@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type FormEvent, type PointerEvent } from "react";
 import {
   defaultViewByDomain,
   missionDomains,
@@ -436,6 +436,33 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
   const activeBlueprint = templateAgents[templateIndex];
   const activeMedia = activeBlueprint.videos?.[mediaIndex] ?? activeBlueprint.portrait;
   const hasVideo = Boolean(activeMedia?.endsWith(".mp4"));
+  const deckAgents = templateAgents.map((agent, index) => {
+    const rawOffset = index - templateIndex;
+    const half = templateAgents.length / 2;
+    const offset = rawOffset > half ? rawOffset - templateAgents.length : rawOffset < -half ? rawOffset + templateAgents.length : rawOffset;
+    return { agent, index, offset };
+  });
+
+  const updateCursorGlow = (event: PointerEvent<HTMLElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    event.currentTarget.style.setProperty("--cursor-x", `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty("--cursor-y", `${event.clientY - rect.top}px`);
+  };
+
+  const updateTilt = (event: PointerEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const px = (event.clientX - rect.left) / rect.width - 0.5;
+    const py = (event.clientY - rect.top) / rect.height - 0.5;
+    event.currentTarget.style.setProperty("--tilt-x", `${(-py * 9).toFixed(2)}deg`);
+    event.currentTarget.style.setProperty("--tilt-y", `${(px * 11).toFixed(2)}deg`);
+    event.currentTarget.style.setProperty("--cursor-x", `${event.clientX - rect.left}px`);
+    event.currentTarget.style.setProperty("--cursor-y", `${event.clientY - rect.top}px`);
+  };
+
+  const resetTilt = (event: PointerEvent<HTMLDivElement>) => {
+    event.currentTarget.style.setProperty("--tilt-x", "0deg");
+    event.currentTarget.style.setProperty("--tilt-y", "0deg");
+  };
 
   const selectTemplateAgent = (index: number) => {
     setTemplateIndex((index + templateAgents.length) % templateAgents.length);
@@ -460,8 +487,8 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
         <span className="fleet-count">{snapshot.agents.length || templateAgents.length} Agents</span>
       </div>
       {snapshot.agents.length === 0 ? (
-        <div className="agent-select-screen" style={{ "--agent-accent": activeBlueprint.accent } as CSSProperties}>
-          <section className="selection-sector panel agent-deck-panel">
+        <div className="agent-select-screen" style={{ "--agent-accent": activeBlueprint.accent } as CSSProperties} onPointerMove={updateCursorGlow}>
+          <section className="selection-sector agent-deck-panel">
             <div className="top-bar">
               <span>Agent Select</span>
               <strong>{templateIndex + 1} / {templateAgents.length}</strong>
@@ -482,14 +509,16 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
                   <button type="button" aria-label="Next agent" onClick={() => selectTemplateAgent(templateIndex + 1)}>Down</button>
                 </div>
               </div>
-              <div className="agent-carousel-viewport">
-                {templateAgents.map((agent, index) => (
+              <div className="agent-carousel-viewport" aria-label="Agent carousel">
+                {deckAgents.map(({ agent, index, offset }) => (
                   <button
                     key={agent.name}
                     type="button"
                     className={index === templateIndex ? "agent-deck-card active" : "agent-deck-card"}
+                    data-offset={offset}
+                    aria-current={index === templateIndex ? "true" : undefined}
                     onClick={() => selectTemplateAgent(index)}
-                    style={{ "--agent-accent": agent.accent } as CSSProperties}
+                    style={{ "--agent-accent": agent.accent, "--deck-offset": offset } as CSSProperties}
                   >
                     <span className="deck-avatar">{agent.name.slice(0, 2)}</span>
                     <span>
@@ -508,8 +537,8 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
               <button type="button">Deploy Agent</button>
             </div>
           </section>
-          <section className="character-sector panel">
-            <div className={configOpen ? "character-console flipped" : "character-console"}>
+          <section className="character-sector">
+            <div className={configOpen ? "character-console flipped" : "character-console"} onPointerMove={updateTilt} onPointerLeave={resetTilt}>
               <span className="corner one" />
               <span className="corner two" />
               <div className="console-lights"><i /><i /><i /></div>

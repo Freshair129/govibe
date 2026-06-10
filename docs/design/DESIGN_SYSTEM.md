@@ -1,6 +1,6 @@
 # GoVibe Mission Control Design System
 
-**Version:** 2.4.0  
+**Version:** 2.5.0  
 **Status:** Active implementation reference  
 **App Entry:** `src/App.tsx`  
 **Data Entry:** `src/mission.ts`
@@ -68,7 +68,8 @@ Light theme is implemented by the `.light-theme` body class and must keep the sa
 
 ### Template-Aligned Surfaces
 - A2 includes roadmap header controls, export/reset affordances, assist roster cards, and detailed task rows from the template blueprint.
-- A5 includes the Agent Select card-deck carousel, active-agent stats, ability tags, bottom controls, EVA video switcher/media console from `public/agents/eva`, sequential autoplay from EVA video 01 to 02 to 03 and back to 01, and a config overlay when no live agents are connected; live agents still render from `snapshot.agents`.
+- A5 includes the Agent Select infinity card-deck carousel, active-agent stats, ability tags, bottom controls, EVA video switcher/media console from `public/agents/eva`, sequential autoplay from EVA video 01 to 02 to 03 and back to 01, pointer-driven cursor glow, 3D tilt on the character console, and a config overlay when no live agents are connected; live agents still render from `snapshot.agents`.
+- A5 must not use nested card/panel wrappers for the selection and character sectors. Cards may appear as individual controls inside an unframed stage, but not as card-inside-card shells.
 - On mobile widths, A5 stacks selection and character sectors into a single column, converts the sidebar into a horizontal module rail, keeps deck cards within the viewport, and compresses the config overlay without hiding controls.
 - A3/A4 use plugin and configuration control surfaces instead of generic live shells.
 - B1 includes an AST code preview and graph canvas blueprint.
