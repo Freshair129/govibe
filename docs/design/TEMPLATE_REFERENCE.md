@@ -51,7 +51,7 @@ The template `siteMap` contains the same 17 modules as the React implementation:
 | A2 | Roadmap header card, global progress, stats, export menu, reset board, AI assist roster, detailed roadmap checklist/accordion. |
 | A3 | Capability plugin management surface. Preserve plugin-slot density and operational controls when data events exist. |
 | A4 | Brain/config panels with model/runtime controls. Preserve config feel without storing secrets in markup. |
-| A5 | Agent Management Carousel: Agent Select stats, ability tags, card-deck roster navigation, video switcher, character media console, configure/flip behavior, model source controls, sliders/meters, and local/cloud endpoint settings. React must avoid hardcoded secret values. |
+| A5 | Agent Management Carousel: Agent Select stats, ability tags, card-deck roster navigation, video switcher, character media console with sequential EVA video playback, configure/flip behavior, model source controls, sliders/meters, local/cloud endpoint settings, and a mobile single-column adaptation. React must avoid hardcoded secret values. |
 | B1 | AST hierarchy/tree-oriented view. |
 | B2 | Business specification / Genesis regulation content panels. |
 | B3 | Interactive graph where nodes can be moved in a 2D graph space. |
@@ -77,7 +77,7 @@ The template `siteMap` contains the same 17 modules as the React implementation:
 
 - Sidebar now starts collapsed, expands on hover, supports lock/collapse, and shows collapsed tooltips.
 - A2 now includes the roadmap header, progress area, export menu, reset action, assist roster cards, accordion phase header, task rows, badges, and assignment selects. It still needs real roadmap event shapes before task state can be backed by data.
-- A5 now includes the template-style Agent Select card-deck carousel with active stats, ability tags, deck navigation, bottom controls, EVA video switcher/media console sourced from `public/agents/eva`, and config overlay when no live agents are connected. It still needs backend-backed config persistence before save/dirty-state controls are meaningful.
+- A5 now includes the template-style Agent Select card-deck carousel with active stats, ability tags, deck navigation, bottom controls, EVA video switcher/media console sourced from `public/agents/eva`, sequential 01 -> 02 -> 03 playback, config overlay, and a mobile single-column adaptation when no live agents are connected. It still needs backend-backed config persistence before save/dirty-state controls are meaningful.
 - A3 now has plugin cards and action controls rather than a generic live shell.
 - A4 now has runtime configuration control surfaces rather than a generic live shell.
 - B1 now has AST code preview and graph canvas details.

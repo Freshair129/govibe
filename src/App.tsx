@@ -47,7 +47,7 @@ const templateAgents: TemplateAgent[] = [
     sessionLimit: 85,
     weeklyLimit: 62,
     abilities: ["Web Search", "Vision", "Code", "Reasoning", "Persistent memory", "Multi-Agent", "Multi-Modal"],
-    videos: ["/agents/eva/eva-vdo-01.mp4", "/agents/eva/eva-vdo-02.mp4"],
+    videos: ["/agents/eva/eva-vdo-01.mp4", "/agents/eva/eva-vdo-02.mp4", "/agents/eva/eva-vdo-03.mp4"],
     portrait: "/agents/eva/eva-pic-01.jpeg",
   },
   {
@@ -443,6 +443,11 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
     setConfigOpen(false);
   };
 
+  const playNextTemplateVideo = () => {
+    if (!activeBlueprint.videos?.length) return;
+    setMediaIndex((index) => (index + 1) % activeBlueprint.videos!.length);
+  };
+
   const selectAgent = (agent: AgentRecord) => {
     setActiveId(agent.id);
     void send({ type: "agent.select", agentId: agent.id });
@@ -522,7 +527,7 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
               <div className="char-media">
                 {activeMedia ? (
                   hasVideo ? (
-                    <video key={activeMedia} src={activeMedia} autoPlay muted loop playsInline preload="metadata" />
+                    <video key={activeMedia} src={activeMedia} autoPlay muted playsInline preload="metadata" onEnded={playNextTemplateVideo} />
                   ) : (
                     <img src={activeMedia} alt={`${activeBlueprint.name} portrait`} />
                   )

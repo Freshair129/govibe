@@ -2133,6 +2133,236 @@ footer {
   }
 }
 
+@media (max-width: 760px) {
+  .app-shell {
+    overflow: hidden;
+  }
+
+  .app-body {
+    flex-direction: column;
+  }
+
+  .topbar {
+    padding: 12px;
+  }
+
+  .brand strong {
+    font-size: 14px;
+  }
+
+  .domain-tabs {
+    gap: 8px;
+    scrollbar-width: none;
+  }
+
+  .domain-tabs::-webkit-scrollbar,
+  .side-nav::-webkit-scrollbar,
+  .agent-carousel-viewport::-webkit-scrollbar {
+    display: none;
+  }
+
+  .domain-tabs button,
+  .top-actions button,
+  .reactor-status {
+    min-height: 38px;
+    white-space: nowrap;
+  }
+
+  .sidebar {
+    border-bottom: 1px solid var(--border);
+    border-right: 0;
+    flex: 0 0 auto;
+    height: auto;
+    padding: 8px 10px;
+    width: 100%;
+  }
+
+  .sidebar-context,
+  .sidebar-toggle {
+    display: none;
+  }
+
+  .side-nav {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .side-nav button {
+    flex: 0 0 auto;
+    height: 44px;
+    min-width: 56px;
+    padding: 0 12px;
+  }
+
+  .side-nav strong {
+    display: none;
+  }
+
+  main {
+    padding: 14px;
+  }
+
+  .view-title-row {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .fleet-count {
+    align-self: stretch;
+    text-align: center;
+  }
+
+  .agent-select-screen {
+    gap: 14px;
+    min-height: 0;
+    width: 100%;
+  }
+
+  .selection-sector,
+  .character-sector,
+  .agent-select-screen .character-console {
+    min-height: 0;
+  }
+
+  .agent-deck-panel {
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .stats-panel {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .stats-panel article {
+    min-height: 74px;
+    padding: 10px;
+  }
+
+  .stats-panel strong {
+    font-size: 18px;
+  }
+
+  .ability-tags.large {
+    max-height: 72px;
+    overflow: auto;
+  }
+
+  .agent-carousel-viewport {
+    max-height: 250px;
+  }
+
+  .agent-deck-card {
+    gap: 10px;
+    grid-template-columns: 44px minmax(0, 1fr);
+    min-height: 78px;
+    min-width: 0;
+    padding: 12px;
+  }
+
+  .agent-deck-card > span:not(.deck-avatar) {
+    min-width: 0;
+  }
+
+  .agent-deck-card strong,
+  .agent-deck-card small,
+  .agent-deck-card em {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .agent-deck-card i {
+    grid-column: 2;
+    justify-self: start;
+  }
+
+  .deck-avatar {
+    height: 40px;
+    width: 40px;
+  }
+
+  .bottom-bar {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .bottom-bar > span {
+    flex-basis: 100%;
+  }
+
+  .bottom-bar button {
+    flex: 1 1 140px;
+  }
+
+  .character-sector {
+    padding: 0;
+  }
+
+  .agent-select-screen .character-console {
+    border-radius: 16px;
+    min-height: 520px;
+    width: 100%;
+  }
+
+  .char-identity {
+    bottom: 38px;
+    gap: 10px;
+    left: 24px;
+    right: 24px;
+  }
+
+  .char-identity strong {
+    font-size: 48px;
+  }
+
+  .char-identity span,
+  .char-identity em {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .vdo-switcher {
+    right: 16px;
+    top: 16px;
+  }
+
+  .console-lights {
+    right: 16px;
+    top: 52px;
+  }
+
+  .corner.one {
+    left: 20px;
+    top: 20px;
+  }
+
+  .corner.two {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .character-config-face {
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .character-config-face textarea {
+    min-height: 96px;
+  }
+
+  .config-meter {
+    grid-template-columns: 1fr 42px;
+  }
+
+  .config-meter span {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
