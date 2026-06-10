@@ -16,10 +16,124 @@ const moduleLookup = Object.fromEntries(
   domainOrder.flatMap((domain) => domain.subModules.map((subModule) => [subModule.id, subModule])),
 ) as Record<ViewId, (typeof domainOrder)[number]["subModules"][number]>;
 
-const templateAgents = [
-  { name: "EVA Agent", role: "Senior Developer", model: "Gemini 3.1 Pro", status: "Active", tasks: "Blueprint", accuracy: "Blueprint", speed: "Blueprint" },
-  { name: "Qwen Coder", role: "Research Analyst", model: "Qwen 2.5 Coder", status: "Ready", tasks: "Blueprint", accuracy: "Blueprint", speed: "Blueprint" },
-  { name: "UAT Agent", role: "Validation Operator", model: "GPT-4o", status: "Ready", tasks: "Blueprint", accuracy: "Blueprint", speed: "Blueprint" },
+type TemplateAgent = {
+  name: string;
+  role: string;
+  model: string;
+  status: "Online" | "Ready" | "Idle" | "Offline";
+  tasks: string;
+  accuracy: string;
+  speed: string;
+  accent: string;
+  package: string;
+  sessionLimit: number;
+  weeklyLimit: number;
+  abilities: string[];
+  videos?: string[];
+  portrait?: string;
+};
+
+const templateAgents: TemplateAgent[] = [
+  {
+    name: "EVA",
+    role: "Senior Developer",
+    model: "Gemini 3.1 Pro",
+    status: "Online",
+    tasks: "12.4k",
+    accuracy: "99.8%",
+    speed: "1.2s",
+    accent: "#ff6363",
+    package: "Google AI Pro",
+    sessionLimit: 85,
+    weeklyLimit: 62,
+    abilities: ["Web Search", "Vision", "Code", "Reasoning", "Persistent memory", "Multi-Agent", "Multi-Modal"],
+    videos: ["/agents/eva/eva-vdo-01.mp4", "/agents/eva/eva-vdo-02.mp4"],
+    portrait: "/agents/eva/eva-pic-01.jpeg",
+  },
+  {
+    name: "QWEN",
+    role: "Research Analyst",
+    model: "Qwen 3 235B-A22B",
+    status: "Online",
+    tasks: "8.7k",
+    accuracy: "98.2%",
+    speed: "0.8s",
+    accent: "#6366f1",
+    package: "Research Tier",
+    sessionLimit: 42,
+    weeklyLimit: 38,
+    abilities: ["Deep Search", "Reasoning", "Multilingual", "Analytics"],
+  },
+  {
+    name: "ATLAS",
+    role: "Infrastructure Lead",
+    model: "Claude 4 Opus",
+    status: "Online",
+    tasks: "15.1k",
+    accuracy: "99.5%",
+    speed: "2.1s",
+    accent: "#22d3ee",
+    package: "Developer Plus",
+    sessionLimit: 90,
+    weeklyLimit: 75,
+    abilities: ["Cloud Ops", "Database", "Security", "CI/CD"],
+  },
+  {
+    name: "NOVA",
+    role: "UI/UX Designer",
+    model: "GPT-4o Vision",
+    status: "Idle",
+    tasks: "6.3k",
+    accuracy: "97.1%",
+    speed: "1.8s",
+    accent: "#f472b6",
+    package: "Creative Plan",
+    sessionLimit: 55,
+    weeklyLimit: 48,
+    abilities: ["Design", "Figma", "Responsive", "Theming"],
+  },
+  {
+    name: "SENTINEL",
+    role: "Security Auditor",
+    model: "Llama 4 Maverick",
+    status: "Online",
+    tasks: "22.9k",
+    accuracy: "99.9%",
+    speed: "0.4s",
+    accent: "#f59e0b",
+    package: "Ollama Local",
+    sessionLimit: 85,
+    weeklyLimit: 72,
+    abilities: ["Encryption", "Vuln Scan", "Auth", "Firewall"],
+  },
+  {
+    name: "OMEGA",
+    role: "Data Scientist",
+    model: "DeepSeek R2",
+    status: "Idle",
+    tasks: "9.8k",
+    accuracy: "98.7%",
+    speed: "3.5s",
+    accent: "#10b981",
+    package: "LM Studio",
+    sessionLimit: 89,
+    weeklyLimit: 64,
+    abilities: ["ML Pipeline", "Data Wrangling", "Visualization", "GPU Compute"],
+  },
+  {
+    name: "PHANTOM",
+    role: "Stealth Operator",
+    model: "Mistral Large 3",
+    status: "Offline",
+    tasks: "4.2k",
+    accuracy: "96.3%",
+    speed: "0.9s",
+    accent: "#a78bfa",
+    package: "Ollama",
+    sessionLimit: 35,
+    weeklyLimit: 28,
+    abilities: ["Shell", "Network", "OSINT", "Crypto"],
+  },
 ];
 
 const roadmapRows = [
@@ -221,7 +335,7 @@ function EmptyState({ title, body }: { title: string; body: string }) {
 
 function TemplateAgentCard({ agent, compact = false }: { agent: typeof templateAgents[number]; compact?: boolean }) {
   return (
-    <article className={compact ? "template-agent-card compact" : "template-agent-card"}>
+    <article className={compact ? "template-agent-card compact" : "template-agent-card"} style={{ "--agent-accent": agent.accent } as CSSProperties}>
       <div className="template-agent-head">
         <div className="template-agent-avatar">{agent.name.slice(0, 2).toUpperCase()}</div>
         <div>
@@ -237,12 +351,10 @@ function TemplateAgentCard({ agent, compact = false }: { agent: typeof templateA
       </div>
       <div className="quota-line">
         <span>Session Quota</span>
-        <i />
+        <i style={{ width: `${agent.sessionLimit}%` }} />
       </div>
       <div className="ability-tags">
-        <span>Web</span>
-        <span>Vision</span>
-        <span>Code</span>
+        {agent.abilities.slice(0, 3).map((ability) => <span key={ability}>{ability}</span>)}
       </div>
       <button type="button">Configure</button>
     </article>
@@ -318,8 +430,18 @@ function RealTimeDashboard({ snapshot, theme }: { snapshot: MissionSnapshot; the
 function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: (command: MissionCommand) => void }) {
   const [activeId, setActiveId] = useState<string | undefined>();
   const [configOpen, setConfigOpen] = useState(false);
+  const [templateIndex, setTemplateIndex] = useState(0);
+  const [mediaIndex, setMediaIndex] = useState(0);
   const active = snapshot.agents.find((agent) => agent.id === activeId) ?? snapshot.agents[0];
-  const activeBlueprint = templateAgents[0];
+  const activeBlueprint = templateAgents[templateIndex];
+  const activeMedia = activeBlueprint.videos?.[mediaIndex] ?? activeBlueprint.portrait;
+  const hasVideo = Boolean(activeMedia?.endsWith(".mp4"));
+
+  const selectTemplateAgent = (index: number) => {
+    setTemplateIndex((index + templateAgents.length) % templateAgents.length);
+    setMediaIndex(0);
+    setConfigOpen(false);
+  };
 
   const selectAgent = (agent: AgentRecord) => {
     setActiveId(agent.id);
@@ -333,47 +455,112 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
         <span className="fleet-count">{snapshot.agents.length || templateAgents.length} Agents</span>
       </div>
       {snapshot.agents.length === 0 ? (
-        <div className="agent-select-screen">
-          <section className="selection-sector panel">
+        <div className="agent-select-screen" style={{ "--agent-accent": activeBlueprint.accent } as CSSProperties}>
+          <section className="selection-sector panel agent-deck-panel">
             <div className="top-bar">
               <span>Agent Select</span>
-              <strong>Blueprint</strong>
+              <strong>{templateIndex + 1} / {templateAgents.length}</strong>
             </div>
             <div className="stats-panel">
-              <article><span>Tasks</span><strong>Blueprint</strong></article>
-              <article><span>Accuracy</span><strong>Blueprint</strong></article>
-              <article><span>Speed</span><strong>Blueprint</strong></article>
+              <article><span>Tasks</span><strong>{activeBlueprint.tasks}</strong></article>
+              <article><span>Accuracy</span><strong>{activeBlueprint.accuracy}</strong></article>
+              <article><span>Speed</span><strong>{activeBlueprint.speed}</strong></article>
             </div>
             <div className="ability-tags large">
-              <span>Web Search</span>
-              <span>Vision</span>
-              <span>Code</span>
-              <span>Reasoning</span>
-              <span>Persistent Memory</span>
-              <span>Multi-Agent</span>
+              {activeBlueprint.abilities.map((ability) => <span key={ability}>{ability}</span>)}
             </div>
             <div className="carousel-section">
               <div className="carousel-title">
                 <span>Roster</span>
-                <div><button type="button">Up</button><button type="button">Down</button></div>
+                <div>
+                  <button type="button" aria-label="Previous agent" onClick={() => selectTemplateAgent(templateIndex - 1)}>Up</button>
+                  <button type="button" aria-label="Next agent" onClick={() => selectTemplateAgent(templateIndex + 1)}>Down</button>
+                </div>
               </div>
-              {templateAgents.map((agent) => <TemplateAgentCard key={agent.name} agent={agent} compact />)}
+              <div className="agent-carousel-viewport">
+                {templateAgents.map((agent, index) => (
+                  <button
+                    key={agent.name}
+                    type="button"
+                    className={index === templateIndex ? "agent-deck-card active" : "agent-deck-card"}
+                    onClick={() => selectTemplateAgent(index)}
+                    style={{ "--agent-accent": agent.accent } as CSSProperties}
+                  >
+                    <span className="deck-avatar">{agent.name.slice(0, 2)}</span>
+                    <span>
+                      <strong>{agent.name}</strong>
+                      <small>{agent.role}</small>
+                      <em>{agent.package}</em>
+                    </span>
+                    <i>{agent.status}</i>
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="bottom-bar">
               <span><kbd>Up</kbd><kbd>Down</kbd> Navigate</span>
-              <button type="button">Configure</button>
+              <button type="button" onClick={() => setConfigOpen((value) => !value)}>{configOpen ? "Close Config" : "Configure"}</button>
               <button type="button">Deploy Agent</button>
             </div>
           </section>
           <section className="character-sector panel">
-            <div className="character-console">
+            <div className={configOpen ? "character-console flipped" : "character-console"}>
               <span className="corner one" />
               <span className="corner two" />
               <div className="console-lights"><i /><i /><i /></div>
+              <div className="vdo-switcher">
+                {(activeBlueprint.videos ?? []).map((video, index) => (
+                  <button
+                    key={video}
+                    type="button"
+                    className={index === mediaIndex ? "active" : ""}
+                    aria-label={`Show EVA video ${index + 1}`}
+                    onClick={() => setMediaIndex(index)}
+                  />
+                ))}
+              </div>
+              <div className="char-media">
+                {activeMedia ? (
+                  hasVideo ? (
+                    <video key={activeMedia} src={activeMedia} autoPlay muted loop playsInline preload="metadata" />
+                  ) : (
+                    <img src={activeMedia} alt={`${activeBlueprint.name} portrait`} />
+                  )
+                ) : (
+                  <div className="char-media-fallback">{activeBlueprint.name}</div>
+                )}
+              </div>
               <div className="char-identity">
-                <strong>{activeBlueprint.name.replace(" Agent", "")}</strong>
+                <strong>{activeBlueprint.name}</strong>
                 <span>{activeBlueprint.role}</span>
                 <em>{activeBlueprint.model}</em>
+              </div>
+              <div className="character-config-face">
+                <header>
+                  <span>Agent Settings</span>
+                  <button type="button" onClick={() => setConfigOpen(false)}>Close</button>
+                </header>
+                <label>
+                  System Prompt
+                  <textarea defaultValue={`You are ${activeBlueprint.name}, an expert ${activeBlueprint.role} operating in autonomous loop mode.`} />
+                </label>
+                <label>
+                  Model Source
+                  <select defaultValue={activeBlueprint.package}>
+                    <option>{activeBlueprint.package}</option>
+                    <option>Local Server</option>
+                  </select>
+                </label>
+                <div className="config-meter">
+                  <span>Session Limit</span>
+                  <i style={{ "--meter": `${activeBlueprint.sessionLimit}%` } as CSSProperties} />
+                  <strong>{activeBlueprint.sessionLimit}%</strong>
+                </div>
+                <div className="config-meter">
+                  <span>Weekly Limit</span>
+                  <i style={{ "--meter": `${activeBlueprint.weeklyLimit}%` } as CSSProperties} />
+                  <strong>{activeBlueprint.weeklyLimit}%</strong>
+                </div>
               </div>
             </div>
           </section>
