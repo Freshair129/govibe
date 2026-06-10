@@ -1,0 +1,58 @@
+<!-- [B4] Call Graph Visualizer (Cytoscape.js) -->
+                <div id="view-B4" class="space-y-6 hidden view-block">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">GENESIS
+                                KNOWLEDGE</span>
+                            <h2 class="text-3xl font-extrabold text-white mt-1">Live Call Graph</h2>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center bg-black/40 border border-cyber-border rounded-lg p-1">
+                                <button onclick="changeGraphDepth('1')"
+                                    class="px-3 py-1 rounded text-xs font-semibold text-text-muted hover:text-white transition">Depth
+                                    1</button>
+                                <button onclick="changeGraphDepth('2')"
+                                    class="px-3 py-1 rounded text-xs font-semibold text-text-muted hover:text-white transition">Depth
+                                    2</button>
+                                <button onclick="changeGraphDepth('all')"
+                                    class="px-3 py-1 rounded text-xs font-semibold text-white bg-indigo-600">All</button>
+                            </div>
+                            <button id="btn-sync-graph" onclick="refreshCallGraph()"
+                                class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-lg transition">
+                                <i class="fa-solid fa-arrows-rotate mr-1.5" id="sync-icon"></i> Sync Graph
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="glass-panel rounded-2xl lg:col-span-2 h-[420px] relative overflow-hidden"
+                            id="cy-container"></div>
+
+                        <div class="glass-panel p-6 rounded-2xl space-y-4" id="cy-info-panel">
+                            <h4 class="font-bold text-white border-b border-white/5 pb-2" id="node-name">Select a node
+                            </h4>
+                            <div class="space-y-3 text-xs">
+                                <div>
+                                    <span class="text-cyber-muted block uppercase text-[10px]">Type</span>
+                                    <span class="font-semibold text-white" id="node-type">-</span>
+                                </div>
+                                <div>
+                                    <span class="text-cyber-muted block uppercase text-[10px]">File Path</span>
+                                    <span class="font-mono text-white break-all" id="node-file">-</span>
+                                </div>
+                                <div class="border-t border-white/5 pt-2">
+                                    <span class="text-cyber-muted block uppercase text-[10px] mb-1.5">Inbound
+                                        Calls</span>
+                                    <div class="flex flex-col gap-1" id="inbound-list"></div>
+                                </div>
+                                <div class="border-t border-white/5 pt-2">
+                                    <span class="text-cyber-muted block uppercase text-[10px] mb-1.5">Outbound
+                                        Calls</span>
+                                    <div class="flex flex-col gap-1" id="outbound-list"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DOMAIN C: BLOCK DB -->

@@ -1,0 +1,84 @@
+
+
+            </div>
+        </main>
+    </div>
+
+    <!-- SECTOR 3: FOOTER -->
+    <footer
+        class="h-8 shrink-0 glass-panel border-t border-cyber-border flex items-center justify-between px-6 text-[10px] text-cyber-muted z-40 relative font-mono">
+        <div>COVIBE COMMAND REACTOR v2.5 | STABLE BUILD</div>
+        <div>STABLE CONTEXT: <span id="footer-context" class="text-emerald-400 font-bold uppercase">Overview</span>
+        </div>
+    </footer>
+
+    <!-- SECTOR 4: Floating Overlays (HITL & Terminal window) -->
+
+    <!-- Human-In-The-Loop Approval Modal -->
+    <div id="hitl-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="bg-zinc-900/95 border border-indigo-500/40 rounded-2xl shadow-2xl max-w-md w-full p-6 transform translate-y-4 transition-transform duration-300"
+            id="hitl-card">
+            <div class="flex items-center gap-3 mb-4">
+                <div
+                    class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl animate-pulse shrink-0">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="min-w-0">
+                    <h3 class="font-bold text-white text-base leading-tight">AST Verification Requested</h3>
+                    <p class="text-xs text-indigo-400">Node: BinaryExpression Verification</p>
+                </div>
+            </div>
+            <p class="text-sm text-stone-300 mb-4">Agent <span class="font-mono text-emerald-400">eva-cli</span> is
+                requesting verification for the conditional code execution path:</p>
+            <div
+                class="bg-black/40 border border-white/5 rounded-xl p-3 font-mono text-xs text-gray-300 mb-6 overflow-x-auto">
+                if (latency &gt; 250) { ... }
+            </div>
+            <div class="flex gap-3">
+                <button onclick="resolveHitl(false)"
+                    class="flex-1 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-sm font-semibold text-white transition">Halt</button>
+                <button onclick="resolveHitl(true)"
+                    class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white transition shadow-lg">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAB Terminal button -->
+    <button id="fab-terminal" class="fab-terminal-btn" onclick="toggleTerminal()" title="Toggle Terminal">
+        <i class="fa-solid fa-terminal text-lg"></i>
+    </button>
+
+    <!-- Floating draggable terminal log console -->
+    <div id="floating-terminal" class="floating-terminal-window">
+        <div class="p-3 bg-white/5 border-b border-white/10 flex items-center justify-between cursor-move"
+            id="terminal-drag-header">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 cursor-pointer" onclick="toggleTerminal()"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                <span class="text-[10px] text-cyber-muted font-mono ml-2">covibe-agent-pipeline ~ sh</span>
+            </div>
+            <select
+                class="bg-black/40 border border-cyber-border rounded px-1.5 py-0.5 text-[9px] text-cyber-muted focus:outline-none"
+                id="terminal-shell-selector">
+                <option value="gemini">Gemini CLI</option>
+                <option value="eva" selected>EVA Agent (eva-cli)</option>
+                <option value="qwen">Qwen Coder</option>
+            </select>
+        </div>
+        <!-- Logs body -->
+        <div class="flex-1 overflow-y-auto p-3 bg-black/80 font-mono text-[10px] text-emerald-400 space-y-1 scroll-custom"
+            id="terminal-output">
+            <div class="text-cyber-muted">[System] Dashboard Standby. Ready for signal simulation...</div>
+        </div>
+        <!-- Input line -->
+        <div class="p-2 border-t border-cyber-border bg-[#06080a] flex items-center">
+            <span class="text-emerald-500 font-mono text-xs mr-2 font-bold">$</span>
+            <input type="text" id="terminal-input" placeholder="Enter shell command here..."
+                class="flex-1 bg-transparent border-none text-[11px] font-mono text-white focus:outline-none"
+                onkeypress="handleTerminalInput(event)">
+        </div>
+    </div>
+
+    <!-- Script integrations -->

@@ -1,0 +1,26 @@
+<!-- [D2] Cyber Reactor Heatmap View -->
+                <div id="view-D2" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-orange-400 uppercase tracking-widest">AI BENCHMARK</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Cyber Reactor Real-time Heatmap</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel p-5 rounded-xl col-span-1 space-y-4">
+                            <h4 class="font-bold text-white">Reactor Overview Status</h4>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span>Core Temp</span><span
+                                        class="text-orange-400 font-bold" id="core-temp-val">42.8 °C</span></div>
+                                <div class="flex justify-between"><span>GFLOPS Power</span><span
+                                        class="text-orange-400 font-bold">2.4 Tflops</span></div>
+                                <div class="flex justify-between"><span>Coolant Flow Rate</span><span
+                                        class="text-orange-400 font-bold">8.4 L/min</span></div>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl col-span-2">
+                            <h4 class="font-bold text-white mb-4">Core Thermal Grid (8x8 CPU/GPU Mapping)</h4>
+                            <div class="grid grid-cols-8 gap-2" id="heatmap-grid-container">
+                            </div>
+                        </div>
+                    </div>
+                </div>

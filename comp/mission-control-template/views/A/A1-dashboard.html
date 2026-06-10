@@ -1,0 +1,89 @@
+<!-- [A1] Dashboard View -->
+                <div id="view-A1" class="space-y-6 hidden view-block">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE
+                                OVERVIEW</span>
+                            <h2 class="text-3xl font-extrabold shimmer-title mt-1">Command Control Center</h2>
+                        </div>
+                        <div class="flex gap-2">
+                            <div
+                                class="px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono text-xs">
+                                ROI: <span class="font-bold text-white">+142.8%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics grid row -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-xs font-semibold">LLM Cost Spend</span>
+                                <i class="fa-solid fa-coins text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-white mt-2 relative z-10" id="tel-cost">$0.0490</h3>
+                        </div>
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-xs font-semibold">Total LLM Calls</span>
+                                <i class="fa-solid fa-robot text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-white mt-2 relative z-10" id="tel-calls">14</h3>
+                        </div>
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-xs font-semibold">Active Tools Calls</span>
+                                <i class="fa-solid fa-wrench text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-white mt-2 relative z-10" id="tel-tools">28</h3>
+                        </div>
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-xs font-semibold">Forecast cost</span>
+                                <i class="fa-solid fa-chart-line text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-white mt-2 relative z-10" id="tel-forecast">$1.24</h3>
+                        </div>
+                    </div>
+
+                    <!-- Performance Chart and live terminal output -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl lg:col-span-2">
+                            <h4 class="font-bold text-white mb-4">Token Performance Analytics</h4>
+                            <div class="chart-container h-80 relative w-full">
+                                <canvas id="dashboardChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- System metrics card list -->
+                        <div class="glass-panel p-6 rounded-2xl space-y-4">
+                            <h4 class="font-bold text-white border-b border-white/5 pb-2">Reactor Telemetry</h4>
+                            <div class="space-y-3.5 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-cyber-muted">Input Tokens</span>
+                                    <span class="font-bold text-white font-mono" id="tel-in">37.2k</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-cyber-muted">Output Tokens</span>
+                                    <span class="font-bold text-white font-mono" id="tel-out">4.4k</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-cyber-muted">Execution Time</span>
+                                    <span class="font-bold text-white font-mono" id="tel-time">1m 24s</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-cyber-muted">Thermal Headroom</span>
+                                    <div class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20"
+                                        id="tel-thermal-container">
+                                        <span class="font-bold font-mono text-emerald-400"
+                                            id="tel-thermal">+36.0°C</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>

@@ -1,0 +1,80 @@
+<!-- [B1] AST Explorer -->
+                <div id="view-B1" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">GENESIS
+                            KNOWLEDGE</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">AST Tree & Preview</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div
+                            class="glass-panel p-5 rounded-2xl col-span-1 h-96 overflow-y-auto scroll-custom space-y-2 text-sm">
+                            <div class="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl cursor-pointer hover:bg-indigo-500/20"
+                                onclick="highlightCodeLine('lc-1')">
+                                <i class="fa-solid fa-file-code mr-2 text-indigo-400"></i> calculateDrift.js
+                            </div>
+                            <div class="border-t border-white/5 my-3"></div>
+                            <!-- Snippet line-code selectors -->
+                            <div class="space-y-1">
+                                <div class="line-code cursor-pointer text-xs font-mono p-1 rounded" id="lc-1"
+                                    onclick="highlightCodeLine('lc-1')">
+                                    <span class="text-indigo-400">1:</span> const latency = report.latencyMs;
+                                </div>
+                                <div class="line-code cursor-pointer text-xs font-mono p-1 rounded" id="lc-2"
+                                    onclick="highlightCodeLine('lc-2')">
+                                    <span class="text-indigo-400">2:</span> if (latency &gt; 250) {
+                                </div>
+                                <div class="line-code cursor-pointer text-xs font-mono p-1 rounded" id="lc-3"
+                                    onclick="highlightCodeLine('lc-3')">
+                                    <span class="text-indigo-400">3:</span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;triggerCalibration(latency);
+                                </div>
+                                <div class="line-code cursor-pointer text-xs font-mono p-1 rounded" id="lc-4"
+                                    onclick="highlightCodeLine('lc-4')">
+                                    <span class="text-indigo-400">4:</span> }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Draggable AST node canvas simulation -->
+                        <div class="glass-panel p-5 rounded-2xl col-span-2 h-96 relative overflow-hidden grid-canvas"
+                            id="ast-canvas-container">
+                            <div
+                                class="absolute top-4 right-4 bg-black/40 border border-cyber-border rounded px-2.5 py-1 text-[10px] font-mono text-indigo-300">
+                                AST Graph Simulator
+                            </div>
+                            <!-- Traversal Nodes -->
+                            <div id="node-start"
+                                class="absolute p-3 bg-indigo-950/50 border border-indigo-500/40 rounded-xl text-xs font-mono font-bold select-none cursor-move"
+                                style="left: 40px; top: 120px;">
+                                Program
+                            </div>
+                            <div id="node-agent"
+                                class="absolute p-3 bg-indigo-950/50 border border-indigo-500/40 rounded-xl text-xs font-mono font-bold select-none cursor-move"
+                                style="left: 180px; top: 70px;">
+                                FunctionDecl
+                                <span class="block text-[10px] text-indigo-400" id="node-agent-status">Idle</span>
+                                <i class="fa-solid fa-spinner animate-spin text-[10px] text-emerald-400 ml-1.5 hidden"
+                                    id="agent-spinner"></i>
+                            </div>
+                            <div id="node-hitl"
+                                class="absolute p-3 bg-indigo-950/50 border border-indigo-500/40 rounded-xl text-xs font-mono font-bold select-none cursor-move"
+                                style="left: 180px; top: 190px;">
+                                BinaryExpr
+                                <span class="block text-[10px] text-yellow-500" id="node-hitl-status">Awaiting
+                                    Verification</span>
+                            </div>
+                            <div id="node-end"
+                                class="absolute p-3 bg-indigo-950/50 border border-indigo-500/40 rounded-xl text-xs font-mono font-bold select-none cursor-move"
+                                style="left: 360px; top: 130px;">
+                                TriggerCalibration
+                            </div>
+                            <!-- Canvas containing vector paths -->
+                            <svg class="absolute inset-0 w-full h-full pointer-events-none" id="ast-svg-lines">
+                                <path id="edge-1" class="edge-path" d="M 0 0 C 0 0, 0 0, 0 0"></path>
+                                <path id="edge-2" class="edge-path" d="M 0 0 C 0 0, 0 0, 0 0"></path>
+                                <path id="edge-3" class="edge-path" d="M 0 0 C 0 0, 0 0, 0 0"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>

@@ -1,0 +1,249 @@
+{
+  "generatedAt": "2026-06-10T14:09:25.530Z",
+  "source": "GoVibe-Mission-Control-template.html",
+  "sourceBytes": 438952,
+  "outputRoot": "comp/mission-control-template",
+  "views": [
+    {
+      "id": "A1",
+      "file": "views/A/A1-dashboard.html",
+      "marker": "<!-- [A1] Dashboard View -->",
+      "lineStart": 1925,
+      "lineEnd": 2015
+    },
+    {
+      "id": "A2",
+      "file": "views/A/A2-roadmap-tracker.html",
+      "marker": "<!-- [A2] Roadmap Tracker View (Detailed accordion checklist) -->",
+      "lineStart": 2015,
+      "lineEnd": 3457
+    },
+    {
+      "id": "A3",
+      "file": "views/A/A3-plugins.html",
+      "marker": "<!-- [A3] Plugins View -->",
+      "lineStart": 3457,
+      "lineEnd": 3493
+    },
+    {
+      "id": "A4",
+      "file": "views/A/A4-brain-settings.html",
+      "marker": "<!-- [A4] Brain Settings View -->",
+      "lineStart": 3493,
+      "lineEnd": 3556
+    },
+    {
+      "id": "A5",
+      "file": "views/A/A5-agent-management-carousel.html",
+      "marker": "<!-- [A5] Agent Management Carousel -->",
+      "lineStart": 3556,
+      "lineEnd": 3876
+    },
+    {
+      "id": "B1",
+      "file": "views/B/B1-ast-explorer.html",
+      "marker": "<!-- [B1] AST Explorer -->",
+      "lineStart": 3876,
+      "lineEnd": 3957
+    },
+    {
+      "id": "B2",
+      "file": "views/B/B2-business-specifications.html",
+      "marker": "<!-- [B2] Business Specifications -->",
+      "lineStart": 3957,
+      "lineEnd": 3976
+    },
+    {
+      "id": "B3",
+      "file": "views/B/B3-graph-studio.html",
+      "marker": "<!-- [B3] Graph Studio -->",
+      "lineStart": 3976,
+      "lineEnd": 3996
+    },
+    {
+      "id": "B4",
+      "file": "views/B/B4-call-graph-visualizer.html",
+      "marker": "<!-- [B4] Call Graph Visualizer (Cytoscape.js) -->",
+      "lineStart": 3996,
+      "lineEnd": 4055
+    },
+    {
+      "id": "C1",
+      "file": "views/C/C1-symbol-explorer.html",
+      "marker": "<!-- [C1] Symbol Explorer -->",
+      "lineStart": 4055,
+      "lineEnd": 4108
+    },
+    {
+      "id": "C2",
+      "file": "views/C/C2-intelligence-zoo.html",
+      "marker": "<!-- [C2] Intelligence Zoo -->",
+      "lineStart": 4108,
+      "lineEnd": 4142
+    },
+    {
+      "id": "C3",
+      "file": "views/C/C3-srs-g-debugger.html",
+      "marker": "<!-- [C3] SRS-G Debugger / query test input -->",
+      "lineStart": 4142,
+      "lineEnd": 4173
+    },
+    {
+      "id": "C4",
+      "file": "views/C/C4-database-erd-schema.html",
+      "marker": "<!-- [C4] Database ERD Schema -->",
+      "lineStart": 4173,
+      "lineEnd": 4220
+    },
+    {
+      "id": "C5",
+      "file": "views/C/C5-hnsw-vector-space-map.html",
+      "marker": "<!-- [C5] HNSW Vector Space Map -->",
+      "lineStart": 4220,
+      "lineEnd": 4264
+    },
+    {
+      "id": "D1",
+      "file": "views/D/D1-reactor-run-trigger.html",
+      "marker": "<!-- [D1] Reactor Run Trigger -->",
+      "lineStart": 4264,
+      "lineEnd": 4333
+    },
+    {
+      "id": "D2",
+      "file": "views/D/D2-cyber-reactor-heatmap.html",
+      "marker": "<!-- [D2] Cyber Reactor Heatmap View -->",
+      "lineStart": 4333,
+      "lineEnd": 4360
+    },
+    {
+      "id": "D3",
+      "file": "views/D/D3-eabs-campaign-logs.html",
+      "marker": "<!-- [D3] EABS-01 Campaign Logs -->",
+      "lineStart": 4360,
+      "lineEnd": 4376
+    }
+  ],
+  "modules": [
+    {
+      "path": "scripts/00-console-warn-filter.js",
+      "bytes": 364,
+      "lines": 11
+    },
+    {
+      "path": "config/tailwind.config.inline.js",
+      "bytes": 1439,
+      "lines": 37
+    },
+    {
+      "path": "styles/template.css",
+      "bytes": 52175,
+      "lines": 1742
+    },
+    {
+      "path": "layout/body-before-views.html",
+      "bytes": 6852,
+      "lines": 111
+    },
+    {
+      "path": "views/A/A1-dashboard.html",
+      "bytes": 6071,
+      "lines": 91
+    },
+    {
+      "path": "views/A/A2-roadmap-tracker.html",
+      "bytes": 126737,
+      "lines": 1443
+    },
+    {
+      "path": "views/A/A3-plugins.html",
+      "bytes": 2238,
+      "lines": 37
+    },
+    {
+      "path": "views/A/A4-brain-settings.html",
+      "bytes": 4677,
+      "lines": 64
+    },
+    {
+      "path": "views/A/A5-agent-management-carousel.html",
+      "bytes": 24521,
+      "lines": 321
+    },
+    {
+      "path": "views/B/B1-ast-explorer.html",
+      "bytes": 5743,
+      "lines": 82
+    },
+    {
+      "path": "views/B/B2-business-specifications.html",
+      "bytes": 1559,
+      "lines": 20
+    },
+    {
+      "path": "views/B/B3-graph-studio.html",
+      "bytes": 1412,
+      "lines": 21
+    },
+    {
+      "path": "views/B/B4-call-graph-visualizer.html",
+      "bytes": 3953,
+      "lines": 60
+    },
+    {
+      "path": "views/C/C1-symbol-explorer.html",
+      "bytes": 3523,
+      "lines": 54
+    },
+    {
+      "path": "views/C/C2-intelligence-zoo.html",
+      "bytes": 2390,
+      "lines": 35
+    },
+    {
+      "path": "views/C/C3-srs-g-debugger.html",
+      "bytes": 2133,
+      "lines": 32
+    },
+    {
+      "path": "views/C/C4-database-erd-schema.html",
+      "bytes": 2909,
+      "lines": 48
+    },
+    {
+      "path": "views/C/C5-hnsw-vector-space-map.html",
+      "bytes": 3071,
+      "lines": 45
+    },
+    {
+      "path": "views/D/D1-reactor-run-trigger.html",
+      "bytes": 5139,
+      "lines": 70
+    },
+    {
+      "path": "views/D/D2-cyber-reactor-heatmap.html",
+      "bytes": 1814,
+      "lines": 28
+    },
+    {
+      "path": "views/D/D3-eabs-campaign-logs.html",
+      "bytes": 1189,
+      "lines": 17
+    },
+    {
+      "path": "layout/body-after-views-before-runtime.html",
+      "bytes": 4716,
+      "lines": 85
+    },
+    {
+      "path": "scripts/mission-control.runtime.js",
+      "bytes": 173229,
+      "lines": 2935
+    },
+    {
+      "path": "README.md",
+      "bytes": 1024,
+      "lines": 24
+    }
+  ]
+}

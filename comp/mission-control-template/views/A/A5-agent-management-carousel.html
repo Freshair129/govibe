@@ -1,0 +1,319 @@
+<!-- [A5] Agent Management Carousel -->
+                <div id="view-A5" class="space-y-6 hidden view-block">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE
+                                OVERVIEW</span>
+                            <h2 class="text-3xl font-extrabold text-white mt-1">Agent Management</h2>
+                            <p class="text-xs text-cyber-muted mt-1">Manage, configure and monitor your AI agent fleet
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/70 font-bold">
+                                <i class="fa-solid fa-robot mr-1"></i> 4 Agents
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="select-screen">
+
+                        <!-- ===== LEFT SECTOR — Selection Panel ===== -->
+                        <div class="selection-sector">
+
+                            <!-- Top Bar -->
+                            <div class="top-bar">
+                                <span class="top-bar-title">Agent Select</span>
+                                <span class="top-bar-count" id="agentCount">1 / 7</span>
+                            </div>
+
+                            <!-- Stats Panel -->
+                            <div class="stats-panel" id="statsPanel">
+                                <div class="stat-card">
+                                    <div class="stat-label"><i class="ph ph-check-square-offset"></i> Tasks</div>
+                                    <div class="stat-value" id="statTasks">12.4k</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label"><i class="ph ph-target"></i> Accuracy</div>
+                                    <div class="stat-value glow" id="statAccuracy">99.8%</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label"><i class="ph ph-lightning"></i> Speed</div>
+                                    <div class="stat-value" id="statSpeed">1.2s</div>
+                                </div>
+                            </div>
+
+                            <!-- Ability Tags -->
+                            <div class="ability-bar" id="abilityBar">
+                                <!-- Populated by JS -->
+                            </div>
+
+                            <!-- Agent Carousel -->
+                            <div class="carousel-section">
+                                <span class="carousel-label">Roster</span>
+                                <div class="carousel-nav-arrows">
+                                    <button class="carousel-arrow" id="carouselUp">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round">
+                                            <path d="M18 15l-6-6-6 6" />
+                                        </svg>
+                                    </button>
+                                    <button class="carousel-arrow" id="carouselDown">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round">
+                                            <path d="M6 9l6 6 6-6" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="agent-carousel-viewport" id="agentViewport">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Bottom Bar -->
+                            <div class="bottom-bar">
+                                <div class="key-hint">
+                                    <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+                                    <span><kbd>Enter</kbd> Deploy</span>
+                                </div>
+                                <div style="display: flex; gap: 0.75rem;">
+                                    <button id="btnConfig"
+                                        style="background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 14px; padding: 0.65rem 1.25rem; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="ph ph-sliders-horizontal"></i>
+                                        Configure
+                                    </button>
+                                    <button class="btn-select" id="btnDeploy">
+                                        <i class="ph ph-rocket-launch"></i>
+                                        Deploy Agent
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== RIGHT SECTOR — Character Portrait ===== -->
+                        <div class="character-sector">
+                            <div class="character-perspective" id="charPerspective">
+                                <div class="character-tilt" id="charTilt">
+                                    <div class="character-flipper" id="charFlipper">
+
+                                        <!-- Front Face -->
+                                        <div class="character-front">
+                                            <div class="scanlines"></div>
+                                            <div class="corner-bracket tl"></div>
+                                            <div class="corner-bracket br"></div>
+
+                                            <!-- Video Switcher Overlay -->
+                                            <div class="vdo-switcher" id="vdoSwitcher"></div>
+
+                                            <div class="char-portrait" id="charPortrait">
+                                                <div id="mediaContainer" style="width: 100%; height: 100%;"></div>
+                                            </div>
+
+                                            <div class="char-identity">
+                                                <div class="char-codename" id="charName">EVA</div>
+                                                <div class="char-role" id="charRole">Senior Developer</div>
+                                                <div class="char-class-badge" id="charBadge"
+                                                    style="color: var(--accent); border-color: rgba(255,99,99,0.3); background: rgba(255,99,99,0.06);">
+                                                    <i class="ph ph-cpu"></i>
+                                                    <span id="charModel">Gemini 3.1 Pro</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Back Face (Configuration Panel) -->
+                                        <div class="character-back">
+                                            <div class="scanlines"></div>
+
+                                            <div style="position: absolute; inset: 0; z-index: 1; opacity: 0.15; pointer-events: none;"
+                                                id="configBgMedia">
+                                                <!-- Background portrait/image blurred -->
+                                            </div>
+
+                                            <div
+                                                style="position: relative; z-index: 10; display: flex; flex-direction: column; height: 100%;">
+                                                <div class="config-header">
+                                                    <span>Agent Settings</span>
+                                                    <button id="btnCloseConfig"
+                                                        style="background: transparent; border: none; color: #fff; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;"><i
+                                                            class="ph ph-x"></i></button>
+                                                </div>
+
+                                                <div class="config-grid">
+                                                    <div class="config-group">
+                                                        <label class="config-label" for="cfgPrompt">System
+                                                            Prompt</label>
+                                                        <textarea class="config-textarea" id="cfgPrompt"
+                                                            placeholder="You are an expert AI agent..."></textarea>
+                                                    </div>
+
+                                                    <!-- Model Source Pill Switcher -->
+                                                    <div class="config-group">
+                                                        <label class="config-label">Model Source</label>
+                                                        <div class="model-src-pill" id="modelSrcPill">
+                                                            <button id="pillCloud" class="pill-active"
+                                                                onclick="switchModelSrc('cloud')">Cloud API</button>
+                                                            <button id="pillLocal"
+                                                                onclick="switchModelSrc('local')">Local Server</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Cloud Configuration Group -->
+                                                    <div id="groupCloudConfig" class="config-group"
+                                                        style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                                        <div class="config-group">
+                                                            <label class="config-label">API Key</label>
+                                                            <div style="position:relative;">
+                                                                <input type="password" class="config-input"
+                                                                    id="cfgApiKey" placeholder="Enter API Key..."
+                                                                    style="padding-right:2.5rem;width:100%;">
+                                                                <button id="btnToggleApiKey"
+                                                                    onclick="toggleApiKeyVisibility()"
+                                                                    style="position:absolute;right:0.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:1rem;display:flex;align-items:center;">
+                                                                    <i class="ph ph-eye" id="apiKeyEyeIcon"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="config-group">
+                                                            <label class="config-label">Model Engine</label>
+                                                            <select class="config-select" id="cfgModel">
+                                                                <option value="Gemini 3.1 Pro">Gemini 3.1 Pro</option>
+                                                                <option value="Qwen 3 235B-A22B">Qwen 3 235B-A22B
+                                                                </option>
+                                                                <option value="Claude 4 Opus">Claude 4 Opus</option>
+                                                                <option value="GPT-4o Vision">GPT-4o Vision</option>
+                                                                <option value="Llama 4 Maverick">Llama 4 Maverick
+                                                                </option>
+                                                                <option value="DeepSeek R2">DeepSeek R2</option>
+                                                                <option value="Mistral Large 3">Mistral Large 3</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Local Configuration Group -->
+                                                    <div id="groupLocalConfig" class="config-group"
+                                                        style="display: none; flex-direction: column; gap: 0.75rem;">
+                                                        <div class="config-group">
+                                                            <label class="config-label">Backend</label>
+                                                            <select class="config-select" id="cfgLocalBackend">
+                                                                <option value="ollama">Ollama</option>
+                                                                <option value="LM Studio">LM Studio</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="config-group">
+                                                            <label class="config-label">Endpoint URL</label>
+                                                            <input type="text" class="config-input" id="cfgLocalUrl"
+                                                                placeholder="e.g. http://localhost:11434">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="config-group">
+                                                        <div class="config-slider-group">
+                                                            <label class="config-label" for="cfgTemp">Creativity
+                                                                (Temp)</label>
+                                                            <span id="cfgTempVal"
+                                                                style="font-size: 0.75rem; font-weight: 600; color: var(--current-accent, var(--accent));">0.7</span>
+                                                        </div>
+                                                        <input type="range" class="config-slider" id="cfgTemp" min="0"
+                                                            max="1" step="0.1" value="0.7">
+                                                    </div>
+
+                                                    <div class="config-group">
+                                                        <div class="config-slider-group">
+                                                            <label class="config-label" for="cfgContext">Context
+                                                                Limit</label>
+                                                            <span id="cfgContextVal"
+                                                                style="font-size: 0.75rem; font-weight: 600; color: var(--current-accent, var(--accent));">128k</span>
+                                                        </div>
+                                                        <input type="range" class="config-slider" id="cfgContext"
+                                                            min="8" max="256" step="8" value="128">
+                                                    </div>
+
+                                                    <!-- Genesis Knowledge Panel -->
+                                                    <div class="config-group">
+                                                        <label class="config-label">Genesis Knowledge</label>
+                                                        <div class="genesis-panel">
+                                                            <div class="genesis-panel-header">
+                                                                <div class="genesis-panel-title">
+                                                                    <i class="ph ph-brain"
+                                                                        style="font-size:0.85rem;color:var(--current-accent,var(--accent));"></i>
+                                                                    Genesis Knowledge
+                                                                </div>
+                                                                <span class="genesis-db-badge">GenesisDB</span>
+                                                            </div>
+                                                            <button class="genesis-add-btn" id="btnAddKnowledge"
+                                                                onclick="triggerKnowledgeUpload()">
+                                                                <i class="ph ph-file-plus" style="font-size:1rem;"></i>
+                                                                Add File to Knowledge
+                                                            </button>
+                                                            <input type="file" id="knowledgeFileInput"
+                                                                style="display:none;" multiple
+                                                                accept=".txt,.md,.pdf,.json,.csv,.yaml,.yml">
+                                                            <div class="genesis-footer">
+                                                                <span>Indexed: <b id="cfgVectorCount">1.2M</b>
+                                                                    Vectors</span>
+                                                                <span>Auto-Sync: <b style="color:#22c55e;">ON</b></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Agent Behaviors -->
+                                                    <div class="config-group" style="gap: 0.5rem;">
+                                                        <label class="config-label">Agent Behaviors</label>
+                                                        <div class="config-toggle-item">
+                                                            <div style="display:flex;align-items:center;gap:0.55rem;">
+                                                                <i class="ph ph-graph"
+                                                                    style="font-size:1rem;color:var(--current-accent,var(--accent));"></i>
+                                                                <div>
+                                                                    <div
+                                                                        style="font-size:0.75rem;font-weight:600;color:#fff;">
+                                                                        Plan Mode</div>
+                                                                    <div
+                                                                        style="font-size:0.58rem;color:var(--text-dim);">
+                                                                        Enable DDD Planning Mode</div>
+                                                                </div>
+                                                            </div>
+                                                            <label class="toggle-switch">
+                                                                <input type="checkbox" id="cfgPlanMode" checked>
+                                                                <span class="toggle-slider"></span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="config-toggle-item">
+                                                            <div style="display:flex;align-items:center;gap:0.55rem;">
+                                                                <i class="ph ph-lightning"
+                                                                    style="font-size:1rem;color:var(--current-accent,var(--accent));"></i>
+                                                                <div>
+                                                                    <div
+                                                                        style="font-size:0.75rem;font-weight:600;color:#fff;">
+                                                                        Auto-Execute Tasks</div>
+                                                                    <div
+                                                                        style="font-size:0.58rem;color:var(--text-dim);">
+                                                                        Run tasks without confirmation</div>
+                                                                </div>
+                                                            </div>
+                                                            <label class="toggle-switch">
+                                                                <input type="checkbox" id="cfgAutoExecute">
+                                                                <span class="toggle-slider"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Save / Cancel action bar -->
+                                                <div class="config-action-bar">
+                                                    <button class="btn-save-cfg" id="btnSaveConfig">Save
+                                                        Changes</button>
+                                                    <button class="btn-cancel-cfg" id="btnCancelConfig">Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- /view-A5 -->
+
+                <!-- DOMAIN B: GENESIS KNOWLEDGE SYSTEM -->

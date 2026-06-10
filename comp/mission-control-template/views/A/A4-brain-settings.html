@@ -1,0 +1,62 @@
+<!-- [A4] Brain Settings View -->
+                <div id="view-A4" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE
+                            OVERVIEW</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Brain & Config Adjustments</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl space-y-4">
+                            <h3 class="font-bold text-white text-lg">💡 EVA Agent configuration</h3>
+                            <div class="space-y-4 text-xs">
+                                <div>
+                                    <label for="system-prompt" class="block text-cyber-muted mb-1">System Prompt</label>
+                                    <textarea id="system-prompt" name="system-prompt"
+                                        class="w-full h-24 bg-black/40 border border-cyber-border rounded-lg p-2.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-white font-mono">You are an autonomous AI pairing assistant helping configure YouTube room states...</textarea>
+                                </div>
+                                <div>
+                                    <label for="workspace-path" class="block text-cyber-muted mb-1">Workspace
+                                        Path</label>
+                                    <input type="text" id="workspace-path" name="workspace-path"
+                                        class="w-full bg-black/40 border border-cyber-border rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-white font-mono"
+                                        value="/workspace/covibe-app">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl space-y-4">
+                            <h3 class="font-bold text-white text-lg">⚙️ Dashboard Adjustments</h3>
+                            <div class="space-y-4 text-xs">
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label for="setting-refresh-interval" class="text-cyber-muted">Telemetry Poll
+                                            Interval</label>
+                                        <span class="text-emerald-400 font-mono" id="setting-refresh-val">2s</span>
+                                    </div>
+                                    <input type="range" id="setting-refresh-interval" name="setting-refresh-interval"
+                                        min="2" max="30" step="1" value="2" class="w-full accent-cyber-emerald"
+                                        oninput="updateRefreshInterval(this.value)">
+                                </div>
+                                <div>
+                                    <label for="setting-thermal-limit" class="block text-cyber-muted mb-1">Thermal
+                                        Caution Limit (°C)</label>
+                                    <input type="number" id="setting-thermal-limit" name="setting-thermal-limit"
+                                        min="50" max="90" value="71"
+                                        class="w-full bg-black/40 border border-cyber-border rounded-lg p-2 focus:outline-none text-white font-mono"
+                                        onchange="updateThermalLimit(this.value)">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label for="setting-synth-vol" class="text-cyber-muted">Synthesizer
+                                            Volume</label>
+                                        <span class="text-emerald-400 font-mono" id="setting-synth-val">40%</span>
+                                    </div>
+                                    <input type="range" id="setting-synth-vol" name="setting-synth-vol" min="0"
+                                        max="100" step="5" value="40" class="w-full accent-cyber-emerald"
+                                        oninput="updateSynthVolume(this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>

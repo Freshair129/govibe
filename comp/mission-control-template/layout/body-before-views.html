@@ -1,0 +1,109 @@
+<body class="h-screen flex flex-col antialiased">
+    <!-- Glowing background elements -->
+    <div class="ambient-orb bg-emerald-600/30 w-[40vw] h-[40vw] top-[-10%] left-[-10%]"></div>
+    <div class="ambient-orb bg-indigo-600/20 w-[35vw] h-[35vw] bottom-[-5%] right-[10%]"></div>
+    <div class="ambient-orb bg-purple-600/20 w-[20vw] h-[20vw] top-[40%] left-[50%]"></div>
+    <div id="orb-left" class="glow-orb w-[45vw] h-[45vw] top-[-10%] left-[-10%] bg-emerald-600/20"></div>
+
+    <!-- SECTOR 1: HEADER (Top Nav Area) -->
+    <header
+        class="h-[64px] shrink-0 glass-panel border-b border-cyber-border flex items-center justify-between px-6 z-50 relative">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-indigo-600 flex items-center justify-center font-black text-white shadow-lg text-sm">
+                    CV
+                </div>
+                <span class="font-extrabold text-lg tracking-wider text-white">
+                    CoVibe CoDev
+                    <span
+                        class="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/60 font-mono tracking-normal ml-1">v2.5</span>
+                </span>
+            </div>
+            <!-- WebSocket connection state marker -->
+            <div class="flex items-center gap-2 bg-black/20 px-2.5 py-1 rounded-md border border-white/5 shadow-inner">
+                <span id="connection-status" class="w-2 h-2 rounded-full bg-red-500 transition-colors duration-300"
+                    title="Disconnected"></span>
+                <span class="text-[10px] font-bold text-cyber-muted tracking-wider uppercase">WS REACTOR</span>
+            </div>
+        </div>
+
+        <!-- Parent Domain View Switcher buttons -->
+        <nav class="flex gap-1 bg-black/40 p-1 rounded-xl border border-white/5">
+            <button onclick="switchDomain('A')" id="domain-tab-A"
+                class="domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 bg-white/10 text-emerald-400 border border-emerald-500/20 shadow-lg">
+                <i class="fa-solid fa-compass"></i> Project Overview
+            </button>
+            <button onclick="switchDomain('B')" id="domain-tab-B"
+                class="domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                <i class="fa-solid fa-brain"></i> Genesis Knowledge
+            </button>
+            <button onclick="switchDomain('C')" id="domain-tab-C"
+                class="domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                <i class="fa-solid fa-cubes"></i> Block DB
+            </button>
+            <button onclick="switchDomain('D')" id="domain-tab-D"
+                class="domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                <i class="fa-solid fa-gauge-high"></i> AI Benchmark
+            </button>
+        </nav>
+
+        <!-- Right action hooks & Theme Toggler -->
+        <div class="flex items-center gap-4">
+            <button onclick="startWorkflow()"
+                class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-lg transition-all duration-300">
+                <i class="fa-solid fa-play"></i> Test Run
+            </button>
+            <span class="text-xs text-cyber-muted font-mono hidden sm:inline">
+                <i class="fa-solid fa-circle text-emerald-500 animate-pulse text-[8px] mr-1.5"></i> STABLE RUN
+            </span>
+            <button onclick="toggleTheme()"
+                class="w-9 h-9 rounded-lg flex items-center justify-center border border-white/10 hover:bg-white/10 text-emerald-400 transition-all duration-300"
+                id="theme-toggle-btn">
+                <i class="fa-solid fa-sun text-sm hidden" id="sun-icon"></i>
+                <i class="fa-solid fa-moon text-sm" id="moon-icon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- SECTOR 2: WORKSPACE (Sidebar & Main content viewport) -->
+    <div class="flex-1 flex overflow-hidden relative z-40">
+        <!-- SECTOR 2.1: Collapsible Sidebar -->
+        <aside id="app-sidebar"
+            class="sidebar glass-panel border-r border-cyber-border flex flex-col justify-between py-6 px-4 z-30 relative shrink-0">
+            <div>
+                <div class="flex items-center gap-3 mb-6 px-2">
+                    <div id="sidebar-context-icon"
+                        class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg shadow-inner shrink-0 transition-all duration-300">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div class="sidebar-expand-content">
+                        <h3 class="text-xs text-cyber-muted uppercase tracking-widest font-black leading-none">ACTIVE
+                            DOMAIN</h3>
+                        <span id="sidebar-context-title"
+                            class="text-sm font-bold text-white tracking-wide">Overview</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/5 my-4"></div>
+
+                <ul class="flex flex-col gap-1.5" id="sidebar-sub-nav">
+                    <!-- Dynamic rendering via switchDomain() -->
+                </ul>
+            </div>
+
+            <!-- Lock and Collapse Switcher -->
+            <div>
+                <button onclick="toggleSidebar()"
+                    class="w-full flex items-center gap-3 text-cyber-muted hover:text-white py-2 px-3 rounded-lg hover:bg-white/5 transition-all text-left">
+                    <i id="sidebar-toggle-icon" class="fa-solid fa-chevron-right text-center w-5"></i>
+                    <span class="sidebar-expand-content text-xs font-semibold tracking-wide">Expand Sidebar</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- SECTOR 2.2: MAIN CONTENT CONTAINER -->
+        <main class="flex-1 overflow-y-auto scroll-custom p-6 md:p-8 relative" id="main-scroll-container">
+            <div id="main-wrapper" class="max-w-7xl mx-auto space-y-8 fade-in">
+
+                <!-- DOMAIN A: PROJECT OVERVIEW -->

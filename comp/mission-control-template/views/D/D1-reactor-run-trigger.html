@@ -1,0 +1,68 @@
+<!-- [D1] Reactor Run Trigger -->
+                <div id="view-D1" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-orange-400 uppercase tracking-widest">AI BENCHMARK</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">System Execution safety and triggers</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-4">
+                            <h4 class="font-bold text-white">Underclocking Power Regulator</h4>
+                            <p class="text-xs text-cyber-muted">ปรับสมดุลการจ่ายพลังงานของ GPU
+                                ในภาวะโหลดหนักเพื่อความปลอดภัย</p>
+                            <input type="range" class="w-full accent-cyber-orange" min="40" max="100" value="85"
+                                oninput="document.getElementById('pwr-val').innerText = this.value + '%'">
+                            <div class="flex justify-between text-xs text-cyber-muted"><span>Power Limit</span><span
+                                    id="pwr-val" class="text-orange-400">85%</span></div>
+                        </div>
+
+                        <!-- Progress Bar safety execution -->
+                        <div class="glass-panel p-5 rounded-xl flex flex-col justify-between h-48 col-span-2">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-white">Reactor Execution Safety Run</h4>
+                                <span
+                                    class="px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 text-xs font-bold">READY</span>
+                            </div>
+                            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                                <div class="bg-orange-500 h-full w-0" id="progress-safety-run"></div>
+                            </div>
+                            <button onclick="triggerSafetyReactorRun(this)"
+                                class="w-full py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors">START
+                                SAFETY CAMPAIGN RUN</button>
+                        </div>
+                    </div>
+
+                    <!-- Sandbox Web Audio oscilloscope player -->
+                    <div class="glass-panel p-6 rounded-2xl space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-bold text-white">🎛️ Oscilloscope Sound Sandbox</h3>
+                            <button onclick="toggleAudioPlayback()"
+                                class="px-4 py-2 bg-orange-500 hover:bg-orange-400 text-slate-950 rounded-lg text-xs font-bold flex items-center gap-2 transition">
+                                <i class="fa-solid fa-play" id="playback-btn-icon"></i>
+                                <span id="playback-btn-text">Play / จำลองเสียง</span>
+                            </button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div
+                                class="col-span-2 h-44 bg-black/40 border border-cyber-border rounded-xl relative overflow-hidden">
+                                <div class="absolute inset-0 flex items-center justify-center font-mono text-xs text-cyber-muted select-none"
+                                    id="canvas-standby-overlay">
+                                    Standby. Press Play to stream.
+                                </div>
+                                <canvas id="oscilloscope-canvas" class="w-full h-full"></canvas>
+                            </div>
+                            <div class="bg-black/20 p-4 rounded-xl border border-cyber-border space-y-3 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-cyber-muted">Active Note</span>
+                                    <span class="font-bold text-orange-400 font-mono" id="active-note-text">-</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-cyber-muted">Audio Volume</span>
+                                    <span class="font-bold text-orange-400 font-mono" id="volume-label-text">40%</span>
+                                </div>
+                                <input type="range" class="w-full accent-cyber-orange" min="0" max="1" step="0.05"
+                                    value="0.4" oninput="updateAudioVolume(this.value)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
