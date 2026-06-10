@@ -16,6 +16,42 @@ const moduleLookup = Object.fromEntries(
   domainOrder.flatMap((domain) => domain.subModules.map((subModule) => [subModule.id, subModule])),
 ) as Record<ViewId, (typeof domainOrder)[number]["subModules"][number]>;
 
+const templateAgents = [
+  { name: "EVA Agent", role: "Senior Developer", model: "Gemini 3.1 Pro", status: "Active", tasks: "Blueprint", accuracy: "Blueprint", speed: "Blueprint" },
+  { name: "Qwen Coder", role: "Research Analyst", model: "Qwen 2.5 Coder", status: "Ready", tasks: "Blueprint", accuracy: "Blueprint", speed: "Blueprint" },
+  { name: "UAT Agent", role: "Validation Operator", model: "GPT-4o", status: "Ready", tasks: "Blueprint", accuracy: "Blueprint", speed: "Blueprint" },
+];
+
+const roadmapRows = [
+  { scope: "Phase 0", title: "Feasibility Spike — พิสูจน์ความเสถียร", state: "Blueprint", assignee: "Unassigned" },
+  { scope: "Sprint 0", title: "Prototype YouTube IFrame Player UI 2 clients พร้อมกัน", state: "Blueprint", assignee: "Unassigned" },
+  { scope: "FR", title: "WebSocket room ขั้นต่ำ: สร้างห้อง / join / broadcast event", state: "Blueprint", assignee: "Unassigned" },
+  { scope: "FR", title: "Play / Pause / Seek sync เบื้องต้น", state: "Blueprint", assignee: "Unassigned" },
+  { scope: "NFR", title: "วัด drift จริงระหว่าง 2 เครื่อง", state: "Blueprint", assignee: "Unassigned" },
+  { scope: "NFR", title: "ทดสอบบน iOS Safari + Android Chrome", state: "Blueprint", assignee: "Unassigned" },
+];
+
+const capabilityBlueprints = [
+  { title: "Transport Plugin", body: "WebSocket, HTTP command endpoint, browser event, and postMessage adapters.", status: "Ready for wiring" },
+  { title: "Export Plugin", body: "Roadmap JSON, YAML, and Markdown export actions from the template surface.", status: "UI blueprint" },
+  { title: "Knowledge Plugin", body: "Genesis file add, vector indexing, and auto-sync controls from agent configuration.", status: "Pending event shape" },
+  { title: "Benchmark Plugin", body: "Safety campaign run, heatmap, and campaign log transport hooks.", status: "Command wired" },
+];
+
+const brainConfigSections = [
+  { title: "Model Source", detail: "Cloud API / Local Server pill selector with backend-safe empty credentials." },
+  { title: "Genesis Knowledge", detail: "Knowledge add surface, indexed vector counter, and auto-sync state." },
+  { title: "Agent Behaviors", detail: "Plan Mode, Auto-Execute, file access, and shell runner toggles." },
+  { title: "Runtime Limits", detail: "Temperature, context window, and latency budget sliders." },
+];
+
+const intelligenceBlueprints = [
+  { title: "EVA Agent (eva-cli)", body: "Primary code architect assisting custom WebSocket connections.", status: "Active" },
+  { title: "Qwen Coder", body: "Sub-agent analyzing code quality and generating tests.", status: "Standby" },
+  { title: "UAT Agent", body: "Validation operator for browser, mobile, and acceptance checks.", status: "Ready" },
+  { title: "Local Runner", body: "Local model worker for sandboxed inference and offline checks.", status: "Offline" },
+];
+
 function useMissionSnapshot() {
   const [snapshot, setSnapshot] = useState<MissionSnapshot>(() => missionGateway.getSnapshot());
 
@@ -183,6 +219,60 @@ function EmptyState({ title, body }: { title: string; body: string }) {
   );
 }
 
+function TemplateAgentCard({ agent, compact = false }: { agent: typeof templateAgents[number]; compact?: boolean }) {
+  return (
+    <article className={compact ? "template-agent-card compact" : "template-agent-card"}>
+      <div className="template-agent-head">
+        <div className="template-agent-avatar">{agent.name.slice(0, 2).toUpperCase()}</div>
+        <div>
+          <strong>{agent.name}</strong>
+          <span>{agent.role}</span>
+          <small>{agent.model}</small>
+        </div>
+        <em>{agent.status}</em>
+      </div>
+      <div className="template-agent-stats">
+        <div><span>Tasks</span><strong>{agent.tasks}</strong></div>
+        <div><span>Accuracy</span><strong>{agent.accuracy}</strong></div>
+      </div>
+      <div className="quota-line">
+        <span>Session Quota</span>
+        <i />
+      </div>
+      <div className="ability-tags">
+        <span>Web</span>
+        <span>Vision</span>
+        <span>Code</span>
+      </div>
+      <button type="button">Configure</button>
+    </article>
+  );
+}
+
+function TemplateTaskRow({ row }: { row: typeof roadmapRows[number] }) {
+  return (
+    <article className="template-task-row">
+      <div>
+        <span>{row.scope}</span>
+        <strong>{row.title}</strong>
+        <div className="task-badges">
+          <em>{row.state}</em>
+          <em>Docs</em>
+          <em>Code</em>
+          <em>Test</em>
+        </div>
+      </div>
+      <label>
+        Assign to
+        <select defaultValue={row.assignee}>
+          <option>{row.assignee}</option>
+          {templateAgents.map((agent) => <option key={agent.name}>{agent.name}</option>)}
+        </select>
+      </label>
+    </article>
+  );
+}
+
 function ViewHeader({ eyebrow, title, desc }: { eyebrow: string; title: string; desc?: string }) {
   return (
     <div className="view-header">
@@ -229,6 +319,7 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
   const [activeId, setActiveId] = useState<string | undefined>();
   const [configOpen, setConfigOpen] = useState(false);
   const active = snapshot.agents.find((agent) => agent.id === activeId) ?? snapshot.agents[0];
+  const activeBlueprint = templateAgents[0];
 
   const selectAgent = (agent: AgentRecord) => {
     setActiveId(agent.id);
@@ -237,8 +328,57 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
 
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Agent Ops" title="Agent Management" desc="Agent roster is sourced from live gateway snapshots." />
-      {snapshot.agents.length === 0 ? <EmptyState title="No agents online" body="Publish agents.update or snapshot.agents to populate the roster." /> : (
+      <div className="view-title-row">
+        <ViewHeader eyebrow="Covibe Overview" title="Agent Management" desc="Manage, configure and monitor the AI agent fleet." />
+        <span className="fleet-count">{snapshot.agents.length || templateAgents.length} Agents</span>
+      </div>
+      {snapshot.agents.length === 0 ? (
+        <div className="agent-select-screen">
+          <section className="selection-sector panel">
+            <div className="top-bar">
+              <span>Agent Select</span>
+              <strong>Blueprint</strong>
+            </div>
+            <div className="stats-panel">
+              <article><span>Tasks</span><strong>Blueprint</strong></article>
+              <article><span>Accuracy</span><strong>Blueprint</strong></article>
+              <article><span>Speed</span><strong>Blueprint</strong></article>
+            </div>
+            <div className="ability-tags large">
+              <span>Web Search</span>
+              <span>Vision</span>
+              <span>Code</span>
+              <span>Reasoning</span>
+              <span>Persistent Memory</span>
+              <span>Multi-Agent</span>
+            </div>
+            <div className="carousel-section">
+              <div className="carousel-title">
+                <span>Roster</span>
+                <div><button type="button">Up</button><button type="button">Down</button></div>
+              </div>
+              {templateAgents.map((agent) => <TemplateAgentCard key={agent.name} agent={agent} compact />)}
+            </div>
+            <div className="bottom-bar">
+              <span><kbd>Up</kbd><kbd>Down</kbd> Navigate</span>
+              <button type="button">Configure</button>
+              <button type="button">Deploy Agent</button>
+            </div>
+          </section>
+          <section className="character-sector panel">
+            <div className="character-console">
+              <span className="corner one" />
+              <span className="corner two" />
+              <div className="console-lights"><i /><i /><i /></div>
+              <div className="char-identity">
+                <strong>{activeBlueprint.name.replace(" Agent", "")}</strong>
+                <span>{activeBlueprint.role}</span>
+                <em>{activeBlueprint.model}</em>
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : (
         <div className="agent-layout">
           <section className="panel agent-list">
             {snapshot.agents.map((agent) => (
@@ -339,21 +479,62 @@ function GraphView({ snapshot, title }: { snapshot: MissionSnapshot; title: stri
   );
 }
 
-function RecordsView({ snapshot, kind }: { snapshot: MissionSnapshot; kind: "specs" | "symbols" | "logs" }) {
-  const title = kind === "specs" ? "Business Specifications" : kind === "symbols" ? "Symbol Explorer Hub" : "Campaign Logs";
+function GraphStudioView({ snapshot }: { snapshot: MissionSnapshot }) {
+  const nodes = snapshot.graph.nodes.length ? snapshot.graph.nodes : [
+    { id: "room", label: "Room Sync" },
+    { id: "player", label: "IFrame Player" },
+    { id: "drift", label: "Drift Monitor" },
+  ];
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Data" title={title} />
-      <section className="record-grid">
-        {kind === "specs" && (snapshot.specs.length ? snapshot.specs.map((spec) => (
-          <article className="panel" key={spec.title}><h2>{spec.title}</h2><p>{spec.body}</p></article>
-        )) : <EmptyState title="No specifications" body="Publish snapshot.specs to populate this view." />)}
-        {kind === "symbols" && (snapshot.symbols.length ? snapshot.symbols.map((symbol) => (
-          <article className="panel" key={`${symbol.path}-${symbol.name}`}><h2>{symbol.name}</h2><p>{symbol.path}</p><small>{symbol.kind}</small></article>
-        )) : <EmptyState title="No symbols indexed" body="Publish snapshot.symbols to populate this view." />)}
-        {kind === "logs" && (snapshot.campaignLogs.length ? snapshot.campaignLogs.map((line) => (
-          <pre className="panel log-line" key={line}>{line}</pre>
-        )) : <EmptyState title="No campaign logs" body="Publish snapshot.campaignLogs to populate this view." />)}
+      <div className="view-title-row">
+        <ViewHeader eyebrow="Genesis Knowledge" title="Interactive Graph Studio" desc="2D graph workspace for relationship mapping." />
+        <button className="panel-action">Add New Node</button>
+      </div>
+      <section className="panel graph-studio-canvas">
+        {nodes.map((node, index) => (
+          <span key={node.id} style={{ left: `${16 + index * 24}%`, top: `${32 + (index % 2) * 22}%` }}>{node.label}</span>
+        ))}
+      </section>
+      <p className="view-note">Click and drag behavior is a follow-up once node position events are defined.</p>
+    </div>
+  );
+}
+
+function BusinessSpecificationsView({ snapshot }: { snapshot: MissionSnapshot }) {
+  return (
+    <div className="view-stack">
+      <ViewHeader eyebrow="Genesis Knowledge" title="Functional Specifications" desc="Business protocol specification for Genesis Knowledge." />
+      {snapshot.specs.length ? (
+        <section className="record-grid">
+          {snapshot.specs.map((spec) => <article className="panel" key={spec.title}><h2>{spec.title}</h2><p>{spec.body}</p></article>)}
+        </section>
+      ) : (
+        <section className="panel spec-panel">
+          <h2>Business Protocol Specification</h2>
+          <p>ตารางต่อไปนี้จัดวางระเบียบข้อบังคับและเวิร์กโฟลว์ของ Genesis Block DB:</p>
+          <ul>
+            <li><strong>GKS-BLOCK-SYNC:</strong> ระบบตรวจสอบความสอดคล้องของโค้ดจริงกับ Document โดยอัตโนมัติ</li>
+            <li><strong>SRS-COMPLIANCE:</strong> ระบบคำนวณสถิติ ROI ของโมเดลและรายงานผลแบบเรียลไทม์ไปยัง AI Benchmark</li>
+          </ul>
+        </section>
+      )}
+    </div>
+  );
+}
+
+function CampaignLogsView({ snapshot }: { snapshot: MissionSnapshot }) {
+  const logs = snapshot.campaignLogs.length ? snapshot.campaignLogs : [
+    "[blueprint] INITIALIZING AI LEVEL 1 COMPLIANCE CHECKS...",
+    "[blueprint] AST FILE STRUCTURE CHECK => waiting for campaign feed",
+    "[blueprint] TELEMETRY UNDERCLOCK SAFETY HOOK => waiting for reactor.run",
+    "[blueprint] CAMPAIGN STATUS => pending live logs",
+  ];
+  return (
+    <div className="view-stack">
+      <ViewHeader eyebrow="AI Benchmark" title="EABS-01 Campaign Logs" desc="Campaign stream uses live logs when available and template blueprint rows otherwise." />
+      <section className="panel campaign-log-panel">
+        {logs.map((line) => <pre key={line}>{line}</pre>)}
       </section>
     </div>
   );
@@ -406,67 +587,48 @@ function SymbolExplorerView({ snapshot }: { snapshot: MissionSnapshot }) {
 }
 
 function Heatmap({ snapshot }: { snapshot: MissionSnapshot }) {
+  const cells = snapshot.heatmap?.cells ?? Array.from({ length: 64 }, (_, index) => (index % 8) * 8 + 18);
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Thermal" title="Cyber Reactor Heatmap" />
-      {!snapshot.heatmap ? <EmptyState title="No heatmap feed" body="Publish heatmap.update to render thermal cells." /> : (
-        <div className="dashboard-grid">
-          <section className="panel heatmap-grid">
-            {snapshot.heatmap.cells.map((value, index) => (
-              <span key={`${index}-${value}`} style={{ background: `rgba(${value > 70 ? "244,63,94" : "16,185,129"},${Math.min(0.85, value / 100)})` }}>{value}</span>
+      <ViewHeader eyebrow="AI Benchmark" title="Cyber Reactor Real-time Heatmap" />
+      <div className="dashboard-grid">
+        <section className="panel reactor-overview">
+          <h2>Reactor Overview Status</h2>
+          <div className="kv-row"><span>Core Temp</span><strong>{snapshot.heatmap ? `${snapshot.heatmap.coreTemp}C` : "Awaiting feed"}</strong></div>
+          <div className="kv-row"><span>GFLOPS Power</span><strong>Awaiting feed</strong></div>
+          <div className="kv-row"><span>Coolant Flow Rate</span><strong>Awaiting feed</strong></div>
+        </section>
+        <section className="panel">
+          <h2>Core Thermal Grid (8x8 CPU/GPU Mapping)</h2>
+          <div className="heatmap-grid">
+            {cells.map((value, index) => (
+              <span key={`${index}-${value}`} className={!snapshot.heatmap ? "blueprint-cell" : ""} style={{ background: `rgba(${value > 70 ? "244,63,94" : "16,185,129"},${Math.min(0.85, value / 100)})` }}>{snapshot.heatmap ? value : ""}</span>
             ))}
-          </section>
-          <section className="panel">
-            <span>Core Temp</span>
-            <strong className="giant">{snapshot.heatmap.coreTemp}C</strong>
-          </section>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ModuleBlueprint({
-  title,
-  eyebrow,
-  desc,
-  lanes,
-  empty,
-}: {
-  title: string;
-  eyebrow: string;
-  desc: string;
-  lanes: Array<{ title: string; body: string }>;
-  empty: string;
-}) {
-  return (
-    <div className="view-stack">
-      <ViewHeader eyebrow={eyebrow} title={title} desc={desc} />
-      <section className="blueprint-grid">
-        {lanes.map((lane) => (
-          <article className="panel blueprint-card" key={lane.title}>
-            <span>{lane.title}</span>
-            <p>{lane.body}</p>
-          </article>
-        ))}
-      </section>
-      <EmptyState title="Awaiting live feed" body={empty} />
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
 
 function RoadmapBoard() {
   const [exportOpen, setExportOpen] = useState(false);
+  const [openPhase, setOpenPhase] = useState(true);
   return (
     <div className="view-stack">
       <section className="panel roadmap-header">
         <div>
-          <ViewHeader eyebrow="Planning" title="CoVibe Development Roadmap" desc="Roadmap controls are ready for live task snapshots." />
+          <ViewHeader eyebrow="Planning" title="CoVibe Development Roadmap" desc="แผนการพัฒนาและติดตามผลความคืบหน้าของฟีเจอร์" />
         </div>
         <div className="roadmap-progress">
-          <span>Overall Progress</span>
-          <strong>Awaiting feed</strong>
-          <div><i /></div>
+          <span>ความคืบหน้ารวมโครงการ</span>
+          <strong>Blueprint</strong>
+          <div><i style={{ width: "53%" }} /></div>
+        </div>
+        <div className="roadmap-stats">
+          <article><strong>36</strong><span>งานทั้งหมด</span></article>
+          <article><strong>19</strong><span>ทำเสร็จแล้ว</span></article>
+          <article><strong>17</strong><span>รอดำเนินการ</span></article>
         </div>
         <div className="roadmap-actions">
           <div className="export-menu">
@@ -485,20 +647,21 @@ function RoadmapBoard() {
       <div className="roadmap-layout">
         <section className="panel assist-roster">
           <h2>AI Assist Roster</h2>
-          <p>Agent assignment activates when roadmap tasks arrive from the mission gateway.</p>
-          <div className="mini-agent-card">
-            <span>GV</span>
-            <strong>Live agent feed required</strong>
-            <small>Use `agents.update` with roadmap events.</small>
-          </div>
+          <p>Drag a card to assign an agent to a task when roadmap events are connected.</p>
+          {templateAgents.map((agent) => <TemplateAgentCard key={agent.name} agent={agent} compact />)}
         </section>
-        <section className="roadmap-board">
-          {["Phase", "Sprint", "Epic", "User Story", "Task"].map((lane) => (
-            <article className="panel roadmap-lane" key={lane}>
-              <span>{lane}</span>
-              <EmptyState title="No roadmap items" body={`Connect ${lane.toLowerCase()} records through the mission gateway.`} />
-            </article>
-          ))}
+        <section className="panel roadmap-accordion">
+          <button className="phase-header" type="button" onClick={() => setOpenPhase((value) => !value)}>
+            <span>Phase 0</span>
+            <strong>Feasibility Spike — พิสูจน์ความเสถียร</strong>
+            <em>Blueprint</em>
+          </button>
+          {openPhase ? (
+            <div className="task-list">
+              <p>ก่อนเริ่ม Sprint จริง ต้องพิสูจน์ให้ได้ว่าระบบ YouTube IFrame API ทำงานร่วมกับ WebSocket sync ในการจัดพิกัดเวลาของเพลงได้เสถียรบนมือถือ 2 เครื่อง และหาข้อจำกัดระบบ</p>
+              {roadmapRows.slice(1).map((row) => <TemplateTaskRow key={row.title} row={row} />)}
+            </div>
+          ) : null}
         </section>
       </div>
     </div>
@@ -507,69 +670,89 @@ function RoadmapBoard() {
 
 function CapabilityPlugins() {
   return (
-    <ModuleBlueprint
-      eyebrow="Capabilities"
-      title="Capability Plugins"
-      desc="Plugin slots are separated from runtime state so capabilities can be wired without raw template code."
-      lanes={[
-        { title: "Transport", body: "WebSocket, HTTP, browser event, and postMessage adapters." },
-        { title: "Runtime", body: "Mission commands and live event handlers." },
-        { title: "Workspace", body: "File save and local integration entrypoints." },
-      ]}
-      empty="Publish plugin capability records through the mission gateway to populate this view."
-    />
+    <div className="view-stack">
+      <ViewHeader eyebrow="Capabilities" title="Capability Plugins" desc="Template-aligned plugin console for operational extension points." />
+      <section className="plugin-grid">
+        {capabilityBlueprints.map((plugin) => (
+          <article className="panel plugin-card" key={plugin.title}>
+            <div><span>{plugin.status}</span><strong>{plugin.title}</strong></div>
+            <p>{plugin.body}</p>
+            <div className="plugin-actions">
+              <button type="button">Inspect</button>
+              <button type="button">Wire Event</button>
+            </div>
+          </article>
+        ))}
+      </section>
+    </div>
   );
 }
 
 function BrainConfig() {
   return (
-    <ModuleBlueprint
-      eyebrow="Runtime Config"
-      title="Brain & Config"
-      desc="Configuration belongs in React state and gateway events, not in legacy inline script."
-      lanes={[
-        { title: "Models", body: "Model routing and profile metadata." },
-        { title: "Memory", body: "Context, storage, and recall policies." },
-        { title: "Safety", body: "Execution guardrails and transport constraints." },
-      ]}
-      empty="Connect model or runtime configuration events before this panel shows active settings."
-    />
+    <div className="view-stack">
+      <ViewHeader eyebrow="Runtime Config" title="Brain & Config" desc="Model, knowledge, behavior, and runtime controls from the template configuration panel." />
+      <section className="brain-config-grid">
+        {brainConfigSections.map((section) => (
+          <article className="panel config-surface" key={section.title}>
+            <span>{section.title}</span>
+            <p>{section.detail}</p>
+            <label>
+              <strong>Blueprint Control</strong>
+              <input type="range" min="0" max="100" defaultValue="50" />
+            </label>
+          </article>
+        ))}
+      </section>
+    </div>
   );
 }
 
 function AstTreeView({ snapshot }: { snapshot: MissionSnapshot }) {
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="AST" title="AST Hierarchy Tree" desc="B1 is the tree-oriented source view for Genesis Knowledge." />
-      <section className="panel tree-panel">
-        {snapshot.graph.nodes.length === 0 ? (
-          <EmptyState title="No AST records" body="Publish AST nodes through snapshot.graph or graph.update to render the hierarchy." />
-        ) : (
-          snapshot.graph.nodes.map((node) => (
-            <div className="tree-row" key={node.id}>
-              <span>{node.id}</span>
+      <ViewHeader eyebrow="Genesis Knowledge" title="AST Tree & Preview" desc="Tree explorer and canvas preview aligned to the template AST Explorer." />
+      <div className="ast-layout">
+        <section className="panel ast-code-panel">
+          <strong>calculateDrift.js</strong>
+          {["const latency = report.latencyMs;", "if (latency > 250) {", "  triggerCalibration(latency);", "}"].map((line, index) => (
+            <button type="button" key={line}><span>{index + 1}:</span>{line}</button>
+          ))}
+        </section>
+        <section className="panel ast-canvas">
+          {(snapshot.graph.nodes.length ? snapshot.graph.nodes : [
+            { id: "program", label: "Program" },
+            { id: "function", label: "FunctionDecl" },
+            { id: "binary", label: "BinaryExpr" },
+            { id: "trigger", label: "TriggerCalibration" },
+          ]).map((node, index) => (
+            <div className="ast-node" key={node.id} style={{ left: `${12 + (index % 2) * 34}%`, top: `${24 + index * 12}%` }}>
               <strong>{node.label}</strong>
+              <span>{snapshot.graph.nodes.length ? "Live node" : "Blueprint node"}</span>
             </div>
-          ))
-        )}
-      </section>
+          ))}
+        </section>
+      </div>
     </div>
   );
 }
 
 function IntelligenceZoo() {
   return (
-    <ModuleBlueprint
-      eyebrow="Experiments"
-      title="Intelligence Zoo"
-      desc="C2 groups capability experiments before they are promoted into stable mission workflows."
-      lanes={[
-        { title: "Candidate", body: "Experiments waiting for evaluation." },
-        { title: "Observed", body: "Runs with collected behavior data." },
-        { title: "Promoted", body: "Validated intelligence modules." },
-      ]}
-      empty="Publish experiment records through the mission gateway to activate the zoo."
-    />
+    <div className="view-stack">
+      <ViewHeader eyebrow="Block DB" title="Intelligence Zoo" desc="Agent and model roster surface from the template." />
+      <section className="zoo-grid">
+        {intelligenceBlueprints.map((item) => (
+          <article className="panel zoo-card" key={item.title}>
+            <div>
+              <strong>{item.title}</strong>
+              <span>{item.status}</span>
+            </div>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </section>
+    </div>
   );
 }
 
@@ -726,11 +909,12 @@ function RenderView({
 }) {
   if (activeView === "A1") return <RealTimeDashboard snapshot={snapshot} theme={theme} />;
   if (activeView === "A5") return <AgentManagement snapshot={snapshot} send={send} />;
-  if (activeView === "B2") return <RecordsView snapshot={snapshot} kind="specs" />;
-  if (activeView === "B3" || activeView === "B4") return <GraphView snapshot={snapshot} title={activeView === "B3" ? "Interactive Knowledge Graph" : "Live Call Graph"} />;
+  if (activeView === "B2") return <BusinessSpecificationsView snapshot={snapshot} />;
+  if (activeView === "B3") return <GraphStudioView snapshot={snapshot} />;
+  if (activeView === "B4") return <GraphView snapshot={snapshot} title="Live Call Graph" />;
   if (activeView === "C1") return <SymbolExplorerView snapshot={snapshot} />;
   if (activeView === "D2") return <Heatmap snapshot={snapshot} />;
-  if (activeView === "D3") return <RecordsView snapshot={snapshot} kind="logs" />;
+  if (activeView === "D3") return <CampaignLogsView snapshot={snapshot} />;
   if (activeView === "D1") return <ReactorRunTrigger send={send} />;
   if (activeView === "A2") return <RoadmapBoard />;
   if (activeView === "A3") return <CapabilityPlugins />;

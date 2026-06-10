@@ -76,14 +76,22 @@ The template `siteMap` contains the same 17 modules as the React implementation:
 ## Current React Alignment Against Template
 
 - Sidebar now starts collapsed, expands on hover, supports lock/collapse, and shows collapsed tooltips.
-- A2 now includes the roadmap header, progress area, export menu, reset action, assist roster surface, and five task lanes. It still needs real roadmap event shapes before accordion/checklist state can be backed by data.
-- A5 now includes a Raycast-style agent detail/config surface for live `snapshot.agents`. It still needs backend-backed config persistence before save/dirty-state controls are meaningful.
+- A2 now includes the roadmap header, progress area, export menu, reset action, assist roster cards, accordion phase header, task rows, badges, and assignment selects. It still needs real roadmap event shapes before task state can be backed by data.
+- A5 now includes the template-style Agent Select layout with selection stats, ability tags, roster cards, bottom controls, and character console when no live agents are connected. It still needs backend-backed config persistence before save/dirty-state controls are meaningful.
+- A3 now has plugin cards and action controls rather than a generic live shell.
+- A4 now has runtime configuration control surfaces rather than a generic live shell.
+- B1 now has AST code preview and graph canvas details.
+- B2 now has the Business Protocol Specification blueprint when no live specs are connected.
+- B3 now has an Interactive Graph Studio blueprint.
 - B4 now includes depth controls, sync action, and a selected-node info panel around the graph renderer. Cytoscape-specific physics remains a follow-up.
 - C1 now uses a filterable symbol table.
+- C2 now has Intelligence Zoo roster cards.
 - C3 now includes query comparison panes plus the MissionEvent JSON debugger.
 - C4 now uses an ERD-style canvas and table cards from `snapshot.symbols`. Draggable table positions and connection-line persistence remain follow-ups.
 - C5 now includes an HNSW layer selector and vector simulation panel.
 - D1 now includes the safety regulator, safety campaign command panel, and oscilloscope sandbox placeholder.
+- D2 now has Reactor Overview Status and an 8x8 heatmap blueprint when no live heatmap is connected.
+- D3 now has campaign log blueprint rows when no live campaign logs are connected.
 
 ## Verification Target
 

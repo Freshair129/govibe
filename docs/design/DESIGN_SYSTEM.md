@@ -1,6 +1,6 @@
 # GoVibe Mission Control Design System
 
-**Version:** 2.1.0  
+**Version:** 2.2.0  
 **Status:** Active implementation reference  
 **App Entry:** `src/App.tsx`  
 **Data Entry:** `src/mission.ts`
@@ -67,13 +67,20 @@ Light theme is implemented by the `.light-theme` body class and must keep the sa
 - C3 also contains query comparison panes for Standard RAG and Multi-Hop Graph Retrieve, but must not fake query results without a connected debugger feed.
 
 ### Template-Aligned Surfaces
-- A2 includes roadmap header controls, export/reset affordances, an assist roster surface, and task lanes.
-- A5 includes live-agent detail and inline configuration controls inspired by `UI Components/agentcard01`.
+- A2 includes roadmap header controls, export/reset affordances, assist roster cards, and detailed task rows from the template blueprint.
+- A5 includes Agent Select, roster cards, bottom controls, and a character console blueprint when no live agents are connected; live agents still render from `snapshot.agents`.
+- A3/A4 use plugin and configuration control surfaces instead of generic live shells.
+- B1 includes an AST code preview and graph canvas blueprint.
+- B2 includes the Genesis business protocol specification surface when no live specs are connected.
+- B3 includes an interactive graph studio canvas blueprint.
 - B4 includes graph depth controls and a selected-node info panel.
 - C1 uses a filterable table for symbols.
+- C2 includes Intelligence Zoo roster cards.
 - C4 uses an ERD canvas/table-card surface.
 - C5 uses an HNSW layer selector.
 - D1 includes safety regulator, safety run command, and oscilloscope sandbox surfaces.
+- D2 includes reactor overview and an 8x8 heatmap blueprint when no live heatmap is connected.
+- D3 includes campaign log blueprint rows when no live logs are connected.
 
 ## Data Entrypoints
 
@@ -89,5 +96,6 @@ The UI accepts real data through:
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 2.2.0 | 2026-06-10 | Expanded domain detail views to match the template more closely: A2 task rows, A5 select screen, AST/graph/spec/zoo/heatmap/log blueprints. |
 | 2.1.0 | 2026-06-10 | Added template-aligned surfaces, hover sidebar behavior, filterable table, graph controls, debugger panes, ERD/vector/safety command surfaces, and PRODUCT.md context. |
 | 2.0.0 | 2026-06-10 | Updated docs to match React/Vite dashboard, MissionGateway, honest empty states, and live data entrypoints. |
