@@ -9,13 +9,16 @@ This document tracks the implemented React route structure in `src/App.tsx` and 
   - Reads `snapshot.metrics`, `snapshot.chart`, and `snapshot.reactor`.
   - Shows empty states when no telemetry has arrived.
 - **A2: Roadmap Board**
-  - Live-data shell.
-  - Expects future roadmap task snapshots through the mission gateway.
+  - Implemented as a React roadmap surface.
+  - Shows Phase, Sprint, Epic, User Story, and Task lanes.
+  - Expects roadmap task snapshots through the mission gateway.
 - **A3: Capability Plugins**
-  - Live-data shell.
+  - Implemented as a React capability surface.
+  - Shows Transport, Runtime, and Workspace capability slots.
   - Expects plugin capability data through the mission gateway.
 - **A4: Brain & Config**
-  - Live-data shell.
+  - Implemented as a React configuration surface.
+  - Shows Models, Memory, and Safety configuration lanes.
   - Expects model/runtime configuration through the mission gateway.
 - **A5: Agent Management**
   - Implemented.
@@ -25,8 +28,8 @@ This document tracks the implemented React route structure in `src/App.tsx` and 
 ## Domain B: Genesis Knowledge
 
 - **B1: AST Hierarchy Tree**
-  - Live-data shell.
-  - Expects AST records through `snapshot.graph` or future AST event types.
+  - Implemented as a React AST tree surface.
+  - Reads `snapshot.graph.nodes` while the dedicated AST event shape is pending.
 - **B2: Business Specifications**
   - Implemented.
   - Reads `snapshot.specs`.
@@ -43,24 +46,26 @@ This document tracks the implemented React route structure in `src/App.tsx` and 
   - Implemented.
   - Reads `snapshot.symbols`.
 - **C2: Intelligence Zoo**
-  - Live-data shell.
+  - Implemented as a React experiment surface.
+  - Shows Candidate, Observed, and Promoted lanes.
   - Expects capability experiment records through the mission gateway.
-- **C3: SRS-G Data Ingest**
+- **C3: SRS-G Debugger**
   - Implemented.
   - Manual JSON entrypoint for `MissionEvent` payloads.
   - Used to verify real gateway updates without backend availability.
 - **C4: Database ERD Schema**
-  - Currently routes to vector/data shell behavior.
-  - Needs schema-specific event shape before final ERD implementation.
+  - Implemented as a React ERD surface.
+  - Reads `snapshot.symbols` as the current schema-adjacent data source.
+  - Needs schema-specific event shape before final ERD rendering.
 - **C5: HNSW Vector Space Map**
-  - Live-data shell.
-  - Expects vector map data through `graph.update` or a future vector event.
+  - Implemented as a React vector topology surface.
+  - Reads `snapshot.graph.nodes` while the dedicated vector event shape is pending.
 
 ## Domain D: AI Benchmark
 
 - **D1: Reactor Run Trigger**
-  - Implemented as command entry.
-  - Header Run button sends `reactor.run`.
+  - Implemented as a dedicated command view.
+  - View button and header Run button both send `reactor.run`.
 - **D2: Cyber Reactor Heatmap**
   - Implemented.
   - Reads `snapshot.heatmap.cells` and `snapshot.heatmap.coreTemp`.

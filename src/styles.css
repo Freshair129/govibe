@@ -332,7 +332,8 @@ main {
 .metric-grid,
 .dashboard-grid,
 .agent-layout,
-.record-grid {
+.record-grid,
+.blueprint-grid {
   display: grid;
   gap: 16px;
 }
@@ -478,6 +479,86 @@ main {
 
 .record-grid {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.blueprint-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.blueprint-card {
+  min-height: 150px;
+}
+
+.blueprint-card span,
+.run-panel span,
+.erd-panel span {
+  color: var(--accent);
+  display: block;
+  font-size: 11px;
+  font-weight: 900;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+}
+
+.tree-panel,
+.erd-panel,
+.vector-panel {
+  min-height: 420px;
+}
+
+.tree-row {
+  border-left: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  display: grid;
+  gap: 4px;
+  margin-left: 12px;
+  padding: 12px 0 12px 18px;
+}
+
+.tree-row span,
+.erd-panel small {
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+}
+
+.erd-panel {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.erd-panel article {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: grid;
+  gap: 8px;
+  min-height: 130px;
+  padding: 16px;
+}
+
+.run-panel {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.run-panel strong {
+  display: block;
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(24px, 3vw, 42px);
+  margin-bottom: 8px;
+}
+
+.run-panel button {
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--text);
+  font-weight: 900;
+  min-height: 48px;
+  padding: 0 22px;
+  white-space: nowrap;
 }
 
 .log-line {
@@ -676,6 +757,11 @@ footer {
   .dashboard-grid,
   .agent-layout {
     grid-template-columns: 1fr;
+  }
+
+  .run-panel {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   main {

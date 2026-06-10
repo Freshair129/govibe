@@ -12,6 +12,9 @@ import {
 } from "./mission";
 
 const domainOrder = Object.values(missionDomains);
+const moduleLookup = Object.fromEntries(
+  domainOrder.flatMap((domain) => domain.subModules.map((subModule) => [subModule.id, subModule])),
+) as Record<ViewId, (typeof domainOrder)[number]["subModules"][number]>;
 
 function useMissionSnapshot() {
   const [snapshot, setSnapshot] = useState<MissionSnapshot>(() => missionGateway.getSnapshot());
@@ -145,8 +148,13 @@ function Sidebar({
       </div>
       <div className="side-nav">
         {domain.subModules.map((sub) => (
-          <button key={sub.id} className={activeView === sub.id ? "active" : ""} onClick={() => onViewChange(sub.id)}>
-            <span>{sub.icon}</span>
+          <button
+            key={sub.id}
+            aria-label={`${sub.id}: ${sub.name}`}
+            className={activeView === sub.id ? "active" : ""}
+            onClick={() => onViewChange(sub.id)}
+          >
+            <span>{sub.id}</span>
             <strong>{sub.name}</strong>
           </button>
         ))}
@@ -307,11 +315,171 @@ function Heatmap({ snapshot }: { snapshot: MissionSnapshot }) {
   );
 }
 
-function SimpleLiveView({ title, body }: { title: string; body: string }) {
+function ModuleBlueprint({
+  title,
+  eyebrow,
+  desc,
+  lanes,
+  empty,
+}: {
+  title: string;
+  eyebrow: string;
+  desc: string;
+  lanes: Array<{ title: string; body: string }>;
+  empty: string;
+}) {
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Live Data" title={title} />
-      <EmptyState title="Awaiting live feed" body={body} />
+      <ViewHeader eyebrow={eyebrow} title={title} desc={desc} />
+      <section className="blueprint-grid">
+        {lanes.map((lane) => (
+          <article className="panel blueprint-card" key={lane.title}>
+            <span>{lane.title}</span>
+            <p>{lane.body}</p>
+          </article>
+        ))}
+      </section>
+      <EmptyState title="Awaiting live feed" body={empty} />
+    </div>
+  );
+}
+
+function RoadmapBoard() {
+  return (
+    <ModuleBlueprint
+      eyebrow="Planning"
+      title="Roadmap Board"
+      desc="Roadmap structure follows SITE_MAP A2 and is ready for live task snapshots."
+      lanes={[
+        { title: "Phase", body: "Top-level delivery horizon." },
+        { title: "Sprint", body: "Time-boxed execution slice." },
+        { title: "Epic", body: "Large product outcome." },
+        { title: "User Story", body: "User-facing requirement." },
+        { title: "Task", body: "Executable engineering unit." },
+      ]}
+      empty="Publish roadmap task snapshots through the mission gateway to fill the board."
+    />
+  );
+}
+
+function CapabilityPlugins() {
+  return (
+    <ModuleBlueprint
+      eyebrow="Capabilities"
+      title="Capability Plugins"
+      desc="Plugin slots are separated from runtime state so capabilities can be wired without raw template code."
+      lanes={[
+        { title: "Transport", body: "WebSocket, HTTP, browser event, and postMessage adapters." },
+        { title: "Runtime", body: "Mission commands and live event handlers." },
+        { title: "Workspace", body: "File save and local integration entrypoints." },
+      ]}
+      empty="Publish plugin capability records through the mission gateway to populate this view."
+    />
+  );
+}
+
+function BrainConfig() {
+  return (
+    <ModuleBlueprint
+      eyebrow="Runtime Config"
+      title="Brain & Config"
+      desc="Configuration belongs in React state and gateway events, not in legacy inline script."
+      lanes={[
+        { title: "Models", body: "Model routing and profile metadata." },
+        { title: "Memory", body: "Context, storage, and recall policies." },
+        { title: "Safety", body: "Execution guardrails and transport constraints." },
+      ]}
+      empty="Connect model or runtime configuration events before this panel shows active settings."
+    />
+  );
+}
+
+function AstTreeView({ snapshot }: { snapshot: MissionSnapshot }) {
+  return (
+    <div className="view-stack">
+      <ViewHeader eyebrow="AST" title="AST Hierarchy Tree" desc="B1 is the tree-oriented source view for Genesis Knowledge." />
+      <section className="panel tree-panel">
+        {snapshot.graph.nodes.length === 0 ? (
+          <EmptyState title="No AST records" body="Publish AST nodes through snapshot.graph or graph.update to render the hierarchy." />
+        ) : (
+          snapshot.graph.nodes.map((node) => (
+            <div className="tree-row" key={node.id}>
+              <span>{node.id}</span>
+              <strong>{node.label}</strong>
+            </div>
+          ))
+        )}
+      </section>
+    </div>
+  );
+}
+
+function IntelligenceZoo() {
+  return (
+    <ModuleBlueprint
+      eyebrow="Experiments"
+      title="Intelligence Zoo"
+      desc="C2 groups capability experiments before they are promoted into stable mission workflows."
+      lanes={[
+        { title: "Candidate", body: "Experiments waiting for evaluation." },
+        { title: "Observed", body: "Runs with collected behavior data." },
+        { title: "Promoted", body: "Validated intelligence modules." },
+      ]}
+      empty="Publish experiment records through the mission gateway to activate the zoo."
+    />
+  );
+}
+
+function DatabaseErdView({ snapshot }: { snapshot: MissionSnapshot }) {
+  return (
+    <div className="view-stack">
+      <ViewHeader eyebrow="Schema" title="Database ERD Schema" desc="C4 owns relational schema visibility for Block DB." />
+      <section className="panel erd-panel">
+        {snapshot.symbols.length === 0 ? (
+          <EmptyState title="No schema records" body="Publish schema or symbol records before rendering the ERD." />
+        ) : (
+          snapshot.symbols.map((symbol) => (
+            <article key={`${symbol.path}-${symbol.name}`}>
+              <strong>{symbol.name}</strong>
+              <span>{symbol.kind}</span>
+              <small>{symbol.path}</small>
+            </article>
+          ))
+        )}
+      </section>
+    </div>
+  );
+}
+
+function HnswVectorView({ snapshot }: { snapshot: MissionSnapshot }) {
+  return (
+    <div className="view-stack">
+      <ViewHeader eyebrow="Vector Index" title="HNSW Vector Space Map" desc="C5 is separated from ERD so vector topology can evolve independently." />
+      <section className="panel vector-panel">
+        {snapshot.graph.nodes.length === 0 ? (
+          <EmptyState title="No vector map" body="Publish vector nodes through graph.update or a future vector event to render this map." />
+        ) : (
+          <div className="node-cloud">
+            {snapshot.graph.nodes.map((node) => <span key={node.id}>{node.label}</span>)}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}
+
+function ReactorRunTrigger({ send }: { send: (command: MissionCommand) => void }) {
+  return (
+    <div className="view-stack">
+      <ViewHeader eyebrow="Benchmark" title="Reactor Run Trigger" desc="D1 sends benchmark run commands through the configured mission transport." />
+      <section className="panel run-panel">
+        <div>
+          <span>Command</span>
+          <strong>reactor.run</strong>
+          <p>Profile: default</p>
+        </div>
+        <button onClick={() => void send({ type: "reactor.run", profile: "default" })}>Run Reactor</button>
+      </section>
     </div>
   );
 }
@@ -332,7 +500,7 @@ function DataIngestView({ ingest }: { ingest: (json: string) => void }) {
 
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Entry Point" title="SRS-G Data Ingest" desc="Manual JSON ingress for real MissionEvent payloads." />
+      <ViewHeader eyebrow="Debugger" title="SRS-G Debugger" desc="Manual JSON ingress for real MissionEvent payloads." />
       <form className="panel ingest-panel" onSubmit={submit}>
         <label htmlFor="mission-event-json">MissionEvent JSON</label>
         <textarea
@@ -370,14 +538,15 @@ function RenderView({
   if (activeView === "C1") return <RecordsView snapshot={snapshot} kind="symbols" />;
   if (activeView === "D2") return <Heatmap snapshot={snapshot} />;
   if (activeView === "D3") return <RecordsView snapshot={snapshot} kind="logs" />;
-  if (activeView === "D1") return <SimpleLiveView title="Reactor Run Trigger" body="Use the Run button to send a reactor.run command to the configured transport." />;
-  if (activeView === "A2") return <SimpleLiveView title="Roadmap Board" body="Connect roadmap task snapshots through the mission gateway." />;
-  if (activeView === "A3") return <SimpleLiveView title="Capability Plugins" body="Connect plugin capability data through the mission gateway." />;
-  if (activeView === "A4") return <SimpleLiveView title="Brain & Config" body="Connect model/runtime configuration through the mission gateway." />;
-  if (activeView === "B1") return <SimpleLiveView title="AST Hierarchy Tree" body="Connect AST records through graph.update or snapshot.graph." />;
-  if (activeView === "C2") return <SimpleLiveView title="Intelligence Zoo" body="Connect capability experiment records through the mission gateway." />;
+  if (activeView === "D1") return <ReactorRunTrigger send={send} />;
+  if (activeView === "A2") return <RoadmapBoard />;
+  if (activeView === "A3") return <CapabilityPlugins />;
+  if (activeView === "A4") return <BrainConfig />;
+  if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;
+  if (activeView === "C2") return <IntelligenceZoo />;
   if (activeView === "C3") return <DataIngestView ingest={ingest} />;
-  return <SimpleLiveView title="HNSW Vector Space Map" body="Connect vector map data through graph.update." />;
+  if (activeView === "C4") return <DatabaseErdView snapshot={snapshot} />;
+  return <HnswVectorView snapshot={snapshot} />;
 }
 
 function Terminal({ snapshot, send }: { snapshot: MissionSnapshot; send: (command: MissionCommand) => void }) {
@@ -414,8 +583,9 @@ export function App() {
   const [theme, setTheme] = useState<ThemeMode>(() => localStorage.getItem("govibe-theme") === "light" ? "light" : "dark");
   const [activeDomain, setActiveDomain] = useState<DomainId>("A");
   const [activeView, setActiveView] = useState<ViewId>("A1");
-  const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [sidebarExpanded, setSidebarExpanded] = useState(true);
   const domain = missionDomains[activeDomain];
+  const activeModule = moduleLookup[activeView];
 
   useEffect(() => {
     document.body.classList.toggle("light-theme", theme === "light");
@@ -461,7 +631,7 @@ export function App() {
           <RenderView activeView={activeView} snapshot={snapshot} theme={theme} send={send} ingest={ingest} />
         </main>
       </div>
-      <footer>GoVibe Mission Control | {domain.title} &gt; {activeView}</footer>
+      <footer>GoVibe Mission Control | {domain.title} &gt; {activeView}: {activeModule.name}</footer>
       <Terminal snapshot={snapshot} send={send} />
     </div>
   );

@@ -92,7 +92,7 @@ export const missionDomains: Record<DomainId, MissionDomain> = {
   A: {
     id: "A",
     title: "Project Overview",
-    shortTitle: "Project",
+    shortTitle: "Project Overview",
     color: "#10b981",
     icon: "compass",
     subModules: [
@@ -106,7 +106,7 @@ export const missionDomains: Record<DomainId, MissionDomain> = {
   B: {
     id: "B",
     title: "Genesis Knowledge",
-    shortTitle: "Genesis",
+    shortTitle: "Genesis Knowledge",
     color: "#6366f1",
     icon: "brain",
     subModules: [
@@ -133,7 +133,7 @@ export const missionDomains: Record<DomainId, MissionDomain> = {
   D: {
     id: "D",
     title: "AI Benchmark",
-    shortTitle: "Benchmark",
+    shortTitle: "AI Benchmark",
     color: "#f59e0b",
     icon: "gauge",
     subModules: [
