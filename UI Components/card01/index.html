@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raycast Linear Extension Card - Interactive Showcase</title>
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Link to custom stylesheets -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Ambient glowing backgrounds -->
+    <div class="ambient-glow glow-orange"></div>
+    <div class="ambient-glow glow-purple"></div>
+
+    <!-- Main Showcase Wrapper -->
+    <div class="showcase-wrapper">
+        <!-- Interactive Raycast 3D Card -->
+        <div class="raycast-card" id="raycastCard" onclick="openCommandPalette()">
+            <!-- Shine overlay tracking mouse -->
+            <div class="card-shine" id="cardShine"></div>
+            
+            <!-- Card Header -->
+            <div class="card-hdr">
+                <div class="brand-info">
+                    <img src="./Icon.png" alt="Linear Icon" class="brand-icon">
+                    <span class="brand-title">Linear</span>
+                </div>
+                <span class="ext-badge">Extension</span>
+            </div>
+
+            <!-- Card Body / Typography -->
+            <div class="card-body">
+                <p class="card-desc">
+                    Create, search and modify your issues without leaving your keyboard.
+                </p>
+            </div>
+
+            <!-- Mockup Layered Visualizer -->
+            <div class="mockup-area">
+                <!-- Base layer backdrop -->
+                <img src="./Image.png" alt="Mockup Grid Base" class="mock-bg-layer">
+                
+                <!-- Floating issues list overlay -->
+                <img src="./Stack.png" alt="Raycast Issues List" class="mock-floating-layer">
+                
+                <!-- Floating Linear accent logo -->
+                <img src="./Linear.png" alt="Linear Gradient Logo" class="mock-brand-layer">
+            </div>
+
+            <!-- Card Footer -->
+            <div class="card-footer">
+                <div class="install-label">
+                    <span>Install Extension</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+                <div class="shortcut-badge" title="Press Cmd+K or click to toggle command menu">
+                    <span class="shortcut-k">⌥ Space</span>
+                    <span>+</span>
+                    <span class="shortcut-k">K</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard shortcut description banner -->
+    <div class="keyboard-hint-banner">
+        <span>Press</span>
+        <kbd id="os-cmd-kbd">⌘</kbd>
+        <span>+</span>
+        <kbd>K</kbd>
+        <span>to open Raycast Command menu</span>
+    </div>
+
+    <!-- ==========================================================================
+       INTERACTIVE COMMAND PALETTE OVERLAY (RAYCAST STYLE)
+       ========================================================================== -->
+    <div class="raycast-overlay" id="raycastOverlay" onclick="closeCommandPalette(event)">
+        <div class="raycast-window" onclick="event.stopPropagation()">
+            <!-- Search bar input -->
+            <div class="window-search-bar">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="window-input" id="searchBarInput" placeholder="Search extensions or type a command..." oninput="filterItems()" onkeydown="handleInputKeys(event)">
+            </div>
+            
+            <!-- List actions -->
+            <ul class="window-list" id="commandList">
+                <li class="list-section-header">Linear Commands</li>
+                <li class="window-item selected" onclick="triggerCommand('search')">
+                    <div class="item-left">
+                        <img src="./Icon.png" alt="Linear" class="item-icon">
+                        <span>Search Issues</span>
+                    </div>
+                    <div class="item-shortcut">
+                        <span>L</span>
+                        <span>S</span>
+                    </div>
+                </li>
+                <li class="window-item" onclick="triggerCommand('create')">
+                    <div class="item-left">
+                        <img src="./Icon.png" alt="Linear" class="item-icon">
+                        <span>Create Issue</span>
+                    </div>
+                    <div class="item-shortcut">
+                        <span>L</span>
+                        <span>C</span>
+                    </div>
+                </li>
+                <li class="window-item" onclick="triggerCommand('stack')">
+                    <div class="item-left">
+                        <img src="./Icon.png" alt="Linear" class="item-icon">
+                        <span>View Issues Stack</span>
+                    </div>
+                    <div class="item-shortcut">
+                        <span>L</span>
+                        <span>V</span>
+                    </div>
+                </li>
+                <li class="list-section-header">Global Preferences</li>
+                <li class="window-item" onclick="triggerCommand('install')">
+                    <div class="item-left">
+                        <i class="fas fa-download" style="font-size: 13px; opacity: 0.8; width: 20px; text-align: center;"></i>
+                        <span>Install Extension</span>
+                    </div>
+                    <div class="item-shortcut">
+                        <span>⌘</span>
+                        <span>I</span>
+                    </div>
+                </li>
+                <li class="window-item" onclick="triggerCommand('close')">
+                    <div class="item-left">
+                        <i class="fas fa-times" style="font-size: 13px; opacity: 0.8; width: 20px; text-align: center;"></i>
+                        <span>Close Window</span>
+                    </div>
+                    <div class="item-shortcut">
+                        <span>Esc</span>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- Window Footer -->
+            <div class="window-footer">
+                <span>Use <i class="fas fa-arrow-up"></i> <i class="fas fa-arrow-down"></i> keys to navigate, <kbd style="background: rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; color: #fff;">↵</kbd> to execute</span>
+                <div class="footer-action-badge">
+                    <span>Actions</span>
+                    <kbd>↵</kbd>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       VANILLA INTERACTION SCRIPT
+       ========================================================================== -->
+    <script>
+        const card = document.getElementById('raycastCard');
+        const shine = document.getElementById('cardShine');
+        const overlay = document.getElementById('raycastOverlay');
+        const searchInput = document.getElementById('searchBarInput');
+        const cmdList = document.getElementById('commandList');
+        const cmdKbd = document.getElementById('os-cmd-kbd');
+
+        // Check user OS for command key mapping description
+        if (navigator.platform.toUpperCase().indexOf('MAC') === -1) {
+            cmdKbd.innerText = 'Ctrl';
+        }
+
+        /* --- 3D Parallax Perspective Tilt on MouseMove --- */
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left; // x coordinate inside the element
+            const y = e.clientY - rect.top;  // y coordinate inside the element
+            
+            // Update CSS custom properties for hover shine
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+
+            // Calculate rotation offsets
+            const cardWidth = rect.width;
+            const cardHeight = rect.height;
+            const centerX = cardWidth / 2;
+            const centerY = cardHeight / 2;
+            const rotateX = ((centerY - y) / centerY) * 12; // tilt max 12 degrees
+            const rotateY = ((x - centerX) / centerX) * 12;
+
+            card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        });
+
+        // Reset rotation on mouseleave
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+            card.style.setProperty('--mouse-x', `50%`);
+            card.style.setProperty('--mouse-y', `50%`);
+        });
+
+        /* --- Command Palette Modal Controls --- */
+        function openCommandPalette() {
+            triggerHaptic(30);
+            overlay.classList.add('show');
+            setTimeout(() => searchInput.focus(), 150);
+        }
+
+        function closeCommandPalette(e) {
+            triggerHaptic(10);
+            overlay.classList.remove('show');
+            searchInput.value = '';
+            filterItems(); // Reset lists
+        }
+
+        // Handle Escape, command keys
+        window.addEventListener('keydown', (e) => {
+            // Toggle overlay via Cmd+K or Ctrl+K
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                if (overlay.classList.contains('show')) {
+                    closeCommandPalette();
+                } else {
+                    openCommandPalette();
+                }
+            }
+            // Close via Escape
+            if (e.key === 'Escape' && overlay.classList.contains('show')) {
+                closeCommandPalette();
+            }
+        });
+
+        /* --- Keyboard List Navigation & Execution --- */
+        function getItems() {
+            return Array.from(cmdList.querySelectorAll('.window-item:not([style*="display: none"])'));
+        }
+
+        function handleInputKeys(e) {
+            const items = getItems();
+            let activeIdx = items.findIndex(item => item.classList.contains('selected'));
+            
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                triggerHaptic(10);
+                if (activeIdx !== -1) items[activeIdx].classList.remove('selected');
+                activeIdx = (activeIdx + 1) % items.length;
+                items[activeIdx].classList.add('selected');
+                items[activeIdx].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                triggerHaptic(10);
+                if (activeIdx !== -1) items[activeIdx].classList.remove('selected');
+                activeIdx = (activeIdx - 1 + items.length) % items.length;
+                items[activeIdx].classList.add('selected');
+                items[activeIdx].scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter') {
+                e.preventDefault();
+                if (activeIdx !== -1) {
+                    items[activeIdx].click();
+                }
+            }
+        }
+
+        /* --- Search Filter List items --- */
+        function filterItems() {
+            const filter = searchInput.value.toLowerCase();
+            const items = cmdList.querySelectorAll('.window-item');
+            const sections = cmdList.querySelectorAll('.list-section-header');
+            
+            let visibleCount = 0;
+            
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                if (text.includes(filter)) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                    item.classList.remove('selected');
+                }
+            });
+
+            // Adjust section headers visibility
+            sections.forEach(sec => {
+                let sibling = sec.nextElementSibling;
+                let hasVisibleItems = false;
+                while (sibling && !sibling.classList.contains('list-section-header')) {
+                    if (sibling.style.display !== 'none') {
+                        hasVisibleItems = true;
+                        break;
+                    }
+                    sibling = sibling.nextElementSibling;
+                }
+                sec.style.display = hasVisibleItems ? 'block' : 'none';
+            });
+
+            // Reselect the first visible item
+            const visibleItems = getItems();
+            if (visibleItems.length > 0) {
+                visibleItems[0].classList.add('selected');
+            }
+        }
+
+        /* --- Mock Command Execution --- */
+        function triggerCommand(commandName) {
+            triggerHaptic(40);
+            
+            if (commandName === 'close') {
+                closeCommandPalette();
+                return;
+            }
+
+            const feedbackMessages = {
+                'search': 'Searching Linear issues in Raycast...',
+                'create': 'Launching "Create Issue" overlay window...',
+                'stack': 'Viewing active issues stack roadmap...',
+                'install': 'Connecting with extension client marketplace...'
+            };
+
+            alert(feedbackMessages[commandName] || `Executing ${commandName} command...`);
+            closeCommandPalette();
+        }
+
+        /* --- Haptic Feedback Fallback --- */
+        function triggerHaptic(ms) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(ms);
+            }
+        }
+    </script>
+</body>
+</html>

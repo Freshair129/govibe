@@ -1,0 +1,370 @@
+/* CSS Tokens & Custom Properties */
+:root {
+    --bg-dark: #0B0C0E;
+    --card-bg: rgba(19, 21, 26, 0.6);
+    --border-color: rgba(38, 41, 48, 0.5);
+    --accent-orange: #ED6C35;
+    --accent-inactive: #262930;
+    --knob-color: #ECECEC;
+    --text-primary: #ffffff;
+    --text-muted: #cbd5e1;
+}
+
+/* Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 2rem;
+    position: relative;
+}
+
+/* Ambient Radial Glows */
+body::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(237, 108, 53, 0.08) 0%, rgba(6, 182, 212, 0.04) 50%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Glassmorphism Showcase Card */
+.showcase-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 28px;
+    padding: 3rem 2.5rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+    z-index: 10;
+}
+
+.showcase-header {
+    text-align: center;
+}
+
+.showcase-header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.showcase-header p {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+/* Selector Grid Group Layout */
+.showcase-sections {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+}
+
+.showcase-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    width: 100%;
+}
+
+.section-title {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-muted);
+    opacity: 0.7;
+    font-weight: 600;
+    width: 100%;
+    text-align: left;
+    border-left: 3px solid var(--accent-orange);
+    padding-left: 0.75rem;
+}
+
+/* Horizontal Display Flex for elements */
+.selectors-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+    padding: 1rem 0;
+}
+
+.selector-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.selector-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* Shared Hide Native Input Styles */
+.switch-input,
+.radio-input,
+.checkbox-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ==========================================================================
+   1. TACTILE TOGGLE SWITCH (Figma Specs: 280px x 168px)
+   ========================================================================== */
+
+.switch-container {
+    position: relative;
+    width: 280px;
+    height: 168px;
+    user-select: none;
+}
+
+.switch-track {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: var(--accent-inactive);
+    border-radius: 212px;
+    cursor: pointer;
+    transition: background 0.35s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.35s ease;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+}
+
+.switch-track:hover {
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 255, 255, 0.05);
+}
+
+.switch-input:checked + .switch-track {
+    background: var(--accent-orange);
+    box-shadow: inset 0 1px 4px rgba(255, 255, 255, 0.3), 0 0 40px rgba(237, 108, 53, 0.45);
+}
+
+.switch-knob {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 145px;
+    height: 145px;
+    left: 11px;
+    top: 11.5px;
+    background: var(--knob-color);
+    border-radius: 50%;
+    box-shadow: -1.12045px 15.6864px 20.1682px rgba(0, 0, 0, 0.35);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform: translateX(0);
+}
+
+.switch-input:checked + .switch-track .switch-knob {
+    transform: translateX(113px);
+    box-shadow: -3px 15px 25px rgba(0, 0, 0, 0.45), inset 0 2px 4px #ffffff;
+}
+
+.switch-track:active .switch-knob {
+    transform: scale(0.96) translateX(0);
+}
+
+.switch-input:checked + .switch-track:active .switch-knob {
+    transform: scale(0.96) translateX(113px);
+}
+
+/* ==========================================================================
+   2. TACTILE RADIO BUTTONS (Figma-inspired: 90px x 90px)
+   ========================================================================== */
+
+.radio-container {
+    position: relative;
+    width: 90px;
+    height: 90px;
+}
+
+.radio-track {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--accent-inactive);
+    cursor: pointer;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.radio-track:hover {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.radio-input:checked + .radio-track {
+    background: var(--accent-orange);
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.3), 0 0 25px rgba(237, 108, 53, 0.45);
+}
+
+.radio-knob {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    left: 18px;
+    top: 18px;
+    background: var(--knob-color);
+    border-radius: 50%;
+    box-shadow: -1px 8px 12px rgba(0, 0, 0, 0.35);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.radio-input:checked + .radio-track .radio-knob {
+    box-shadow: -1.5px 8px 15px rgba(0, 0, 0, 0.45), inset 0 1.5px 2px #ffffff;
+}
+
+.radio-track:active .radio-knob {
+    transform: scale(0.92);
+}
+
+/* ==========================================================================
+   3. TACTILE CHECKBOXES (Figma-inspired: 90px x 90px)
+   ========================================================================== */
+
+.checkbox-container {
+    position: relative;
+    width: 90px;
+    height: 90px;
+}
+
+.checkbox-track {
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 22px;
+    background: var(--accent-inactive);
+    cursor: pointer;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.checkbox-track:hover {
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6), 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.checkbox-input:checked + .checkbox-track {
+    background: var(--accent-orange);
+    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.3), 0 0 25px rgba(237, 108, 53, 0.45);
+}
+
+.checkbox-knob {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    width: 54px;
+    height: 54px;
+    left: 18px;
+    top: 18px;
+    background: var(--knob-color);
+    border-radius: 14px;
+    box-shadow: -1px 8px 12px rgba(0, 0, 0, 0.35);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+
+.checkbox-input:checked + .checkbox-track .checkbox-knob {
+    box-shadow: -1.5px 8px 15px rgba(0, 0, 0, 0.45), inset 0 1.5px 2px #ffffff;
+}
+
+.checkbox-track:active .checkbox-knob {
+    transform: scale(0.92);
+}
+
+/* ==========================================================================
+   Details and Footers
+   ========================================================================== */
+
+.status-display {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.status-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    opacity: 0.6;
+}
+
+.status-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.status-value.off {
+    color: var(--text-muted);
+}
+
+.status-value.on {
+    color: var(--accent-orange);
+    text-shadow: 0 0 10px rgba(237, 108, 53, 0.3);
+}
+
+.showcase-footer {
+    border-top: 1px solid var(--border-color);
+    padding-top: 1.5rem;
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+    text-align: left;
+}
+
+.spec-item span {
+    font-weight: 500;
+    color: var(--text-primary);
+}

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium Dark Hero Section - Vortex Console</title>
+    <!-- Import modern Google Fonts: Outfit and Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Ambient Glowing Backdrops -->
+    <div class="glow-orb orb-purple"></div>
+    <div class="glow-orb orb-orange"></div>
+
+    <!-- Navigation Header -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="brand-logo"><i class="fas fa-cube"></i></div>
+                <span>VORTEX</span>
+            </div>
+            <nav class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#components">Components</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#docs">Docs</a>
+            </nav>
+            <div class="nav-actions">
+                <button class="btn btn-outline nav-btn">Sign In</button>
+                <button class="btn btn-primary nav-btn">Get Started</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Hero Section -->
+    <section class="hero-section">
+        <div class="hero-container">
+            
+            <!-- Pill Badge -->
+            <div class="hero-badge">
+                <span class="badge-tag">NEW</span>
+                <span class="badge-text">Vortex Landing Kit v1.0 is now live</span>
+                <i class="fas fa-chevron-right badge-arrow"></i>
+            </div>
+
+            <!-- Main Typography -->
+            <h1 class="hero-title">
+                Give your big idea the<br>
+                <span class="text-gradient">website it deserves</span>
+            </h1>
+
+            <p class="hero-subtitle">
+                A premium landing page kit template built with modern web technologies, responsive layouts, 
+                and stunning glassmorphism aesthetics that you can easily copy and paste into your project.
+            </p>
+
+            <!-- Call to Actions -->
+            <div class="hero-ctas">
+                <button class="btn btn-primary btn-lg" onclick="triggerHaptic(50)">
+                    <span>Get Started</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <button class="btn btn-outline btn-lg" onclick="triggerHaptic(30)">
+                    <i class="fab fa-github"></i>
+                    <span>Star on GitHub</span>
+                </button>
+            </div>
+
+            <!-- Mockup Showcase Area -->
+            <div class="mockup-frame">
+                <!-- Inner ambient glowing light -->
+                <div class="mockup-glow"></div>
+                
+                <div class="mockup-card">
+                    <!-- Dashboard Mock Header -->
+                    <div class="mock-header">
+                        <div class="mock-dots">
+                            <span class="dot red"></span>
+                            <span class="dot yellow"></span>
+                            <span class="dot green"></span>
+                        </div>
+                        <div class="mock-search">vortex-console-panel/analytics</div>
+                        <div class="mock-user"><i class="fas fa-user-circle"></i></div>
+                    </div>
+                    
+                    <!-- Dashboard Mock Content -->
+                    <div class="mock-content">
+                        <!-- Left sidebar mock -->
+                        <div class="mock-sidebar">
+                            <div class="sidebar-row active"></div>
+                            <div class="sidebar-row"></div>
+                            <div class="sidebar-row"></div>
+                            <div class="sidebar-row"></div>
+                        </div>
+                        
+                        <!-- Main dashboard grid mock -->
+                        <div class="mock-main">
+                            <div class="main-grid">
+                                <div class="grid-card">
+                                    <div class="card-label">CPU LOAD</div>
+                                    <div class="card-value font-mono">24.5%</div>
+                                    <div class="progress-track"><div class="progress-bar orange" style="width: 24.5%"></div></div>
+                                </div>
+                                <div class="grid-card">
+                                    <div class="card-label">VRAM UTILIZATION</div>
+                                    <div class="card-value font-mono">4.2 GB</div>
+                                    <div class="progress-track"><div class="progress-bar purple" style="width: 35%"></div></div>
+                                </div>
+                                <div class="grid-card">
+                                    <div class="card-label">INFERENCE SPEED</div>
+                                    <div class="card-value font-mono">55.4 t/s</div>
+                                    <div class="progress-track"><div class="progress-bar green" style="width: 78%"></div></div>
+                                </div>
+                            </div>
+                            
+                            <!-- Graph visualization mock -->
+                            <div class="graph-card">
+                                <div class="graph-header">
+                                    <div class="graph-title">System Performance Latency (60fps)</div>
+                                    <div class="graph-legend">
+                                        <span class="legend-dot orange"></span><span>Target</span>
+                                        <span class="legend-dot purple"></span><span>Current</span>
+                                    </div>
+                                </div>
+                                <div class="graph-visual">
+                                    <svg class="graph-svg" viewBox="0 0 400 120">
+                                        <!-- Grid lines -->
+                                        <line x1="0" y1="20" x2="400" y2="20" stroke="rgba(255,255,255,0.03)" />
+                                        <line x1="0" y1="60" x2="400" y2="60" stroke="rgba(255,255,255,0.03)" />
+                                        <line x1="0" y1="100" x2="400" y2="100" stroke="rgba(255,255,255,0.03)" />
+                                        <!-- Wave paths -->
+                                        <path d="M0,80 Q50,40 100,70 T200,50 T300,90 T400,60" fill="none" stroke="rgba(237, 108, 53, 0.4)" stroke-width="2" />
+                                        <path d="M0,60 Q60,90 120,40 T240,80 T360,50 T400,70" fill="none" stroke="rgba(168, 85, 247, 0.6)" stroke-width="2" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Stack Logo Cloud -->
+            <div class="logos-section">
+                <span class="logos-title">BUILT WITH THE BEST TOOLS</span>
+                <div class="logos-grid">
+                    <div class="logo-item" title="React.js">
+                        <i class="fab fa-react"></i>
+                        <span>React</span>
+                    </div>
+                    <div class="logo-item" title="TypeScript">
+                        <i class="fas fa-code"></i>
+                        <span>TypeScript</span>
+                    </div>
+                    <div class="logo-item" title="Tailwind CSS">
+                        <i class="fab fa-css3-alt"></i>
+                        <span>Tailwind</span>
+                    </div>
+                    <div class="logo-item" title="Figma">
+                        <i class="fab fa-figma"></i>
+                        <span>Figma</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <script>
+        function triggerHaptic(ms) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(ms);
+            }
+            console.log(`[Haptics] Triggered tactile click: ${ms}ms vibration`);
+        }
+    </script>
+</body>
+</html>

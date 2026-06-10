@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zuri — AI Business Platform สำหรับธุรกิจบริการไทย</title>
+    <!-- Font Awesome for icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Link to custom stylesheets -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Floating View Switcher Button -->
+    <button class="view-switcher-floating" onclick="toggleMainView()">
+        <i class="fas fa-random"></i>
+        <span id="switcher-text" data-th="เข้าสู่ระบบตัวอย่างแอป" data-en="Go to App Demo">เข้าสู่ระบบตัวอย่างแอป</span>
+    </button>
+
+    <!-- Ambient Glowing Orbs -->
+    <div class="glow-orb orb-primary" style="top: 10%; left: -100px; width: 400px; height: 400px;"></div>
+    <div class="glow-orb orb-secondary" style="top: 50%; right: -100px; width: 500px; height: 500px;"></div>
+
+    <!-- ==========================================================================
+       VIEW SECTION 1: PUBLIC LANDING PAGE
+       ========================================================================== -->
+    <div id="landing-view" class="view-container view-section active">
+        <!-- Landing Page Navigation -->
+        <nav class="landing-nav" id="landingNav">
+            <div class="container nav-flex">
+                <a href="#" class="logo-group">
+                    <div class="logo-box">Z</div>
+                    <span>Zuri</span>
+                </a>
+                <div class="nav-links">
+                    <a href="#officers" data-th="พนักงาน AI" data-en="AI Officers">พนักงาน AI</a>
+                    <a href="#values" data-th="ทำไมต้อง Zuri" data-en="Why Zuri">ทำไมต้อง Zuri</a>
+                    <a href="#pricing" data-th="ราคา" data-en="Pricing">ราคา</a>
+                </div>
+                <div class="nav-actions">
+                    <button class="btn btn-outline" onclick="switchView('dashboard')" data-th="เข้าสู่ระบบ" data-en="Sign In">เข้าสู่ระบบ</button>
+                    <button class="btn btn-accent-premium" onclick="switchView('dashboard')" data-th="เริ่มใช้ฟรี" data-en="Start Free">เริ่มใช้ฟรี</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <header class="hero-wrapper">
+            <div class="container hero-content">
+                <div style="margin-bottom: 24px;">
+                    <span class="badge-premium">
+                        <i class="fas fa-sparkles"></i>
+                        <span data-th="THE MODERN SOVEREIGN AI PLATFORM" data-en="THE MODERN SOVEREIGN AI PLATFORM">THE MODERN SOVEREIGN AI PLATFORM</span>
+                    </span>
+                </div>
+                <h1 class="hero-title">
+                    <span data-th="อยากมี " data-en="Want to have ">อยากมี </span>
+                    <span class="text-gradient">"Zuri"</span>
+                    <br>
+                    <span data-th="เป็นของตัวเอง" data-en="as your own assistant?">เป็นของตัวเอง</span>
+                </h1>
+                <p class="hero-subtitle" data-th="ลืมระบบซอฟต์แวร์ที่ซับซ้อนไปได้เลย ซูริ คือ 'ผู้ช่วยส่วนตัว' ที่ออกแบบโดยเน้นความเป็นมนุษย์ และพร้อมประคองคุณอยู่เบื้องหลังเงียบๆ ด้วยแนวคิด Warm Minimalist ลดภาระสมองเพื่อให้คุณโฟกัสกับกลยุทธ์ ช่วยให้ทีม AI Multi-Agent ทำงานแทนคุณได้อย่างเป็นธรรมชาติ และรู้ลึกถึงทุกบริบทธุรกิจของคุณตั้งแต่วันแรก" data-en="Forget complex software systems. Zuri is a 'personal assistant' designed with a human-centric focus. It quietly supports you in the background with a Warm Minimalist philosophy, reducing cognitive load so you can focus on strategy, allowing your AI Multi-Agent team to work naturally and know your business context from day one.">
+                    ลืมระบบซอฟต์แวร์ที่ซับซ้อนไปได้เลย ซูริ คือ "ผู้ช่วยส่วนตัว" ที่ออกแบบโดยเน้นความเป็นมนุษย์ และพร้อมประคองคุณอยู่เบื้องหลังเงียบๆ ด้วยแนวคิด Warm Minimalist ลดภาระสมองเพื่อให้คุณโฟกัสกับกลยุทธ์ ช่วยให้ทีม AI Multi-Agent ทำงานแทนคุณได้อย่างเป็นธรรมชาติ และรู้ลึกถึงทุกบริบทธุรกิจของคุณตั้งแต่วันแรก
+                </p>
+                <div class="hero-buttons">
+                    <button class="btn btn-accent-premium" onclick="switchView('dashboard')">
+                        <span data-th="เริ่มต้นใช้งาน Zuri ฟรี" data-en="Get Started with Zuri Free">เริ่มต้นใช้งาน Zuri ฟรี</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button class="btn btn-outline" onclick="switchView('dashboard')">
+                        <span data-th="นัดปรึกษาการวางระบบ AI" data-en="Consult AI Setup">นัดปรึกษาการวางระบบ AI</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="trust-signals">
+                    <i class="fas fa-lock"></i>
+                    <span data-th="Sovereign Cloud Security" data-en="Sovereign Cloud Security">Sovereign Cloud Security</span>
+                    <span class="trust-divider">|</span>
+                    <i class="fas fa-star"></i>
+                    <span data-th="ได้รับความไว้วางใจจากธุรกิจไทย" data-en="Trusted by Thai Businesses">ได้รับความไว้วางใจจากธุรกิจไทย</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- AI Department (AI Officers) -->
+        <section id="officers" class="officers-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="badge-premium">
+                        <i class="fas fa-users"></i>
+                        <span data-th="AI Department" data-en="AI Department">AI Department</span>
+                    </span>
+                    <h2 data-th="ทีมงาน AI ที่พร้อมรันธุรกิจแทนคุณตลอด 24 ชั่วโมง" data-en="AI Team ready to run your business 24/7">ทีมงาน AI ที่พร้อมรันธุรกิจแทนคุณตลอด 24 ชั่วโมง</h2>
+                </div>
+                <div class="officers-grid">
+                    <!-- Officer 1 -->
+                    <div class="officer-card glass-card-warm">
+                        <div class="officer-icon-box"><i class="fas fa-bullhorn"></i></div>
+                        <div class="officer-info">
+                            <h3>
+                                <span data-th="Zuri Ads Optimized" data-en="Zuri Ads Optimized">Zuri Ads Optimized</span>
+                                <span class="badge-premium" style="font-size: 8px; padding: 2px 8px;">Manus AI</span>
+                            </h3>
+                            <div class="officer-subtitle" data-th="ผู้จัดการกลยุทธ์สื่ออาวุโส" data-en="Senior Media Strategist">ผู้จัดการกลยุทธ์สื่ออาวุโส</div>
+                            <p data-th="เชื่อมต่อ Meta API โดยตรง วางกลยุทธ์โฆษณาระดับนิตยสาร ตรวจสอบ Policy อัตโนมัติ ปรับงบประมาณแบบ Real-time เพื่อ ROAS สูงสุด" data-en="Connects directly to Meta API, designs magazine-level ad strategies, automatically audits policies, and dynamically manages budgets in real-time for maximum ROAS.">เชื่อมต่อ Meta API โดยตรง วางกลยุทธ์โฆษณาระดับนิตยสาร ตรวจสอบ Policy อัตโนมัติ ปรับงบประมาณแบบ Real-time เพื่อ ROAS สูงสุด</p>
+                        </div>
+                    </div>
+                    <!-- Officer 2 -->
+                    <div class="officer-card glass-card-warm">
+                        <div class="officer-icon-box"><i class="fas fa-comments"></i></div>
+                        <div class="officer-info">
+                            <h3>
+                                <span data-th="Zuri Sales Force" data-en="Zuri Sales Force">Zuri Sales Force</span>
+                                <span class="badge-premium" style="font-size: 8px; padding: 2px 8px;">Always-On</span>
+                            </h3>
+                            <div class="officer-subtitle" data-th="ผู้เชี่ยวชาญการปิดการขาย" data-en="The Closing Expert">ผู้เชี่ยวชาญการปิดการขาย</div>
+                            <p data-th="เฝ้า Inbox 24 ชม. วิเคราะห์ Intent ของลูกค้า คัดกรองโปรไฟล์ ส่งลิงก์ชำระเงินปิดการขายทันที ไม่พลาดทุก Lead" data-en="Monitors the inbox 24/7, analyzes customer intents, qualifies leads, and triggers direct payment links for immediate sales closure.">เฝ้า Inbox 24 ชม. วิเคราะห์ Intent ของลูกค้า คัดกรองโปรไฟล์ ส่งลิงก์ชำระเงินปิดการขายทันที ไม่พลาดทุก Lead</p>
+                        </div>
+                    </div>
+                    <!-- Officer 3 -->
+                    <div class="officer-card glass-card-warm">
+                        <div class="officer-icon-box"><i class="fas fa-box"></i></div>
+                        <div class="officer-info">
+                            <h3>
+                                <span data-th="Zuri Warehouse & Finance" data-en="Zuri Warehouse & Finance">Zuri Warehouse & Finance</span>
+                                <span class="badge-premium" style="font-size: 8px; padding: 2px 8px;">Dual-Audit</span>
+                            </h3>
+                            <div class="officer-subtitle" data-th="ผู้ดูแลสต็อกวัตถุดิบและการเงิน" data-en="The Inventory & Financial Guardian">ผู้ดูแลสต็อกวัตถุดิบและการเงิน</div>
+                            <p data-th="ดูแลสต็อกวัตถุดิบและตัวเลขการเงินแบบครบวงจร ตัดสต็อกอัตโนมัติจาก POS พร้อม Dual-Model Auditing ป้องกันความผิดพลาด" data-en="Manages materials stock and financial metrics end-to-end. Automatically updates inventory from POS with Dual-Model Auditing to ensure zero discrepancy.">ดูแลสต็อกวัตถุดิบและตัวเลขการเงินแบบครบวงจร ตัดสต็อกอัตโนมัติจาก POS พร้อม Dual-Model Auditing ป้องกันความผิดพลาด</p>
+                        </div>
+                    </div>
+                    <!-- Officer 4 -->
+                    <div class="officer-card glass-card-warm">
+                        <div class="officer-icon-box"><i class="fas fa-chart-line"></i></div>
+                        <div class="officer-info">
+                            <h3>
+                                <span data-th="Zuri Business Analyst" data-en="Zuri Business Analyst">Zuri Business Analyst</span>
+                                <span class="badge-premium" style="font-size: 8px; padding: 2px 8px;">Insight</span>
+                            </h3>
+                            <div class="officer-subtitle" data-th="ที่ปรึกษากลยุทธ์ทางธุรกิจ" data-en="The Strategy Advisor">ที่ปรึกษากลยุทธ์ทางธุรกิจ</div>
+                            <p data-th="เปลี่ยนดาต้าดิบเป็น Insight ที่ใช้ได้จริง Daily Sales Brief ส่งตรง LINE ทุกเช้า วิเคราะห์ KPI แจ้งเตือนเมื่อตัวเลขผิดปกติ" data-en="Transforms raw data into actionable insights. Delivers a Daily Sales Brief to your LINE app every morning, tracks KPIs, and alerts you to anomalies.">เปลี่ยนดาต้าดิบเป็น Insight ที่ใช้ได้จริง Daily Sales Brief ส่งตรง LINE ทุกเช้า วิเคราะห์ KPI แจ้งเตือนเมื่อตัวเลขผิดปกติ</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Why Zuri -->
+        <section id="values" class="values-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="badge-premium">
+                        <i class="fas fa-brain"></i>
+                        <span data-th="Why Zuri" data-en="Why Zuri">Why Zuri</span>
+                    </span>
+                    <h2 data-th="ปรัชญาที่ทำให้ ซูริ แตกต่างจากทุกแพลตฟอร์ม" data-en="The philosophy that sets Zuri apart">ปรัชญาที่ทำให้ ซูริ แตกต่างจากทุกแพลตฟอร์ม</h2>
+                </div>
+                <div class="values-grid">
+                    <!-- Value 1 -->
+                    <div class="value-card glass-card-warm">
+                        <div class="value-icon-box"><i class="fas fa-bolt"></i></div>
+                        <h3 data-th="Zero-Prompting Experience" data-en="Zero-Prompting Experience">Zero-Prompting Experience</h3>
+                        <p data-th="Gemini 1M Context รู้ทุกตัวเลขในธุรกิจคุณ ไม่ต้องสอนงานใหม่ ไม่ต้องป้อนบริบทซ้ำ" data-en="Gemini 1M Context keeps record of all parameters in your business. No retraining or repetitive prompt input needed.">Gemini 1M Context รู้ทุกตัวเลขในธุรกิจคุณ ไม่ต้องสอนงานใหม่ ไม่ต้องป้อนบริบทซ้ำ</p>
+                    </div>
+                    <!-- Value 2 -->
+                    <div class="value-card glass-card-warm">
+                        <div class="value-icon-box"><i class="fas fa-shield-halved"></i></div>
+                        <h3 data-th="Dual-Model Integrity" data-en="Dual-Model Integrity">Dual-Model Integrity</h3>
+                        <p data-th="AI 2 ตัวตรวจสอบซึ่งกันและกัน ยกระดับความถูกต้องสูงสุดในทุกการตัดสินใจ" data-en="Two distinct AI models cross-verify operations, guaranteeing absolute accuracy in critical decisions.">AI 2 ตัวตรวจสอบซึ่งกันและกัน ยกระดับความถูกต้องสูงสุดในทุกการตัดสินใจ</p>
+                    </div>
+                    <!-- Value 3 -->
+                    <div class="value-card glass-card-warm">
+                        <div class="value-icon-box"><i class="fas fa-crown"></i></div>
+                        <h3 data-th="Human-in-the-Loop" data-en="Human-in-the-Loop">Human-in-the-Loop</h3>
+                        <p data-th="คุณยังเป็น 'องค์อธิปัตย์' ของธุรกิจ ทุกขั้นตอนสำคัญต้องผ่านการอนุมัติจากคุณเสมอ" data-en="You remain the ultimate sovereign of your business. Every major process requires your manual validation.">คุณยังเป็น "องค์อธิปัตย์" ของธุรกิจ ทุกขั้นตอนสำคัญต้องผ่านการอนุมัติจากคุณเสมอ</p>
+                    </div>
+                    <!-- Value 4 -->
+                    <div class="value-card glass-card-warm">
+                        <div class="value-icon-box"><i class="fas fa-sliders"></i></div>
+                        <h3 data-th="Tailored Intelligence" data-en="Tailored Intelligence">Tailored Intelligence</h3>
+                        <p data-th="เลือกอัปเกรดสมองให้ Agent รายตำแหน่ง จ่ายเฉพาะจุดที่ต้องการ ไม่มีค่าใช้จ่ายซ่อน" data-en="Upgrade AI agency selectively for specific roles. Pay only for what you need with zero hidden costs.">เลือกอัปเกรดสมองให้ Agent รายตำแหน่ง จ่ายเฉพาะจุดที่ต้องการ ไม่มีค่าใช้จ่ายซ่อน</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Grid -->
+        <section id="pricing" class="pricing-section">
+            <div class="container">
+                <div class="section-header">
+                    <span class="badge-premium">
+                        <i class="fas fa-credit-card"></i>
+                        <span data-th="Pricing" data-en="Pricing">Pricing</span>
+                    </span>
+                    <h2 data-th="แพ็กเกจที่ออกแบบมาเพื่อธุรกิจไทยโดยเฉพาะ" data-en="Packages crafted for Thai businesses">แพ็กเกจที่ออกแบบมาเพื่อธุรกิจไทยโดยเฉพาะ</h2>
+                </div>
+
+                <!-- DEPA Banner -->
+                <div class="depa-banner">
+                    <div class="depa-icon"><i class="fas fa-award"></i></div>
+                    <div class="depa-info">
+                        <h3 data-th="รองรับโครงการ DEPA Voucher สูงสุด 10,000 บาท" data-en="Eligible for DEPA Voucher up to 10,000 THB">รองรับโครงการ DEPA Voucher สูงสุด 10,000 บาท</h3>
+                        <p data-th="ครอบคลุม Pro ฟรี 3+ เดือน หรือ Business ฟรี ~1.5 เดือน เพิ่มสปีดให้ธุรกิจคุณด้วย AI ทันที" data-en="Covers Pro subscription free for 3+ months or Business for ~1.5 months. Instantly boost efficiency with AI.">ครอบคลุม Pro ฟรี 3+ เดือน หรือ Business ฟรี ~1.5 เดือน เพิ่มสปีดให้ธุรกิจคุณด้วย AI ทันที</p>
+                    </div>
+                </div>
+
+                <!-- 4 Pricing cards with MangoCard Header gradient -->
+                <div class="pricing-grid">
+                    <!-- Free Plan -->
+                    <div class="pricing-card">
+                        <div class="card-header card-header-normal">
+                            <div class="price-pill" data-th="ฟรี" data-en="Free">ฟรี</div>
+                            <h3 data-th="Free" data-en="Free">Free</h3>
+                            <div class="tier-desc" data-th="ทดลองใช้งานเริ่มต้น" data-en="For starter trials">ทดลองใช้งานเริ่มต้น</div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i><span data-th="1 User" data-en="1 User">1 User</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="50 แชท/เดือน" data-en="50 Chats/month">50 แชท/เดือน</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="100 คอนแทค/เดือน" data-en="100 Contacts/month">100 คอนแทค/เดือน</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="Unified Inbox: FB + LINE" data-en="Unified Inbox: FB + LINE">Unified Inbox: FB + LINE</span></li>
+                            </ul>
+                            <button class="card-cta" onclick="switchView('dashboard')" data-th="เริ่มต้นฟรี" data-en="Get Started Free">เริ่มต้นฟรี</button>
+                        </div>
+                    </div>
+                    <!-- Starter Plan -->
+                    <div class="pricing-card">
+                        <div class="card-header card-header-normal">
+                            <div class="price-pill" data-th="฿990/เดือน" data-en="฿990/mo">฿990/เดือน</div>
+                            <h3 data-th="Starter" data-en="Starter">Starter</h3>
+                            <div class="tier-desc" data-th="เริ่มต้นขายจริงจัง" data-en="For serious sellers">เริ่มต้นขายจริงจัง</div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i><span data-th="3 Users" data-en="3 Users">3 Users</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="500 แชท/เดือน" data-en="500 Chats/month">500 แชท/เดือน</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="1,000 คอนแทค/เดือน" data-en="1,000 Contacts/month">1,000 คอนแทค/เดือน</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="CRM จัดการลูกค้า" data-en="Customer CRM">CRM จัดการลูกค้า</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="Quick Sale ปิดการขายเร็ว" data-en="Quick Sales Closers">Quick Sale ปิดการขายเร็ว</span></li>
+                            </ul>
+                            <button class="card-cta" onclick="switchView('dashboard')" data-th="เลือกแพ็กเกจนี้" data-en="Choose Starter">เลือกแพ็กเกจนี้</button>
+                        </div>
+                    </div>
+                    <!-- Pro Plan (Highlight) -->
+                    <div class="pricing-card highlight">
+                        <div class="recommended-tag">
+                            <i class="fas fa-star"></i>
+                            <span data-th="แนะนำ" data-en="Recommended">แนะนำ</span>
+                        </div>
+                        <div class="card-header card-header-highlight">
+                            <div class="price-pill" data-th="฿2,990/เดือน" data-en="฿2,990/mo">฿2,990/เดือน</div>
+                            <h3 data-th="Pro" data-en="Pro">Pro</h3>
+                            <div class="tier-desc" data-th="ครบทุกเครื่องมือขาย" data-en="Complete sales suite">ครบทุกเครื่องมือขาย</div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i><span data-th="10 Users" data-en="10 Users">10 Users</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="2,000 แชท/เดือน" data-en="2,000 Chats/month">2,000 แชท/เดือน</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="5,000 คอนแทค/เดือน" data-en="5,000 Contacts/month">5,000 คอนแทค/เดือน</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="Full POS ระบบขายหน้าร้าน" data-en="Full POS Retail System">Full POS ระบบขายหน้าร้าน</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="AI สแกนสลิปอัตโนมัติ" data-en="AI Automatic Slip Scan">AI สแกนสลิปอัตโนมัติ</span></li>
+                            </ul>
+                            <button class="card-cta" onclick="switchView('dashboard')" data-th="เลือกแพ็กเกจนี้" data-en="Choose Pro">เลือกแพ็กเกจนี้</button>
+                        </div>
+                    </div>
+                    <!-- Business Plan -->
+                    <div class="pricing-card">
+                        <div class="card-header card-header-normal">
+                            <div class="price-pill" data-th="฿5,990/เดือน" data-en="฿5,990/mo">฿5,990/เดือน</div>
+                            <h3 data-th="Business" data-en="Business">Business</h3>
+                            <div class="tier-desc" data-th="ไม่จำกัด ทุกอย่าง" data-en="Unlimited everything">ไม่จำกัด ทุกอย่าง</div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="feature-list">
+                                <li><i class="fas fa-check"></i><span data-th="ไม่จำกัดจำนวนผู้ใช้" data-en="Unlimited Users">ไม่จำกัดจำนวนผู้ใช้</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="ไม่จำกัดข้อความแชท" data-en="Unlimited Chats">ไม่จำกัดข้อความแชท</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="AI ทำงานได้ครบวงจร" data-en="Full AI Automation">AI ทำงานได้ครบวงจร</span></li>
+                                <li><i class="fas fa-check"></i><span data-th="สรุปยอดขายส่ง LINE รายวัน" data-en="Daily LINE Sales Briefs">สรุปยอดขายส่ง LINE รายวัน</span></li>
+                            </ul>
+                            <button class="card-cta" onclick="switchView('dashboard')" data-th="เลือกแพ็กเกจนี้" data-en="Choose Business">เลือกแพ็กเกจนี้</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add-ons sections -->
+                <h3 class="addon-title" data-th="Industry Add-ons" data-en="Industry Add-ons">Industry Add-ons</h3>
+                <div class="addons-grid">
+                    <div class="addon-card glass-card-warm">
+                        <div class="addon-icon"><i class="fas fa-utensils"></i></div>
+                        <div class="addon-info">
+                            <h4 data-th="Kitchen Ops" data-en="Kitchen Ops">Kitchen Ops</h4>
+                            <div class="addon-price" data-th="+฿790 / เดือน" data-en="+฿790 / mo">+฿790 / เดือน</div>
+                            <p class="addon-desc" data-th="ร้านอาหาร/สถาบันสอนทำอาหาร: จัดการวัตถุดิบ, BOM, ตัดสต็อกแบบ FEFO อัตโนมัติ" data-en="Culinary / Restaurant module: BOM control, cooking ingredients, automatic FEFO batch stock release.">ร้านอาหาร/สถาบันสอนทำอาหาร: จัดการวัตถุดิบ, BOM, ตัดสต็อกแบบ FEFO อัตโนมัติ</p>
+                        </div>
+                    </div>
+                    <div class="addon-card glass-card-warm">
+                        <div class="addon-icon"><i class="fas fa-graduation-cap"></i></div>
+                        <div class="addon-info">
+                            <h4 data-th="Enrollment" data-en="Enrollment">Enrollment</h4>
+                            <div class="addon-price" data-th="+฿790 / เดือน" data-en="+฿790 / mo">+฿790 / เดือน</div>
+                            <p class="addon-desc" data-th="โรงเรียน/สถาบันฝึกอบรม: จัดการคอร์ส, ตารางเรียน, เช็คชื่อ และสร้างใบประกาศนียบัตร" data-en="Academy / Training center: Manage classes, bookings, attendance track, and digital certification.">โรงเรียน/สถาบันฝึกอบรม: จัดการคอร์ส, ตารางเรียน, เช็คชื่อ และสร้างใบประกาศนียบัตร</p>
+                        </div>
+                    </div>
+                    <div class="addon-card glass-card-warm">
+                        <div class="addon-icon"><i class="fas fa-robot"></i></div>
+                        <div class="addon-info">
+                            <h4 data-th="AI Agent Integration" data-en="AI Agent Integration">AI Agent Integration</h4>
+                            <div class="addon-price" data-th="+฿990 / เดือน" data-en="+฿990 / mo">+฿990 / เดือน</div>
+                            <p class="addon-desc" data-th="AI บอทตอบแทน 24/7 + ระบบสลับให้พนักงานตอบทันทีเมื่อเจอคำถามซับซ้อน" data-en="AI chat-bot replies 24/7 and gracefully routes complex cases to human support desk.">AI บอทตอบแทน 24/7 + ระบบสลับให้พนักงานตอบทันทีเมื่อเจอคำถามซับซ้อน</p>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="addon-title" data-th="Platform Add-ons" data-en="Platform Add-ons">Platform Add-ons</h3>
+                <div class="addons-grid">
+                    <div class="addon-card glass-card-warm">
+                        <div class="addon-icon"><i class="fas fa-microchip"></i></div>
+                        <div class="addon-info">
+                            <h4 data-th="AI Starter Bot" data-en="AI Starter Bot">AI Starter Bot</h4>
+                            <div class="addon-price" data-th="฿890 / เดือน" data-en="฿890 / mo">฿890 / เดือน</div>
+                            <p class="addon-desc" data-th="ปุ่มแชทตอบข้อมูลธุรกิจหน้าเว็บ จำกัด 100 คำถามต่อเดือน" data-en="Web floating business chat assistant. Caps at 100 AI responses/month.">ปุ่มแชทตอบข้อมูลธุรกิจหน้าเว็บ จำกัด 100 คำถามต่อเดือน</p>
+                        </div>
+                    </div>
+                    <div class="addon-card glass-card-warm">
+                        <div class="addon-icon"><i class="fas fa-server"></i></div>
+                        <div class="addon-info">
+                            <h4 data-th="AI Group Bot Pro" data-en="AI Group Bot Pro">AI Group Bot Pro</h4>
+                            <div class="addon-price" data-th="฿1,290 / เดือน" data-en="฿1,290 / mo">฿1,290 / เดือน</div>
+                            <p class="addon-desc" data-th="แชทถามข้อมูลไม่จำกัด และบอทสิงกลุ่ม LINE คอยจับยอดสลิปและสรุปผล" data-en="Unlimited AI chat interactions and active LINE Group bot to detect payment slips.">แชทถามข้อมูลไม่จำกัด และบอทสิงกลุ่ม LINE คอยจับยอดสลิปและสรุปผล</p>
+                        </div>
+                    </div>
+                    <div class="addon-card glass-card-warm">
+                        <div class="addon-icon"><i class="fas fa-calculator"></i></div>
+                        <div class="addon-info">
+                            <h4 data-th="Accounting Integration" data-en="Accounting Integration">Accounting Integration</h4>
+                            <div class="addon-price" data-th="จ่ายครั้งเดียว (TBD)" data-en="One-time Payment (TBD)">จ่ายครั้งเดียว (TBD)</div>
+                            <p class="addon-desc" data-th="เชื่อมต่อระบบบัญชีสำเร็จรูป FlowAccount API และระบบนำเข้าข้อมูล Express" data-en="One-click billing export. Bridges directly with FlowAccount API and Express ledger imports.">เชื่อมต่อระบบบัญชีสำเร็จรูป FlowAccount API และระบบนำเข้าข้อมูล Express</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final CTA -->
+        <section class="cta-section">
+            <div class="container">
+                <div class="cta-box glass-card-warm">
+                    <h2 data-th="เริ่มต้นสร้างทีมงานอัจฉริยะของคุณวันนี้" data-en="Build your smart agent team today">เริ่มต้นสร้างทีมงานอัจฉริยะของคุณวันนี้</h2>
+                    <p data-th="ไม่ว่าธุรกิจของคุณจะเล็กหรือใหญ่ ซูริ พร้อมเป็นทีมงาน AI ที่เข้าใจทุกมิติของธุรกิจคุณ เริ่มต้นใช้งานได้ทันทีโดยไม่มีค่าใช้จ่าย" data-en="Whether your business is small or large, Zuri is ready to act as a dedicated AI team that knows every angle of your work. Start today for free.">ไม่ว่าธุรกิจของคุณจะเล็กหรือใหญ่ ซูริ พร้อมเป็นทีมงาน AI ที่เข้าใจทุกมิติของธุรกิจคุณ เริ่มต้นใช้งานได้ทันทีโดยไม่มีค่าใช้จ่าย</p>
+                    <div class="cta-buttons">
+                        <button class="btn btn-accent-premium" onclick="switchView('dashboard')" data-th="เริ่มต้นใช้งาน ซูริ ฟรี" data-en="Start Zuri for Free">เริ่มต้นใช้งาน ซูริ ฟรี</button>
+                        <button class="btn btn-outline" onclick="switchView('dashboard')" data-th="นัดปรึกษาวางระบบ AI" data-en="Book AI Consulting">นัดปรึกษาวางระบบ AI</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer-site">
+            <div class="container">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <div class="logo-group">
+                            <div class="logo-box">Z</div>
+                            <span>Zuri</span>
+                        </div>
+                        <p data-th="แพลตฟอร์ม AI Multi-Agent สำหรับธุรกิจบริการไทย ที่ออกแบบเพื่อให้คุณบริหารงานได้อย่างนิ่งสงบ" data-en="AI Multi-Agent business console for Thai merchants, crafted to let you manage operations in absolute peace.">แพลตฟอร์ม AI Multi-Agent สำหรับธุรกิจบริการไทย ที่ออกแบบเพื่อให้คุณบริหารงานได้อย่างนิ่งสงบ</p>
+                    </div>
+                    <div class="footer-col">
+                        <h4 data-th="ผลิตภัณฑ์" data-en="PRODUCT">ผลิตภัณฑ์</h4>
+                        <ul>
+                            <li><a href="#" data-th="ฟีเจอร์" data-en="Features">ฟีเจอร์</a></li>
+                            <li><a href="#" data-th="ราคา" data-en="Pricing">ราคา</a></li>
+                            <li><a href="#" data-th="ระบบเชื่อมต่อ" data-en="Integrations">ระบบเชื่อมต่อ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4 data-th="บริษัท" data-en="COMPANY">บริษัท</h4>
+                        <ul>
+                            <li><a href="#" data-th="เกี่ยวกับเรา" data-en="About Us">เกี่ยวกับเรา</a></li>
+                            <li><a href="#" data-th="นโยบายความเป็นส่วนตัว" data-en="Privacy Policy">นโยบายความเป็นส่วนตัว</a></li>
+                            <li><a href="#" data-th="เงื่อนไขการให้บริการ" data-en="Terms of Service">เงื่อนไขการให้บริการ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-col">
+                        <h4 data-th="ช่วยเหลือ" data-en="SUPPORT">ช่วยเหลือ</h4>
+                        <ul>
+                            <li><a href="#" data-th="ศูนย์ช่วยเหลือ" data-en="Help Center">ศูนย์ช่วยเหลือ</a></li>
+                            <li><a href="#" data-th="ความปลอดภัย" data-en="Security Status">ความปลอดภัย</a></li>
+                            <li><a href="#" data-th="ติดต่อเรา" data-en="Contact Us">ติดต่อเรา</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <span data-th="© 2026 Zuri Inc. สงวนลิขสิทธิ์ทั้งหมด" data-en="© 2026 Zuri Inc. All rights reserved.">© 2026 Zuri Inc. สงวนลิขสิทธิ์ทั้งหมด</span>
+                    <span data-th="สถาปัตยกรรมคลาวด์อธิปไตย" data-en="Sovereign Cloud Infrastructure">สถาปัตยกรรมคลาวด์อธิปไตย</span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ==========================================================================
+       VIEW SECTION 2: INTERNAL ADMIN DASHBOARD LAYOUT
+       ========================================================================== -->
+    <div id="dashboard-view" class="view-container view-section">
+        <div class="dashboard-shell">
+            <!-- Sidebar Overlay for mobile -->
+            <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+            <!-- Left Collapsible Sidebar -->
+            <aside class="glass-sidebar" id="sidebar">
+                <!-- Header -->
+                <div class="sidebar-header">
+                    <div class="sidebar-brand-box">
+                        <div class="logo-box">Z</div>
+                        <div>
+                            <span class="sidebar-brand-text">Zuri Suite</span>
+                            <div class="sidebar-header-sub" data-th="ระบบจัดการร้าน" data-en="Store Manager">ระบบจัดการร้าน</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nav Menu -->
+                <nav class="sidebar-nav">
+                    <a href="#" class="sidebar-nav-link active" onclick="selectNavTab(this)">
+                        <div class="sidebar-collapsed-indicator"></div>
+                        <i class="fas fa-chart-pie"></i>
+                        <span data-th="แดชบอร์ดหลัก" data-en="Dashboard">แดชบอร์ดหลัก</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-link" onclick="selectNavTab(this)">
+                        <div class="sidebar-collapsed-indicator"></div>
+                        <i class="fas fa-users-gear"></i>
+                        <span data-th="พนักงานอัจฉริยะ" data-en="Smart Officers">พนักงานอัจฉริยะ</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-link" onclick="selectNavTab(this)">
+                        <div class="sidebar-collapsed-indicator"></div>
+                        <i class="fas fa-inbox"></i>
+                        <span data-th="กล่องข้อความรวม" data-en="Unified Inbox">กล่องข้อความรวม</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-link" onclick="selectNavTab(this)">
+                        <div class="sidebar-collapsed-indicator"></div>
+                        <i class="fas fa-warehouse"></i>
+                        <span data-th="คลังและสต็อก" data-en="Stock & Inventory">คลังและสต็อก</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-link" onclick="selectNavTab(this)">
+                        <div class="sidebar-collapsed-indicator"></div>
+                        <i class="fas fa-chart-line"></i>
+                        <span data-th="วิเคราะห์ยอดขาย" data-en="Analytics & Brief">วิเคราะห์ยอดขาย</span>
+                    </a>
+                </nav>
+
+                <!-- Footer settings -->
+                <div class="sidebar-footer">
+                    <a href="#" class="sidebar-nav-link" onclick="selectNavTab(this)">
+                        <i class="fas fa-cog"></i>
+                        <span data-th="การตั้งค่าระบบ" data-en="Settings">การตั้งค่าระบบ</span>
+                    </a>
+                    <a href="#" class="sidebar-nav-link" style="color: rgba(239, 68, 68, 0.7);" onclick="switchView('landing')">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span data-th="ออกจากระบบ" data-en="Log Out">ออกจากระบบ</span>
+                    </a>
+                </div>
+            </aside>
+
+            <!-- Right Area containing Topbar and Body content -->
+            <div class="dashboard-main">
+                <!-- Topbar -->
+                <header class="dashboard-topbar">
+                    <!-- Left menu control & Title -->
+                    <div class="topbar-left">
+                        <button class="sidebar-toggle-btn" onclick="toggleSidebarCollapse()" title="Toggle Sidebar">
+                            <i class="fas fa-bars"></i>
+                        </button>
+                        <div class="dashboard-title-box">
+                            <h2 data-th="ภาพรวมธุรกิจ" data-en="Business Overview">ภาพรวมธุรกิจ</h2>
+                            <span class="badge-premium" style="font-size: 9px; padding: 2px 8px;" data-th="ระบบคลาวด์อธิปไตย" data-en="Sovereign Cloud">ระบบคลาวด์อธิปไตย</span>
+                        </div>
+                    </div>
+
+                    <!-- Center modules list slider (Simulates module switching) -->
+                    <nav class="topbar-module-slider">
+                        <button class="module-tab active">
+                            <i class="fas fa-chart-simple"></i>
+                            <span data-th="แดชบอร์ด" data-en="Console">แดชบอร์ด</span>
+                        </button>
+                        <button class="module-tab">
+                            <i class="fas fa-address-book"></i>
+                            <span data-th="จัดการทีม" data-en="CRM">จัดการทีม</span>
+                        </button>
+                        <button class="module-tab">
+                            <i class="fas fa-cash-register"></i>
+                            <span data-th="ขายหน้าร้าน" data-en="POS">ขายหน้าร้าน</span>
+                        </button>
+                        <button class="module-tab">
+                            <i class="fas fa-robot"></i>
+                            <span data-th="คุยกับบอท" data-en="AI Assistant">คุยกับบอท</span>
+                        </button>
+                    </nav>
+
+                    <!-- Right buttons & user dropdown -->
+                    <div class="topbar-right">
+                        <!-- Theme switch -->
+                        <button class="topbar-btn" onclick="toggleTheme()" title="Switch Light/Dark Theme">
+                            <i class="fas fa-moon" id="theme-icon"></i>
+                        </button>
+
+                        <!-- Language switch -->
+                        <button class="lang-pill-btn" onclick="toggleLanguage()" title="Switch Language">
+                            <span id="lang-th" class="lang-active">TH</span>
+                            <span>|</span>
+                            <span id="lang-en">EN</span>
+                        </button>
+
+                        <!-- Notifications icon -->
+                        <button class="topbar-btn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-dot">3</span>
+                        </button>
+
+                        <!-- User Profile card -->
+                        <div class="user-menu-wrapper">
+                            <button class="user-profile-pill" onclick="toggleUserMenu(event)">
+                                <div class="user-avatar">W</div>
+                                <div class="user-profile-info">
+                                    <div class="user-profile-name">วิชญะ (คุณเหม่ง)</div>
+                                    <div class="user-profile-role" data-th="เจ้าของธุรกิจ" data-en="Owner Account">เจ้าของธุรกิจ</div>
+                                </div>
+                                <i class="fas fa-chevron-down" style="font-size: 10px; margin-left: 6px; opacity: 0.6;"></i>
+                            </button>
+                            <!-- Dropdown Menu -->
+                            <div class="dropdown-menu" id="userDropdown">
+                                <div class="dropdown-header">
+                                    <div class="dropdown-name">วิชญะ (คุณเหม่ง)</div>
+                                    <div class="dropdown-email">owner@covibe.co</div>
+                                </div>
+                                <a href="#" class="dropdown-item"><i class="fas fa-user-circle"></i> <span data-th="โปรไฟล์ของฉัน" data-en="My Profile">โปรไฟล์ของฉัน</span></a>
+                                <a href="#" class="dropdown-item"><i class="fas fa-sliders"></i> <span data-th="สิทธิ์การใช้งาน" data-en="Licensing Details">สิทธิ์การใช้งาน</span></a>
+                                <div style="border-top: 1px solid var(--border-warm); margin: 6px 0;"></div>
+                                <button class="dropdown-item text-red" onclick="switchView('landing')"><i class="fas fa-sign-out-alt"></i> <span data-th="ออกจากระบบ" data-en="Sign Out">ออกจากระบบ</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Dashboard Content Body -->
+                <div class="dashboard-body">
+                    
+                    <!-- Stats Grid -->
+                    <div class="stats-grid" id="statsGrid">
+                        <!-- Stat 1 -->
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon-wrapper" style="background-color: #EEF2FF; color: #4F46E5;"><i class="fas fa-user-tie"></i></div>
+                                <div class="trend-badge trend-up"><i class="fas fa-arrow-trend-up"></i> +12%</div>
+                            </div>
+                            <div class="stat-value">12 / 15</div>
+                            <div class="stat-label" data-th="พนักงานผู้ใช้งานจริง" data-en="Active Staff / Slots">พนักงานผู้ใช้งานจริง</div>
+                            <div class="stat-timeframe" data-th="จากเดือนที่แล้ว 10 คน" data-en="Up from 10 slots last month">จากเดือนที่แล้ว 10 คน</div>
+                        </div>
+                        <!-- Stat 2 -->
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon-wrapper" style="background-color: var(--brand-surface); color: var(--brand);"><i class="fas fa-robot"></i></div>
+                                <div class="trend-badge trend-up"><i class="fas fa-arrow-trend-up"></i> +25%</div>
+                            </div>
+                            <div class="stat-value">4 / 4</div>
+                            <div class="stat-label" data-th="จำนวนบอทผู้ช่วยใช้งานอยู่" data-en="Active AI Officers">จำนวนบอทผู้ช่วยใช้งานอยู่</div>
+                            <div class="stat-timeframe" data-th="ทำงานครบทุกสายงานแล้ว" data-en="All departments staffed">ทำงานครบทุกสายงานแล้ว</div>
+                        </div>
+                        <!-- Stat 3 -->
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon-wrapper" style="background-color: #ECFDF5; color: #10B981;"><i class="fas fa-hourglass-half"></i></div>
+                                <div class="trend-badge trend-up"><i class="fas fa-arrow-trend-up"></i> +8%</div>
+                            </div>
+                            <div class="stat-value">98.4%</div>
+                            <div class="stat-label" data-th="ความไวในการตอบแชทของบอท" data-en="Average AI Response Speed">ความไวในการตอบแชทของบอท</div>
+                            <div class="stat-timeframe" data-th="ความเร็วในการตอบน้อยกว่า 30 วินาที" data-en="Response time under 30s">ความเร็วในการตอบน้อยกว่า 30 วินาที</div>
+                        </div>
+                        <!-- Stat 4 -->
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon-wrapper" style="background-color: #FEF3C7; color: #D97706;"><i class="fas fa-circle-nodes"></i></div>
+                                <div class="trend-badge trend-up"><i class="fas fa-arrow-trend-up"></i> +5%</div>
+                            </div>
+                            <div class="stat-value">3 / 3</div>
+                            <div class="stat-label" data-th="ช่องทางโซเชียลที่เปิดซิงค์" data-en="Synced Social Channels">ช่องทางโซเชียลที่เปิดซิงค์</div>
+                            <div class="stat-timeframe" data-th="LINE OA, Facebook, Instagram" data-en="LINE OA, Facebook, IG synced">LINE OA, Facebook, Instagram</div>
+                        </div>
+                    </div>
+
+                    <!-- Draggable Team Carousel Showcase -->
+                    <div class="carousel-wrapper" id="carouselSection">
+                        <div class="carousel-title-row">
+                            <h3>
+                                <span data-th="เจ้าหน้าที่บอทอัจฉริยะแนะนำ" data-en="Featured AI Officers">เจ้าหน้าที่บอทอัจฉริยะแนะนำ</span>
+                                <span class="carousel-live-dot"></span>
+                            </h3>
+                            <div class="carousel-drag-tip" data-th="เลื่อนเมาส์ดึงเพื่อสำรวจ →" data-en="DRAG TO EXPLORE →">เลื่อนเมาส์ดึงเพื่อสำรวจ →</div>
+                        </div>
+                        <div class="carousel-track-container" id="carouselContainer">
+                            <div class="carousel-track">
+                                <!-- Bot 1 -->
+                                <div class="employee-carousel-card glass-card-warm" style="background: linear-gradient(135deg, rgba(237, 108, 53, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);">
+                                    <div class="carousel-card-inner">
+                                        <div class="carousel-avatar-box">
+                                            <div class="carousel-initials">ZA</div>
+                                        </div>
+                                        <h3 class="carousel-card-name" data-th="Zuri Ads Optimized" data-en="Zuri Ads Optimized">Zuri Ads Optimized</h3>
+                                        <p class="carousel-card-title" data-th="Senior Media Strategist" data-en="Senior Media Strategist">Senior Media Strategist</p>
+                                        <span class="carousel-card-tag" data-th="Manus AI" data-en="Manus AI">Manus AI</span>
+                                    </div>
+                                </div>
+                                <!-- Bot 2 -->
+                                <div class="employee-carousel-card glass-card-warm" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);">
+                                    <div class="carousel-card-inner">
+                                        <div class="carousel-avatar-box">
+                                            <div class="carousel-initials">ZS</div>
+                                        </div>
+                                        <h3 class="carousel-card-name" data-th="Zuri Sales Force" data-en="Zuri Sales Force">Zuri Sales Force</h3>
+                                        <p class="carousel-card-title" data-th="The Closing Expert" data-en="The Closing Expert">The Closing Expert</p>
+                                        <span class="carousel-card-tag" data-th="Always-On" data-en="Always-On">Always-On</span>
+                                    </div>
+                                </div>
+                                <!-- Bot 3 -->
+                                <div class="employee-carousel-card glass-card-warm" style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(237, 108, 53, 0.1) 100%);">
+                                    <div class="carousel-card-inner">
+                                        <div class="carousel-avatar-box">
+                                            <div class="carousel-initials">ZW</div>
+                                        </div>
+                                        <h3 class="carousel-card-name" data-th="Zuri Warehouse & Finance" data-en="Zuri Warehouse & Finance">Zuri Warehouse & Finance</h3>
+                                        <p class="carousel-card-title" data-th="Inventory Guardian" data-en="Inventory Guardian">Inventory Guardian</p>
+                                        <span class="carousel-card-tag" data-th="Dual-Audit" data-en="Dual-Audit">Dual-Audit</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Employee Directory Grid -->
+                    <div class="directory-section" id="directorySection">
+                        <h3 class="directory-title" data-th="รายชื่อเจ้าหน้าที่พนักงาน (Directory)" data-en="Staff Directory">รายชื่อเจ้าหน้าที่พนักงาน (Directory)</h3>
+                        <div class="employee-grid">
+                            <!-- Card 1 -->
+                            <div class="employee-card">
+                                <div class="employee-card-dot"></div>
+                                <div class="employee-avatar">JD</div>
+                                <div class="employee-name" data-th="สมชาย ยิ้มแย้ม" data-en="Somchai Yimyem">สมชาย ยิ้มแย้ม</div>
+                                <div class="employee-title" data-th="ผู้จัดการฝ่ายขาย" data-en="Sales Manager">ผู้จัดการฝ่ายขาย</div>
+                                <div class="employee-tags">
+                                    <span class="emp-tag-dept">SALES</span>
+                                    <span class="emp-tag-status emp-status-active">ACTIVE</span>
+                                </div>
+                            </div>
+                            <!-- Card 2 -->
+                            <div class="employee-card">
+                                <div class="employee-card-dot"></div>
+                                <div class="employee-avatar">WS</div>
+                                <div class="employee-name" data-th="วันวิสา สุขใจ" data-en="Wanwisa Sukjai">วันวิสา สุขใจ</div>
+                                <div class="employee-title" data-th="ผู้ดูแลฝ่ายบริการลูกค้า" data-en="Customer Support Officer">ผู้ดูแลฝ่ายบริการลูกค้า</div>
+                                <div class="employee-tags">
+                                    <span class="emp-tag-dept">SUPPORT</span>
+                                    <span class="emp-tag-status emp-status-active">ACTIVE</span>
+                                </div>
+                            </div>
+                            <!-- Card 3 -->
+                            <div class="employee-card">
+                                <div class="employee-card-dot"></div>
+                                <div class="employee-avatar">KP</div>
+                                <div class="employee-name" data-th="เกียรติศักดิ์ พูลผล" data-en="Kiattisak Poolpol">เกียรติศักดิ์ พูลผล</div>
+                                <div class="employee-title" data-th="เจ้าหน้าที่คลังสินค้า" data-en="Warehouse Officer">เจ้าหน้าที่คลังสินค้า</div>
+                                <div class="employee-tags">
+                                    <span class="emp-tag-dept">WAREHOUSE</span>
+                                    <span class="emp-tag-status emp-status-offline">OFFLINE</span>
+                                </div>
+                            </div>
+                            <!-- Card 4 -->
+                            <div class="employee-card">
+                                <div class="employee-card-dot"></div>
+                                <div class="employee-avatar">NL</div>
+                                <div class="employee-name" data-th="นลินดา เลิศล้ำ" data-en="Nalinda Lertlam">นลินดา เลิศล้ำ</div>
+                                <div class="employee-title" data-th="นักวิเคราะห์การเงิน" data-en="Finance Analyst">นักวิเคราะห์การเงิน</div>
+                                <div class="employee-tags">
+                                    <span class="emp-tag-dept">FINANCE</span>
+                                    <span class="emp-tag-status emp-status-active">ACTIVE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Simulated Loading Skeletons Section (Hidden by default, triggered by toggle) -->
+                    <div class="skeleton-row" id="skeletonSection">
+                        <div class="skeleton-card pulse">
+                            <div class="skeleton-circle"></div>
+                            <div class="skeleton-line title"></div>
+                            <div class="skeleton-line subtitle"></div>
+                            <div style="margin-top: 20px;">
+                                <div class="skeleton-line body-1"></div>
+                                <div class="skeleton-line body-2"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-card pulse">
+                            <div class="skeleton-circle"></div>
+                            <div class="skeleton-line title"></div>
+                            <div class="skeleton-line subtitle"></div>
+                            <div style="margin-top: 20px;">
+                                <div class="skeleton-line body-1"></div>
+                                <div class="skeleton-line body-2"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-card pulse">
+                            <div class="skeleton-circle"></div>
+                            <div class="skeleton-line title"></div>
+                            <div class="skeleton-line subtitle"></div>
+                            <div style="margin-top: 20px;">
+                                <div class="skeleton-line body-1"></div>
+                                <div class="skeleton-line body-2"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton-card pulse">
+                            <div class="skeleton-circle"></div>
+                            <div class="skeleton-line title"></div>
+                            <div class="skeleton-line subtitle"></div>
+                            <div style="margin-top: 20px;">
+                                <div class="skeleton-line body-1"></div>
+                                <div class="skeleton-line body-2"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dev Tool Simulator Panel -->
+                    <div class="dev-controls-panel">
+                        <span class="dev-controls-title" data-th="จำลองสภาพแวดล้อม (Simulator)" data-en="Showcase Environment Simulator">จำลองสภาพแวดล้อม (Simulator)</span>
+                        <div class="toggle-switch-wrapper">
+                            <span class="toggle-label" data-th="แสดง Skeleton โหลดข้อมูล" data-en="Simulate Skeleton Loading">แสดง Skeleton โหลดข้อมูล</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="skeletonToggle" onchange="toggleSkeletonSimulator()">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       VANILLA INTERACTION SCRIPT
+       ========================================================================== -->
+    <script>
+        // State variables
+        let currentLang = 'th';
+        let currentTheme = 'light';
+        let sidebarCollapsed = false;
+
+        // View Toggler
+        function switchView(viewName) {
+            triggerHaptic(30);
+            const landingView = document.getElementById('landing-view');
+            const dashboardView = document.getElementById('dashboard-view');
+            const switcherText = document.getElementById('switcher-text');
+
+            if (viewName === 'dashboard') {
+                landingView.classList.remove('active');
+                dashboardView.classList.add('active');
+                
+                switcherText.setAttribute('data-th', 'กลับไปหน้าหลัก (Landing Page)');
+                switcherText.setAttribute('data-en', 'Go to Landing Page');
+                updateLanguageText(currentLang);
+                
+                // Reset scroll
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                dashboardView.classList.remove('active');
+                landingView.classList.add('active');
+                
+                switcherText.setAttribute('data-th', 'เข้าสู่ระบบตัวอย่างแอป');
+                switcherText.setAttribute('data-en', 'Go to App Demo');
+                updateLanguageText(currentLang);
+                
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function toggleMainView() {
+            const landingView = document.getElementById('landing-view');
+            if (landingView.classList.contains('active')) {
+                switchView('dashboard');
+            } else {
+                switchView('landing');
+            }
+        }
+
+        // Language Switcher Logic
+        function toggleLanguage() {
+            triggerHaptic(20);
+            currentLang = currentLang === 'th' ? 'en' : 'th';
+            
+            const btnTh = document.getElementById('lang-th');
+            const btnEn = document.getElementById('lang-en');
+            
+            if (currentLang === 'th') {
+                btnTh.classList.add('lang-active');
+                btnEn.classList.remove('lang-active');
+            } else {
+                btnEn.classList.add('lang-active');
+                btnTh.classList.remove('lang-active');
+            }
+            
+            updateLanguageText(currentLang);
+        }
+
+        function updateLanguageText(lang) {
+            const translatable = document.querySelectorAll('[data-th][data-en]');
+            translatable.forEach(el => {
+                if (lang === 'th') {
+                    el.innerText = el.getAttribute('data-th');
+                } else {
+                    el.innerText = el.getAttribute('data-en');
+                }
+            });
+        }
+
+        // Theme Switcher Logic
+        function toggleTheme() {
+            triggerHaptic(20);
+            currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (currentTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                document.body.classList.remove('dark-theme');
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+
+        // Collapsible Sidebar logic
+        function toggleSidebarCollapse() {
+            triggerHaptic(20);
+            const sidebar = document.getElementById('sidebar');
+            sidebarCollapsed = !sidebarCollapsed;
+            
+            if (sidebarCollapsed) {
+                sidebar.classList.add('collapsed');
+            } else {
+                sidebar.classList.remove('collapsed');
+            }
+        }
+
+        // Mobile drawer toggles
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            
+            sidebar.classList.toggle('active-mobile');
+            overlay.classList.toggle('active');
+        }
+
+        // User dropdown menu toggle
+        function toggleUserMenu(event) {
+            event.stopPropagation();
+            const dropdown = document.getElementById('userDropdown');
+            const isVisible = dropdown.style.display === 'block';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+        }
+
+        // Close user dropdown on outer clicks
+        window.addEventListener('click', function() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.style.display = 'none';
+            }
+        });
+
+        // Sidebar active tab styling
+        function selectNavTab(element) {
+            triggerHaptic(10);
+            const navLinks = document.querySelectorAll('.sidebar-nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        // Simulated Haptics Vibration
+        function triggerHaptic(ms) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(ms);
+            }
+            console.log(`[Haptics] Visual feedback triggered for ${ms}ms`);
+        }
+
+        // Landing Header Scroll animation
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('landingNav');
+            if (window.scrollY > 40) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Skeleton Simulator Switch
+        function toggleSkeletonSimulator() {
+            triggerHaptic(30);
+            const skeletonToggle = document.getElementById('skeletonToggle');
+            const directorySection = document.getElementById('directorySection');
+            const skeletonSection = document.getElementById('skeletonSection');
+
+            if (skeletonToggle.checked) {
+                directorySection.style.display = 'none';
+                skeletonSection.classList.add('active');
+            } else {
+                directorySection.style.display = 'block';
+                skeletonSection.classList.remove('active');
+            }
+        }
+
+        // Draggable Carousel Mouse Events
+        const track = document.getElementById('carouselContainer');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        if (track) {
+            track.addEventListener('mousedown', (e) => {
+                isDown = true;
+                startX = e.pageX - track.offsetLeft;
+                scrollLeft = track.scrollLeft;
+            });
+            track.addEventListener('mouseleave', () => {
+                isDown = false;
+            });
+            track.addEventListener('mouseup', () => {
+                isDown = false;
+            });
+            track.addEventListener('mousemove', (e) => {
+                if(!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - track.offsetLeft;
+                const walk = (x - startX) * 2; // scroll-fast scale
+                track.scrollLeft = scrollLeft - walk;
+            });
+        }
+    </script>
+</body>
+</html>

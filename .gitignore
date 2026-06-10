@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.turbo/
+.vite/
+*.log
+vite-dev.*.log
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Local environment
+.env
+.env.*
+!.env.example

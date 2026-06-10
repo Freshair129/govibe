@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selector Switch Component - Tactile Console Mockup</title>
+    <!-- Import Outfit Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="showcase-card">
+        <div class="showcase-header">
+            <h1>Tactile Controls Console</h1>
+            <p>Glassmorphic Tactile Selector Mockups</p>
+        </div>
+
+        <div class="showcase-sections">
+            <!-- SECTION 1: TOGGLE SWITCH -->
+            <section class="showcase-section">
+                <span class="section-title">1. Feature Toggle (Tactile Switch)</span>
+                <div class="switch-container">
+                    <input type="checkbox" id="feature-toggle" class="switch-input" onchange="toggleToggle(this)">
+                    <label for="feature-toggle" class="switch-track" aria-label="Toggle Feature">
+                        <span class="switch-knob"></span>
+                    </label>
+                </div>
+                <div class="status-display">
+                    <span class="status-label">Feature Status</span>
+                    <span id="toggle-status" class="status-value off">DISABLED (OFF)</span>
+                </div>
+            </section>
+
+            <!-- SECTION 2: RADIO BUTTONS -->
+            <section class="showcase-section">
+                <span class="section-title">2. Single Selection (Tactile Radio)</span>
+                <div class="selectors-row">
+                    <div class="selector-item">
+                        <div class="radio-container">
+                            <input type="radio" name="generic-radio" id="radio-opt-a" class="radio-input" onchange="toggleRadio('OPTION A')" checked>
+                            <label for="radio-opt-a" class="radio-track">
+                                <span class="radio-knob"></span>
+                            </label>
+                        </div>
+                        <span class="selector-label">Option A</span>
+                    </div>
+
+                    <div class="selector-item">
+                        <div class="radio-container">
+                            <input type="radio" name="generic-radio" id="radio-opt-b" class="radio-input" onchange="toggleRadio('OPTION B')">
+                            <label for="radio-opt-b" class="radio-track">
+                                <span class="radio-knob"></span>
+                            </label>
+                        </div>
+                        <span class="selector-label">Option B</span>
+                    </div>
+                </div>
+                <div class="status-display">
+                    <span class="status-label">Selected Option</span>
+                    <span id="radio-status" class="status-value on" style="color: var(--accent-orange);">OPTION A</span>
+                </div>
+            </section>
+
+            <!-- SECTION 3: CHECKBOXES -->
+            <section class="showcase-section">
+                <span class="section-title">3. Multiple Selection (Tactile Checkboxes)</span>
+                <div class="selectors-row">
+                    <div class="selector-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="check-setting-a" class="checkbox-input" onchange="toggleCheckbox(this, 'SETTING A')">
+                            <label for="check-setting-a" class="checkbox-track">
+                                <span class="checkbox-knob"></span>
+                            </label>
+                        </div>
+                        <span class="selector-label">Setting A</span>
+                    </div>
+
+                    <div class="selector-item">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="check-setting-b" class="checkbox-input" onchange="toggleCheckbox(this, 'SETTING B')">
+                            <label for="check-setting-b" class="checkbox-track">
+                                <span class="checkbox-knob"></span>
+                            </label>
+                        </div>
+                        <span class="selector-label">Setting B</span>
+                    </div>
+                </div>
+                <div class="status-display">
+                    <span class="status-label">Active Settings</span>
+                    <span id="check-status" class="status-value off">NONE</span>
+                </div>
+            </section>
+        </div>
+
+        <!-- Specifications Footer -->
+        <div class="showcase-footer">
+            <div class="spec-item">
+                Toggle size: <span>280px × 168px</span>
+            </div>
+            <div class="spec-item">
+                Radio/Check size: <span>90px × 90px</span>
+            </div>
+            <div class="spec-item">
+                Active Fill: <span>#ED6C35 (Orange)</span>
+            </div>
+            <div class="spec-item">
+                Knob Fill: <span>#ECECEC (Gray)</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const activeSettings = new Set();
+
+        function triggerHaptics(ms) {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(ms);
+            }
+            console.log(`[Haptics] Triggered tactile click: ${ms}ms vibration`);
+        }
+
+        function toggleToggle(checkbox) {
+            const statusText = document.getElementById('toggle-status');
+            if (checkbox.checked) {
+                statusText.innerText = "ENABLED (ON)";
+                statusText.className = "status-value on";
+                triggerHaptics(60);
+            } else {
+                statusText.innerText = "DISABLED (OFF)";
+                statusText.className = "status-value off";
+                triggerHaptics(30);
+            }
+        }
+
+        function toggleRadio(optionName) {
+            const statusText = document.getElementById('radio-status');
+            statusText.innerText = optionName;
+            triggerHaptics(45);
+        }
+
+        function toggleCheckbox(checkbox, settingName) {
+            const statusText = document.getElementById('check-status');
+            
+            if (checkbox.checked) {
+                activeSettings.add(settingName);
+                triggerHaptics(50);
+            } else {
+                activeSettings.delete(settingName);
+                triggerHaptics(25);
+            }
+
+            if (activeSettings.size > 0) {
+                statusText.innerText = Array.from(activeSettings).join(" + ");
+                statusText.className = "status-value on";
+            } else {
+                statusText.innerText = "NONE";
+                statusText.className = "status-value off";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoVibe Command Center v2.5</title>
+    
+    <!-- 
+      =========================================================
+      [อธิบายสำหรับแก้ไข] ส่วนนำเข้าไลบรารีต่างๆ (Imports)
+      - Tailwind CSS: ใช้สำหรับจัดหน้าตาและ Layout (เช่น คลาส flex, p-4, bg-white)
+      - Chart.js: ใช้สำหรับวาดกราฟเส้นในหน้า Dashboard
+      - FontAwesome: ใช้สำหรับดึงไอคอนต่างๆ มาแสดงผล (เช่น fa-solid fa-compass)
+      - Google Fonts (Prompt): ใช้ฟอนต์ Prompt เพื่อให้อ่านภาษาไทยและอังกฤษได้สวยงาม
+      ========================================================= 
+    -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- 
+      =========================================================
+      [อธิบายสำหรับแก้ไข] การตั้งค่า Tailwind CSS
+      - คุณสามารถเพิ่มสีใหม่ๆ หรือเปลี่ยนฟอนต์ที่ใช้เป็นค่าเริ่มต้นได้ที่นี่
+      - เช่น ถ้าอยากเปลี่ยนสี neon-green ให้แก้ค่าที่ 'var(--neon-green)'
+      ========================================================= 
+    -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        glass: {
+                            100: 'var(--glass-bg-100)',
+                            200: 'var(--glass-bg-200)',
+                            300: 'var(--glass-bg-300)',
+                        },
+                        neon: {
+                            green: 'var(--neon-green)',
+                            blue: 'var(--neon-blue)',
+                            purple: 'var(--neon-purple)'
+                        },
+                        cyber: {
+                            bg: '#08090c',
+                            card: 'rgba(18, 20, 28, 0.65)',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            text: '#f3f4f6',
+                            muted: '#9ca3af',
+                            emerald: '#10b981',
+                            indigo: '#6366f1',
+                            orange: '#f59e0b',
+                            cyan: '#06b6d4',
+                            purple: '#a855f7'
+                        },
+                        dark: 'var(--bg-body)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- 
+      =========================================================
+      [อธิบายสำหรับแก้ไข] ส่วน CSS หลักของเว็บไซต์ (Styles)
+      - ตัวแปร :root ใช้กำหนดสีพื้นฐานของเว็บทั้งหมด ถ้าจะเปลี่ยนสีพื้นหลังหลักให้มาแก้ที่ --bg-body
+      - คลาส .light-theme คือตัวแปรสีที่จะถูกเรียกใช้เมื่อผู้ใช้กดปุ่มเปิดโหมดสว่าง (สลับธีม)
+      ========================================================= 
+    -->
+    <style>
+        :root {
+            /* ── พื้นหลัง & ข้อความ ─────────────────────────────── */
+            --bg-body: #0f1115; /* สีพื้นหลังหลัก: เกือบดำ มีโทนน้ำเงิน */
+            --text-main: #e2e8f0; /* สีข้อความทั่วไป: ขาวอมเทา อ่านสบายตา */
+            --text-muted: #9ca3af; /* สีข้อความรอง: เทากลาง ใช้สำหรับคำอธิบายย่อย */
+            --text-title: #ffffff; /* สีหัวข้อหลัก: ขาวบริสุทธิ์ */
+
+            /* ── Glassmorphism Effect ───────────────────────────── */
+            --glass-bg: rgba(30, 30, 35, 0.65); /* พื้นหลังการ์ดโปร่งแสง */
+            --glass-bg-100: rgba(255, 255, 255, 0.05);
+            --glass-bg-200: rgba(255, 255, 255, 0.1);
+            --glass-bg-300: rgba(255, 255, 255, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.08); /* ขอบการ์ดตอนปกติ */
+            --card-hover-border: rgba(255, 255, 255, 0.3); /* ขอบการ์ดตอนเอาเมาส์ชี้ */
+
+            /* ── สีนีออน (Accent Colors) ────────────────────────── */
+            --neon-green: #00ff88;
+            --neon-blue: #00e1ff;
+            --neon-purple: #b700ff;
+
+            /* ── Animation & Effects ───────────────────────────── */
+            --shimmer-start: #ffffff;
+            --shimmer-end: #ffffff;
+            --orb-opacity: 0.6;
+            --card-glare: rgba(255, 255, 255, 0.12);
+            --shadow-intensity: rgba(0, 0, 0, 0.3);
+            --badge-bg: rgba(0, 255, 136, 0.15);
+        }
+
+        .light-theme {
+            --bg-body: #f4f4f5;
+            --text-main: #18181b;
+            --text-muted: #52525b;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --card-glare: rgba(0, 0, 0, 0.03);
+            --orb-opacity: 0.15;
+            --neon-green: #059669;
+            --neon-blue: #0284c7;
+            --neon-purple: #cced3ac7;
+            --shimmer-start: #ffc320;
+            --shimmer-end: #059669;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow: hidden; /* ห้ามหน้าเว็บหลักเลื่อนไปมาแบบอิสระ จะให้เลื่อนเฉพาะในกรอบเนื้อหาเท่านั้น */
+            font-family: 'Prompt', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        /* 
+          อธิบาย: วงกลมแสง (Orb) ที่ลอยอยู่หลังสุดเพื่อให้ฉากหลังดูมีมิติ 
+          แก้สีหรือขนาดได้โดยเปลี่ยนคลาสของ Tailwind ใน HTML (เช่น w-[40vw])
+        */
+        .ambient-orb, .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: var(--orb-opacity);
+            pointer-events: none; /* กดทะลุวงกลมได้ */
+        }
+
+        .ambient-orb {
+            animation: pulse 10s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.2) translate(20px, -20px); }
+        }
+
+        /* พื้นหลังกรอบต่างๆ ให้เป็นกระจกขุ่น (Glass Effect) */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+
+        /* Custom Scrollbar ให้ดูเล็กและโมเดิร์น */
+        .scroll-custom::-webkit-scrollbar {
+            width: 6px; height: 6px;
+        }
+        .scroll-custom::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .scroll-custom::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+        }
+        .scroll-custom::-webkit-scrollbar-thumb:hover {
+            background: var(--active-accent, #10b981);
+        }
+
+        /* ข้อความมีแสงวิ่งผ่าน (Shimmer Text) */
+        .shimmer-title {
+            background: linear-gradient(90deg,
+                    var(--shimmer-start) 0%,
+                    #a855f7 35%,
+                    var(--active-accent, #10b981) 50%,
+                    #06b6d4 65%,
+                    var(--shimmer-start) 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+
+        /* 
+          อธิบาย Sidebar: แถบเมนูด้านซ้าย 
+          เมื่อเอาเมาส์ไปชี้ หรือ ถูกล็อกด้วยคลาส expanded-lock ให้ขยายความกว้างจาก 80px เป็น 280px
+        */
+        .sidebar {
+            width: 80px;
+            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden; /* ถ้าข้อความยาวเกินกรอบ 80px ให้ซ่อนส่วนที่ล้นไปก่อน */
+        }
+        .sidebar:hover, .sidebar.expanded-lock {
+            width: 280px;
+        }
+
+        /* ซ่อนข้อความใน Sidebar ตอนหดตัว และโชว์เมื่อขยาย */
+        .sidebar-text, .sidebar-expand-content {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.4s ease;
+            white-space: nowrap; /* ห้ามข้อความตัดบรรทัดเด็ดขาด เพื่อความสวยงาม */
+        }
+        .sidebar:hover .sidebar-text, .sidebar:hover .sidebar-expand-content,
+        .sidebar.expanded-lock .sidebar-text, .sidebar.expanded-lock .sidebar-expand-content {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Tooltip (ป้ายบอกชื่อเมนูเมื่อ Sidebar หดตัวอยู่ และเอาเมาส์ไปชี้ที่ไอคอน) */
+        .nav-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--text-title);
+            color: var(--bg-body);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+            z-index: 100;
+        }
+        /* จะโชว์ Tooltip ก็ต่อเมื่อ Sidebar "ไม่" ได้ถูก Hover และ "ไม่" ได้ถูก Lock กางอยู่ */
+        .sidebar:not(:hover):not(.expanded-lock) .nav-item:hover::after {
+            opacity: 1;
+        }
+
+        /* กราฟิกการ์ดแบบ 3D และมีแสงสะท้อนตามเมาส์ (Glare Effect) */
+        .interactive-card {
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s ease, border-color 0.3s ease;
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+            will-change: transform;
+        }
+        .interactive-card:hover {
+            border-color: var(--card-hover-border);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.12), 0 5px 15px var(--shadow-intensity);
+            z-index: 10;
+        }
+        .card-glare {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle 250px at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--card-glare), transparent 80%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .interactive-card:hover .card-glare {
+            opacity: 1;
+        }
+
+        /* Animation ให้กล่องเนื้อหาค่อยๆ เลื่อนขึ้นมาโชว์ (Fade-in) */
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ลายตารางในหน้า B3 Interactive Graph */
+        .grid-canvas {
+            background-size: 24px 24px;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* CSS พิเศษสำหรับ Light Theme เพื่อบังคับสีตัวอักษรบางส่วน */
+        .light-theme .text-white { color: #18181b !important; }
+        .light-theme .text-stone-300, .light-theme .text-gray-400, .light-theme .text-cyber-muted { color: #52525b !important; }
+        .light-theme .bg-black\/40 { background-color: rgba(255, 255, 255, 0.8) !important; border-color: rgba(0, 0, 0, 0.1) !important; }
+        .light-theme pre { background-color: rgba(0, 0, 0, 0.03) !important; color: #18181b !important; }
+        .light-theme input, .light-theme select { color: #18181b !important; background-color: rgba(255, 255, 255, 0.9) !important; }
+    </style>
+</head>
+
+<!-- 
+  =========================================================
+  [อธิบายสำหรับแก้ไข] โครงสร้างหลัก (Body)
+  - h-screen = บังคับให้หน้าเว็บมีความสูงเท่ากับหน้าจอพอดี 100%
+  - flex flex-col = จัดเรียงชิ้นส่วนจากบนลงล่าง (Header -> พื้นที่ทำงาน -> Footer)
+  ========================================================= 
+-->
+<body class="h-screen flex flex-col antialiased">
+    
+    <!-- กลุ่มจุดแสงก้อนกลมด้านหลัง (ลบหรือแก้สีได้ที่คลาส bg-... ) -->
+    <div class="ambient-orb bg-emerald-600/30 w-[40vw] h-[40vw] top-[-10%] left-[-10%]"></div>
+    <div class="ambient-orb bg-indigo-600/20 w-[35vw] h-[35vw] bottom-[-5%] right-[10%]"></div>
+    <div class="ambient-orb bg-purple-600/20 w-[20vw] h-[20vw] top-[40%] left-[50%]"></div>
+    <div id="orb-left" class="glow-orb w-[45vw] h-[45vw] top-[-10%] left-[-10%] bg-emerald-600/20"></div>
+
+    <!-- =========================================================
+         SECTOR 1: HEADER (แถบเมนูด้านบนสุด)
+         ========================================================= 
+         - h-[64px] = ความสูงของ Header ตายตัวที่ 64px
+         - shrink-0 = ห้ามให้ Header โดนบีบขนาด
+         - z-50 = ให้อยู่ชั้นบนสุด (ทับสิ่งอื่น)
+    -->
+    <header class="h-[64px] shrink-0 glass-panel border-b border-cyber-border flex items-center justify-between px-6 z-50 relative">
+        <!-- Logo ซ้ายมือ -->
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-indigo-600 flex items-center justify-center font-black text-white shadow-lg text-sm">
+                    CV
+                </div>
+                <span class="font-extrabold text-lg tracking-wider text-white">
+                    CoVibe 
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/60 font-mono tracking-normal ml-1">v2.5</span>
+                </span>
+            </div>
+        </div>
+
+        <!-- แถบปุ่ม Domain (กลุ่มหน้าจอใหญ่ๆ ตรงกลาง Header) -->
+        <nav class="flex gap-1 bg-black/40 p-1 rounded-xl border border-white/5">
+            <button onclick="switchDomain('A')" id="domain-tab-A" class="domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 bg-white/10 text-emerald-400 border border-emerald-500/20 shadow-lg">
+                <i class="fa-solid fa-compass"></i> Project Overview
+            </button>
+            <button onclick="switchDomain('B')" id="domain-tab-B" class="domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                <i class="fa-solid fa-brain"></i> Genesis Knowledge
+            </button>
+            <button onclick="switchDomain('C')" id="domain-tab-C" class="domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                <i class="fa-solid fa-cubes"></i> Block DB
+            </button>
+            <button onclick="switchDomain('D')" id="domain-tab-D" class="domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5">
+                <i class="fa-solid fa-gauge-high"></i> AI Benchmark
+            </button>
+        </nav>
+
+        <!-- ขวาสุด: สถานะ และปุ่มสลับ ธีมมืด/สว่าง -->
+        <div class="flex items-center gap-4">
+            <span class="text-xs text-cyber-muted font-mono">
+                <i class="fa-solid fa-circle text-emerald-500 animate-pulse text-[8px] mr-1.5"></i> REACTOR ONLINE
+            </span>
+            <button onclick="toggleTheme()" class="w-9 h-9 rounded-lg flex items-center justify-center border border-white/10 hover:bg-white/10 text-emerald-400 transition-all duration-300" id="theme-toggle-btn" title="Toggle Light/Dark Mode">
+                <i class="fa-solid fa-sun text-sm hidden" id="sun-icon"></i>
+                <i class="fa-solid fa-moon text-sm" id="moon-icon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- =========================================================
+         SECTOR 2: WORKSPACE (พื้นที่ทำงานตรงกลาง ประกอบด้วย ซ้าย: Sidebar, ขวา: ข้อมูล)
+         ========================================================= 
+         - flex-1 = ให้กล่องนี้ยืดออกจนเต็มพื้นที่หน้าจอที่เหลือจาก Header และ Footer
+         - flex = แบ่งการจัดวางลูกข้างในจากซ้ายไปขวา (Row)
+         - overflow-hidden = ป้องกันไม่ให้ทะลุกรอบออกไป
+    -->
+    <div class="flex-1 flex overflow-hidden relative z-40">
+
+        <!-- ==========================================
+             SECTOR 2.1: SIDEBAR (แถบเมนูนำทางด้านซ้าย)
+             ========================================== 
+             - คลาส .sidebar ควบคุมความกว้างด้วย CSS (80px -> 280px)
+        -->
+        <aside id="app-sidebar" class="sidebar glass-panel border-r border-cyber-border flex flex-col justify-between py-6 px-4 z-30 relative shrink-0">
+            <div>
+                <!-- ส่วนหัวของ Sidebar (ไอคอนและชื่อ Domain ที่เลือกอยู่) -->
+                <div class="flex items-center gap-3 mb-6 px-2">
+                    <div id="sidebar-context-icon" class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg shadow-inner shrink-0 transition-all duration-300">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div class="sidebar-expand-content">
+                        <h3 class="text-xs text-cyber-muted uppercase tracking-widest font-black leading-none">ACTIVE DOMAIN</h3>
+                        <span id="sidebar-context-title" class="text-sm font-bold text-white tracking-wide">Overview</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/5 my-4"></div>
+                
+                <!-- 
+                  บริเวณนี้คือรายการเมนูย่อย (Sub-modules) 
+                  (JavaScript จะล้างและสร้าง <li> ลงในนี้ใหม่ทุกครั้งที่มีการเปลี่ยน Domain ด้านบน) 
+                -->
+                <ul class="flex flex-col gap-1.5" id="sidebar-sub-nav">
+                    <!-- Loaded dynamically via switchDomain() -->
+                </ul>
+            </div>
+
+            <!-- ปุ่มเปิด-ปิด(ล็อก) Sidebar ด้านล่างสุด -->
+            <div>
+                <button onclick="toggleSidebar()" class="w-full flex items-center gap-3 text-cyber-muted hover:text-white py-2 px-3 rounded-lg hover:bg-white/5 transition-all text-left">
+                    <i id="sidebar-toggle-icon" class="fa-solid fa-chevron-right text-center w-5"></i>
+                    <span class="sidebar-expand-content text-xs font-semibold tracking-wide">Expand Sidebar</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+             SECTOR 2.2: MAIN CONTENT (พื้นที่แสดงเนื้อหาหน้าจอตรงกลาง)
+             ========================================== 
+             - flex-1 = กินพื้นที่ด้านขวาทั้งหมดที่เหลือจาก Sidebar
+             - overflow-y-auto = ถ้าเนื้อหายาวเกินจอ ให้เลื่อนแนวตั้ง (Scroll) ได้
+        -->
+        <main class="flex-1 overflow-y-auto scroll-custom p-6 md:p-8 relative" id="main-scroll-container">
+            <!-- 
+              ID main-wrapper เป็นตัวจัดกึ่งกลาง (mx-auto) และกำหนดความกว้างสูงสุด (max-w-7xl)
+              ถ้าอยากให้กล่องเนื้อหาเต็มจอ 100% ให้เอา max-w-7xl ทิ้งไป
+            -->
+            <div id="main-wrapper" class="max-w-7xl mx-auto space-y-8 fade-in">
+
+                <!-- 
+                  ==========================================
+                  DOMAIN A: PROJECT OVERVIEW (หน้าหลัก A)
+                  ========================================== 
+                -->
+                <!-- [A1] Dashboard (หน้าแดชบอร์ดสถิติ) -->
+                <div id="view-A1" class="space-y-6 hidden view-block">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE OVERVIEW</span>
+                            <h2 class="text-3xl font-extrabold shimmer-title mt-1">Command Control Center</h2>
+                        </div>
+                        <div class="px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono text-xs">
+                            ROI: <span class="font-bold text-white">+142.8%</span>
+                        </div>
+                    </div>
+
+                    <!-- บล็อกสถิติ 3 ช่อง (แก้ข้อความและตัวเลขได้ที่นี่) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-sm font-semibold">Active Agents</span>
+                                <i class="fa-solid fa-robot text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-3xl font-black text-white mt-2 relative z-10">14 / 16</h3>
+                        </div>
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-sm font-semibold">Token ROI Index</span>
+                                <i class="fa-solid fa-coins text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-3xl font-black text-white mt-2 relative z-10">4.2M <span class="text-xs text-emerald-400 font-normal">ROI</span></h3>
+                        </div>
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-sm font-semibold">Sys Health</span>
+                                <i class="fa-solid fa-shield-halved text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-3xl font-black text-white mt-2 relative z-10">99.98%</h3>
+                        </div>
+                    </div>
+
+                    <!-- กราฟ (ทำงานร่วมกับ Chart.js ด้านล่างสุด) -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h4 class="font-bold text-white mb-4">Token Performance Analytics</h4>
+                        <div class="chart-container h-80 relative w-full">
+                            <canvas id="dashboardChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [A2] Manager Board (ติดตามแผนงาน) -->
+                <div id="view-A2" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE OVERVIEW</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Roadmap Tracker</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- กล่อง Phase งาน (แก้ไขหัวข้อหรือรายละเอียดด้านในได้เลย) -->
+                        <div class="glass-panel p-4 rounded-xl space-y-3">
+                            <h4 class="text-xs font-bold uppercase text-cyber-muted border-b border-white/5 pb-2">Phase 1: Initiation</h4>
+                            <div class="bg-white/5 p-3 rounded-lg border border-white/5 text-sm">
+                                <h5 class="font-bold text-white">Bootstrap Genesis</h5>
+                                <p class="text-xs text-cyber-muted mt-1">Initialization code pipeline setup complete.</p>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl space-y-3">
+                            <h4 class="text-xs font-bold uppercase text-cyber-muted border-b border-white/5 pb-2">Phase 2: DB Block</h4>
+                            <div class="bg-white/5 p-3 rounded-lg border border-white/5 text-sm">
+                                <h5 class="font-bold text-white">HNSW Vectorizing</h5>
+                                <p class="text-xs text-cyber-muted mt-1">Index vectors for symbol graph structures.</p>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl space-y-3">
+                            <h4 class="text-xs font-bold uppercase text-cyber-muted border-b border-white/5 pb-2">Phase 3: LLM Tuning</h4>
+                            <!-- กล่องสถานะ Active (สีเขียว) -->
+                            <div class="bg-emerald-500/10 p-3 rounded-lg border border-emerald-500/20 text-sm">
+                                <h5 class="font-bold text-emerald-400">Context RAG Engine</h5>
+                                <p class="text-xs text-stone-300 mt-1">Merging semantic search query structures.</p>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-4 rounded-xl space-y-3">
+                            <h4 class="text-xs font-bold uppercase text-cyber-muted border-b border-white/5 pb-2">Phase 4: Telemetry</h4>
+                            <!-- กล่องสถานะ รอทำ (สีหม่น opacity-50) -->
+                            <div class="bg-white/5 p-3 rounded-lg border border-white/5 text-sm opacity-50">
+                                <h5 class="font-bold text-white">Cyber Reactor</h5>
+                                <p class="text-xs text-cyber-muted mt-1">Thermal heatmap metrics and compliance logs.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [A3] Plugins (ปลั๊กอินส่วนขยาย) -->
+                <div id="view-A3" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE OVERVIEW</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Extension Capabilities</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-white">Tree-Sitter AST Parsing</h4>
+                                <p class="text-xs text-cyber-muted mt-1">Real-time parser indexing</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-bold">ACTIVE</span>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-white">Jina Vector Embedding</h4>
+                                <p class="text-xs text-cyber-muted mt-1">External API parser model</p>
+                            </div>
+                            <span class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-bold">ACTIVE</span>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-white">Nvidia Thermal Monitor</h4>
+                                <p class="text-xs text-cyber-muted mt-1">GPU Telemetry hook-in</p>
+                            </div>
+                            <!-- ป้ายบอกสถานะ ปิดการทำงาน (สีแดง) -->
+                            <span class="px-2.5 py-1 rounded bg-red-500/10 text-red-400 text-xs font-bold">OFFLINE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [A4] Agent Configurations -->
+                <div id="view-A4" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE OVERVIEW</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Available Models & Brain Configurations</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-4">
+                            <h3 class="font-bold text-white text-lg">🧠 Gemini Pro 1.5</h3>
+                            <p class="text-sm text-cyber-muted">โมเดลประมวลผลขนาดใหญ่ เหมาะสำหรับงานดึงข้อมูลเชิงลึกและสรุปผล</p>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span>Brain Temperature</span><span class="text-neon-green">0.7</span></div>
+                                <!-- สไลด์บาร์เลื่อนตั้งค่าอุณหภูมิสมอง AI -->
+                                <input type="range" class="w-full accent-cyber-emerald" min="0" max="1" step="0.1" value="0.7">
+                            </div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-4">
+                            <h3 class="font-bold text-white text-lg">💡 Qwen 2.5 Coder</h3>
+                            <p class="text-sm text-cyber-muted">โมเดลเขียนโปรแกรม เหมาะสำหรับวิเคราะห์โครงสร้างโค้ดและการจัดวาง AST</p>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span>Brain Temperature</span><span class="text-neon-green">0.2</span></div>
+                                <input type="range" class="w-full accent-cyber-emerald" min="0" max="1" step="0.1" value="0.2">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 
+                  ==========================================
+                  DOMAIN B: GENESIS KNOWLEDGE SYSTEM
+                  ========================================== 
+                -->
+                <!-- [B1] Code Structure -->
+                <div id="view-B1" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">GENESIS KNOWLEDGE SYSTEM</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">AST Code Hierarchy</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- รายชื่อไฟล์ให้กดดูโครงสร้าง (ทำงานร่วมกับฟังก์ชัน showMockCode() ข้างล่าง) -->
+                        <div class="glass-panel p-4 rounded-xl col-span-1 h-96 overflow-y-auto scroll-custom space-y-2 text-sm">
+                            <div class="p-2 bg-indigo-500/10 border border-indigo-500/20 rounded cursor-pointer hover:bg-indigo-500/20" onclick="showMockCode('main.py')">
+                                <i class="fa-solid fa-file-code mr-2 text-indigo-400"></i> main.py
+                            </div>
+                            <div class="p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10" onclick="showMockCode('hnsw.py')">
+                                <i class="fa-solid fa-file-code mr-2 text-indigo-400"></i> hnsw.py
+                            </div>
+                            <div class="p-2 bg-white/5 rounded cursor-pointer hover:bg-white/10" onclick="showMockCode('vector_store.py')">
+                                <i class="fa-solid fa-file-code mr-2 text-indigo-400"></i> vector_store.py
+                            </div>
+                        </div>
+                        <!-- กรอบแสดงตัวอย่างโค้ดที่คลิก -->
+                        <div class="glass-panel p-5 rounded-xl col-span-2 h-96">
+                            <h4 class="font-bold text-white mb-3" id="mock-code-title">Source Preview: main.py</h4>
+                            <pre class="bg-black/40 p-4 rounded-lg h-72 overflow-y-auto scroll-custom text-xs font-mono text-indigo-200" id="mock-code-block">
+import sys
+from hnsw import HNSWIndex
+
+def main():
+    print("Initiating CoVibe Command Reactor...")
+    index = HNSWIndex(M=16, ef=64)
+    # Loading vectors...
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [B2] Business Logic -->
+                <div id="view-B2" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">GENESIS KNOWLEDGE SYSTEM</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Functional Specifications</h2>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl text-stone-300 space-y-4">
+                        <h3 class="text-xl font-bold text-white">⚡ Business Protocol Specification</h3>
+                        <p class="text-sm">ตารางต่อไปนี้จัดวางระเบียบข้อบังคับและเวิร์กโฟลว์ของ Genesis Block DB:</p>
+                        <ul class="list-disc list-inside space-y-2 text-sm">
+                            <li><strong>GKS-BLOCK-SYNC:</strong> ระบบตรวจสอบความสอดคล้องของโค้ดจริงกับ Document โดยอัตโนมัติ</li>
+                            <li><strong>SRS-COMPLIANCE:</strong> ระบบคำนวณสถิติ ROI ของโมเดลและรายงานผลแบบเรียลไทม์ไปยัง AI Benchmark</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- [B3] Graph Studio (เพิ่มโหนดในกราฟได้) -->
+                <div id="view-B3" class="space-y-6 hidden view-block">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">GENESIS KNOWLEDGE SYSTEM</span>
+                            <h2 class="text-3xl font-extrabold text-white mt-1">Interactive Graph Studio</h2>
+                        </div>
+                        <button onclick="addNodeToCanvas()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-xs font-bold transition-colors text-white">
+                            <i class="fa-solid fa-circle-plus mr-1.5"></i> Add New Node
+                        </button>
+                    </div>
+
+                    <!-- ลานวาดกราฟเปล่าๆ (จะถูกเติม Node ใหม่ด้วย JS addNodeToCanvas) -->
+                    <div class="w-full h-[400px] rounded-2xl glass-panel relative overflow-hidden grid-canvas" id="canvas-container">
+                    </div>
+                    <p class="text-xs text-cyber-muted text-center mt-2"><i class="fa-solid fa-mouse-pointer mr-1"></i> คลิกและลากโหนดเพื่อขยับพิกัดความสัมพันธ์ใน 2D Graph Space ได้อย่างอิสระ</p>
+                </div>
+
+                <!-- [B4] Codebase Graph -->
+                <div id="view-B4" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-indigo-400 uppercase tracking-widest">GENESIS KNOWLEDGE SYSTEM</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">AST Codebase Vis</h2>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl h-80 flex items-center justify-center text-center">
+                        <div class="space-y-4">
+                            <i class="fa-solid fa-diagram-project text-5xl text-indigo-400 animate-pulse"></i>
+                            <h3 class="text-lg font-bold text-white">Call Graph Automated Generator</h3>
+                            <p class="text-sm text-cyber-muted max-w-md">ระบบกำลังสแกนโครงสร้าง AST ของ hnsw_kitchen_complex_query.md และประมวลผลโมเดลความสัมพันธ์แบบ dynamic graph</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 
+                  ==========================================
+                  DOMAIN C: GENESIS BLOCK DB
+                  ========================================== 
+                -->
+                <!-- [C1] Explorer Hub -->
+                <div id="view-C1" class="space-y-6 hidden view-block">
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest">GENESIS BLOCK DB</span>
+                            <h2 class="text-3xl font-extrabold text-white mt-1">Explorer Hub</h2>
+                        </div>
+                        <!-- ช่องค้นหาข้อมูลในตาราง -->
+                        <div class="relative">
+                            <input type="text" id="symbol-search" placeholder="Filter symbols..." class="bg-black/40 border border-cyber-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500 w-64" oninput="filterExplorerHubTable()">
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl overflow-hidden">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-white/5 border-b border-white/5 text-xs uppercase tracking-wider text-cyber-muted">
+                                    <th class="p-4">Symbol Name</th>
+                                    <th class="p-4">Type</th>
+                                    <th class="p-4">Source File</th>
+                                    <th class="p-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="explorer-hub-tbody">
+                                <!-- แถวของข้อมูล สามารถ Copy วางต่อกันเพื่อเพิ่มข้อมูลใหม่ได้เลย -->
+                                <tr class="border-b border-white/5 hover:bg-white/5">
+                                    <td class="p-4 font-mono font-bold text-cyan-400">HNSWIndex</td>
+                                    <td class="p-4">Class</td>
+                                    <td class="p-4 font-mono">hnsw.py</td>
+                                    <td class="p-4"><span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-xs">Indexed</span></td>
+                                </tr>
+                                <tr class="border-b border-white/5 hover:bg-white/5">
+                                    <td class="p-4 font-mono font-bold text-cyan-400">add_node_to_graph</td>
+                                    <td class="p-4">Function</td>
+                                    <td class="p-4 font-mono">vector_store.py</td>
+                                    <td class="p-4"><span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-300 text-xs">Indexed</span></td>
+                                </tr>
+                                <tr class="hover:bg-white/5">
+                                    <td class="p-4 font-mono font-bold text-cyan-400">main_control_reactor</td>
+                                    <td class="p-4">Function</td>
+                                    <td class="p-4 font-mono">main.py</td>
+                                    <td class="p-4"><span class="px-2 py-0.5 rounded bg-purple-500/10 text-purple-300 text-xs">Queued</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- [C2] Processing Lab -->
+                <div id="view-C2" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest">GENESIS BLOCK DB</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Graph Intelligence Zoo</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-4">
+                            <h4 class="font-bold text-white text-lg">🧠 Vector Chunking Intelligence</h4>
+                            <p class="text-sm text-cyber-muted">ปรับแต่งขนาด Token Chunk ของเอกสารก่อนจัดส่งเข้า Vector DB</p>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span>Chunk Size Limit (Tokens)</span><span class="text-cyan-400" id="chunk-val">512</span></div>
+                                <input type="range" class="w-full accent-cyber-cyan" min="128" max="2048" step="128" value="512" oninput="document.getElementById('chunk-val').innerText = this.value">
+                            </div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl space-y-4">
+                            <h4 class="font-bold text-white text-lg">💡 Embedding Model Selection</h4>
+                            <p class="text-sm text-cyber-muted">เลือกโมเดลการประมวลผลความหมายเชิงลึก</p>
+                            <select class="w-full bg-black/40 border border-cyber-border text-white text-sm p-3 rounded-lg focus:ring-1 focus:ring-cyan-500">
+                                <option>Jina AI Multilingual-v3</option>
+                                <option>Voyage Multilingual-2</option>
+                                <option>Meta Llama-Embedding</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [C3] Retrieval Studio (หน้าทดสอบแชท) -->
+                <div id="view-C3" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest">GENESIS BLOCK DB</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">SRS-G Debugger Terminal</h2>
+                    </div>
+
+                    <div class="glass-panel p-5 rounded-xl space-y-4">
+                        <h3 class="text-lg font-bold text-white">Compare Semantic Search vs. Graph-Augmented Testing</h3>
+                        <div class="flex gap-2">
+                            <!-- ช่องกรอกข้อความสำหรับเทส (พิมพ์แล้วกดปุ่มรัน JS จะแสดงผลข้างล่าง) -->
+                            <input type="text" id="debugger-query" placeholder="Ask something: e.g., 'อาหารเพิ่มกล้ามงบประหยัด'" class="flex-1 bg-black/40 border border-cyber-border rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-cyan-500">
+                            <button onclick="runDebuggerTest()" class="px-5 py-2 bg-cyan-600 hover:bg-cyan-500 text-white text-sm font-bold rounded-xl transition-colors">Run Benchmark</button>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- กล่องแสดงผลฝั่งซ้าย (Standard) -->
+                            <div class="bg-black/30 p-4 rounded-lg border border-white/5">
+                                <h4 class="text-xs font-bold text-cyber-muted uppercase tracking-wider mb-2">Standard Semantic Search</h4>
+                                <p class="text-sm text-gray-300" id="standard-rag-output">ใส่คำค้นหาแล้วกด 'Run Benchmark' เพื่อจำลองคำตอบ...</p>
+                            </div>
+                            <!-- กล่องแสดงผลฝั่งขวา (Graph-Augmented) -->
+                            <div class="bg-cyan-950/10 p-4 rounded-lg border border-cyan-500/20">
+                                <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-2">Graph-Augmented RAG (SRS-G)</h4>
+                                <p class="text-sm text-cyan-200" id="graph-rag-output">ใส่คำค้นหาแล้วกด 'Run Benchmark' เพื่อจำลองคำตอบ...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [C4] Symbol Linker -->
+                <div id="view-C4" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest">GENESIS BLOCK DB</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Documentation Symbol Linker</h2>
+                    </div>
+                    <div class="glass-panel p-6 rounded-2xl h-64 flex items-center justify-center text-center">
+                        <div class="space-y-2">
+                            <i class="fa-solid fa-link text-4xl text-cyan-400 animate-bounce"></i>
+                            <h3 class="text-lg font-bold text-white">Doc Bridge is Active</h3>
+                            <p class="text-sm text-cyber-muted max-w-sm">ลิงก์ตรงระหว่างข้อความในเอกสารคู่มือกับบรรทัดโค้ดหลักใน GKS ทำงานได้อย่างสมบูรณ์แบบแล้ว</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [C5] Vector Store (กดปุ่มสลับ Layer เพื่อโชว์คำศัพท์) -->
+                <div id="view-C5" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-cyan-400 uppercase tracking-widest">GENESIS BLOCK DB</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">HNSW Vector Space Map</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- กล่องเมนูปุ่มทางซ้าย (เมื่อกดจะสั่งให้ JS render ของทางขวาใหม่) -->
+                        <div class="glass-panel p-5 rounded-xl col-span-1 space-y-4 text-sm">
+                            <h3 class="font-bold text-white">Filter HNSW Layer View</h3>
+                            <div class="space-y-2">
+                                <button onclick="selectHNSWLayer(6, this)" class="w-full p-2 rounded text-left bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-bold hnsw-layer-btn">Layer 6: Expressway</button>
+                                <button onclick="selectHNSWLayer(4, this)" class="w-full p-2 rounded text-left bg-white/5 text-gray-300 hover:bg-white/10 hnsw-layer-btn">Layer 4: Category Nodes</button>
+                                <button onclick="selectHNSWLayer(2, this)" class="w-full p-2 rounded text-left bg-white/5 text-gray-300 hover:bg-white/10 hnsw-layer-btn">Layer 2: Station Index</button>
+                                <button onclick="selectHNSWLayer(0, this)" class="w-full p-2 rounded text-left bg-white/5 text-gray-300 hover:bg-white/10 hnsw-layer-btn">Layer 0: Raw Objects</button>
+                            </div>
+                        </div>
+
+                        <!-- กล่องแสดงผลทางขวา -->
+                        <div class="glass-panel p-6 rounded-2xl col-span-2 h-72 flex flex-col justify-between relative overflow-hidden">
+                            <div class="flex justify-between items-center relative z-10">
+                                <h4 class="font-bold text-white" id="hnsw-visual-layer-title">Active: Layer 6 Expressway</h4>
+                                <span class="text-xs text-cyan-400">3D Simulation Space</span>
+                            </div>
+                            <div class="h-40 flex items-center justify-around relative z-10" id="hnsw-layer-visual-container">
+                                <div class="px-4 py-2 bg-cyan-900/30 border border-cyan-500/50 rounded-xl text-white font-mono text-sm animate-pulse">Hot Kitchen Zone</div>
+                                <div class="px-4 py-2 bg-cyan-900/30 border border-cyan-500/50 rounded-xl text-white font-mono text-sm animate-pulse">Cold Bar Zone</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 
+                  ==========================================
+                  DOMAIN D: AI BENCHMARK
+                  ========================================== 
+                -->
+                <!-- [D1] Execution (รันเทสระบบ) -->
+                <div id="view-D1" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-orange-400 uppercase tracking-widest">AI BENCHMARK</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">System Execution safety and triggers</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel p-5 rounded-xl space-y-4">
+                            <h4 class="font-bold text-white">Underclocking Power Regulator</h4>
+                            <p class="text-xs text-cyber-muted">ปรับสมดุลการจ่ายพลังงานของ GPU ในภาวะโหลดหนักเพื่อความปลอดภัย</p>
+                            <input type="range" class="w-full accent-cyber-orange" min="40" max="100" value="85" oninput="document.getElementById('pwr-val').innerText = this.value + '%'">
+                            <div class="flex justify-between text-xs text-cyber-muted"><span>Power Limit</span><span id="pwr-val" class="text-orange-400">85%</span></div>
+                        </div>
+
+                        <!-- กล่องกดรันเทสที่มี Progress Bar -->
+                        <div class="glass-panel p-5 rounded-xl flex flex-col justify-between h-48 col-span-2">
+                            <div class="flex justify-between items-center">
+                                <h4 class="font-bold text-white">Reactor Execution Safety Run</h4>
+                                <span class="px-2 py-0.5 rounded bg-orange-500/10 text-orange-400 text-xs font-bold">READY</span>
+                            </div>
+                            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                                <div class="bg-orange-500 h-full w-0" id="progress-safety-run"></div>
+                            </div>
+                            <button onclick="triggerSafetyReactorRun(this)" class="w-full py-2.5 bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-lg transition-colors">START SAFETY CAMPAIGN RUN</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [D2] Telemetry (แสดงผลตารางความร้อนจำลอง) -->
+                <div id="view-D2" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-orange-400 uppercase tracking-widest">AI BENCHMARK</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Cyber Reactor Real-time Heatmap</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel p-5 rounded-xl col-span-1 space-y-4">
+                            <h4 class="font-bold text-white">Reactor Overview Status</h4>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span>Core Temp</span><span class="text-orange-400 font-bold" id="core-temp-val">42.8 °C</span></div>
+                                <div class="flex justify-between"><span>GFLOPS Power</span><span class="text-orange-400 font-bold">2.4 Tflops</span></div>
+                                <div class="flex justify-between"><span>Coolant Flow Rate</span><span class="text-orange-400 font-bold">8.4 L/min</span></div>
+                            </div>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl col-span-2">
+                            <h4 class="font-bold text-white mb-4">Core Thermal Grid (8x8 CPU/GPU Mapping)</h4>
+                            <!-- ตารางสีจำลองอุณหภูมิ (JS จะวาดก้อนสี่เหลี่ยม 64 ก้อนลงที่นี่แบบสุ่มสี) -->
+                            <div class="grid grid-cols-8 gap-2" id="heatmap-grid-container">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [D3] Reports (บันทึก Log) -->
+                <div id="view-D3" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-orange-400 uppercase tracking-widest">AI BENCHMARK</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">EABS-01 Campaign Logs</h2>
+                    </div>
+
+                    <div class="glass-panel rounded-xl p-4 text-xs font-mono text-orange-300 space-y-2 max-h-80 overflow-y-auto scroll-custom">
+                        <p>[2026-06-01 08:31:02] INITIALIZING AI LEVEL 1 COMPLIANCE CHECKS...</p>
+                        <p>[2026-06-01 08:31:05] AST FILE STRUCTURE CHECK FOR 'hnsw.py' => PASS</p>
+                        <p>[2026-06-01 08:31:12] TELEMETRY UNDERCLOCK SAFETY HOOK CHECK => LIMIT SET TO 85%</p>
+                        <p>[2026-06-01 08:31:24] TOTAL OF 14 ACTIVE MODEL ROSTERS SUCCESSFULLY TESTED</p>
+                        <p class="text-white font-bold">[2026-06-01 08:31:30] ALL SYSTEMS OPTIMIZED - CAMPAIGN STATUS: SECURE</p>
+                    </div>
+                </div>
+
+            </div> <!-- จบ main-wrapper -->
+        </main> <!-- จบ Main Content -->
+    </div> <!-- จบ WORKSPACE flex -->
+
+    <!-- =========================================================
+         SECTOR 3: FOOTER (แถบสถานะด้านล่างสุด)
+         ========================================================= 
+         - shrink-0 = ล็อกความสูงไว้ ห้ามโดนบีบพัง
+         - h-8 = ความสูงขนาดเล็ก (32px)
+    -->
+    <footer class="h-8 shrink-0 glass-panel border-t border-cyber-border flex items-center justify-between px-6 text-[10px] text-cyber-muted z-40 relative">
+        <div>COVIBE COMMAND REACTOR v2.5 | STABLE BUILD</div>
+        <div>STABLE CONTEXT: <span id="footer-context" class="text-emerald-400 font-bold uppercase">Overview</span></div>
+    </footer>
+
+    <!-- 
+      =========================================================
+      SECTOR 4: SYSTEM JAVASCRIPT LOGIC (ระบบโค้ดเบื้องหลัง)
+      - ส่วนนี้ทำหน้าที่สลับหน้าจอ วาดกราฟ ขยายแถบด้านข้าง และปุ่มกดต่างๆ
+      ========================================================= 
+    -->
+    <script>
+        // ข้อมูลหลักของโปรแกรม (สถานะการเปิดหน้าจอต่างๆ)
+        const appState = {
+            activeDomain: 'A',
+            activeSubModule: 'A1',
+            sidebarExpanded: false, // ถ้าเป็น true คือกดปุ่มล็อกให้กางออกตลอด
+            dashboardChart: null,
+            heatmapInterval: null
+        };
+
+        // 
+        // อธิบาย: คุณสามารถแก้ชื่อเมนู ไอคอน (จาก FontAwesome) และสีประจำ Domain ได้ที่ออบเจกต์ siteMap นี้
+        // ตัวอย่าง: { id: "A1", name: "แดชบอร์ดหลัก", icon: "fa-house" }
+        //
+        const siteMap = {
+            A: {
+                title: "Project Overview",
+                icon: "fa-compass",
+                color: "#10b981", // Emerald (เขียว)
+                bgGradient: "bg-emerald-600/20",
+                subModules: [
+                    { id: "A1", name: "Real-time Dashboard", icon: "fa-chart-pie" },
+                    { id: "A2", name: "Roadmap Board", icon: "fa-timeline" },
+                    { id: "A3", name: "Capability Plugins", icon: "fa-plug" },
+                    { id: "A4", name: "Brain Configurations", icon: "fa-brain" }
+                ]
+            },
+            B: {
+                title: "Genesis Knowledge",
+                icon: "fa-brain",
+                color: "#6366f1", // Indigo (น้ำเงินม่วง)
+                bgGradient: "bg-indigo-600/10",
+                subModules: [
+                    { id: "B1", name: "AST Hierarchy Tree", icon: "fa-folder-tree" },
+                    { id: "B2", name: "Business Specifications", icon: "fa-receipt" },
+                    { id: "B3", name: "Interactive Graph Studio", icon: "fa-diagram-project" },
+                    { id: "B4", name: "Automated Visualizer", icon: "fa-circle-nodes" }
+                ]
+            },
+            C: {
+                title: "Block DB",
+                icon: "fa-cubes",
+                color: "#06b6d4", // Cyan (ฟ้า)
+                bgGradient: "bg-cyan-600/10",
+                subModules: [
+                    { id: "C1", name: "Symbol Explorer Hub", icon: "fa-magnifying-glass-chart" },
+                    { id: "C2", name: "Intelligence Zoo", icon: "fa-flask" },
+                    { id: "C3", name: "SRS-G Debugger", icon: "fa-terminal" },
+                    { id: "C4", name: "Source Document Linker", icon: "fa-link" },
+                    { id: "C5", name: "HNSW Vector Space Map", icon: "fa-circle-nodes" }
+                ]
+            },
+            D: {
+                title: "AI Benchmark",
+                icon: "fa-gauge-high",
+                color: "#f59e0b", // Orange (ส้ม)
+                bgGradient: "bg-orange-600/10",
+                subModules: [
+                    { id: "D1", name: "Reactor Run Trigger", icon: "fa-bolt" },
+                    { id: "D2", name: "Cyber Reactor Heatmap", icon: "fa-fire" },
+                    { id: "D3", name: "EABS-01 Campaign Logs", icon: "fa-file-lines" }
+                ]
+            }
+        };
+
+        // ฟังก์ชันเมื่อผู้ใช้กดแถบด้านบน (เปลี่ยน Domain ใหญ่ๆ A, B, C, D)
+        function switchDomain(domainId) {
+            appState.activeDomain = domainId;
+            const domainInfo = siteMap[domainId];
+
+            // 1. ล้างสไตล์ของแถบปุ่มบนให้เป็นสีเทาหมดก่อน
+            document.querySelectorAll('.domain-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-white/10', 'text-emerald-400', 'text-indigo-400', 'text-cyan-400', 'text-orange-400', 'border-emerald-500/20', 'border-indigo-500/20', 'border-cyan-500/20', 'border-orange-500/20', 'shadow-lg');
+                btn.classList.add('text-gray-400');
+            });
+
+            // 2. ระบายสีปุ่มที่เพิ่งถูกกดให้เป็นสีตามธีม
+            const activeBtn = document.getElementById(`domain-tab-${domainId}`);
+            let themeColor = domainInfo.color;
+
+            if (activeBtn) {
+                activeBtn.classList.remove('text-gray-400');
+                activeBtn.classList.add('bg-white/10', 'shadow-lg');
+
+                if (domainId === 'A') { activeBtn.classList.add('text-emerald-400', 'border-emerald-500/20'); }
+                else if (domainId === 'B') { activeBtn.classList.add('text-indigo-400', 'border-indigo-500/20'); }
+                else if (domainId === 'C') { activeBtn.classList.add('text-cyan-400', 'border-cyan-500/20'); }
+                else if (domainId === 'D') { activeBtn.classList.add('text-orange-400', 'border-orange-500/20'); }
+            }
+
+            // เซ็ตสี Accent หลักส่งไปให้ CSS เพื่อเปลี่ยนสีลูกเล่นต่างๆ
+            document.documentElement.style.setProperty('--active-accent', themeColor);
+
+            // เปลี่ยนสีแสงเรืองรองด้านหลัง (วงกลมซ้ายบน) ให้ตรงกับตีม
+            const orbLeft = document.getElementById('orb-left');
+            if (orbLeft) {
+                orbLeft.className = `glow-orb w-[45vw] h-[45vw] top-[-10%] left-[-10%] ${domainInfo.bgGradient}`;
+            }
+
+            // 3. อัปเดตส่วนหัวของ Sidebar ด้านซ้าย (เปลี่ยนไอคอนและชื่อหมวด)
+            const contextIcon = document.getElementById('sidebar-context-icon');
+            if (contextIcon) {
+                contextIcon.innerHTML = `<i class="fa-solid ${domainInfo.icon}"></i>`;
+                contextIcon.style.color = themeColor;
+                contextIcon.style.backgroundColor = `${themeColor}20`;
+                contextIcon.style.borderColor = `${themeColor}30`;
+            }
+
+            const contextTitle = document.getElementById('sidebar-context-title');
+            if (contextTitle) {
+                contextTitle.innerText = domainInfo.title;
+            }
+
+            // 4. ลบเมนูย่อยเดิมออก และสร้างเมนูย่อยชุดใหม่ลงใน Sidebar
+            const subNavContainer = document.getElementById('sidebar-sub-nav');
+            if (subNavContainer) {
+                subNavContainer.innerHTML = ''; // ล้างของเก่า
+
+                domainInfo.subModules.forEach((sub, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item relative';
+                    li.setAttribute('data-tooltip', sub.name); // เก็บชื่อไว้แสดงเป็น Tooltip ตอนหดแถบ
+
+                    const activeSubClass = (index === 0) ? 'bg-white/5 font-semibold text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white';
+
+                    li.innerHTML = `
+                        <button onclick="switchMainView('${sub.id}', this)" class="sub-nav-item w-full flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300 ${activeSubClass}">
+                            <i class="fa-solid ${sub.icon} text-center w-5 text-sm" style="color: ${index === 0 ? themeColor : 'inherit'}"></i>
+                            <span class="sidebar-expand-content text-xs font-semibold tracking-wide truncate">${sub.name}</span>
+                        </button>
+                    `;
+                    subNavContainer.appendChild(li);
+                });
+            }
+
+            // 5. บังคับให้โหลดหน้าจอของเมนูย่อยอันแรกเสมอ
+            switchMainView(domainInfo.subModules[0].id);
+        }
+
+        // ฟังก์ชันสลับหน้าจอตรงกลาง (เช่น สลับจาก A1 ไป A2)
+        function switchMainView(subModuleId, btnElement = null) {
+            appState.activeSubModule = subModuleId;
+
+            // จัดการสีของปุ่มใน Sidebar ที่ถูกกด (ทำให้สว่างขึ้น)
+            if (btnElement) {
+                document.querySelectorAll('.sub-nav-item').forEach(item => {
+                    item.classList.remove('bg-white/5', 'font-semibold', 'text-white');
+                    item.classList.add('text-gray-400');
+                    const icon = item.querySelector('i');
+                    if (icon) icon.style.color = 'inherit';
+                });
+                btnElement.classList.remove('text-gray-400');
+                btnElement.classList.add('bg-white/5', 'font-semibold', 'text-white');
+                const activeIcon = btnElement.querySelector('i');
+                if (activeIcon) activeIcon.style.color = siteMap[appState.activeDomain].color;
+            }
+
+            // ซ่อนหน้าจอทั้งหมดที่เป็น .view-block ไปก่อน (เพิ่มคลาส hidden)
+            document.querySelectorAll('.view-block').forEach(v => v.classList.add('hidden'));
+
+            // โชว์เฉพาะหน้าจอที่ต้องการ (ลบคลาส hidden ออก) พร้อมเล่น Animation fade-in ใหม่
+            const activeViewEl = document.getElementById(`view-${subModuleId}`);
+            if (activeViewEl) {
+                activeViewEl.classList.remove('hidden');
+                activeViewEl.classList.remove('fade-in');
+                void activeViewEl.offsetWidth; // บังคับให้เบราว์เซอร์ล้างคิวงาน เพื่อให้เล่นแอนิเมชันซ้ำได้
+                activeViewEl.classList.add('fade-in');
+            }
+
+            // ดึงสกอร์บาร์ตรงกลางกลับขึ้นไปจุดบนสุด
+            const scrollContainer = document.getElementById('main-scroll-container');
+            if (scrollContainer) scrollContainer.scrollTop = 0;
+
+            // คำสั่งพิเศษ: ถ้าย้ายไปหน้า Heatmap D2 ให้เปิดสคริปต์สุ่มความร้อน
+            handleTelemetryViews(subModuleId);
+
+            // แจ้งเตือนข้อความตรง Footer ด้านล่างขวา
+            const footerCtx = document.getElementById('footer-context');
+            if (footerCtx) {
+                footerCtx.innerText = `${siteMap[appState.activeDomain].title} > ${subModuleId}`;
+            }
+        }
+
+        // ฟังก์ชันปุ่มกดขยาย-ย่อ Sidebar
+        function toggleSidebar() {
+            const sidebar = document.getElementById('app-sidebar');
+            const toggleIcon = document.getElementById('sidebar-toggle-icon');
+            if (!sidebar || !toggleIcon) return;
+
+            // สลับสถานะ (ถ้าล็อกอยู่ให้ปลด ปลดอยู่ให้ล็อก)
+            appState.sidebarExpanded = !appState.sidebarExpanded;
+
+            if (appState.sidebarExpanded) {
+                sidebar.classList.add('expanded-lock'); // ใส่คลาสเพื่อบังคับกางค้างไว้ (ดู CSS ด้านบน)
+                toggleIcon.className = 'fa-solid fa-chevron-left text-center w-5'; // เปลี่ยนลูกศรชี้เข้า
+                // เปลี่ยนข้อความที่ปุ่ม
+                const btnText = sidebar.querySelector('button .sidebar-expand-content');
+                if(btnText) btnText.innerText = "Collapse Sidebar";
+            } else {
+                sidebar.classList.remove('expanded-lock');
+                toggleIcon.className = 'fa-solid fa-chevron-right text-center w-5'; // เปลี่ยนลูกศรชี้ออก
+                const btnText = sidebar.querySelector('button .sidebar-expand-content');
+                if(btnText) btnText.innerText = "Expand Sidebar";
+            }
+        }
+
+        // ฟังก์ชันสลับโหมดสว่าง-มืด (Toggle Light/Dark Theme)
+        function toggleTheme() {
+            const body = document.body;
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            if (!body || !sunIcon || !moonIcon) return;
+
+            if (body.classList.contains('light-theme')) {
+                // เปลี่ยนกลับเป็น Dark Mode
+                body.classList.remove('light-theme');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                // เปลี่ยนเป็น Light Mode (ใส่คลาส light-theme ครอบที่ Body)
+                body.classList.add('light-theme');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+            updateChartColors(); // ให้สีกราฟเปลี่ยนตามด้วย
+        }
+
+        // อัปเดตสีกราฟให้เข้ากับธีมปัจจุบัน (มืด หรือ สว่าง)
+        function updateChartColors() {
+            if (!appState.dashboardChart) return;
+            try {
+                const isLight = document.body.classList.contains('light-theme');
+                const textColor = isLight ? '#18181b' : '#f3f4f6';
+                const gridColor = isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)';
+
+                appState.dashboardChart.options.scales.y.grid.color = gridColor;
+                appState.dashboardChart.options.scales.y.ticks.color = textColor;
+                appState.dashboardChart.options.scales.x.ticks.color = textColor;
+                appState.dashboardChart.update();
+            } catch (e) {
+                console.error("Failed to update chart colors:", e);
+            }
+        }
+
+        // ข้อมูลจำลองสำหรับหน้า B1 แสดงโค้ด (สามารถเอาไปต่อ API จริงได้ทีหลัง)
+        const mockCodes = {
+            'main.py': `import sys\nfrom hnsw import HNSWIndex\n\ndef main():\n    print("Initiating CoVibe Command Reactor...")\n    index = HNSWIndex(M=16, ef=64)\n    # Loading vectors...`,
+            'hnsw.py': `class HNSWIndex:\n    def __init__(self, M=16, ef=64):\n        self.M = M\n        self.ef = ef\n        self.layers = []\n\n    def insert(self, q_vector):\n        # Traversing from top expressway layers down to L0...`,
+            'vector_store.py': `class VectorStore:\n    def __init__(self):\n        self.symbols = {}\n\n    def upsert_symbol(self, name, vector):\n        self.symbols[name] = vector\n        print(f"Upserted: {name}")`
+        };
+
+        // สั่งเปลี่ยนข้อความในบล็อกแสดงโค้ด (หน้า B1)
+        function showMockCode(fileName) {
+            const title = document.getElementById('mock-code-title');
+            const block = document.getElementById('mock-code-block');
+            if (title) title.innerText = `Source Preview: ${fileName}`;
+            if (block) block.innerText = mockCodes[fileName];
+        }
+
+        // ระบบวาดกล่องในหน้า Interactive Graph (B3)
+        let nodeCount = 0;
+        function addNodeToCanvas() {
+            nodeCount++;
+            const container = document.getElementById('canvas-container');
+            if (!container) return;
+            const node = document.createElement('div');
+            // กล่อง Node กราฟ
+            node.className = 'absolute p-3 bg-indigo-900/40 border border-indigo-500/50 rounded-xl shadow-lg cursor-move select-none z-20 text-xs font-mono font-bold hover:scale-105 transition-transform duration-200';
+            node.style.left = `${50 + (nodeCount * 30)}px`;
+            node.style.top = `${100 + (nodeCount * 25)}px`;
+            node.innerText = `Symbol_Block_0${nodeCount}`;
+            node.id = `node-${nodeCount}`;
+
+            // ระบบคลิกค้างแล้วลาก (Drag and Drop)
+            node.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                let shiftX = e.clientX - node.getBoundingClientRect().left;
+                let shiftY = e.clientY - node.getBoundingClientRect().top;
+
+                function moveAt(pageX, pageY) {
+                    const rect = container.getBoundingClientRect();
+                    let left = pageX - rect.left - shiftX;
+                    let top = pageY - rect.top - shiftY;
+
+                    // กันไม่ให้ลากทะลุกรอบออกไปข้างนอก
+                    left = Math.max(0, Math.min(left, rect.width - node.offsetWidth));
+                    top = Math.max(0, Math.min(top, rect.height - node.offsetHeight));
+
+                    node.style.left = left + 'px';
+                    node.style.top = top + 'px';
+                }
+
+                function onMouseMove(event) {
+                    moveAt(event.clientX, event.clientY);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', () => {
+                    document.removeEventListener('mousemove', onMouseMove);
+                }, { once: true });
+            });
+
+            container.appendChild(node);
+        }
+
+        // ระบบค้นหาข้อความในตารางหน้า C1 (Hub) แบบ Real-time
+        function filterExplorerHubTable() {
+            const searchInput = document.getElementById('symbol-search');
+            if (!searchInput) return;
+            const query = searchInput.value.toLowerCase();
+            const rows = document.querySelectorAll('#explorer-hub-tbody tr');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                // ถ้ามีข้อความที่พิมพ์ ให้โชว์ ถ้าไม่มีให้ซ่อนแถวนั้นทิ้งไป (display: none)
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // ระบบจำลองแชทตอบกลับในหน้า C3 (Debugger)
+        function runDebuggerTest() {
+            const queryInput = document.getElementById('debugger-query');
+            if (!queryInput) return;
+            const query = queryInput.value.trim();
+            if (!query) return;
+
+            const standardOutput = document.getElementById('standard-rag-output');
+            const graphOutput = document.getElementById('graph-rag-output');
+
+            if (standardOutput) standardOutput.innerText = "Running Standard Semantic Query... ⏳";
+            if (graphOutput) graphOutput.innerText = "Initiating Multi-Hop Graph Retrieval... 🧬";
+
+            // ดีเลย์หลอกๆ 0.6 วินาที ก่อนแสดงคำตอบจำลอง
+            setTimeout(() => {
+                if (standardOutput) {
+                    standardOutput.innerHTML = `
+                        <div class="space-y-2">
+                            <span class="text-xs text-red-400">Match score: 0.72 (Single-vector Match)</span>
+                            <p class="text-xs">ดึงผลลัพธ์โดยยึดคำว่า "อาหาร" และ "กล้าม" => ค้นพบ อกไก่ปั่น (โปรตีนสูง)</p>
+                            <p class="text-[11px] text-cyber-muted">หลุดประเด็นสำคัญเรื่อง 'งบประหยัด' เนื่องจากโครงสร้างแบบแผ่นไม่ได้เชื่อมมิติด้านราคากับคุณค่า</p>
+                        </div>
+                    `;
+                }
+                if (graphOutput) {
+                    graphOutput.innerHTML = `
+                        <div class="space-y-2 text-cyan-200">
+                            <span class="text-xs text-neon-green">Traversed nodes: 14 | Depth: 4 | Match score: 0.96</span>
+                            <p class="text-xs">ดึงผลลัพธ์ผ่าน Node: <strong>[ฟิตเนส]</strong> ──(relate)──► <strong>[โปรตีน]</strong> ──(property)──► <strong>[สร้างกล้ามเนื้อ]</strong> ──(subtags)──► <strong>[อกไก่]</strong> ซึ่งมี Tag <strong>[ราคาถูก]</strong> กำกับอยู่พอดี</p>
+                            <p class="text-[11px] text-cyan-400">คำแนะนำ: แนะนำเมนู 'อกไก่ต้ม' ร่วมกับ 'แป้งบัวลอยไส้งาดำ' เนื่องจากให้พลังงานสูงและราคาประหยัดตามโครงข่ายความสัมพันธ์</p>
+                        </div>
+                    `;
+                }
+            }, 600);
+        }
+
+        // ข้อมูลจำลองสำหรับวาด Layer ต่างๆ ในหน้า C5
+        const hnswMockLayers = {
+            6: ['Hot Kitchen Zone', 'Cold Bar Zone', 'Dessert Station'],
+            4: ['สถานีผัด/ทอด', 'สถานีเตรียมผักสด', 'สถานีเครื่องปั่น'],
+            2: ['ราวแขวนกระทะ', 'ตู้แช่เย็น 4°C', 'ตู้แช่ผลไม้สด'],
+            0: ['[กระทะจีน]', '[ผักสลัดแก้ว]', '[น้ำเชื่อม]', '[เครื่องปั่น]']
+        };
+
+        // ฟังก์ชันเวลากดเปลี่ยน Layer
+        function selectHNSWLayer(layer, btnElement) {
+            document.querySelectorAll('.hnsw-layer-btn').forEach(btn => {
+                btn.className = "w-full p-2 rounded text-left bg-white/5 text-gray-300 hover:bg-white/10 hnsw-layer-btn";
+            });
+            if (btnElement) {
+                // ไฮไลต์ปุ่มที่ถูกกด
+                btnElement.className = "w-full p-2 rounded text-left bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-bold hnsw-layer-btn";
+            }
+
+            const container = document.getElementById('hnsw-layer-visual-container');
+            const visualTitle = document.getElementById('hnsw-visual-layer-title');
+            if (!container || !visualTitle) return;
+
+            container.innerHTML = '';
+            visualTitle.innerText = `Active: Layer ${layer} Structure`;
+
+            // วาดกล่องข้อความใหม่ตามข้อมูลใน hnswMockLayers
+            hnswMockLayers[layer].forEach(item => {
+                const node = document.createElement('div');
+                node.className = "px-4 py-2 bg-cyan-900/30 border border-cyan-500/50 rounded-xl text-white font-mono text-sm animate-pulse";
+                node.innerText = item;
+                container.appendChild(node);
+            });
+        }
+
+        // ฟังก์ชันจำลองหลอดโหลดเปอร์เซ็นต์ในหน้า D1
+        function triggerSafetyReactorRun(btn) {
+            if (!btn) return;
+            btn.disabled = true;
+            btn.innerText = "RUNNING SAFETY LEVEL CHECK...";
+
+            const progress = document.getElementById('progress-safety-run');
+            if (progress) progress.style.width = '0%';
+
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 5; // เพิ่มขึ้นทีละ 5%
+                if (progress) progress.style.width = `${width}%`;
+                if (width >= 100) {
+                    clearInterval(interval);
+                    btn.disabled = false;
+                    btn.innerText = "START SAFETY CAMPAIGN RUN";
+                    alert("EABS-01 Run Complete. All AI models certified safe under the current thermal configurations!");
+                }
+            }, 100);
+        }
+
+        // ฟังก์ชันเปิด-ปิด การคำนวณกราฟความร้อนในหน้า D2
+        function handleTelemetryViews(subModuleId) {
+            if (subModuleId === 'D2') {
+                initHeatmapGrid();
+                if (!appState.heatmapInterval) {
+                    appState.heatmapInterval = setInterval(randomizeHeatmapValues, 1000); // อัปเดตทุก 1 วิ
+                }
+            } else {
+                // ถ้าเปลี่ยนไปหน้าอื่น ให้หยุดทำงานประหยัดทรัพยากร
+                if (appState.heatmapInterval) {
+                    clearInterval(appState.heatmapInterval);
+                    appState.heatmapInterval = null;
+                }
+            }
+        }
+
+        // วาดตาราง 64 ช่องเพื่อแสดงความร้อน (D2)
+        function initHeatmapGrid() {
+            const grid = document.getElementById('heatmap-grid-container');
+            if (!grid) return;
+            grid.innerHTML = '';
+            for (let i = 0; i < 64; i++) {
+                const node = document.createElement('div');
+                node.className = "h-8 rounded flex items-center justify-center font-mono text-[10px] font-bold text-black transition-all duration-500";
+                node.id = `temp-grid-${i}`;
+                grid.appendChild(node);
+            }
+            randomizeHeatmapValues();
+        }
+
+        // สุ่มตัวเลขความร้อนและเปลี่ยนสี (ฟ้า -> ส้ม -> แดง)
+        function randomizeHeatmapValues() {
+            for (let i = 0; i < 64; i++) {
+                const temp = Math.floor(Math.random() * 45) + 30; // สุ่มอุณหภูมิ 30C ถึง 75C
+                const node = document.getElementById(`temp-grid-${i}`);
+                if (!node) continue;
+
+                node.innerText = `${temp}°`;
+                if (temp < 45) {
+                    node.className = "h-8 rounded flex items-center justify-center font-mono text-[10px] font-bold text-white bg-blue-500/40 border border-blue-500/20";
+                } else if (temp < 60) {
+                    node.className = "h-8 rounded flex items-center justify-center font-mono text-[10px] font-bold text-black bg-amber-500/60 border border-amber-500/20";
+                } else {
+                    node.className = "h-8 rounded flex items-center justify-center font-mono text-[10px] font-bold text-white bg-red-600/80 border border-red-500/40 animate-pulse";
+                }
+            }
+            const coreTempVal = document.getElementById('core-temp-val');
+            if (coreTempVal) {
+                const coreTemp = Math.floor(Math.random() * 15) + 40;
+                coreTempVal.innerText = `${coreTemp}.4 °C`;
+            }
+        }
+
+        // วาดกราฟเส้นหลักในหน้า A1 ด้วย Chart.js
+        function renderLandscapeChart() {
+            try {
+                const canvas = document.getElementById('dashboardChart');
+                if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                const isLight = document.body.classList.contains('light-theme');
+                const textColor = isLight ? '#18181b' : '#f3f4f6';
+
+                appState.dashboardChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                        datasets: [{
+                            label: 'Active Agents Efficiency',
+                            data: [65, 78, 72, 89, 85, 96],
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderColor: '#10b981', // สีเขียว Emerald
+                            borderWidth: 2,
+                            tension: 0.4, // ทำให้กราฟดูโค้งมนสมูท (0 คือกราฟหยักตรง)
+                            fill: true // ระบายสีใต้กราฟ
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false, // บังคับให้กราฟขยายเต็มกรอบคอนเทนเนอร์เสมอ
+                        scales: {
+                            y: {
+                                grid: { color: isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)' },
+                                ticks: { color: textColor }
+                            },
+                            x: {
+                                grid: { display: false }, // ซ่อนเส้นตารางแนวตั้ง
+                                ticks: { color: textColor }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false } // ซ่อนแถบคำอธิบายกราฟ (Legend) ด้านบนทิ้ง
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error("Chart initialization failed:", e);
+            }
+        }
+
+        // ==========================================
+        // คำสั่งนี้จะทำงานตอนที่หน้าเว็บโหลดเสร็จทั้งหมด (Startup)
+        // ==========================================
+        document.addEventListener('DOMContentLoaded', () => {
+            // บังคับเปิดแท็บ A เป็นหน้าเริ่มต้น
+            switchDomain('A');
+            // วาดกราฟทันที
+            renderLandscapeChart();
+
+            // ระบบคำนวณทิศทางเมาส์ขยับเพื่อทำแสงสะท้อนบนการ์ด (.interactive-card)
+            document.addEventListener('mousemove', (e) => {
+                const cards = document.querySelectorAll('.interactive-card');
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; // พิกัด X ของเมาส์ที่อยู่บนการ์ด
+                    const y = e.clientY - rect.top;  // พิกัด Y ของเมาส์ที่อยู่บนการ์ด
+                    // เซ็ตพิกัดลงไปที่ CSS variables เพื่อให้วงกลมแสงขยับตาม
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

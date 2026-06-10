@@ -1,0 +1,612 @@
+/* CSS Design System Tokens */
+:root {
+    --bg-dark: #09090B;
+    --card-bg: rgba(15, 23, 42, 0.4);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-primary: #FAFAFA;
+    --text-muted: #A1A1AA;
+    
+    /* Branding Accent Colors */
+    --accent-orange: #ED6C35;
+    --accent-orange-glow: rgba(237, 108, 53, 0.35);
+    --accent-purple: #A855F7;
+    --accent-purple-glow: rgba(168, 85, 247, 0.25);
+    
+    /* Font stacks */
+    --font-heading: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
+}
+
+/* Base Reset & Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    line-height: 1.5;
+}
+
+/* Background Ambient Neon Orbs */
+.glow-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    -webkit-filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.6;
+    animation: pulse-glow 8s ease-in-out infinite alternate;
+}
+
+.orb-purple {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, var(--accent-purple-glow) 0%, transparent 70%);
+    top: -150px;
+    right: -100px;
+    animation-delay: 0s;
+}
+
+.orb-orange {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--accent-orange-glow) 0%, transparent 70%);
+    top: 300px;
+    left: -200px;
+    animation-delay: 2s;
+}
+
+@keyframes pulse-glow {
+    0% {
+        transform: scale(1) translate(0, 0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(1.15) translate(30px, -20px);
+        opacity: 0.7;
+    }
+}
+
+/* ─────────────────────────────────────────
+   1. NAVIGATION HEADER (Navbar)
+   ───────────────────────────────────────── */
+.navbar {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    background: rgba(9, 9, 11, 0.4);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.25rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.brand-logo {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent-orange), var(--accent-purple));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--bg-dark);
+    font-size: 1rem;
+    box-shadow: 0 0 15px var(--accent-orange-glow);
+}
+
+.nav-brand span {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.2rem;
+    letter-spacing: 0.05em;
+    background: linear-gradient(to right, #ffffff, var(--text-muted));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: var(--text-primary);
+}
+
+.nav-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* Buttons System */
+.btn {
+    font-family: var(--font-body);
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    outline: none;
+    border: none;
+}
+
+.btn-primary {
+    background-color: var(--accent-orange);
+    color: #ffffff;
+    box-shadow: 0 0 20px rgba(237, 108, 53, 0.25);
+}
+
+.btn-primary:hover {
+    background-color: #ff7d45;
+    box-shadow: 0 0 25px rgba(237, 108, 53, 0.45);
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: scale(0.96) translateY(0);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.btn-outline:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.btn-outline:active {
+    transform: scale(0.96) translateY(0);
+}
+
+.btn-lg {
+    padding: 0.875rem 1.75rem;
+    font-size: 1rem;
+    border-radius: 12px;
+}
+
+/* ─────────────────────────────────────────
+   2. HERO CONTENT SECTION
+   ───────────────────────────────────────── */
+.hero-section {
+    padding: 8.5rem 2rem 5rem;
+    display: flex;
+    justify-content: center;
+    z-index: 10;
+    position: relative;
+}
+
+.hero-container {
+    max-width: 900px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2rem;
+}
+
+/* Pill Badge */
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 4px 12px 4px 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 9999px;
+    transition: border-color 0.3s;
+    cursor: pointer;
+}
+
+.hero-badge:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.badge-tag {
+    background: var(--accent-orange);
+    color: var(--bg-dark);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 9999px;
+}
+
+.badge-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.badge-arrow {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+/* Headings */
+.hero-title {
+    font-family: var(--font-heading);
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: #ffffff;
+    max-width: 800px;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #ffffff 30%, var(--accent-orange) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    max-width: 680px;
+    line-height: 1.6;
+}
+
+.hero-ctas {
+    display: flex;
+    gap: 1.25rem;
+    margin-top: 0.5rem;
+}
+
+/* ─────────────────────────────────────────
+   3. MOCKUP PREVIEW CARD (Dashboard)
+   ───────────────────────────────────────── */
+.mockup-frame {
+    width: 100%;
+    margin-top: 3rem;
+    position: relative;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), transparent 40%, rgba(237, 108, 53, 0.2));
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+}
+
+.mockup-glow {
+    position: absolute;
+    width: 80%;
+    height: 80%;
+    left: 10%;
+    top: 10%;
+    background: radial-gradient(circle, rgba(168, 85, 247, 0.15) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.mockup-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    z-index: 5;
+    position: relative;
+}
+
+/* Mockup Header */
+.mock-header {
+    height: 48px;
+    background: rgba(9, 9, 11, 0.5);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1.25rem;
+}
+
+.mock-dots {
+    display: flex;
+    gap: 6px;
+}
+
+.mock-dots .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.mock-dots .red { background-color: #EF4444; }
+.mock-dots .yellow { background-color: #F59E0B; }
+.mock-dots .green { background-color: #10B981; }
+
+.mock-search {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 4px 2rem;
+    font-size: 0.65rem;
+    font-family: monospace;
+    color: var(--text-muted);
+}
+
+.mock-user {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+}
+
+/* Mockup Content Container */
+.mock-content {
+    display: flex;
+    height: 380px;
+}
+
+/* Mockup Sidebar */
+.mock-sidebar {
+    width: 60px;
+    background: rgba(9, 9, 11, 0.2);
+    border-right: 1px solid var(--border-color);
+    padding: 1.5rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+}
+
+.sidebar-row {
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    transition: background 0.3s;
+}
+
+.sidebar-row.active {
+    background: var(--accent-orange);
+    box-shadow: 0 0 10px var(--accent-orange-glow);
+}
+
+/* Mockup Main View */
+.mock-main {
+    flex: 1;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    overflow: hidden;
+}
+
+/* Stats Cards Grid */
+.main-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.grid-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.card-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+}
+
+.card-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+/* Progress Bars inside mock */
+.progress-track {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 2px;
+}
+
+.progress-bar.orange { background-color: var(--accent-orange); }
+.progress-bar.purple { background-color: var(--accent-purple); }
+.progress-bar.green { background-color: #10B981; }
+
+/* Large Graph Card */
+.graph-card {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 0;
+}
+
+.graph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.graph-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.graph-legend {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.65rem;
+    color: var(--text-muted);
+}
+
+.legend-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.legend-dot.orange { background-color: var(--accent-orange); }
+.legend-dot.purple { background-color: var(--accent-purple); }
+
+.graph-visual {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    border-radius: 8px;
+    background: rgba(9, 9, 11, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.02);
+    overflow: hidden;
+}
+
+.graph-svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* ─────────────────────────────────────────
+   4. LOGO CLOUD SECTION
+   ───────────────────────────────────────── */
+.logos-section {
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.logos-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    opacity: 0.8;
+}
+
+.logos-grid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3.5rem;
+    flex-wrap: wrap;
+}
+
+.logo-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-muted);
+    font-size: 1.25rem;
+    opacity: 0.5;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.logo-item:hover {
+    opacity: 1;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+.logo-item[title="React.js"]:hover { color: #61DAFB; }
+.logo-item[title="TypeScript"]:hover { color: #3178C6; }
+.logo-item[title="Tailwind CSS"]:hover { color: #38BDF8; }
+.logo-item[title="Figma"]:hover { color: #F24E1E; }
+
+.logo-item span {
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+/* ─────────────────────────────────────────
+   5. RESPONSIVE DESIGN (Media Queries)
+   ───────────────────────────────────────── */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none; /* Hide standard nav on mobile */
+    }
+    
+    .hero-title {
+        font-size: 2.75rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .main-grid {
+        grid-template-columns: 1fr; /* Stack columns on mobile */
+    }
+    
+    .mock-content {
+        height: auto;
+        flex-direction: column;
+    }
+    
+    .mock-sidebar {
+        width: 100%;
+        height: 50px;
+        flex-direction: row;
+        justify-content: center;
+        padding: 0.5rem;
+    }
+    
+    .logos-grid {
+        gap: 2rem;
+    }
+}
