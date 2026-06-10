@@ -1,6 +1,6 @@
 # GoVibe Mission Control Design System
 
-**Version:** 2.0.0  
+**Version:** 2.1.0  
 **Status:** Active implementation reference  
 **App Entry:** `src/App.tsx`  
 **Data Entry:** `src/mission.ts`
@@ -43,7 +43,8 @@ Light theme is implemented by the `.light-theme` body class and must keep the sa
 
 ### Sidebar
 - Shows the current domain module list.
-- Collapsed state must preserve icon access and avoid text overflow.
+- Starts collapsed, expands on hover, and can be locked expanded with the sidebar toggle.
+- Collapsed state must preserve module access, tooltip labels, and avoid text overflow.
 
 ### Panels
 - Use `.panel` for framed content.
@@ -63,6 +64,16 @@ Light theme is implemented by the `.light-theme` body class and must keep the sa
 ### Data Ingest
 - C3 is the manual JSON entrypoint for `MissionEvent`.
 - It is intended for local testing, backend integration, and debugging real payload shape.
+- C3 also contains query comparison panes for Standard RAG and Multi-Hop Graph Retrieve, but must not fake query results without a connected debugger feed.
+
+### Template-Aligned Surfaces
+- A2 includes roadmap header controls, export/reset affordances, an assist roster surface, and task lanes.
+- A5 includes live-agent detail and inline configuration controls inspired by `UI Components/agentcard01`.
+- B4 includes graph depth controls and a selected-node info panel.
+- C1 uses a filterable table for symbols.
+- C4 uses an ERD canvas/table-card surface.
+- C5 uses an HNSW layer selector.
+- D1 includes safety regulator, safety run command, and oscilloscope sandbox surfaces.
 
 ## Data Entrypoints
 
@@ -78,4 +89,5 @@ The UI accepts real data through:
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 2.1.0 | 2026-06-10 | Added template-aligned surfaces, hover sidebar behavior, filterable table, graph controls, debugger panes, ERD/vector/safety command surfaces, and PRODUCT.md context. |
 | 2.0.0 | 2026-06-10 | Updated docs to match React/Vite dashboard, MissionGateway, honest empty states, and live data entrypoints. |

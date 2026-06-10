@@ -86,12 +86,14 @@ function useCanvasChart(snapshot: MissionSnapshot, theme: ThemeMode) {
 
 function Header({
   activeDomain,
+  connectionLabel,
   theme,
   onDomainChange,
   onToggleTheme,
   onRun,
 }: {
   activeDomain: DomainId;
+  connectionLabel: string;
   theme: ThemeMode;
   onDomainChange: (domain: DomainId) => void;
   onToggleTheme: () => void;
@@ -103,7 +105,7 @@ function Header({
         <div className="brand-mark">GV</div>
         <div>
           <strong>GoVibe Mission Control</strong>
-          <span>React Data Runtime</span>
+          <span>Agent Command Center</span>
         </div>
       </div>
       <nav className="domain-tabs">
@@ -119,8 +121,12 @@ function Header({
         ))}
       </nav>
       <div className="top-actions">
-        <button onClick={onRun}>Run</button>
-        <button onClick={onToggleTheme}>{theme === "dark" ? "Dark" : "Light"}</button>
+        <div className="reactor-status">
+          <span className={connectionLabel === "CONNECTED" ? "online" : ""} />
+          <strong>WS REACTOR</strong>
+        </div>
+        <button className="primary-action" onClick={onRun}>Test Run</button>
+        <button className="icon-action" onClick={onToggleTheme} aria-label="Toggle theme">{theme === "dark" ? "Moon" : "Sun"}</button>
       </div>
     </header>
   );
@@ -143,14 +149,18 @@ function Sidebar({
   return (
     <aside className={expanded ? "sidebar expanded" : "sidebar"}>
       <div className="sidebar-context">
-        <span style={{ color: domain.color }}>{domain.icon}</span>
-        <strong>{domain.title}</strong>
+        <span style={{ color: domain.color }}>{activeDomain}</span>
+        <div>
+          <small>Active Domain</small>
+          <strong>{domain.title}</strong>
+        </div>
       </div>
       <div className="side-nav">
         {domain.subModules.map((sub) => (
           <button
             key={sub.id}
             aria-label={`${sub.id}: ${sub.name}`}
+            data-tooltip={sub.name}
             className={activeView === sub.id ? "active" : ""}
             onClick={() => onViewChange(sub.id)}
           >
@@ -159,7 +169,7 @@ function Sidebar({
           </button>
         ))}
       </div>
-      <button className="sidebar-toggle" onClick={onToggle}>{expanded ? "Collapse" : "Expand"}</button>
+      <button className="sidebar-toggle" onClick={onToggle}>{expanded ? "Collapse Sidebar" : "Expand Sidebar"}</button>
     </aside>
   );
 }
@@ -217,6 +227,7 @@ function RealTimeDashboard({ snapshot, theme }: { snapshot: MissionSnapshot; the
 
 function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: (command: MissionCommand) => void }) {
   const [activeId, setActiveId] = useState<string | undefined>();
+  const [configOpen, setConfigOpen] = useState(false);
   const active = snapshot.agents.find((agent) => agent.id === activeId) ?? snapshot.agents[0];
 
   const selectAgent = (agent: AgentRecord) => {
@@ -239,15 +250,46 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
             ))}
           </section>
           {active ? (
-            <section className="panel agent-detail">
-              <h2>{active.name}</h2>
-              <p>{active.role}</p>
-              <div className="metric-grid compact">
-                <article><span>Model</span><strong>{active.model}</strong></article>
-                <article><span>Tasks</span><strong>{active.tasks}</strong></article>
-                <article><span>Accuracy</span><strong>{active.accuracy}</strong></article>
-                <article><span>Speed</span><strong>{active.speed}</strong></article>
+            <section className={configOpen ? "panel agent-detail config-open" : "panel agent-detail"}>
+              <div className="agent-card-front">
+                <div className="agent-avatar">{active.name.slice(0, 2).toUpperCase()}</div>
+                <div>
+                  <h2>{active.name}</h2>
+                  <p>{active.role}</p>
+                  <span className={`status-pill ${active.status}`}>{active.status}</span>
+                </div>
+                <button onClick={() => setConfigOpen((value) => !value)}>{configOpen ? "Close Config" : "Configure"}</button>
               </div>
+              {!configOpen ? (
+                <div className="metric-grid compact">
+                  <article><span>Model</span><strong>{active.model}</strong></article>
+                  <article><span>Tasks</span><strong>{active.tasks}</strong></article>
+                  <article><span>Accuracy</span><strong>{active.accuracy}</strong></article>
+                  <article><span>Speed</span><strong>{active.speed}</strong></article>
+                </div>
+              ) : (
+                <div className="agent-config-grid">
+                  <label>
+                    <span>System Prompt</span>
+                    <textarea placeholder="Connect agent config events to edit prompt." />
+                  </label>
+                  <label>
+                    <span>Model Source</span>
+                    <select defaultValue="cloud">
+                      <option value="cloud">Cloud API</option>
+                      <option value="local">Local Server</option>
+                    </select>
+                  </label>
+                  <label>
+                    <span>Context Window</span>
+                    <input type="range" min="8" max="200" defaultValue="64" />
+                  </label>
+                  <label>
+                    <span>Temperature</span>
+                    <input type="range" min="0" max="2" step="0.1" defaultValue="0.7" />
+                  </label>
+                </div>
+              )}
             </section>
           ) : null}
         </div>
@@ -257,19 +299,42 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
 }
 
 function GraphView({ snapshot, title }: { snapshot: MissionSnapshot; title: string }) {
+  const [depth, setDepth] = useState("all");
+  const selected = snapshot.graph.nodes[0];
+  const liveCallGraph = title === "Live Call Graph";
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Graph" title={title} desc="Graph nodes and edges are driven by gateway data." />
-      <section className="panel graph-panel">
-        {snapshot.graph.nodes.length === 0 ? <EmptyState title="No graph data" body="Publish graph.update to render the relationship map." /> : (
-          <>
-            {snapshot.graph.edges.map((edge) => <div className="edge-row" key={`${edge.source}-${edge.target}`}>{edge.source} {"->"} {edge.target}</div>)}
-            <div className="node-cloud">
-              {snapshot.graph.nodes.map((node) => <span key={node.id}>{node.label}</span>)}
-            </div>
-          </>
-        )}
-      </section>
+      <div className="view-title-row">
+        <ViewHeader eyebrow="Graph" title={title} desc="Graph nodes and edges are driven by gateway data." />
+        {liveCallGraph ? (
+          <div className="graph-controls">
+            {["1", "2", "all"].map((value) => (
+              <button key={value} className={depth === value ? "active" : ""} onClick={() => setDepth(value)}>Depth {value}</button>
+            ))}
+            <button>Sync Graph</button>
+          </div>
+        ) : null}
+      </div>
+      <div className={liveCallGraph ? "graph-layout" : ""}>
+        <section className="panel graph-panel">
+          {snapshot.graph.nodes.length === 0 ? <EmptyState title="No graph data" body="Publish graph.update to render the relationship map." /> : (
+            <>
+              {snapshot.graph.edges.map((edge) => <div className="edge-row" key={`${edge.source}-${edge.target}`}>{edge.source} {"->"} {edge.target}</div>)}
+              <div className="node-cloud">
+                {snapshot.graph.nodes.map((node) => <span key={node.id}>{node.label}</span>)}
+              </div>
+            </>
+          )}
+        </section>
+        {liveCallGraph ? (
+          <section className="panel graph-info">
+            <h2>{selected?.label ?? "Select a node"}</h2>
+            <div className="kv-row"><span>Depth</span><strong>{depth}</strong></div>
+            <div className="kv-row"><span>Nodes</span><strong>{snapshot.graph.nodes.length}</strong></div>
+            <div className="kv-row"><span>Edges</span><strong>{snapshot.graph.edges.length}</strong></div>
+          </section>
+        ) : null}
+      </div>
     </div>
   );
 }
@@ -290,6 +355,52 @@ function RecordsView({ snapshot, kind }: { snapshot: MissionSnapshot; kind: "spe
           <pre className="panel log-line" key={line}>{line}</pre>
         )) : <EmptyState title="No campaign logs" body="Publish snapshot.campaignLogs to populate this view." />)}
       </section>
+    </div>
+  );
+}
+
+function SymbolExplorerView({ snapshot }: { snapshot: MissionSnapshot }) {
+  const [filter, setFilter] = useState("");
+  const symbols = snapshot.symbols.filter((symbol) => {
+    const query = filter.toLowerCase();
+    return symbol.name.toLowerCase().includes(query) || symbol.path.toLowerCase().includes(query) || symbol.kind.toLowerCase().includes(query);
+  });
+
+  return (
+    <div className="view-stack">
+      <div className="view-title-row">
+        <ViewHeader eyebrow="Block DB" title="Symbol Explorer Hub" />
+        <input
+          className="table-filter"
+          value={filter}
+          onChange={(event) => setFilter(event.target.value)}
+          placeholder="Filter symbols..."
+        />
+      </div>
+      {snapshot.symbols.length === 0 ? <EmptyState title="No symbols indexed" body="Publish snapshot.symbols to populate this view." /> : (
+        <section className="panel table-panel">
+          <table>
+            <thead>
+              <tr>
+                <th>Symbol Name</th>
+                <th>Type</th>
+                <th>Source File</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {symbols.map((symbol) => (
+                <tr key={`${symbol.path}-${symbol.name}`}>
+                  <td>{symbol.name}</td>
+                  <td>{symbol.kind}</td>
+                  <td>{symbol.path}</td>
+                  <td><span>Indexed</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+      )}
     </div>
   );
 }
@@ -345,20 +456,52 @@ function ModuleBlueprint({
 }
 
 function RoadmapBoard() {
+  const [exportOpen, setExportOpen] = useState(false);
   return (
-    <ModuleBlueprint
-      eyebrow="Planning"
-      title="Roadmap Board"
-      desc="Roadmap structure follows SITE_MAP A2 and is ready for live task snapshots."
-      lanes={[
-        { title: "Phase", body: "Top-level delivery horizon." },
-        { title: "Sprint", body: "Time-boxed execution slice." },
-        { title: "Epic", body: "Large product outcome." },
-        { title: "User Story", body: "User-facing requirement." },
-        { title: "Task", body: "Executable engineering unit." },
-      ]}
-      empty="Publish roadmap task snapshots through the mission gateway to fill the board."
-    />
+    <div className="view-stack">
+      <section className="panel roadmap-header">
+        <div>
+          <ViewHeader eyebrow="Planning" title="CoVibe Development Roadmap" desc="Roadmap controls are ready for live task snapshots." />
+        </div>
+        <div className="roadmap-progress">
+          <span>Overall Progress</span>
+          <strong>Awaiting feed</strong>
+          <div><i /></div>
+        </div>
+        <div className="roadmap-actions">
+          <div className="export-menu">
+            <button onClick={() => setExportOpen((value) => !value)}>Export</button>
+            {exportOpen ? (
+              <div>
+                <button>JSON</button>
+                <button>YAML</button>
+                <button>Markdown</button>
+              </div>
+            ) : null}
+          </div>
+          <button>Reset Board</button>
+        </div>
+      </section>
+      <div className="roadmap-layout">
+        <section className="panel assist-roster">
+          <h2>AI Assist Roster</h2>
+          <p>Agent assignment activates when roadmap tasks arrive from the mission gateway.</p>
+          <div className="mini-agent-card">
+            <span>GV</span>
+            <strong>Live agent feed required</strong>
+            <small>Use `agents.update` with roadmap events.</small>
+          </div>
+        </section>
+        <section className="roadmap-board">
+          {["Phase", "Sprint", "Epic", "User Story", "Task"].map((lane) => (
+            <article className="panel roadmap-lane" key={lane}>
+              <span>{lane}</span>
+              <EmptyState title="No roadmap items" body={`Connect ${lane.toLowerCase()} records through the mission gateway.`} />
+            </article>
+          ))}
+        </section>
+      </div>
+    </div>
   );
 }
 
@@ -433,13 +576,16 @@ function IntelligenceZoo() {
 function DatabaseErdView({ snapshot }: { snapshot: MissionSnapshot }) {
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Schema" title="Database ERD Schema" desc="C4 owns relational schema visibility for Block DB." />
-      <section className="panel erd-panel">
+      <div className="view-title-row">
+        <ViewHeader eyebrow="Schema" title="Database ERD Schema" desc="C4 owns relational schema visibility for Block DB." />
+        <button className="panel-action">Re-align Connections</button>
+      </div>
+      <section className="panel erd-canvas">
         {snapshot.symbols.length === 0 ? (
           <EmptyState title="No schema records" body="Publish schema or symbol records before rendering the ERD." />
         ) : (
           snapshot.symbols.map((symbol) => (
-            <article key={`${symbol.path}-${symbol.name}`}>
+            <article className="db-table-card" key={`${symbol.path}-${symbol.name}`}>
               <strong>{symbol.name}</strong>
               <span>{symbol.kind}</span>
               <small>{symbol.path}</small>
@@ -452,33 +598,63 @@ function DatabaseErdView({ snapshot }: { snapshot: MissionSnapshot }) {
 }
 
 function HnswVectorView({ snapshot }: { snapshot: MissionSnapshot }) {
+  const [layer, setLayer] = useState(6);
   return (
     <div className="view-stack">
       <ViewHeader eyebrow="Vector Index" title="HNSW Vector Space Map" desc="C5 is separated from ERD so vector topology can evolve independently." />
-      <section className="panel vector-panel">
-        {snapshot.graph.nodes.length === 0 ? (
-          <EmptyState title="No vector map" body="Publish vector nodes through graph.update or a future vector event to render this map." />
-        ) : (
-          <div className="node-cloud">
-            {snapshot.graph.nodes.map((node) => <span key={node.id}>{node.label}</span>)}
+      <div className="hnsw-layout">
+        <section className="panel hnsw-controls">
+          <h2>Filter HNSW Layer View</h2>
+          {[6, 4, 2, 0].map((value) => (
+            <button key={value} className={layer === value ? "active" : ""} onClick={() => setLayer(value)}>Layer {value}</button>
+          ))}
+        </section>
+        <section className="panel vector-panel">
+          <div className="vector-title-row">
+            <h2>Active: Layer {layer}</h2>
+            <span>Simulation Space</span>
           </div>
-        )}
-      </section>
+          {snapshot.graph.nodes.length === 0 ? (
+            <EmptyState title="No vector map" body="Publish vector nodes through graph.update or a future vector event to render this map." />
+          ) : (
+            <div className="node-cloud">
+              {snapshot.graph.nodes.map((node) => <span key={node.id}>{node.label}</span>)}
+            </div>
+          )}
+        </section>
+      </div>
     </div>
   );
 }
 
 function ReactorRunTrigger({ send }: { send: (command: MissionCommand) => void }) {
+  const [powerLimit, setPowerLimit] = useState(85);
+  const [armed, setArmed] = useState(false);
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Benchmark" title="Reactor Run Trigger" desc="D1 sends benchmark run commands through the configured mission transport." />
-      <section className="panel run-panel">
+      <ViewHeader eyebrow="Benchmark" title="System Execution Safety and Triggers" desc="D1 sends benchmark run commands through the configured mission transport." />
+      <div className="reactor-grid">
+        <section className="panel regulator-panel">
+          <h2>Underclocking Power Regulator</h2>
+          <p>Adjust local safety preference before sending the reactor command.</p>
+          <input type="range" min="40" max="100" value={powerLimit} onChange={(event) => setPowerLimit(Number(event.target.value))} />
+          <div className="kv-row"><span>Power Limit</span><strong>{powerLimit}%</strong></div>
+        </section>
+        <section className="panel safety-run-panel">
+          <div>
+            <h2>Reactor Execution Safety Run</h2>
+            <span className={armed ? "status-pill online" : "status-pill idle"}>{armed ? "armed" : "ready"}</span>
+          </div>
+          <div className="safety-progress"><i style={{ width: armed ? "100%" : "0%" }} /></div>
+          <button onClick={() => { setArmed(true); void send({ type: "reactor.run", profile: "default" }); }}>Start Safety Campaign Run</button>
+        </section>
+      </div>
+      <section className="panel oscilloscope-panel">
         <div>
-          <span>Command</span>
-          <strong>reactor.run</strong>
-          <p>Profile: default</p>
+          <h2>Oscilloscope Sound Sandbox</h2>
+          <button type="button">Play Stream</button>
         </div>
-        <button onClick={() => void send({ type: "reactor.run", profile: "default" })}>Run Reactor</button>
+        <div className="oscilloscope-screen">Standby. Connect audio stream to render waveform.</div>
       </section>
     </div>
   );
@@ -486,6 +662,7 @@ function ReactorRunTrigger({ send }: { send: (command: MissionCommand) => void }
 
 function DataIngestView({ ingest }: { ingest: (json: string) => void }) {
   const [payload, setPayload] = useState("");
+  const [query, setQuery] = useState("");
   const [message, setMessage] = useState("Paste a MissionEvent JSON payload and ingest it into the live gateway.");
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -501,6 +678,22 @@ function DataIngestView({ ingest }: { ingest: (json: string) => void }) {
   return (
     <div className="view-stack">
       <ViewHeader eyebrow="Debugger" title="SRS-G Debugger" desc="Manual JSON ingress for real MissionEvent payloads." />
+      <section className="panel query-debugger">
+        <div className="query-row">
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Enter query text here..." />
+          <button type="button">Submit Query</button>
+        </div>
+        <div className="debug-output-grid">
+          <article>
+            <span>Standard RAG output</span>
+            <p>{query ? "Connect debugger transport to run this query." : "Waiting for query..."}</p>
+          </article>
+          <article>
+            <span>Multi-Hop Graph Retrieve</span>
+            <p>{query ? "Connect graph retrieval events to compare results." : "Waiting for query..."}</p>
+          </article>
+        </div>
+      </section>
       <form className="panel ingest-panel" onSubmit={submit}>
         <label htmlFor="mission-event-json">MissionEvent JSON</label>
         <textarea
@@ -535,7 +728,7 @@ function RenderView({
   if (activeView === "A5") return <AgentManagement snapshot={snapshot} send={send} />;
   if (activeView === "B2") return <RecordsView snapshot={snapshot} kind="specs" />;
   if (activeView === "B3" || activeView === "B4") return <GraphView snapshot={snapshot} title={activeView === "B3" ? "Interactive Knowledge Graph" : "Live Call Graph"} />;
-  if (activeView === "C1") return <RecordsView snapshot={snapshot} kind="symbols" />;
+  if (activeView === "C1") return <SymbolExplorerView snapshot={snapshot} />;
   if (activeView === "D2") return <Heatmap snapshot={snapshot} />;
   if (activeView === "D3") return <RecordsView snapshot={snapshot} kind="logs" />;
   if (activeView === "D1") return <ReactorRunTrigger send={send} />;
@@ -583,7 +776,7 @@ export function App() {
   const [theme, setTheme] = useState<ThemeMode>(() => localStorage.getItem("govibe-theme") === "light" ? "light" : "dark");
   const [activeDomain, setActiveDomain] = useState<DomainId>("A");
   const [activeView, setActiveView] = useState<ViewId>("A1");
-  const [sidebarExpanded, setSidebarExpanded] = useState(true);
+  const [sidebarExpanded, setSidebarExpanded] = useState(false);
   const domain = missionDomains[activeDomain];
   const activeModule = moduleLookup[activeView];
 
@@ -610,6 +803,7 @@ export function App() {
       <div className="ambient two" />
       <Header
         activeDomain={activeDomain}
+        connectionLabel={connectionLabel}
         theme={theme}
         onDomainChange={changeDomain}
         onToggleTheme={() => setTheme((value) => value === "dark" ? "light" : "dark")}

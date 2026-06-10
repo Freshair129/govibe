@@ -73,17 +73,17 @@ The template `siteMap` contains the same 17 modules as the React implementation:
 - Any static structural labels are allowed only when they define the surface contract, not when they pretend to be backend data.
 - Replace template secrets and sample credentials with empty inputs, redacted placeholders, or real configuration events.
 
-## Current React Gaps Against Template
+## Current React Alignment Against Template
 
-- Sidebar is expanded by default and has a manual toggle; hover expansion and collapsed tooltips are not yet matched.
-- A2 has the roadmap lane surface but not the full accordion checklist, export dropdown, reset flow, or agent assignment interactions.
-- A5 renders live agent records but not the template's flip-card configuration workflow.
-- B4 renders graph data but does not yet use Cytoscape depth controls or selected-node info panel.
-- C1 is card-based, while the template uses a filterable symbol table.
-- C3 is currently a MissionEvent JSON debugger; the template also includes query comparison panes.
-- C4 has a schema surface but not draggable ERD table cards with connection lines.
-- C5 has a vector topology surface but not the HNSW layer selector.
-- D1 sends `reactor.run` but does not include the safety regulator, progress run, or oscilloscope sandbox.
+- Sidebar now starts collapsed, expands on hover, supports lock/collapse, and shows collapsed tooltips.
+- A2 now includes the roadmap header, progress area, export menu, reset action, assist roster surface, and five task lanes. It still needs real roadmap event shapes before accordion/checklist state can be backed by data.
+- A5 now includes a Raycast-style agent detail/config surface for live `snapshot.agents`. It still needs backend-backed config persistence before save/dirty-state controls are meaningful.
+- B4 now includes depth controls, sync action, and a selected-node info panel around the graph renderer. Cytoscape-specific physics remains a follow-up.
+- C1 now uses a filterable symbol table.
+- C3 now includes query comparison panes plus the MissionEvent JSON debugger.
+- C4 now uses an ERD-style canvas and table cards from `snapshot.symbols`. Draggable table positions and connection-line persistence remain follow-ups.
+- C5 now includes an HNSW layer selector and vector simulation panel.
+- D1 now includes the safety regulator, safety campaign command panel, and oscilloscope sandbox placeholder.
 
 ## Verification Target
 
@@ -94,4 +94,3 @@ The React app should still pass:
 - Browser load without console errors
 - Domain switching A/B/C/D with exact module names
 - No fake live data when no transport or snapshot exists
-

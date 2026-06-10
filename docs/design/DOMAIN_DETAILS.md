@@ -52,10 +52,10 @@ Each domain and module below must match `docs/design/SITE_MAP.md`, `src/mission.
 | Module | Implemented Evidence | Verification |
 | --- | --- | --- |
 | A1 Real-time Dashboard | Renders metrics, chart, and reactor rows from `MissionSnapshot`. | Ingest a `snapshot` payload with metrics; A1 must update and remove the no-telemetry empty state. |
-| A2 Roadmap Board | Renders a React roadmap surface with Phase, Sprint, Epic, User Story, and Task lanes. | Switch to A2; the five lanes and live-feed empty state must be visible. |
+| A2 Roadmap Board | Renders a roadmap header, progress surface, export/reset controls, assist roster, and Phase, Sprint, Epic, User Story, and Task lanes. | Switch to A2; controls, roster, lanes, and live-feed empty states must be visible. |
 | A3 Capability Plugins | Renders Transport, Runtime, and Workspace capability slots. | Switch to A3; capability slots must be visible without mock telemetry. |
 | A4 Brain & Config | Renders Models, Memory, and Safety configuration lanes. | Switch to A4; configuration lanes must be visible without implying active backend state. |
-| A5 Agent Management | Renders `snapshot.agents`; selecting an agent sends `agent.select`. | Ingest `agents`; click an agent; no console errors. |
+| A5 Agent Management | Renders `snapshot.agents`; selecting an agent sends `agent.select`; active agent detail has inline configuration controls. | Ingest `agents`; click an agent; open Configure; no console errors. |
 
 ### Domain B: Genesis Knowledge
 
@@ -64,23 +64,23 @@ Each domain and module below must match `docs/design/SITE_MAP.md`, `src/mission.
 | B1 AST Hierarchy Tree | Renders an AST tree surface from `snapshot.graph.nodes` while AST-specific events are pending. | Switch to B1; ingest graph nodes; tree rows appear. |
 | B2 Business Specifications | Renders `snapshot.specs`. | Ingest specs; B2 cards appear. |
 | B3 Interactive Graph | Renders `snapshot.graph.nodes` and `snapshot.graph.edges`. | Ingest graph; node labels and edge rows appear. |
-| B4 Live Call Graph | Uses the graph renderer for live call relationships. | Switch to B4 after graph ingest; node labels and edge rows remain visible. |
+| B4 Live Call Graph | Uses the graph renderer with depth controls, sync action, and selected-node info panel. | Switch to B4 after graph ingest; node labels, edge rows, depth controls, and info panel remain visible. |
 
 ### Domain C: Block DB
 
 | Module | Implemented Evidence | Verification |
 | --- | --- | --- |
-| C1 Symbol Explorer Hub | Renders `snapshot.symbols`. | Ingest symbols; symbol cards appear. |
+| C1 Symbol Explorer Hub | Renders `snapshot.symbols` in a filterable table. | Ingest symbols; table rows appear; filtering narrows visible rows. |
 | C2 Intelligence Zoo | Renders Candidate, Observed, and Promoted experiment lanes. | Switch to C2; experiment lanes and live-feed empty state must be visible. |
-| C3 SRS-G Debugger | Accepts JSON `MissionEvent` payload. | Paste a `snapshot` event and click Ingest; UI updates. |
-| C4 Database ERD Schema | Renders an ERD surface from `snapshot.symbols` while schema-specific events are pending. | Switch to C4; ingest symbols; schema cards appear. |
-| C5 HNSW Vector Space Map | Renders vector topology from `snapshot.graph.nodes` while vector-specific events are pending. | Switch to C5; ingest graph nodes; vector nodes appear. |
+| C3 SRS-G Debugger | Shows query comparison panes and accepts JSON `MissionEvent` payload. | Type a query; panes show waiting/transport copy; paste a `snapshot` event and click Ingest; UI updates. |
+| C4 Database ERD Schema | Renders an ERD canvas with table cards from `snapshot.symbols` while schema-specific events are pending. | Switch to C4; ingest symbols; schema table cards appear. |
+| C5 HNSW Vector Space Map | Renders layer controls and vector topology from `snapshot.graph.nodes` while vector-specific events are pending. | Switch to C5; change layer; ingest graph nodes; vector nodes appear. |
 
 ### Domain D: AI Benchmark
 
 | Module | Implemented Evidence | Verification |
 | --- | --- | --- |
-| D1 Reactor Run Trigger | Dedicated view button and header Run button both send `reactor.run`. | Switch to D1; click Run Reactor; gateway sends command or warns if no transport exists. |
+| D1 Reactor Run Trigger | Safety regulator, campaign run command, and oscilloscope sandbox surface; header Run and view run both send `reactor.run`. | Switch to D1; adjust power limit; click Start Safety Campaign Run; gateway sends command or warns if no transport exists. |
 | D2 Cyber Reactor Heatmap | Renders `snapshot.heatmap`. | Ingest heatmap; grid and core temp appear. |
 | D3 EABS-01 Campaign Logs | Renders `snapshot.campaignLogs`. | Ingest logs; log lines appear. |
 
