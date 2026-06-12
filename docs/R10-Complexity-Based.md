@@ -1,131 +1,152 @@
-## R10 — Complexity-Based Execution Path (v2.0)
+# R10: Complexity-Based Execution Path
 
-**Title:** Complexity-Based Execution Path + H-Scale Mapping  
-**Summary:** มาตรฐานการเลือกกระบวนการทำงานขั้นต่ำที่ปลอดภัยและเหมาะสม โดยผูกกับ Context Scaling Tier (H0-H5)  
-**Version:** 2.0  
-**Updated:** 2026-06-07  
-**Role:** Governance / Process Framework  
-**wikilink:** [[R10-Complexity-Based]]  
+**Title:** Complexity-Based Execution Path + H-Scale Mapping
+**Summary:** Minimum viable process selection for safe work execution, mapped to Context Scaling Tier H0-H5.
+**Version:** 2.1
+**Updated:** 2026-06-12
+**Role:** Governance / Process Framework
+**wikilink:** [[R10-Complexity-Based]]
 **crosslink:** [[FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS]]
 
 ---
 
-### หลักการพื้นฐาน (Core Principle)
+## 1. Core Principle
+Choose the minimum process that preserves correctness, safety, and maintainability.
 
-**เลือกกระบวนการขั้นต่ำ (Minimum Viable Process) ที่ปลอดภัยและเพียงพอ**  
-- Avoid under-engineering  
-- **Avoid over-engineering** (ปัญหาหลักของเวอร์ชันเก่า)  
-- ทุกงานต้องระบุ **Complexity Level** + **Context Tier (H)** ก่อนเริ่ม
+- Avoid under-engineering.
+- Avoid over-engineering.
+- Every non-trivial task must declare **Complexity Level** and **Context Tier** before execution.
+- When uncertainty exists, choose the higher level.
 
----
+## 2. Complexity Levels
+| Level | Name | Workflow | Use When | Recommended Context |
+|---|---|---|---|---|
+| **C-0** | Trivial | Text -> Code | Typo, copy, config, comment, or tiny isolated change | H0 |
+| **C-1** | Direct | Text -> Code | Small task, clear bug fix, single-file low-risk change | H0-H1 |
+| **C-2** | Doc-Driven | Text -> Doc -> Code | Feature work, multi-file work, medium-risk logic | H1-H2 |
+| **C-3** | Architecture-Driven | Text -> Doc -> Diagram -> Code | Architecture, governance, security, cross-system, platform-level work | H3-H5 |
 
-### ระดับ Complexity (ปรับปรุงใหม่ — 4 ระดับ)
+## 3. H-Scale Mapping
+| H Tier | Scope | Typical Work |
+|---|---|---|
+| **H0** | Subtask / PR | Local change, no broad context required |
+| **H1** | Task / Component | Component assembly, local imports/exports |
+| **H2** | Story / Feature | Feature folder, nearby types, data contracts |
+| **H3** | Epic / Module | Module integration, API/event contracts |
+| **H4** | Phase / Architecture | System architecture, governance, security model |
+| **H5** | Masterplan / Roadmap | Platform vision, operating model, enterprise-wide context |
 
-| ระดับ | ชื่อ | Workflow | ใช้เมื่อ | % โดยประมาณ | Context Hop ที่แนะนำ |
-|-------|------|----------|---------|-------------|---------------------|
-| **C-0** | **Trivial** | Text → Code | เปลี่ยน < 10 บรรทัด, typo, config, comment, small fix | 30-40% | **H0** |
-| **C-1** | **Direct** | Text → Code | Small task, bug fix ชัดเจน, single file, low-risk | 30-35% | **H0 ~ H1** |
-| **C-2** | **Doc-Driven** | Text → Doc → Code | New feature ปานกลาง, multi-file, business logic, medium-risk | 20-25% | **H1 ~ H2** |
-| **C-3** | **Architecture-Driven** | Text → Doc → Diagram → Code | Architecture change, cross-system, high-risk, platform-level | 5-10% | **H3 ~ H5** |
-
----
-
-### Mapping กับ H-Scale (Context Tier)
+Default mapping:
 
 ```yaml
 complexity_hop_mapping:
-  C-0: H0          # Trivial - No extra context
-  C-1: H0-H1       # Component level
-  C-2: H1-H2       # Feature / Story level
-  C-3: H3-H5       # Module → Enterprise (H5 สำหรับ Masterplan เท่านั้น)
+  C-0: H0
+  C-1: H0-H1
+  C-2: H1-H2
+  C-3: H3-H5
 ```
 
-**กฎ Mapping:**
-* **Default:** ใช้ $H = C + 1$ (เช่น C-2 → H2)
-* ถ้างาน C-3 แต่กระทบเฉพาะโมดูล → **H3**
-* ถ้ากระทบหลาย Cluster หรือ Masterplan → **H4-H5**
-* ห้ามใช้ H5 เว้นแต่จำเป็นจริง (ควบคุม Context bloat)
+Rules:
 
----
+- Use H3 for C-3 work that affects one module.
+- Use H4 for architecture, governance, security, and access-control changes.
+- Use H5 only for product vision, roadmap, operating model, or platform-wide direction.
+- Do not downgrade complexity after approval without justification.
 
-### Workflow ตามระดับ
+## 4. Human-First Artifact Requirements
+GoVibe uses normal SWE documents as the primary authoring format. Genesis atoms may be extracted after review, but agents and developers should not be required to author work directly as atom blocks.
 
-#### **C-0 — Trivial**
-* **กระบวนการ:** Text → Code
-* **เอกสาร:** ไม่ต้องทำเอกสารสเปก
-* **การระบุคำอธิบาย:** Inline comment บนโค้ดเพียงพอ
-* **ตัวอย่าง:** แก้ไข typo, เพิ่ม field เล็กน้อยใน UI
+| Context Tier | Required Human Artifact | Optional Supporting Artifact | Derived Atom Examples |
+|---|---|---|---|
+| **H0** | Change note or task comment | Test evidence | `PARAMS`, `HOOK` |
+| **H1** | Task spec or LLD section | API snippet, component contract | `ALGO`, `API`, `PARAMS`, `SAFTY` |
+| **H2** | SRD, Feature Spec, or Runbook | Data contract, Test Plan | `FEAT`, `RUNBOOK`, `ENTITY`, `GUARD` |
+| **H3** | SDD for the module or integration | API/Event Contract, Integration Plan | `MOD`, `FLOW`, `API`, `PROTOCOL`, `AUDIT` |
+| **H4** | SDD, ADR, Access Model, or Architecture Standard | Threat Model, Migration Plan | `FRAMEWORK`, `STACK`, `GUARD`, `MCP` |
+| **H5** | PRD, Vision, Roadmap, or Operating Model | Governance Model | `CONCEPT`, `MCP`, `FRAMEWORK` |
 
-#### **C-1 — Direct**
-* **กระบวนการ:** Text → Code
-* **การตรวจสอบ:** Scope verification + Basic test
-* **ตัวอย่าง:** เพิ่มการตรวจค่าตัวแปร (validation), สร้าง helper function ขนาดเล็ก
+## 5. Docs to Code Gate
+For C-2 and C-3 work, code generation, task generation, and agent assignment should reference an approved human-readable artifact.
 
-#### **C-2 — Doc-Driven**
-* **กระบวนการ:** Text → Feature Spec / Runbook → Code
-* **เงื่อนไข:** ต้องทำการวิเคราะห์ผลกระทบ (Impact Analysis) และได้รับอนุมัติแผนงานจาก Lead (T3)
-* **ตัวอย่าง:** สร้าง API endpoint ใหม่, ระบบจ่ายเงิน (Payment flow), ระบบหักสต็อกอัตโนมัติ
+Allowed source artifacts:
 
-#### **C-3 — Architecture-Driven**
-* **กระบวนการ:** Text → Spec → Diagram (Sequence, Architecture) → Code
-* **เงื่อนไข:** ต้องผ่านการตรวจสอบสถาปัตยกรรม (Architecture Review) + ขออนุมัติจากผู้ใช้งาน (User approval)
-* **ตัวอย่าง:** ปรับเปลี่ยนโครงสร้างระบบ GenesisDB, เพิ่มเลเยอร์บีบอัดข้อมูล Compaction ใหม่, สร้างระบบการประสานงาน AI หลายตัว (Multi-Agent coordination)
+- PRD
+- SRD
+- SDD
+- LLD
+- API Contract
+- Event Contract
+- MCP Contract
+- Runbook
+- Test Plan
 
----
+The implementation task must preserve traceability:
 
-### Enforcement Mechanisms (Mandatory)
+```text
+source document -> requirement/section -> task -> agent assignment -> artifact -> review -> test evidence
+```
 
-#### **1. GEMINI.md Gate (ต้องใส่ต้นไฟล์)**
-* Agent ต้องระบุ `Complexity: C-X | Context: H-Y` ในการตอบกลับครั้งแรกของทุกงาน
-* หากไม่ระบุ → Lead จะทำการแจ้งเตือนและบล็อกการดำเนินการ
+## 6. Diagram to Doc Gate
+Diagrams are valid source inputs for architecture work, but they must be converted into reviewed documentation before implementation begins.
 
-#### **2. Output Format บังคับ (ทุก Task)**
+Supported diagram inputs:
+
+- C4 context/container/component diagrams
+- Sequence diagrams
+- Flow diagrams
+- ERD/data model diagrams
+- Site maps
+- Dependency graphs
+- Agent workflow diagrams
+
+Required flow:
+
+```text
+diagram -> draft doc -> human review -> approved doc -> docs to code
+```
+
+## 7. Canonical Source Rule
+Human-readable SWE documents are canonical. Derived atoms support AI retrieval, graph linking, compaction, and visualization.
+
+If a derived atom conflicts with its source document, the source document wins until the owner approves a new document revision.
+
+## 8. Naming Rule
+Use `Test Plan` for testing strategy and use `SDD` or `LLD` for design. Avoid using `TDD` to mean Technical Design Document because it conflicts with Test-Driven Development.
+
+Recommended terms:
+
+```text
+PRD = Product Requirements Document
+SRD = Software Requirements Document
+SDD = Software/System Design Document
+LLD = Low-Level Design
+TRD = Technical Requirements Document
+Test Plan = Testing and verification strategy
+```
+
+## 9. Verification Requirements
+| Complexity | Required Verification |
+|---|---|
+| **C-0** | Basic validation |
+| **C-1** | Basic test and manual check |
+| **C-2** | Tests, spec review, and lead approval |
+| **C-3** | Tests, documentation review, diagram review, impact analysis, and user/owner approval |
+
+## 10. Required Output Format
+Every non-trivial task response should include:
+
 ```markdown
-**Complexity:** C-X (ระบุเหตุผลสั้นๆ)
+**Complexity:** C-X
 **Context Tier:** H-Y
-**Justification:** ...
+**Risk:** LOW / MEDIUM / HIGH
 **Required Artifacts:** ...
 **Plan:** ...
+**Verification:** ...
 ```
 
-#### **3. Hook Enforcement**
-* **TaskCompleted Hook:** จะสแกนตรวจสอบว่าสร้าง Artifacts ครบถ้วนตามระดับความยากงานหรือไม่ (เช่น หากเป็นงาน C-2/C-3 แต่ไม่มีไฟล์ Spec ระบบจะทำการ Block การส่งงาน)
-
-#### **4. Escalation Rule**
-* หากความซับซ้อนหรืองานเพิ่มขึ้นระหว่างขั้นตอนการทำ สามารถยกระดับขึ้นได้จาก: `C-0 → C-1 → C-2 → C-3`
-* ห้ามลดระดับความซับซ้อนลงหลังจากได้รับการอนุมัติ (Approved) แล้ว เว้นแต่มีเหตุผลอันสมควร
-
-#### **5. Selection Rule**
-* เลือกระดับความซับซ้อนที่ต่ำที่สุดที่ยังสามารถรักษาความถูกต้อง ความปลอดภัย และการดูแลรักษาโค้ดระยะยาว (Correctness + Safety + Maintainability) ไว้ได้
-* เมื่อไม่แน่ใจให้เลือกปัดไประดับความซับซ้อนที่สูงกว่าไว้ก่อน
-
----
-
-### Verification Requirements
-
-| ระดับ Complexity | รูปแบบ Verification ที่ต้องการ |
-|---|---|
-| **C-0** | Basic validation (ตรวจสอบเบื้องต้น) |
-| **C-1** | Unit test + manual check (เขียนแบบทดสอบยูนิตและตรวจสอบด้วยตนเอง) |
-| **C-2** | Tests + Spec Review + Lead Approval (เขียนแบบทดสอบ + ทบทวนสเปก + Lead อนุมัติ) |
-| **C-3** | Full Review (Lead + User) + Diagram + Impact Analysis (ประเมินสถาปัตยกรรมอย่างละเอียด) |
-
----
-
-### ตัวอย่างการใช้งานจริงใน GKS
-* แก้ไขคำผิด (Typo) ในไฟล์ ➔ **C-0 + H0**
-* เพิ่มตัวแปร/ฟิลด์ใน `PARAMS::Automatic-Stock-Deduction` ➔ **C-1 + H1**
-* เขียน FEFO Logic ชุดใหม่ ➔ **C-2 + H2**
-* ปรับโครงสร้างระบบบีบอัดข้อมูล (Hierarchy Compaction) หรือระบบฐานข้อมูล GenesisDB ➔ **C-3 + H4**
-
----
-
-### CHANGELOG
-
+## 11. Changelog
 | Version | Date | Summary |
 |---|---|---|
-| **2.0** | 2026-06-07 | เพิ่มระดับ C-0, ปรับปรุงระบบ Mapping กับ H-Scale และกำหนดมาตรการบังคับใช้ให้ชัดเจนเพื่อลด Over-engineering |
-| **1.0** | ก่อนหน้า | เวอร์ชันเริ่มต้น (แบ่งเป็น 3 ระดับโครงสร้างเก่า) |
-
----
-*หมายเหตุ: เอกสารนี้เป็นส่วนหนึ่งของ [FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS](file:///d:/GoVibe/.agents/FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS.md) ทุก Agent ต้องสแกนอ่านและยึดถือเป็นแนวปฏิบัติหลักในการทำงาน*
+| **2.1** | 2026-06-12 | Rewritten into readable UTF-8, added human-first artifacts, Docs to Code gate, Diagram to Doc gate, canonical source rule, and SDD/LLD naming guidance. |
+| **2.0** | 2026-06-07 | Added C-0, mapped complexity to H-scale, and clarified enforcement to reduce over-engineering. |
+| **1.0** | Previous | Initial three-level complexity model. |
