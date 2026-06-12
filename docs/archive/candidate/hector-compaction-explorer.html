@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GKS Framework & Hector Compaction Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .tree-line {
+            border-left: 2px solid #d6d3d1;
+            margin-left: 1rem;
+            padding-left: 1.5rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        body {
+            background-color: #fafaf9;
+            color: #1c1917;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .nav-active {
+            border-bottom: 2px solid #d97706;
+            color: #d97706;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Chosen Palette: Warm Neutrals (Stone/Amber/Teal) -->
+    <!-- Application Structure Plan: โครงสร้าง SPA ถูกออกแบบเป็น 3 ส่วนหลัก (Dashboard) เพื่อให้ผู้ใช้สำรวจสถาปัตยกรรม GKS ได้ง่ายที่สุด ส่วนแรกคือ 'Hector Visualizer' เพื่อจำลองการลดขนาดไฟล์ (Compaction) ซึ่งเป็นหัวใจของเอกสารล่าสุด ส่วนที่สองคือ 'Agent Ecosystem' เพื่อแสดงบทบาทของ AI แต่ละระดับ (T1-T3) และส่วนที่สามคือ 'Knowledge Taxonomy' เพื่อให้ค้นหาประเภท Atom ได้ง่าย โครงสร้างนี้เปลี่ยนเอกสารเชิงเทคนิคที่ยาวและซับซ้อนให้กลายเป็นเครื่องมือที่สามารถกดเล่นและทำความเข้าใจพฤติกรรมของระบบกราฟได้ทันที -->
+    <!-- Visualization & Content Choices: ข้อมูลระดับการบีบอัด H1-H5 นำเสนอผ่าน Interactive Tree (HTML/CSS) เพื่อแสดงให้เห็นการร้อยเรียง Chain โดยไม่ใช้ SVG กราฟแท่ง (Chart.js) ใช้เปรียบเทียบขีดความสามารถของ Agent T1-T3 เพื่อความชัดเจนในการเลือกใช้ กราฟเส้น (Chart.js) ใช้แสดงอัตราส่วนการลดลงของไฟล์เมื่อใช้ Hector Model เพื่อเน้นย้ำถึงการแก้ปัญหา I/O Bottleneck ทุกองค์ประกอบใช้ Canvas และ HTML ล้วนตามข้อกำหนด NO SVG/Mermaid -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <header class="bg-stone-900 text-stone-50 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🧠</span>
+                    <span class="font-bold text-xl tracking-tight">GKS Master Architecture</span>
+                </div>
+            </div>
+            <nav class="flex space-x-8 overflow-x-auto">
+                <button onclick="navigate('hector-view')" id="nav-hector-view" class="nav-active whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-sm font-medium hover:text-amber-500 transition-colors">⛓️ Hector Compaction</button>
+                <button onclick="navigate('agent-view')" id="nav-agent-view" class="whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-sm font-medium hover:text-amber-500 transition-colors">🤖 Agent Ecosystem</button>
+                <button onclick="navigate('taxonomy-view')" id="nav-taxonomy-view" class="whitespace-nowrap py-3 px-1 border-b-2 border-transparent text-sm font-medium hover:text-amber-500 transition-colors">📚 Knowledge Taxonomy</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <div id="hector-view" class="view-section block">
+            <div class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                <h1 class="text-3xl font-bold text-stone-800 mb-4">High-Level Hector: Chain-Driven Atom Compaction</h1>
+                <p class="text-lg text-stone-600 leading-relaxed">
+                    ส่วนนี้จำลองการทำงานของสถาปัตยกรรม <strong class="text-amber-700">Hector Compaction (H1-H5)</strong> จากเอกสาร FRAMEWORK--HECTOR-COMPACTION-STANDARDS 
+                    ซึ่งออกแบบมาเพื่อแก้ปัญหา Inode Exhaustion และ File I/O Bottleneck ในโปรเจกต์ระดับ Enterprise 
+                    โดยการยุบรวม Node ในสายสัมพันธ์เดียวกัน (Execution Chain) ให้บันทึกบนไฟล์กายภาพเพียง 1 ไฟล์ 
+                    คุณสามารถคลิกเลือกระดับความสูงด้านล่าง เพื่อดูโครงสร้างตรรกะที่ GKS Parser Engine จะสกัดออกมาในหน่วยความจำ
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 flex flex-col gap-3">
+                    <h2 class="text-xl font-semibold mb-2">เลือกระดับการบีบอัด (Height)</h2>
+                    <button onclick="renderHector('H5')" id="btn-H5" class="hector-btn bg-stone-100 hover:bg-amber-100 text-left p-4 rounded-lg border-2 border-transparent transition-all flex justify-between items-center">
+                        <span class="font-bold">H5 (3 Layers)</span>
+                        <span class="text-xs bg-stone-200 px-2 py-1 rounded">Standard</span>
+                    </button>
+                    <button onclick="renderHector('H4')" id="btn-H4" class="hector-btn bg-stone-100 hover:bg-amber-100 text-left p-4 rounded-lg border-2 border-transparent transition-all flex justify-between items-center">
+                        <span class="font-bold">H4 (4 Layers)</span>
+                        <span class="text-xs bg-stone-200 px-2 py-1 rounded">Core</span>
+                    </button>
+                    <button onclick="renderHector('H3')" id="btn-H3" class="hector-btn bg-stone-100 hover:bg-amber-100 text-left p-4 rounded-lg border-2 border-transparent transition-all flex justify-between items-center">
+                        <span class="font-bold">H3 (5 Layers)</span>
+                        <span class="text-xs bg-stone-200 px-2 py-1 rounded">Complete</span>
+                    </button>
+                    <button onclick="renderHector('H2')" id="btn-H2" class="hector-btn bg-stone-100 hover:bg-amber-100 text-left p-4 rounded-lg border-2 border-transparent transition-all flex justify-between items-center">
+                        <span class="font-bold">H2 (6 Layers)</span>
+                        <span class="text-xs bg-stone-200 px-2 py-1 rounded">Advanced</span>
+                    </button>
+                    <button onclick="renderHector('H1')" id="btn-H1" class="hector-btn bg-stone-100 hover:bg-amber-100 text-left p-4 rounded-lg border-2 border-transparent transition-all flex justify-between items-center">
+                        <span class="font-bold">H1 (8 Layers)</span>
+                        <span class="text-xs bg-amber-200 px-2 py-1 rounded">Ultra Edge</span>
+                    </button>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6 h-full">
+                        <div class="flex justify-between items-center border-b border-stone-100 pb-4 mb-4">
+                            <h2 class="text-xl font-semibold flex items-center gap-2">
+                                <span>📄</span> 
+                                <span id="hector-filename" class="font-mono text-sm bg-stone-100 px-2 py-1 rounded">gks/chains/...</span>
+                            </h2>
+                            <span id="hector-filecount" class="text-sm font-medium text-teal-600 bg-teal-50 px-3 py-1 rounded-full">1 Physical File</span>
+                        </div>
+                        
+                        <div id="hector-tree-container" class="font-mono text-sm overflow-x-auto pb-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-8 bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                <h2 class="text-xl font-semibold mb-6 text-center">สถิติการแก้ปัญหา I/O Bottleneck (สมมติฐานระบบ 10,000 โหนด)</h2>
+                <div class="chart-container">
+                    <canvas id="compactionChart"></canvas>
+                </div>
+                <p class="text-center text-sm text-stone-500 mt-4">กราฟแสดงจำนวนไฟล์บนฮาร์ดดิสก์ที่ลดลงเมื่อใช้โมเดล Hector แทนการเก็บแบบ 1 Atom = 1 File</p>
+            </div>
+        </div>
+
+        <div id="agent-view" class="view-section hidden">
+            <div class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                <h1 class="text-3xl font-bold text-stone-800 mb-4">3-Tier Agent Workflow</h1>
+                <p class="text-lg text-stone-600 leading-relaxed">
+                    ส่วนนี้จำลองโครงสร้างและบทบาทของ AI Agents ตามกฎ <strong class="text-amber-700">Right Agent for the Right Tier</strong> 
+                    การเลือกใช้ Agent ผิดระดับจะทำให้สูญเสีย Token และความแม่นยำ (Hallucination) 
+                    ระบบ GKS กำหนดให้แยกการทำงานเป็น T3 (Architect), T2 (Implementer), และ T1 (Executor) 
+                    กราฟด้านล่างแสดงการเปรียบเทียบความสามารถและต้นทุนเพื่อให้เห็นภาพความเหมาะสมในการเลือกใช้
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 hover:border-amber-400 transition-colors">
+                    <div class="text-4xl mb-3">🏛️</div>
+                    <h3 class="text-xl font-bold mb-2">T3 (Architect)</h3>
+                    <p class="text-sm text-stone-600 mb-4">Large LLM (Opus 4.7, Gemini 2.5 Pro)</p>
+                    <ul class="text-sm space-y-2 text-stone-700">
+                        <li>✔️ ออกแบบ ADR / Blueprints</li>
+                        <li>✔️ Decomposition & PR Review</li>
+                        <li>✔️ การตัดสินใจทางสถาปัตยกรรม</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 hover:border-teal-400 transition-colors">
+                    <div class="text-4xl mb-3">🛠️</div>
+                    <h3 class="text-xl font-bold mb-2">T2 (Implementer)</h3>
+                    <p class="text-sm text-stone-600 mb-4">Mid LLM (Sonnet 4.6, Flash)</p>
+                    <ul class="text-sm space-y-2 text-stone-700">
+                        <li>✔️ Instantiate Template</li>
+                        <li>✔️ Acceptance Tests</li>
+                        <li>✔️ Composer & Validators</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200 hover:border-stone-400 transition-colors">
+                    <div class="text-4xl mb-3">⚡</div>
+                    <h3 class="text-xl font-bold mb-2">T1 (Executor)</h3>
+                    <p class="text-sm text-stone-600 mb-4">SLM (Qwen 14B, Llama 3)</p>
+                    <ul class="text-sm space-y-2 text-stone-700">
+                        <li>✔️ 1-concern micro-task</li>
+                        <li>✔️ Pure codegen</li>
+                        <li>✔️ Deterministic & Narrow scope</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                <h2 class="text-xl font-semibold mb-6 text-center">Agent Tier Analysis: Reasoning vs Speed vs Cost</h2>
+                <div class="chart-container">
+                    <canvas id="agentChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div id="taxonomy-view" class="view-section hidden">
+            <div class="mb-8 bg-white p-6 rounded-xl shadow-sm border border-stone-200">
+                <h1 class="text-3xl font-bold text-stone-800 mb-4">Knowledge Taxonomy (Atom Registry)</h1>
+                <p class="text-lg text-stone-600 leading-relaxed">
+                    ส่วนนี้แสดงประเภทองค์ความรู้ระดับอะตอม (Atomic Knowledge) ภายใต้ <strong class="text-amber-700">GKS Assembly Line (P0-P7)</strong> 
+                    ตามโครงสร้าง `atom_registry.yaml` ซึ่งใช้เป็น SSOT ในการจำแนกข้อมูล 
+                    การแบ่งประเภทอย่างชัดเจนช่วยให้ Agent สามารถค้นหาและประมวลผลผ่าน MCP Tools (gks_lookup, gks_recall) ได้อย่างแม่นยำ 
+                    คุณสามารถกรองข้อมูลตาม Cluster ด้านล่างเพื่อศึกษาโครงสร้างแต่ละประเภท
+                </p>
+            </div>
+
+            <div class="mb-6 flex flex-wrap gap-2" id="filter-container">
+                <button onclick="filterAtoms('all')" id="btn-filter-all" class="filter-btn bg-stone-800 text-white px-4 py-2 rounded-full text-sm font-medium transition-colors">All</button>
+                <button onclick="filterAtoms('implementation_flow')" id="btn-filter-implementation_flow" class="filter-btn bg-stone-200 text-stone-700 hover:bg-stone-300 px-4 py-2 rounded-full text-sm font-medium transition-colors">Implementation Flow (Core)</button>
+                <button onclick="filterAtoms('agent_governance')" id="btn-filter-agent_governance" class="filter-btn bg-stone-200 text-stone-700 hover:bg-stone-300 px-4 py-2 rounded-full text-sm font-medium transition-colors">Agent Governance</button>
+                <button onclick="filterAtoms('ops')" id="btn-filter-ops" class="filter-btn bg-stone-200 text-stone-700 hover:bg-stone-300 px-4 py-2 rounded-full text-sm font-medium transition-colors">Ops & Memory</button>
+            </div>
+
+            <div id="atoms-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-stone-900 text-stone-400 py-6 text-center text-sm mt-auto">
+        <p>GKS Universal Multi-Agent Framework Boilerplate Explorer</p>
+        <p class="mt-1">Generated based on FRAMEWORK_MASTER_SPEC.md (v1.4.0) & Hector Compaction Standards</p>
+    </footer>
+
+    <script>
+        const hectorData = {
+            'H5': {
+                name: 'CHN--NOTIFY-H5.md',
+                nodes: [
+                    { icon: '🌐', level: '[L2-System]', id: 'SYS--NOTIFY-GW', desc: 'ระบบเซิร์ฟเวอร์ย่อยแจ้งเตือนกลาง' },
+                    { icon: '📦', level: '[L1-Module]', id: 'MOD--LINE-DISPATCHER', desc: 'โมดูลควบคุมการต่อสายและยิง API' },
+                    { icon: '⚙️', level: '[L0-Function]', id: 'FUNC--POST-TO-LINE', desc: 'ฟังก์ชันเรียก axios ส่ง payload' }
+                ]
+            },
+            'H4': {
+                name: 'CHN--POS-CHECKOUT-H4.md',
+                nodes: [
+                    { icon: '🌐', level: '[L3-System]', id: 'SYS--ZURI-POS', desc: 'ระบบจุดรับจ่ายเงินหน้าร้านค้าปลีก' },
+                    { icon: '📦', level: '[L2-Module]', id: 'MOD--CHECKOUT', desc: 'โมดูลทำธุรกรรมและปิดยอดออเดอร์' },
+                    { icon: '✨', level: '[L1-Feat]', id: 'FEAT--CALCULATE-BILL', desc: 'ฟีเจอร์คำนวณราคาสินค้าและค่าบริการ' },
+                    { icon: '⚙️', level: '[L0-Function]', id: 'FUNC--EXECUTE-MATH-BILL', desc: 'ชุดสูตรคณิตศาสตร์หักลบ' }
+                ]
+            },
+            'H3': {
+                name: 'CHN--CRM-MEMBER-H3.md',
+                nodes: [
+                    { icon: '🌐', level: '[L4-System]', id: 'SYS--ZURI-CRM', desc: 'System infrastructure root' },
+                    { icon: '📦', level: '[L3-Module]', id: 'MOD--MEMBER-PORTAL', desc: 'พอร์ทัลจัดการสมาชิก' },
+                    { icon: '✨', level: '[L2-Feat]', id: 'FEAT--REDEEM-LOYALTY-REWARD', desc: 'ฟีเจอร์แลกของรางวัล' },
+                    { icon: '🖥️', level: '[L1-Component]', id: 'COMP--REDEEM-BUTTON', desc: 'หน้าจอ UI ปุ่มกดแลกสิทธิพิเศษ' },
+                    { icon: '⚙️', level: '[L0-Method]', id: 'METH--TRIGGER-REDEEM-API', desc: 'สับเปลี่ยนสถานะ Loading สกัดการกดซ้ำ' }
+                ]
+            },
+            'H2': {
+                name: 'CHN--STOCK-COLD-H2.md',
+                nodes: [
+                    { icon: '🌐', level: '[L5-System]', id: 'SYS--ZURI-STOCK', desc: 'ระบบจัดการคลังสินค้าหลัก' },
+                    { icon: '📦', level: '[L4-Module]', id: 'MOD--INVENTORY-MANAGEMENT', desc: 'จัดการสินค้าคงคลัง' },
+                    { icon: '🗃️', level: '[L3-Sub-Module]', id: 'SUBMOD--COLD-STORAGE', desc: 'ตรวจสอบสารทำความเย็นคลังแช่แข็ง' },
+                    { icon: '✨', level: '[L2-Feat]', id: 'FEAT--ALERT-SPOILED-TEMP', desc: 'แจ้งเตือนอุณหภูมิผิดปกติ' },
+                    { icon: '🖥️', level: '[L1-Component]', id: 'COMP--TEMPERATURE-MONITOR', desc: 'UI แสดงผลอุณหภูมิ' },
+                    { icon: '⚙️', level: '[L0-Method]', id: 'METH--COMPUTE-SPOILED-RATIO', desc: 'คำนวณโอกาสอาหารเน่าเสีย (24 ชม.)' }
+                ]
+            },
+            'H1': {
+                name: 'CHN--PLATFORM-MASTER-H1.md',
+                nodes: [
+                    { icon: '🌐', level: '[L7-System]', id: 'SYS--ZURI-GLOBAL', desc: 'เครือข่ายองค์กรภาพรวม' },
+                    { icon: '🖥️', level: '[L6-Sub-System]', id: 'SUBSYS--ZURI-BACKOFFICE', desc: 'ระบบหลังบ้านกลาง' },
+                    { icon: '📦', level: '[L5-Module]', id: 'MOD--HR-PAYROLL', desc: 'บัญชีเงินเดือนบุคลากร' },
+                    { icon: '🗃️', level: '[L4-Sub-Module]', id: 'SUBMOD--TAX-CALCULATION', desc: 'คำนวณภาษีหัก ณ ที่จ่าย' },
+                    { icon: '✨', level: '[L3-Feat]', id: 'FEAT--CALCULATE-TAX-DEDUCT', desc: 'คำนวณยอดสุทธิภาษี' },
+                    { icon: '🖥️', level: '[L2-Component]', id: 'COMP--TAX-SUMMARY-VIEW', desc: 'หน้าต่างสรุปภาษีพนักงาน' },
+                    { icon: '🏛️', level: '[L1-Class]', id: 'CLASS--TAX-CALCULATOR-CORE', desc: 'OOP Class รวบรวม State ภาษี' },
+                    { icon: '⚙️', level: '[L0-Method]', id: 'METH--COMPUTE-SSO-CONTRIBUTION', desc: 'คำนวณประกันสังคมรายบุคคล' }
+                ]
+            }
+        };
+
+        const taxonomyData = [
+            { prefix: 'IDEA--', phase: 'P0', cluster: 'implementation_flow', desc: 'ไอเดียดิบ, พรอมต์เริ่มต้น (Human/PM)' },
+            { prefix: 'MASTER--', phase: 'P0', cluster: 'implementation_flow', desc: 'กฎ/นโยบายระดับ root (Contradiction policy)' },
+            { prefix: 'CONCEPT--', phase: 'P1', cluster: 'implementation_flow', desc: 'PRD, User Story, Roadmap, Motivation' },
+            { prefix: 'ADR--', phase: 'P2', cluster: 'implementation_flow', desc: 'Architecture Decision Record' },
+            { prefix: 'FRAMEWORK--', phase: 'P2', cluster: 'implementation_flow', desc: 'มาตรฐานโค้ด + สถาปัตยกรรมระดับสูง' },
+            { prefix: 'FEAT--', phase: 'P2', cluster: 'implementation_flow', desc: 'รายละเอียดฟีเจอร์และพฤติกรรม' },
+            { prefix: 'API--', phase: 'P2', cluster: 'implementation_flow', desc: 'API hub — รวม endpoints ของ subsystem' },
+            { prefix: 'ENTITY--', phase: 'P2', cluster: 'implementation_flow', desc: 'นิยามข้อมูลและ Schema (DB tables)' },
+            { prefix: 'ALGO--', phase: 'P2', cluster: 'implementation_flow', desc: 'ขั้นตอนการคำนวณและลอจิก' },
+            { prefix: 'BLUEPRINT--', phase: 'P3', cluster: 'implementation_flow', desc: 'แผนงานเทคนิค (YAML/MD) สำหรับ Codegen' },
+            { prefix: 'AUDIT--', phase: 'P6', cluster: 'implementation_flow', desc: 'รายงานคุณภาพ + verification outcome' },
+            
+            { prefix: 'PROTOCOL--', phase: 'P2', cluster: 'agent_governance', desc: 'Interaction contract ระหว่าง Agent/System' },
+            { prefix: 'GUARD--', phase: 'P2', cluster: 'agent_governance', desc: 'Runtime-enforced constraint บน agent behavior' },
+            { prefix: 'POLICY--', phase: 'P2', cluster: 'agent_governance', desc: 'Operational policy (RBAC, Rate limit)' },
+            { prefix: 'PERSONA--', phase: 'P2', cluster: 'agent_governance', desc: 'Agent identity (Role, Voice, Prompt)' },
+            
+            { prefix: 'RUNBOOK--', phase: 'P2', cluster: 'ops', desc: 'Operational response guide (ถ้าเห็น X ให้ทำ Y)' },
+            { prefix: 'FACT--', phase: 'Auto', cluster: 'ops', desc: 'Auto-derived memory (GKS Process)' }
+        ];
+
+        let compactionChartInstance = null;
+        let agentChartInstance = null;
+
+        function navigate(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+            
+            document.querySelectorAll('nav button').forEach(el => {
+                el.classList.remove('nav-active', 'border-amber-600', 'text-amber-600');
+                el.classList.add('border-transparent');
+            });
+            const activeBtn = document.getElementById(`nav-${viewId}`);
+            activeBtn.classList.remove('border-transparent');
+            activeBtn.classList.add('nav-active', 'border-amber-600', 'text-amber-600');
+
+            if(viewId === 'hector-view' && !compactionChartInstance) initCompactionChart();
+            if(viewId === 'agent-view' && !agentChartInstance) initAgentChart();
+        }
+
+        function renderHector(level) {
+            document.querySelectorAll('.hector-btn').forEach(btn => {
+                btn.classList.remove('border-amber-500', 'bg-amber-50');
+                btn.classList.add('border-transparent');
+            });
+            document.getElementById(`btn-${level}`).classList.add('border-amber-500', 'bg-amber-50');
+            document.getElementById(`btn-${level}`).classList.remove('border-transparent');
+
+            const data = hectorData[level];
+            document.getElementById('hector-filename').innerText = `gks/chains/${data.name}`;
+            document.getElementById('hector-filecount').innerText = `1 Physical File = ${data.nodes.length} Logical Nodes`;
+
+            const container = document.getElementById('hector-tree-container');
+            container.innerHTML = '';
+
+            let html = '';
+            data.nodes.forEach((node, index) => {
+                const indentClass = index === 0 ? '' : 'tree-line';
+                html += `
+                    <div class="${indentClass}">
+                        <div class="bg-stone-50 border border-stone-200 p-3 rounded shadow-sm hover:border-amber-300 transition-colors">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-lg">${node.icon}</span>
+                                <span class="font-bold text-teal-800">${node.level}</span>
+                                <span class="text-stone-700 font-semibold">${node.id}</span>
+                            </div>
+                            <div class="text-stone-500 pl-8 text-xs md:text-sm">
+                                ➔ ${node.desc}
+                            </div>
+                        </div>
+                `;
+            });
+            
+            data.nodes.forEach((_, index) => {
+                if (index !== 0) html += `</div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function filterAtoms(cluster) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-stone-800', 'text-white');
+                btn.classList.add('bg-stone-200', 'text-stone-700');
+            });
+
+            const activeBtn = document.getElementById(`btn-filter-${cluster}`);
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-stone-200', 'text-stone-700');
+                activeBtn.classList.add('bg-stone-800', 'text-white');
+            }
+
+            const grid = document.getElementById('atoms-grid');
+            grid.innerHTML = '';
+            
+            const filtered = cluster === 'all' ? taxonomyData : taxonomyData.filter(d => d.cluster === cluster);
+            
+            filtered.forEach(item => {
+                let badgeColor = 'bg-stone-200 text-stone-700';
+                if(item.cluster === 'implementation_flow') badgeColor = 'bg-teal-100 text-teal-800';
+                if(item.cluster === 'agent_governance') badgeColor = 'bg-amber-100 text-amber-800';
+                
+                grid.innerHTML += `
+                    <div class="bg-white p-5 rounded-xl shadow-sm border border-stone-200 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="font-mono font-bold text-lg text-stone-800">${item.prefix}</span>
+                            <span class="text-xs font-bold px-2 py-1 rounded bg-stone-100">${item.phase}</span>
+                        </div>
+                        <span class="inline-block text-xs font-medium px-2 py-1 rounded mb-3 ${badgeColor}">
+                            ${item.cluster}
+                        </span>
+                        <p class="text-sm text-stone-600">${item.desc}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function initCompactionChart() {
+            const ctx = document.getElementById('compactionChart').getContext('2d');
+            compactionChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['No Compaction (1:1)', 'H5 (3:1)', 'H4 (4:1)', 'H3 (5:1)', 'H2 (6:1)', 'H1 (8:1)'],
+                    datasets: [{
+                        label: 'Physical Files on Disk',
+                        data: [10000, 3333, 2500, 2000, 1666, 1250],
+                        borderColor: '#d97706',
+                        backgroundColor: 'rgba(217, 119, 6, 0.1)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#0f766e',
+                        pointRadius: 6,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'File Count' }
+                        },
+                        x: {
+                            title: { display: true, text: 'Compaction Model' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y + ' Files';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function initAgentChart() {
+            const ctx = document.getElementById('agentChart').getContext('2d');
+            agentChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['T3 (Architect)', 'T2 (Implementer)', 'T1 (Executor)'],
+                    datasets: [
+                        {
+                            label: 'Reasoning Capability',
+                            data: [95, 75, 40],
+                            backgroundColor: '#0f766e',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Execution Speed',
+                            data: [30, 70, 95],
+                            backgroundColor: '#d97706',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Token Cost',
+                            data: [100, 40, 5],
+                            backgroundColor: '#a8a29e',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: { display: true, text: 'Relative Score (0-100)' }
+                        }
+                    },
+                    plugins: {
+                        tooltip: { mode: 'index', intersect: false }
+                    }
+                }
+            });
+        }
+
+        // Initialize default view
+        renderHector('H4');
+        filterAtoms('all');
+        initCompactionChart();
+    </script>
+</body>
+</html>

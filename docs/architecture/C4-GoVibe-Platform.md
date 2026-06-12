@@ -261,9 +261,9 @@ Responsibilities:
 - Apply ABAC to agents, subagents, MCP clients, services, and scheduled jobs.
 - Audit every policy decision that affects project resources.
 
-### 5.6 Genesis Knowledge HCS
+### 5.6 Genesis Knowledge System
 ```text
-GenesisKnowledgeHCS
+GenesisKnowledgeSystem
 +-- HierarchyCompactionSystem
 |   +-- HLevelClassifier
 |   +-- ContextScopeResolver
@@ -291,7 +291,7 @@ GenesisKnowledgeHCS
 |   +-- SymbolLinker
 |   +-- DocumentBacklinkIndex
 |   +-- GraphQueryEngine
-+-- BlockDB
++-- GenesisBlockDB
     +-- BlockStore
     +-- VersionIndex
     +-- EmbeddingIndex

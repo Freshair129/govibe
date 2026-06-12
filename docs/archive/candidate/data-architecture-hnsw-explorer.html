@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สถาปัตยกรรมข้อมูลและ AI (Data Architecture & HNSW)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background-color: #fafaf9; 
+            color: #292524; 
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+
+        @media (max-width: 768px) {
+            .chart-container {
+                height: 300px;
+                max-height: 350px;
+            }
+        }
+
+        .tab-active {
+            border-bottom-width: 4px;
+            border-color: #0f766e;
+            color: #0f766e;
+            font-weight: 600;
+        }
+
+        .tab-inactive {
+            border-bottom-width: 4px;
+            border-color: transparent;
+            color: #78716c;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .layer-box {
+            transition: all 0.3s ease;
+        }
+        
+        .layer-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Chosen Palette: Warm Neutrals (Stone) with Teal-700 and Amber-600 Accents -->
+    <!-- Application Structure Plan: The SPA uses a dashboard-style tabbed interface. This structure was chosen because the source report contains two distinct but related technical concepts: a broad catalog of data technologies (Landscape) and a specific, complex algorithmic process (HNSW Kitchen). Breaking them into thematic tabs prevents cognitive overload. Tab 1 focuses on exploration and categorization (Goal: Organize). Tab 2 focuses on interactive storytelling and process visualization (Goal: Inform/Relationships). Tab 3 focuses on quantitative validation (Goal: Compare). The top navigation ensures users can non-linearly explore the architectural breadth before diving into the algorithmic depth. -->
+    <!-- Visualization & Content Choices: 
+        1. Data Landscape (Categorization) -> Goal: Organize -> Viz: Interactive interactive lists + Chart.js Doughnut -> Justification: Allows users to drill down into specific architectural layers without cluttering the screen. Doughnut chart summarizes the density of tools per category. (NO SVG/Mermaid used).
+        2. HNSW Kitchen (Process Flow) -> Goal: Relationships/Change -> Viz: HTML/CSS flexbox hierarchy with JS driven state updates based on dish selection -> Justification: Best illustrates the "Six Degrees of Separation" and Top-Down search without relying on complex SVG node graphs. Shows layers dynamically.
+        3. Performance (Stats) -> Goal: Compare -> Viz: Chart.js Bar Chart -> Justification: Visually demonstrates the $O(\log N)$ efficiency and pruning power of HNSW compared to linear search. (NO SVG used). 
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4 md:py-6">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🌐</span>
+                    <div>
+                        <h1 class="text-2xl font-bold text-stone-800 leading-tight">Data & AI Architecture</h1>
+                        <p class="text-sm text-stone-500">Interactive Landscape & HNSW Simulation</p>
+                    </div>
+                </div>
+            </div>
+            <nav class="flex space-x-8 overflow-x-auto hide-scrollbar" id="nav-tabs">
+                <button class="tab-btn tab-active pb-4 px-1 text-base whitespace-nowrap focus:outline-none transition-colors" data-target="tab-landscape">
+                    🗂️ 1. ภูมิทัศน์ข้อมูล (Landscape)
+                </button>
+                <button class="tab-btn tab-inactive pb-4 px-1 text-base whitespace-nowrap focus:outline-none transition-colors" data-target="tab-hnsw">
+                    🍳 2. การค้นหา HNSW (Simulation)
+                </button>
+                <button class="tab-btn tab-inactive pb-4 px-1 text-base whitespace-nowrap focus:outline-none transition-colors" data-target="tab-performance">
+                    📊 3. ประสิทธิภาพ (Performance)
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <section id="tab-landscape" class="tab-content fade-in block">
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6 md:p-8 mb-8">
+                <h2 class="text-2xl font-bold text-teal-800 mb-3">ภาพรวมสถาปัตยกรรมข้อมูล (Data Architecture Landscape)</h2>
+                <p class="text-stone-600 text-lg leading-relaxed">
+                    ส่วนนี้จัดระเบียบเทคโนโลยีข้อมูลในปัจจุบันตั้งแต่จุดเก็บข้อมูลดิบ (Data Store) ไปจนถึงเอนจินจัดโครงสร้าง (DB Engine) และวิธีการสืบค้น (Retrieval) เลือกหมวดหมู่ด้านล่างเพื่อสำรวจเครื่องมือและเทคโนโลยีที่ใช้ในแต่ละระดับชั้น
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 space-y-4">
+                    <button class="landscape-btn w-full text-left px-6 py-4 rounded-lg bg-teal-50 border-2 border-teal-600 text-teal-900 font-semibold transition-all" data-category="store">
+                        💾 1. Data Store (แหล่งเก็บข้อมูล)
+                    </button>
+                    <button class="landscape-btn w-full text-left px-6 py-4 rounded-lg bg-white border-2 border-transparent hover:border-stone-300 text-stone-700 font-semibold shadow-sm transition-all" data-category="engine">
+                        🗂️ 2. DB Engine (ระบบจัดโครงสร้าง)
+                    </button>
+                    <button class="landscape-btn w-full text-left px-6 py-4 rounded-lg bg-white border-2 border-transparent hover:border-stone-300 text-stone-700 font-semibold shadow-sm transition-all" data-category="retrieval">
+                        🔍 3. Retrieval Methods (การค้นหา)
+                    </button>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6 mt-8">
+                        <h3 class="text-lg font-bold text-stone-800 mb-4 text-center">สัดส่วนเครื่องมือตามหมวดหมู่</h3>
+                        <div class="chart-container h-64">
+                            <canvas id="landscapeChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6 md:p-8 h-full">
+                        <div id="landscape-content-area" class="space-y-6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-hnsw" class="tab-content fade-in hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6 md:p-8 mb-8">
+                <h2 class="text-2xl font-bold text-amber-700 mb-3">จำลองระบบ HNSW: ห้องครัวอัจฉริยะ (Multi-Vector Search)</h2>
+                <p class="text-stone-600 text-lg leading-relaxed">
+                    Hierarchical Navigable Small World (HNSW) เป็นอัลกอริทึมค้นหาข้อมูลเวกเตอร์ที่ทำงานแบบ "บนลงล่าง" (Top-Down Search) ส่วนนี้จะอธิบายกลไกดังกล่าวผ่านการจำลอง <strong>การรับออเดอร์สุดซับซ้อนในห้องครัว</strong> โดยที่แต่ละเมนูจะส่ง "ตัวแทนค้นหา" แยกกันไปทำงานแบบขนาน (Parallel Traversal) เลือกเมนูเพื่อดูเส้นทางการค้นหาที่รวดเร็วนี้
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8" id="menu-grid">
+            </div>
+
+            <div class="bg-stone-800 rounded-xl shadow-xl overflow-hidden border border-stone-700">
+                <div class="p-6 bg-stone-900 border-b border-stone-700 flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-amber-400" id="current-menu-title">👈 โปรดเลือกเมนูด้านบน</h3>
+                    <span class="text-stone-400 text-sm">การสืบค้นแบบ HNSW</span>
+                </div>
+                
+                <div class="p-6 md:p-8 space-y-6 relative" id="hnsw-layers-container">
+                    <div class="absolute left-10 md:left-1/2 top-8 bottom-8 w-1 bg-stone-700 -translate-x-1/2 hidden md:block"></div>
+                    
+                    <div class="layer-box relative z-10 bg-stone-800 border-2 border-stone-600 rounded-lg p-5 flex flex-col md:flex-row items-start md:items-center gap-4 opacity-50 transition-opacity" id="layer-6">
+                        <div class="w-16 h-16 rounded-full bg-teal-900 border-4 border-teal-500 flex items-center justify-center text-xl font-bold text-white shrink-0">L6</div>
+                        <div>
+                            <h4 class="text-lg font-bold text-teal-400">Expressway (ทางด่วนข้ามโซน)</h4>
+                            <p class="text-stone-300 mt-1" id="text-l6">ระบบจุดกระจายตัวหลัก: ครัวร้อน, ครัวเย็น, บาร์, ของหวาน</p>
+                        </div>
+                    </div>
+
+                    <div class="layer-box relative z-10 bg-stone-800 border-2 border-stone-600 rounded-lg p-5 flex flex-col md:flex-row items-start md:items-center gap-4 opacity-50 transition-opacity" id="layer-4">
+                        <div class="w-16 h-16 rounded-full bg-sky-900 border-4 border-sky-500 flex items-center justify-center text-xl font-bold text-white shrink-0">L4</div>
+                        <div>
+                            <h4 class="text-lg font-bold text-sky-400">Main Category (ถนนหลัก/สถานี)</h4>
+                            <p class="text-stone-300 mt-1" id="text-l4">เจาะลึกเข้าไปยังสถานีเตรียมอาหารเฉพาะทาง</p>
+                        </div>
+                    </div>
+
+                    <div class="layer-box relative z-10 bg-stone-800 border-2 border-stone-600 rounded-lg p-5 flex flex-col md:flex-row items-start md:items-center gap-4 opacity-50 transition-opacity" id="layer-2">
+                        <div class="w-16 h-16 rounded-full bg-indigo-900 border-4 border-indigo-500 flex items-center justify-center text-xl font-bold text-white shrink-0">L2</div>
+                        <div>
+                            <h4 class="text-lg font-bold text-indigo-400">Storage Station (ซอยย่อย/แหล่งเก็บ)</h4>
+                            <p class="text-stone-300 mt-1" id="text-l2">ระบุตู้แช่ ชั้นวาง หรือเครื่องมือเฉพาะกลุ่ม</p>
+                        </div>
+                    </div>
+
+                    <div class="layer-box relative z-10 bg-stone-800 border-2 border-stone-600 rounded-lg p-5 flex flex-col md:flex-row items-start md:items-center gap-4 opacity-50 transition-opacity" id="layer-0">
+                        <div class="w-16 h-16 rounded-full bg-rose-900 border-4 border-rose-500 flex items-center justify-center text-xl font-bold text-white shrink-0">L0</div>
+                        <div>
+                            <h4 class="text-lg font-bold text-rose-400">Physical Layer (เครือข่ายสิ่งของจริง)</h4>
+                            <p class="text-stone-300 mt-1" id="text-l0">ดึงข้อมูลและเชื่อมโยงสิ่งที่เกี่ยวข้องกันในระยะประชิด</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="tab-performance" class="tab-content fade-in hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6 md:p-8 mb-8">
+                <h2 class="text-2xl font-bold text-indigo-800 mb-3">สรุปประสิทธิภาพการค้นหา (Performance Metrics)</h2>
+                <p class="text-stone-600 text-lg leading-relaxed">
+                    ส่วนนี้สรุปสถิติเปรียบเทียบระหว่างการค้นหาแบบดั้งเดิม (Table Scan) ที่ต้องไล่ดูข้อมูลทีละรายการ กับการค้นหาผ่านดัชนีโครงข่าย HNSW การจัดกลุ่ม (Clustering) และการลดขอบเขตข้อมูล (Pruning) ช่วยประหยัดเวลาการประมวลผลได้อย่างมหาศาล
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-xl shadow-sm border border-stone-200 p-6">
+                    <h3 class="text-lg font-bold text-stone-800 mb-2">เปรียบเทียบเวลาค้นหาและขอบเขต</h3>
+                    <p class="text-stone-500 text-sm mb-6">จำลองการค้นหาจากรายการสิ่งของทั้งหมด 10,000 ชิ้นในระบบครัว</p>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <div class="bg-teal-50 border-l-4 border-teal-500 p-6 rounded-r-lg">
+                        <h4 class="text-lg font-bold text-teal-900 mb-2">⏱️ Time Complexity</h4>
+                        <p class="text-teal-800">
+                            การค้นหาเมนูย่อย 1 รายการทำงานด้วยระดับ <strong>O(log N)</strong> และด้วยกลไก Parallel Multithreading แม้โจทย์จะซับซ้อน 6 เมนู ระบบก็ใช้เวลาเพียงเท่ากับเมนูที่หาช้าที่สุดตัวเดียวเท่านั้น
+                        </p>
+                    </div>
+                    
+                    <div class="bg-sky-50 border-l-4 border-sky-500 p-6 rounded-r-lg">
+                        <h4 class="text-lg font-bold text-sky-900 mb-2">✂️ การตัดข้อมูลทิ้ง (Pruning)</h4>
+                        <p class="text-sky-800">
+                            ระบบสามารถละทิ้งพื้นที่ที่ไม่เกี่ยวข้อง เช่น "ห้องเก็บไวน์" หรือ "โซนล้างจาน" ได้ทันทีตั้งแต่ Layer 6 ชั้นบนสุด <strong>ลดพื้นที่และเป้าหมายการค้นหาได้มากกว่า 80% ทันที</strong>
+                        </p>
+                    </div>
+
+                    <div class="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-lg">
+                        <h4 class="text-lg font-bold text-amber-900 mb-2">🔗 การใช้ข้อมูลร่วมกัน (Shared Nodes)</h4>
+                        <p class="text-amber-800">
+                            เมนูที่แตกต่างกัน (เช่น น้ำสับปะรด และ อกไก่ปั่น) สามารถวิ่งมาเจอกันที่โหนดร่วมคือ <strong>[เครื่องปั่น]</strong> ใน Layer 4 ทำให้ระบบสามารถแชร์ทรัพยากรหน่วยความจำและดึงข้อมูลได้อย่างคุ้มค่า
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-stone-900 text-stone-400 py-6 text-center text-sm mt-auto">
+        <div class="max-w-7xl mx-auto px-4">
+            Interactive Dashboard based on "Data Architecture Landscape" and "HNSW Kitchen Simulation" reports.
+        </div>
+    </footer>
+
+    <script>
+        const state = {
+            currentTab: 'tab-landscape',
+            currentLandscapeCategory: 'store',
+            currentMenu: null,
+            charts: {
+                landscape: null,
+                performance: null
+            }
+        };
+
+        const dataLandscape = {
+            store: {
+                title: "💾 1. DATA STORE (แหล่งกักเก็บข้อมูลทางกายภาพ)",
+                description: "ที่อยู่ของไฟล์หรือข้อมูลดิบก่อนจะถูกนำไปจัดโครงสร้าง",
+                items: [
+                    { name: "Local & Bare Metal", details: "File System (NTFS, ext4), In-Memory (RAM), Embedded (SQLite, DuckDB, Markdown/JSON)" },
+                    { name: "Cloud & Distributed", details: "Object Storage (AWS S3, GCS), Block Storage, Distributed FS (Hadoop), Web3 (IPFS)" },
+                    { name: "SaaS / BaaS", details: "Backend (Firebase, Supabase), Workspace (Notion), Data Lakehouse (Snowflake)" }
+                ]
+            },
+            engine: {
+                title: "🗂️ 2. DB ENGINE (ระบบจัดโครงสร้างและดัชนี)",
+                description: "ตัวจัดการที่จะเอาข้อมูลดิบมาปั้นเป็นรูปเป็นร่าง เพื่อให้พร้อมต่อการค้นหา",
+                items: [
+                    { name: "Relational & SQL", details: "PostgreSQL, MySQL, CockroachDB, Google Spanner" },
+                    { name: "NoSQL", details: "Document (MongoDB), Key-Value (Redis), Wide-Column (Cassandra)" },
+                    { name: "Graph", details: "Neo4j, Amazon Neptune, Ontotext GraphDB" },
+                    { name: "Vector & AI", details: "Pinecone, Milvus, Qdrant, pgvector" },
+                    { name: "Specialized", details: "Time-Series (InfluxDB), Search Engines (Elasticsearch), OLAP (ClickHouse)" }
+                ]
+            },
+            retrieval: {
+                title: "🔍 3. RETRIEVAL METHODS (วิธีการค้นหา)",
+                description: "เมื่อข้อมูลถูกจัดโครงสร้างแล้ว นี่คือกลไกที่เราใช้หยิบมันออกมา",
+                items: [
+                    { name: "Graph Retrieval", details: "Traversal, Multi-Hop (เพื่อนของเพื่อน), Pattern Matching, Centrality" },
+                    { name: "Vector & Semantic", details: "HNSW, Semantic Search, Multi-Vector Search, Hybrid Search (Vector + BM25)" },
+                    { name: "Text & Standard", details: "Keyword Match, Full-text Search, Relational Query (SQL), Time-Windowing" }
+                ]
+            }
+        };
+
+        const dataHNSW = [
+            { id: 'm1', icon: '🥩', name: 'ผัดกะเพราคอหมูย่าง', type: 'จานหลัก', bg: 'bg-red-50 text-red-900 border-red-200',
+              l6: 'กระโดดลงที่ [โซนครัวร้อน]', 
+              l4: 'สถานีย่าง ───> ส่งต่อให้ สถานีผัด', 
+              l2: 'พุ่งไปที่ [ชั้นเครื่องปรุงรสเผ็ดร้อน] และ [ชั้นวางกระทะเหล็ก]', 
+              l0: 'ดึง: [ใบกะเพรา] ── [พริกขี้หนู] ── [กระเทียม] ── [คอหมูย่าง] ── [กระทะจีน]' },
+            { id: 'm2', icon: '🥗', name: 'สลัดปูอัด', type: 'เครื่องเคียง', bg: 'bg-green-50 text-green-900 border-green-200',
+              l6: 'กระโดดลงที่ [โซนครัวเย็น] (ข้ามครัวร้อนประหยัดเวลา)', 
+              l4: 'พุ่งตรงไปที่ [สถานีเตรียมผักสด]', 
+              l2: 'ค้นหาใน [ตู้แช่เย็นอุณหภูมิ 4°C]', 
+              l0: 'ดึง: [ผักสลัดแก้ว] ── [น้ำสลัดครีม] ── [ปูอัด] ── [ถ้วยแก้วแช่เย็น]' },
+            { id: 'm3', icon: '🍍', name: 'น้ำสับปะรดปั่น', type: 'เครื่องดื่ม', bg: 'bg-yellow-50 text-yellow-900 border-yellow-200',
+              l6: 'กระโดดลงที่ [โซนเครื่องดื่ม/บาร์]', 
+              l4: 'พุ่งไปที่ [สถานีเครื่องปั่นความเร็วสูง]', 
+              l2: 'ค้นหาใน [ตู้แช่ผลไม้สด]', 
+              l0: 'ดึง: [เนื้อสับปะรด] ── [น้ำเชื่อม] ── [น้ำแข็งเกล็ด] ── [เครื่องปั่น]' },
+            { id: 'm4', icon: '🍓', name: 'อกไก่ปั่นรสสตรอเบอร์รี่', type: 'เครื่องดื่ม', bg: 'bg-pink-50 text-pink-900 border-pink-200',
+              l6: 'กระโดดลงที่ [โซนเครื่องดื่ม/บาร์]', 
+              l4: 'แชร์โหนด [สถานีเครื่องปั่นความเร็วสูง]', 
+              l2: 'ค้นหาใน [ตู้แช่โปรตีน/อาหารสุขภาพ]', 
+              l0: 'วิเคราะห์ Semantic Healthy Cluster ดึง: [อกไก่ต้มสุก] ── [สตรอเบอร์รี่แช่แข็ง] ── [เวย์โปรตีน] ── [เครื่องปั่น]' },
+            { id: 'm5', icon: '🍧', name: 'น้ำแข็งใส', type: 'ของหวาน', bg: 'bg-cyan-50 text-cyan-900 border-cyan-200',
+              l6: 'กระโดดลงที่ [โซนของหวาน]', 
+              l4: 'วิ่งไปที่ [ฝั่งของหวานเย็น]', 
+              l2: 'พุ่งไปที่ [เครื่องไสน้ำแข็ง]', 
+              l0: 'ดึง: [น้ำแข็งก้อนใหญ่] ── [น้ำแดงเฮลบลูบอย] ── [นมข้นหวาน] ── [ขนมปัง]' },
+            { id: 'm6', icon: '🥣', name: 'บัวลอยน้ำขิง', type: 'ของหวาน', bg: 'bg-orange-50 text-orange-900 border-orange-200',
+              l6: 'กระโดดลงที่ [โซนของหวาน]', 
+              l4: 'วิ่งไปที่ [ฝั่งของหวานร้อน]', 
+              l2: 'พุ่งไปที่ [เตาอุ่นหม้อต้มสมุนไพร]', 
+              l0: 'ดึง: [แป้งบัวลอยไส้งาดำ] ── [ขิงแก่ฝาน] ── [น้ำตาลทรายแดง] ── [หม้อต้มทองเหลือง]' }
+        ];
+
+        function initTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.dataset.target;
+                    
+                    tabBtns.forEach(b => {
+                        b.classList.remove('tab-active');
+                        b.classList.add('tab-inactive');
+                    });
+                    btn.classList.add('tab-active');
+                    btn.classList.remove('tab-inactive');
+
+                    tabContents.forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(target).classList.remove('hidden');
+
+                    if (target === 'tab-landscape' && !state.charts.landscape) renderLandscapeChart();
+                    if (target === 'tab-performance' && !state.charts.performance) renderPerformanceChart();
+                });
+            });
+        }
+
+        function initLandscape() {
+            const btns = document.querySelectorAll('.landscape-btn');
+            const contentArea = document.getElementById('landscape-content-area');
+
+            function updateContent(category) {
+                const data = dataLandscape[category];
+                
+                btns.forEach(b => {
+                    b.classList.remove('bg-teal-50', 'border-teal-600', 'text-teal-900');
+                    b.classList.add('bg-white', 'border-transparent', 'text-stone-700');
+                });
+                
+                const activeBtn = document.querySelector(`.landscape-btn[data-category="${category}"]`);
+                activeBtn.classList.remove('bg-white', 'border-transparent', 'text-stone-700');
+                activeBtn.classList.add('bg-teal-50', 'border-teal-600', 'text-teal-900');
+
+                let html = `
+                    <h3 class="text-2xl font-bold text-stone-800 mb-2">${data.title}</h3>
+                    <p class="text-stone-500 mb-6">${data.description}</p>
+                    <div class="space-y-4">
+                `;
+                
+                data.items.forEach(item => {
+                    html += `
+                        <div class="p-4 rounded-lg bg-stone-50 border border-stone-200">
+                            <h4 class="font-bold text-teal-800 text-lg">${item.name}</h4>
+                            <p class="text-stone-600 mt-1">${item.details}</p>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+                contentArea.innerHTML = html;
+                
+                contentArea.classList.remove('fade-in');
+                void contentArea.offsetWidth;
+                contentArea.classList.add('fade-in');
+            }
+
+            btns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.currentLandscapeCategory = btn.dataset.category;
+                    updateContent(state.currentLandscapeCategory);
+                });
+            });
+
+            updateContent(state.currentLandscapeCategory);
+        }
+
+        function initHNSW() {
+            const grid = document.getElementById('menu-grid');
+            const title = document.getElementById('current-menu-title');
+            
+            dataHNSW.forEach(menu => {
+                const btn = document.createElement('button');
+                btn.className = `p-4 rounded-xl border-2 text-left transition-all hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${menu.bg}`;
+                btn.innerHTML = `
+                    <div class="text-2xl mb-2">${menu.icon}</div>
+                    <div class="font-bold text-lg">${menu.name}</div>
+                    <div class="text-sm opacity-80">${menu.type}</div>
+                `;
+                btn.addEventListener('click', () => activateMenu(menu.id, btn));
+                grid.appendChild(btn);
+            });
+
+            function activateMenu(id, btnElement) {
+                const menu = dataHNSW.find(m => m.id === id);
+                if(!menu) return;
+
+                Array.from(grid.children).forEach(child => {
+                    child.style.opacity = '0.5';
+                    child.style.transform = 'scale(0.98)';
+                });
+                btnElement.style.opacity = '1';
+                btnElement.style.transform = 'scale(1)';
+
+                title.innerHTML = `${menu.icon} กระบวนการค้นหา: ${menu.name}`;
+                
+                const layers = [6, 4, 2, 0];
+                layers.forEach((l, index) => {
+                    const el = document.getElementById(`layer-${l}`);
+                    const textEl = document.getElementById(`text-l${l}`);
+                    
+                    el.classList.remove('opacity-50', 'border-stone-600');
+                    el.classList.add('border-amber-500');
+                    el.style.opacity = '0';
+                    textEl.textContent = menu[`l${l}`];
+
+                    setTimeout(() => {
+                        el.style.opacity = '1';
+                    }, index * 200);
+                });
+            }
+        }
+
+        function renderLandscapeChart() {
+            const ctx = document.getElementById('landscapeChart').getContext('2d');
+            state.charts.landscape = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Data Stores', 'DB Engines', 'Retrieval Methods'],
+                    datasets: [{
+                        data: [11, 16, 12],
+                        backgroundColor: ['#0f766e', '#d97706', '#4338ca'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { font: { family: 'Sarabun' } } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ' ' + context.label + ': ' + context.raw + ' เทคโนโลยี';
+                                }
+                            }
+                        }
+                    },
+                    cutout: '65%'
+                }
+            });
+        }
+
+        function renderPerformanceChart() {
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            state.charts.performance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['รายการที่ต้องสแกน', 'เวลาโดยประมาณ (หน่วย)'],
+                    datasets: [
+                        {
+                            label: 'ดั้งเดิม (Table Scan)',
+                            data: [10000, 100],
+                            backgroundColor: '#e5e7eb',
+                            borderColor: '#9ca3af',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'HNSW Search',
+                            data: [150, 5],
+                            backgroundColor: '#14b8a6',
+                            borderColor: '#0d9488',
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { type: 'logarithmic', min: 1, title: { display: true, text: 'Log Scale (อัตราส่วน)' } }
+                    },
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'Sarabun' } } },
+                        tooltip: {
+                            titleFont: { family: 'Sarabun' },
+                            bodyFont: { family: 'Sarabun' }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initTabs();
+            initLandscape();
+            initHNSW();
+            renderLandscapeChart(); 
+        });
+    </script>
+</body>
+</html>

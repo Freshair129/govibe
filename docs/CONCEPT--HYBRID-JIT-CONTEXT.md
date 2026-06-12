@@ -49,6 +49,11 @@ role: Strategic intent / PRD
 
 ---
 
+### **Operational Workflow Addendum**
+*   **Obsidian / GenesisDB Production Flow:** เมื่อ Obsidian Plugin ส่งข้อมูลอะตอมจำนวนมาก ระบบ production ควรใช้ batch operations เช่น `bulk_add_nodes()` และ `bulk_add_edges()` แทนการเขียนทีละโหนด
+*   **Virtual Rendering Contract:** ผลลัพธ์จาก JIT renderer ควรถูกส่งกลับเป็น Virtual Document หรือ text snapshot ที่ agent ใช้ทำงานต่อได้ทันที โดยไม่ต้องเปิด raw file tree ทั้งก้อน
+*   **Workflow Value:** ส่วนนี้เก็บรายละเอียดเชิงปฏิบัติการจาก prototype workflow ไว้ในระดับ concept เดียวกับ JIT context โดยไม่แตก source ซ้ำเป็นอีก SSOT
+
 ## **3. Workflow Execution (ตัวอย่างการทำงาน)**
 1. **User:** *"ช่วยเพิ่มเงื่อนไข Tax Deduction ลงในฟีเจอร์คำนวณเงินเดือนหน่อย (Scaling Tier: H2)"*
 2. **Agent:** สั่งการ Tool `query_genesis_graph(target="FEAT--TAX-DEDUCT", hops=2)`

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="th" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenesisDB x Obsidian Production Workflow</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'spin-slow': 'spin 8s linear infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: Inter & Sarabun -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', 'Sarabun', sans-serif;
+        }
+
+        .animate-fade-in-zoom {
+            animation: fadeInZoom 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeInZoom {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <div class="min-h-screen p-4 md:p-8 flex items-center justify-center">
+        <div
+            class="max-w-6xl w-full bg-white dark:bg-slate-900 rounded-2xl shadow-xl overflow-hidden flex flex-col border border-slate-200 dark:border-slate-800 transition-all duration-300">
+
+            <!-- Header Section -->
+            <div
+                class="p-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                    <h1 class="text-2xl md:text-3xl font-extrabold flex items-center gap-3">
+                        <svg class="w-8 h-8 text-blue-600 dark:text-blue-500" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
+                            </path>
+                        </svg>
+                        <span>Obsidian <span class="text-slate-400 font-light">+</span> GenesisDB Production
+                            Workflow</span>
+                    </h1>
+                    <p class="text-slate-500 dark:text-slate-400 mt-2 text-sm md:text-base">
+                        เจาะลึกกระบวนการทำงานจริงของ Rust Engine ผสานการทำงานแบบไร้ไฟล์ย่อยบน Obsidian (Phase 8
+                        Optimized)
+                    </p>
+                </div>
+
+                <!-- Dark Mode Toggle -->
+                <button id="themeToggle"
+                    class="self-start sm:self-auto p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all">
+                    <!-- Sun Icon (visible in dark) -->
+                    <svg id="sunIcon" class="w-5 h-5 text-yellow-500 hidden" fill="none" stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707-.707m12.728 0l-.707.707M6.343 6.343l-.707-.707M14 12a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
+                    </svg>
+                    <!-- Moon Icon (visible in light) -->
+                    <svg id="moonIcon" class="w-5 h-5 text-slate-700 dark:text-slate-300" fill="none"
+                        stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex flex-col lg:flex-row flex-grow">
+
+                <!-- Sidebar / Steps Menu -->
+                <div class="w-full lg:w-1/3 bg-slate-50 dark:bg-slate-900/50 p-4 border-r lg:border-b-0 border-b border-slate-200 dark:border-slate-800 flex flex-col gap-2"
+                    id="stepsContainer">
+                    <!-- Step buttons will be rendered here dynamically via JS -->
+                </div>
+
+                <!-- Main Work Area (Diagram & Explanation) -->
+                <div class="w-full lg:w-2/3 p-6 flex flex-col bg-white dark:bg-slate-900 justify-between gap-6">
+
+                    <!-- Dynamic Interactive Diagram Panel -->
+                    <div
+                        class="flex-grow flex items-center justify-center bg-slate-50 dark:bg-slate-950 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 min-h-[300px] p-6 relative overflow-hidden">
+                        <div id="diagramArea" class="w-full h-full flex flex-col items-center justify-center">
+                            <!-- Diagram content updated dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Codebinding Explanation Box -->
+                    <div
+                        class="bg-blue-50/70 dark:bg-blue-950/20 rounded-xl p-6 border border-blue-100 dark:border-blue-900/40 transition-all duration-300">
+                        <h2
+                            class="text-lg md:text-xl font-bold mb-4 text-slate-800 dark:text-slate-100 flex items-center gap-2">
+                            <span id="explanationIcon"></span>
+                            <span id="explanationTitle" class="ml-1">การผูกลอจิกโค้ดจริง (Codebinding Logic)</span>
+                        </h2>
+                        <ul class="space-y-3.5" id="detailsList">
+                            <!-- Details list items will be injected here -->
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Data model mirroring the React logic with Binary WAL update
+        const steps = [
+            {
+                id: 1,
+                title: '1. Ingestion & Bulk Loading',
+                icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>`,
+                description: 'ลด Mutex Overhead 99% ด้วย Single-Lock Batch APIs',
+                details: [
+                    'เมื่อ Obsidian Plugin ส่งข้อมูลอะตอมจำนวนมาก ระบบจะเรียกใช้ bulk_add_nodes() และ bulk_add_edges() แทนการเขียนทีละโหนด',
+                    'ลดภาระการแย่งชิงทรัพยากรล็อก (Mutex Contention) ลงได้ถึง 99% ทำให้สามารถนำเข้าข้อมูลได้สูงถึง ~24,435 Ops/sec',
+                    'กลไกนี้ช่วยแก้ปัญหา Small File Problem ของไฟล์ .md ใน Obsidian ได้อย่างเบ็ดเสร็จตั้งแต่ด่านแรก'
+                ]
+            },
+            {
+                id: 2,
+                title: '2. Mechanical Sympathy Storage',
+                icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>`,
+                description: 'จัดระเบียบหน่วยความจำระดับ 64-Byte CPU Cache Lines',
+                details: [
+                    'ในฟังก์ชัน add_vector_internal() เวกเตอร์ f32 จะถูกจัดเรียงตำแหน่งหน่วยความจำผ่าน allocate_aligned_offset(..., 64)',
+                    'การใช้ 64-byte alignment (หรือ 16 f32 elements) ช่วยป้องกันปัญหา Cache Line Contention ระหว่างการสลับเธรดการประมวลผล',
+                    'เปลี่ยนจากข้อความ JSONL มาบันทึกประวัติลงไฟล์ genesis-graph.wal ในรูปแบบ Append-only Binary Log (Bincode) เพื่อลดภาระ CPU ในการแปลงไฟล์ (JSON Deserialization Overhead) อย่างเบ็ดเสร็จ'
+                ]
+            },
+            {
+                id: 3,
+                title: '3. Deferred Indexing & Rayon',
+                icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>`,
+                description: 'แยกการทำดัชนีเวกเตอร์ออกจาก Pipeline หลัก',
+                details: [
+                    'การโหลดข้อมูลจะไม่ทำ HNSW index ทันที (Deferred Indexing) เพื่อให้เขียนไฟล์ Binary WAL ได้ความเร็วสูงสุดและไม่ต้องพึ่งพา String serialization',
+                    'เรียก rebuild_index_parallel() เพื่อใช้เธรดทั้งหมดของ CPU ประมวลผลสร้างดัชนี HNSW พร้อมกันด้วยความเร็ว ~3,698 Vec/sec',
+                    'ดัชนีและข้อมูลกราฟทั้งหมดจะพร้อมทำงานในแบบ In-Memory ทันทีหลังจากนั้น'
+                ]
+            },
+            {
+                id: 4,
+                title: '4. Ultra-low Latency Retrieval',
+                icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>`,
+                description: 'สืบค้นข้อมูลกราฟและเวกเตอร์ระดับ Microseconds',
+                details: [
+                    'การเรียก neighbors() สำหรับ 1-hop Traversal ใช้เวลาเพียง 12.79 µs และสำหรับ 3-hop เพียง 522.07 µs เท่านั้น',
+                    'ฟังก์ชัน hybrid_search() นำคะแนนความคล้ายของเวกเตอร์มารวมกับคะแนนความสำคัญของโหนด (Impact Score) บน RAM โดยไม่แตะต้องดิสก์',
+                    'ผลลัพธ์ที่ได้ถูกส่งกลับไปวาดผลแบบไดนามิกบนหน้าจอ Obsidian เสมือนมีไฟล์จริงเปิดอยู่ (Virtual Obsidian Rendering)'
+                ]
+            },
+            {
+                id: 5,
+                title: '5. Binary Compaction',
+                icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.5M7 13h10M7 17h10"></path></svg>`,
+                description: 'เคลียร์ประวัติและบีบอัดข้อมูลเป็น Snapshot ก้อนเดียว',
+                details: [
+                    'ฟังก์ชัน compact() จะทำการล้างข้อมูลขยะและ Edge ที่ถูกยกเลิก (Retracted Edges) ออกจากหน่วยความจำ',
+                    'เขียนข้อมูลสถานะล่าสุดกลับไปทับไฟล์หลัก และแปลงหน่วยความจำทั้งหมดเป็นสแนปชอตไบนารีในไฟล์ genesis-graph.bin ด้วย bincode',
+                    'ช่วยให้การสตาร์ท Obsidian ครั้งถัดไปโหลดความรู้ทั้งหมดกลับขึ้น RAM ได้ทันทีในเวลาเสี้ยววินาที'
+                ]
+            }
+        ];
+
+        let activeStep = 1;
+
+        // Initialize elements
+        const stepsContainer = document.getElementById('stepsContainer');
+        const diagramArea = document.getElementById('diagramArea');
+        const detailsList = document.getElementById('detailsList');
+        const explanationTitle = document.getElementById('explanationTitle');
+        const explanationIcon = document.getElementById('explanationIcon');
+
+        function renderSteps() {
+            stepsContainer.innerHTML = '';
+            steps.forEach(step => {
+                const isActive = step.id === activeStep;
+                const buttonClass = isActive
+                    ? 'bg-blue-100 dark:bg-blue-900/40 border-blue-300 dark:border-blue-700 shadow-sm text-blue-900 dark:text-blue-100'
+                    : 'bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800/80 border-transparent text-slate-700 dark:text-slate-300';
+
+                const iconColor = isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400';
+
+                const btn = document.createElement('button');
+                btn.className = `flex items-start text-left p-4 rounded-xl transition-all duration-200 border w-full ${buttonClass}`;
+                btn.onclick = () => selectStep(step.id);
+                btn.innerHTML = `
+                    <div class="mt-1 mr-4 ${iconColor}">
+                        ${step.icon}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm sm:text-base">${step.title}</h3>
+                        <p class="text-xs mt-1 opacity-80 leading-relaxed">${step.description}</p>
+                    </div>
+                `;
+                stepsContainer.appendChild(btn);
+            });
+        }
+
+        function renderDiagram() {
+            diagramArea.className = "w-full h-full flex flex-col items-center justify-center animate-fade-in-zoom";
+            let content = '';
+            const arrowSvg = `<svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>`;
+
+            switch (activeStep) {
+                case 1:
+                    content = `
+                        <div class="flex flex-col items-center justify-center space-y-4">
+                            <div class="flex flex-wrap items-center justify-center gap-6">
+                                <div class="flex flex-col items-center bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 w-32 shadow-sm">
+                                    <svg class="w-10 h-10 text-purple-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">Obsidian Inputs<br/>(Bulk Array)</span>
+                                </div>
+                                ${arrowSvg}
+                                <div class="flex flex-col items-center bg-blue-50 dark:bg-blue-900/30 p-4 rounded-xl border border-blue-200 dark:border-blue-800 w-36 shadow-sm">
+                                    <svg class="w-10 h-10 text-blue-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">bulk_add_nodes()</span>
+                                </div>
+                                ${arrowSvg}
+                                <div class="flex flex-col items-center bg-amber-50 dark:bg-amber-900/30 p-4 rounded-xl border border-amber-200 dark:border-amber-800 w-36 shadow-sm">
+                                    <svg class="w-10 h-10 text-amber-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">Batch Writer<br/>(No Mutex Limit)</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-4 text-center max-w-md leading-relaxed">
+                                ป้อนข้อมูลแบบกลุ่มเข้าสู่ระดับเอนจิน ป้องกันการล็อกทรัพยากรซ้ำซ้อนในระดับ Thread Lock
+                            </p>
+                        </div>
+                    `;
+                    break;
+                case 2:
+                    content = `
+                        <div class="flex flex-col items-center justify-center space-y-4">
+                            <div class="flex flex-wrap items-center justify-center gap-6">
+                                <div class="flex flex-col items-center bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-xl border border-indigo-200 dark:border-indigo-800 w-36 shadow-sm">
+                                    <svg class="w-10 h-10 text-indigo-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">Vector Arena<br/>(f32 Elements)</span>
+                                </div>
+                                ${arrowSvg}
+                                <div class="flex flex-col items-center bg-emerald-50 dark:bg-emerald-900/30 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 w-38 shadow-sm">
+                                    <svg class="w-10 h-10 text-emerald-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">64-Byte Alignment</span>
+                                </div>
+                                ${arrowSvg}
+                                <div class="flex flex-col items-center bg-indigo-100 dark:bg-indigo-950/40 p-4 rounded-xl border border-indigo-300 dark:border-indigo-800 w-38 shadow-sm">
+                                    <svg class="w-10 h-10 text-indigo-600 dark:text-indigo-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76z"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">Binary WAL<br/>(Bincode .wal)</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-4 text-center max-w-md leading-relaxed font-semibold">
+                                ★ อัปเดต: บันทึกลง Binary WAL ด้วย Bincode เพื่อตัดคอขวดขั้นตอนการแปลง String เป็น JSON ตัวดิสก์รันแบบ Sequential I/O รวดเร็วและทนทานสูงสุด
+                            </p>
+                        </div>
+                    `;
+                    break;
+                case 3:
+                    content = `
+                        <div class="flex flex-col items-center justify-center space-y-4">
+                            <div class="flex flex-wrap items-center justify-center gap-6">
+                                <div class="flex flex-col items-center bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 w-32 shadow-sm">
+                                    <svg class="w-10 h-10 text-purple-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">Flat Raw Data</span>
+                                </div>
+                                ${arrowSvg}
+                                <div class="flex flex-col items-center bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-xl border border-yellow-200 dark:border-yellow-800 w-44 shadow-sm">
+                                    <svg class="w-10 h-10 text-yellow-600 dark:text-yellow-400 mb-2 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.5"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">rebuild_index_parallel()</span>
+                                </div>
+                                ${arrowSvg}
+                                <div class="flex flex-col items-center bg-emerald-50 dark:bg-emerald-900/30 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 w-32 shadow-sm">
+                                    <svg class="w-10 h-10 text-emerald-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">HNSW Index</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-4 text-center max-w-md leading-relaxed">
+                                หลีกเลี่ยงการสร้างดัชนีทีละตัวขณะเขียน ย้ายงานหนักไปประมวลผลบนเธรดขนานของ CPU ด้วย Rayon หลังโหลดดิสก์เสร็จ
+                            </p>
+                        </div>
+                    `;
+                    break;
+                case 4:
+                    content = `
+                        <div class="flex flex-col items-center justify-center space-y-4">
+                            <div class="flex flex-wrap items-center justify-center gap-6">
+                                <div class="flex flex-col items-center bg-slate-100 dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 w-32 shadow-sm">
+                                    <svg class="w-10 h-10 text-purple-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">User Query</span>
+                                </div>
+                                <div class="flex items-center relative">
+                                    ${arrowSvg}
+                                    <span class="absolute -top-5 text-[10px] font-extrabold text-emerald-500 flex items-center bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 px-1 py-0.5 rounded shadow-sm whitespace-nowrap">
+                                        <svg class="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"></path></svg> ~12µs
+                                    </span>
+                                </div>
+                                <div class="flex flex-col items-center bg-emerald-50 dark:bg-emerald-900/30 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 w-36 shadow-sm">
+                                    <svg class="w-10 h-10 text-emerald-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">neighbors() & hybrid()</span>
+                                </div>
+                                ${arrowSvg}
+                                <div class="flex flex-col items-center bg-blue-50 dark:bg-blue-900/30 p-4 rounded-xl border border-blue-200 dark:border-blue-800 w-32 shadow-sm">
+                                    <svg class="w-10 h-10 text-blue-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">Virtual Dynamic View</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-4 text-center max-w-md leading-relaxed">
+                                การสืบค้นความสัมพันธ์ข้าม Node ดำเนินการบน RAM 100% ทำให้ไม่สร้าง I/O โหลดให้ฮาร์ดดิสก์เสื่อมสภาพ
+                            </p>
+                        </div>
+                    `;
+                    break;
+                case 5:
+                    content = `
+                        <div class="flex flex-col items-center justify-center space-y-4">
+                            <div class="flex flex-wrap items-center justify-center gap-6">
+                                <div class="flex flex-col items-center bg-amber-50 dark:bg-amber-900/30 p-4 rounded-xl border border-amber-200 dark:border-amber-800 w-32 shadow-sm">
+                                    <svg class="w-10 h-10 text-amber-500 mb-2 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H18.5"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">compact() Trigger</span>
+                                </div>
+                                ${arrowSvg}
+                                <div class="flex flex-col items-center bg-indigo-50 dark:bg-indigo-900/30 p-4 rounded-xl border border-indigo-200 dark:border-indigo-800 w-40 shadow-sm">
+                                    <svg class="w-10 h-10 text-indigo-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 11m8 4V11M4 11v10l8 4m0-10l8-4m-8 4v10"></path></svg>
+                                    <span class="text-xs font-bold text-center leading-tight">genesis-graph.bin<br/><span class="text-[10px] font-normal">(Bincode Snaps)</span></span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-4 text-center max-w-md leading-relaxed">
+                                จัดระเบียบไฟล์เก็บข้อมูลบนดิสก์และลบการเปลี่ยนแปลงส่วนเกิน เพื่อคงความเร็วระดับสูงในระยะยาว
+                            </p>
+                        </div>
+                    `;
+                    break;
+            }
+            diagramArea.innerHTML = content;
+        }
+
+        function renderDetails() {
+            const currentStep = steps.find(s => s.id === activeStep);
+
+            explanationIcon.innerHTML = currentStep.icon;
+            explanationIcon.className = "text-blue-600 dark:text-blue-400";
+
+            detailsList.innerHTML = '';
+            currentStep.details.forEach((detail, idx) => {
+                const li = document.createElement('li');
+                li.className = "flex items-start";
+                li.innerHTML = `
+                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 flex items-center justify-center text-xs font-bold mr-3 mt-0.5">
+                        ${idx + 1}
+                    </span>
+                    <span class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                        ${detail}
+                    </span>
+                `;
+                detailsList.appendChild(li);
+            });
+        }
+
+        // Action when switching a step
+        function selectStep(stepId) {
+            activeStep = stepId;
+            renderSteps();
+            renderDiagram();
+            renderDetails();
+        }
+
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+
+        function updateThemeUI() {
+            if (document.documentElement.classList.contains('dark')) {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            } else {
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            }
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            updateThemeUI();
+        });
+
+        // Initialize App
+        window.onload = function () {
+            updateThemeUI();
+            selectStep(1);
+        };
+    </script>
+</body>
+
+</html>

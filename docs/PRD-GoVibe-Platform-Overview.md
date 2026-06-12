@@ -129,7 +129,7 @@ PRD::GoVibe-Platform
 - **Agent ABAC:** subject attributes, resource attributes, action context, policy decision point.
 - **Policy Enforcement:** policy enforcement point, obligation handler, deny reason renderer, policy audit logger.
 
-### 5.8 Genesis Knowledge HCS System
+### 5.8 Genesis Knowledge System
 - **Hierarchy Compaction System:** H-level classifier, context scope resolver, graph hop resolver, compaction engine, context budget planner.
 - **Hybrid JIT Context System:** Markdown source resolver, in-memory graph builder, hop-bounded context query, virtual document renderer, context overwrite guard.
 - **Atom Extraction System:** concept, feature, module, flow, algorithm, entity, guard, API, and MCP extractors.
