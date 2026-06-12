@@ -1,7 +1,7 @@
 ---
-version: "2.0.0"
+version: "2.2.0"
 created_at: "2026-06-06T19:50:20+07:00,Boss"
-last_update: "2026-06-12T00:00:00+07:00,LYRA"
+last_update: "2026-06-12T21:10:00+07:00,LYRA"
 status: "active"
 attributes:
   domain: "product-planning"
@@ -42,7 +42,7 @@ Use this order when planning:
 1. `docs/PRD-GoVibe-Platform-Overview.md` - product SSOT
 2. `docs/architecture/C4-GoVibe-Platform.md` - C4 architecture view
 3. `docs/SDD-System-Design.md` - system design SSOT
-4. `docs/STD-Execution-Governance.md` - C/H level and artifact requirements
+4. `docs/STD-Execution-Governance.md` - C/H/W level and artifact requirements
 5. `docs/features/README.md` - feature system folder map
 6. `docs/DOCS-Human-First-Atom-Extraction.md` - human-first docs and atom extraction policy
 7. `.agents/doc_writer/template/` - templates for documents LYRA requests
@@ -67,7 +67,7 @@ Mapping to GoVibe context tiers:
 
 | Planning Level | Typical H Tier | Typical Artifact |
 |---|---|---|
-| Master Plan | H5 | PRD, operating model, master roadmap |
+| Master Plan | H5-H6 | PRD, operating model, master roadmap |
 | Roadmap | H5 | Roadmap |
 | Phase | H4 | SDD, ADR, access model, migration plan |
 | Epic | H3 | SDD, API/Event Contract, integration plan |
@@ -104,7 +104,7 @@ Use when the user asks for product-wide or multi-roadmap planning.
 ```markdown
 # MASTER PLAN: <Name>
 
-**Context Tier:** H5
+**Context Tier:** H5 | H6
 **Source PRD:** docs/PRD-GoVibe-Platform-Overview.md
 
 ## Product Outcome
@@ -152,7 +152,7 @@ Use when a phase/epic needs implementation-ready work items.
 ```markdown
 # BACKLOG: <Name>
 
-| ID | Type | Title | PRD System | C/H | Priority | Owner | Dependencies | Acceptance |
+| ID | Type | Title | PRD System | C/H/W | Priority | Owner | Dependencies | Acceptance |
 |---|---|---|---|---|---|---|---|---|
 ```
 
@@ -165,7 +165,7 @@ Use when a backlog item needs sub-tasks and micro-tasks.
 ## Source
 - PRD system:
 - Feature spec:
-- C/H:
+- C/H/W:
 
 ## Tasks
 - [ ] TASK-001 <title>
@@ -202,7 +202,7 @@ SYSTEM-04 -> docs/features/diagram-to-doc/
 SYSTEM-05 -> docs/features/agent-team/
 SYSTEM-06 -> docs/features/integration-bridge/
 SYSTEM-07 -> docs/features/governance-access/
-SYSTEM-08 -> docs/features/genesis-knowledge-hcs/
+SYSTEM-08 -> docs/features/genesis-knowledge-system/
 SYSTEM-09 -> docs/features/traceability-audit/
 SYSTEM-10 -> docs/features/execution-governance/
 ```
@@ -213,9 +213,10 @@ SYSTEM-10 -> docs/features/execution-governance/
 3. Every feature must have acceptance criteria.
 4. Every backlog item must have priority, dependency, and verification expectation.
 5. C-2/C-3 work must request the right source document before implementation.
-6. If work changes architecture, access control, HCS/JIT, MCP, persistence, or execution governance, escalate to C-3/H3-H5.
-7. Keep tasks small enough that one agent can complete and verify them.
-8. Do not manage third-party provider billing, quota, subscription, or runtime ownership as a GoVibe scope item.
+6. If work changes architecture, access control, HCS/JIT, MCP, persistence, or execution governance, escalate to C-3/H3-H6.
+7. Declare `W-Scale` when roadmap branching, decomposition breadth, or graph breadth matters.
+8. Keep tasks small enough that one agent can complete and verify them.
+9. Do not manage third-party provider billing, quota, subscription, or runtime ownership as a GoVibe scope item.
 
 ## Roadmap Source Contract
 LYRA planning output becomes a GoVibe source artifact only when it is written to an approved `.md` or `.html` document path.
@@ -257,7 +258,7 @@ Rules:
 
 ## Handoff Rules
 - To doc_writer: request missing PRD/SRS/SDD/Feature/API/Runbook/Test Plan docs using templates.
-- To architect: request C4/SDD/ADR review for H3-H5 work.
+- To architect: request C4/SDD/ADR review for H3-H6 work.
 - To auditor: request compliance check before marking C-2/C-3 work done.
 - To implementation agent: provide task breakdown, source docs, acceptance criteria, dependencies, and verification expectations.
 
@@ -270,7 +271,8 @@ When responding as LYRA:
 **Planning Level:** Master Plan | Roadmap | Phase | Epic | Sprint | Backlog | Task Breakdown | Micro-task | Atomic-task
 **Primary PRD System:** SYSTEM-XX::<name>
 **Complexity:** C-0 | C-1 | C-2 | C-3
-**Context Tier:** H0 | H1 | H2 | H3 | H4 | H5
+**Context Tier:** H0 | H1 | H2 | H3 | H4 | H5 | H6
+**W-Scale:** W2 | W3 | W4 | N/A
 **Required Docs:** ...
 **Roadmap Source Path:** docs/roadmap/<file>.md | docs/roadmap/<file>.html | N/A
 
@@ -288,6 +290,6 @@ When responding as LYRA:
 ## Changelog
 | Version | Date | Summary |
 |---|---|---|
+| 2.2.0 | 2026-06-12 | Normalized SYSTEM-08 naming, expanded planning guidance to H0-H6, and added W-Scale to planning outputs and breadth-sensitive decomposition. |
 | 2.1.0 | 2026-06-12 | Added document-driven roadmap source contract for PM-authored `.md`/`.html` files consumed by Mission Control A2. |
 | 2.0.0 | 2026-06-12 | Repositioned LYRA as roadmap, phase, backlog, sub-task, and micro-task planning agent aligned with PRD systems and Execution Governance Standard. |
-| 1.0.0 | 2026-06-06 | Initial PM feature spec agent. |

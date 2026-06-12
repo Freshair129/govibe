@@ -1,8 +1,8 @@
-﻿---
+---
 title: "PROJECT STRUCTURE: <Project Name>"
 doc_id: "PROJECT-STRUCTURE-<slug>"
 status: "draft"
-version: "0.1.0"
+version: "0.2.0"
 updated: "YYYY-MM-DD"
 owner: "<owner>"
 source_of_truth: true
@@ -26,12 +26,13 @@ Describe what this repository/workspace contains and how humans and agents shoul
 ## 3. Workspace Layout
 ```text
 <repo>/
-+-- apps/
-+-- packages/
++-- src/
++-- public/
++-- comp/
 +-- docs/
 +-- .agents/
 +-- scripts/
-+-- public/
++-- workflows/
 ```
 
 ## 4. Directory Contract
@@ -63,7 +64,7 @@ docs/
 | SYSTEM-05 Agent Team Management | docs/features/agent-team/ |
 | SYSTEM-06 Integration Bridge | docs/features/integration-bridge/ |
 | SYSTEM-07 Governance Access Control | docs/features/governance-access/ |
-| SYSTEM-08 Genesis Knowledge HCS | docs/features/genesis-knowledge-hcs/ |
+| SYSTEM-08 Genesis Knowledge System | docs/features/genesis-knowledge-system/ |
 | SYSTEM-09 Traceability Audit Verification | docs/features/traceability-audit/ |
 | SYSTEM-10 Execution Governance | docs/features/execution-governance/ |
 
@@ -72,7 +73,8 @@ docs/
 .agents/
 +-- auditor/
 +-- doc_writer/
-+-- cto/
++-- pm/
++-- qa/
 ```
 
 ## 8. Build and Test Entry Points
@@ -88,7 +90,7 @@ docs/
 
 ## 10. Boundaries
 - Frontend:
-- Backend:
+- Backend/integration:
 - Docs:
 - Generated artifacts:
 - Agent/private workspace:

@@ -1,7 +1,7 @@
 ---
-version: "2.0.0"
+version: "2.1.0"
 created_at: "2026-06-06T19:52:20+07:00,Boss"
-last_update: "2026-06-12T00:00:00+07:00,THESEUS"
+last_update: "2026-06-12T21:10:00+07:00,THESEUS"
 status: "active"
 attributes:
   domain: "documentation-governance"
@@ -64,7 +64,7 @@ SYSTEM-04 -> docs/features/diagram-to-doc/
 SYSTEM-05 -> docs/features/agent-team/
 SYSTEM-06 -> docs/features/integration-bridge/
 SYSTEM-07 -> docs/features/governance-access/
-SYSTEM-08 -> docs/features/genesis-knowledge-hcs/
+SYSTEM-08 -> docs/features/genesis-knowledge-system/
 SYSTEM-09 -> docs/features/traceability-audit/
 SYSTEM-10 -> docs/features/execution-governance/
 ```
@@ -77,9 +77,10 @@ If a feature spans systems, choose the primary owner folder and add cross-links.
 3. Every non-trivial doc must include frontmatter with `title`, `doc_id`, `status`, `version`, `updated`, `owner`, and `source_of_truth`.
 4. Diagrams must use Mermaid unless a source diagram file is explicitly referenced.
 5. Every feature/system document must include traceability to PRD system, C/H level, risk, owner, acceptance criteria, and verification.
-6. Keep documents human-readable and self-contained at their level. Link deeper details instead of duplicating full specs.
-7. Preserve canonical source rules: PRD owns product intent, SRS owns requirements, SDD/C4 own architecture, LLD owns low-level logic, API/MCP contracts own integration behavior, Runbooks own operations, Test Plans own verification.
-8. Legacy root `templates/` is deprecated once migrated into `.agents/doc_writer/template/`; canonical templates live only in the agent writer template folder.
+6. Add `W-Scale` when the document defines breadth-sensitive behavior such as hierarchy compaction, graph expansion, roadmap branching, or decomposition rules.
+7. Keep documents human-readable and self-contained at their level. Link deeper details instead of duplicating full specs.
+8. Preserve canonical source rules: PRD owns product intent, SRS owns requirements, SDD/C4 own architecture, LLD owns low-level logic, API/MCP contracts own integration behavior, Runbooks own operations, Test Plans own verification.
+9. Legacy root `templates/` is deprecated once migrated into `.agents/doc_writer/template/`; canonical templates live only in the agent writer template folder.
 
 ## Output Format
 When asked to create or update a document, respond with:
@@ -91,6 +92,9 @@ When asked to create or update a document, respond with:
 **File Path:** <path>
 **Source of Truth:** <source doc or section>
 **Traceability:** <PRD system / feature / task>
+**Complexity:** C-0 | C-1 | C-2 | C-3 | N/A
+**Context Tier:** H0 | H1 | H2 | H3 | H4 | H5 | H6 | N/A
+**W-Scale:** W2 | W3 | W4 | N/A
 **Status:** <draft|candidate|approved|stable>
 
 Summary:
@@ -104,6 +108,7 @@ Summary:
 - [ ] Correct template used.
 - [ ] PRD system mapping exists.
 - [ ] C/H level and risk are declared where relevant.
+- [ ] W-Scale is declared where breadth-sensitive behavior is specified.
 - [ ] Acceptance criteria are testable.
 - [ ] Verification section exists.
 - [ ] Related docs are linked.
@@ -112,5 +117,5 @@ Summary:
 ## Changelog
 | Version | Date | Summary |
 |---|---|---|
+| 2.1.0 | 2026-06-12 | Normalized SYSTEM-08 naming, added H0-H6 and W-Scale guidance to documentation output, and kept template governance aligned with current SSOT. |
 | 2.0.0 | 2026-06-12 | Normalized THESEUS around PRD/C4/SDD/STD execution governance, feature system folders, and SWE templates. |
-| 1.0.0 | 2026-06-06 | Initial documentation writer directive. |
