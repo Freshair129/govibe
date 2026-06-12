@@ -51,7 +51,7 @@ The template `siteMap` contains the same 17 modules as the React implementation:
 | A2 | Roadmap header card, global progress, stats, export menu, reset board, AI assist roster, detailed roadmap checklist/accordion. |
 | A3 | Capability plugin management surface. Preserve plugin-slot density and operational controls when data events exist. |
 | A4 | Brain/config panels with model/runtime controls. Preserve config feel without storing secrets in markup. |
-| A5 | Agent Management Carousel: Agent Select stats, ability tags, infinity card-deck roster navigation without scrollbars, video switcher, character media console with sequential EVA video playback, cursor glow, 3D tilt, configure/flip behavior, model source controls, sliders/meters, local/cloud endpoint settings, and a mobile single-column adaptation. React must avoid hardcoded secret values. |
+| A5 | Agent Management Carousel: Agent Select stats, ability tags, infinity card-deck roster navigation without scrollbars, `interactive-card` mouse glare, Raycast 3D Agent Card style, Agent drag follow-cursor assignment style, video switcher, character media console with sequential EVA video playback, cursor glow, 3D tilt, configure/flip behavior, model source controls, sliders/meters, local/cloud endpoint settings, and a mobile single-column adaptation. React must avoid hardcoded secret values. |
 | B1 | AST hierarchy/tree-oriented view. |
 | B2 | Business specification / Genesis regulation content panels. |
 | B3 | Interactive graph where nodes can be moved in a 2D graph space. |
@@ -72,6 +72,19 @@ The template `siteMap` contains the same 17 modules as the React implementation:
 - Keep UI density and visual identity close to the template, but source all runtime values from `MissionSnapshot` / `MissionEvent`.
 - Any static structural labels are allowed only when they define the surface contract, not when they pretend to be backend data.
 - Replace template secrets and sample credentials with empty inputs, redacted placeholders, or real configuration events.
+
+## A5 Interaction Style Reference
+
+The React migration must preserve these template-level interaction contracts from `GoVibe-Mission-Control-template.html`:
+
+| Template style | Contract |
+| --- | --- |
+| `interactive-card` | Uses `transform-style: preserve-3d`, hover border/glow elevation, and a glare layer driven by `--mouse-x` / `--mouse-y`. |
+| `raycast-perspective-container` | Provides about `1000px` perspective for Raycast-style agent cards. Pointer movement tilts the container up to about `15deg` on X/Y and scales to about `1.04`; pointer leave resets to neutral. |
+| `raycast-agent-card` | Uses glass blur, preserve-3D children, agent-specific hover border/shadow colors, shine/glare overlay, and raised child elements with `translateZ(20px)`. |
+| `agent-drag-float` | During drag, clones the agent card into a fixed floating element that follows the cursor with `rotate(-5deg) scale(1.05)`, while the source card fades and uses grabbing cursor state. |
+| `task-drop-hover` | Drop targets under the dragged card elevate/glow while hit-tested beneath the floating clone. |
+| `character-perspective` / `character-tilt` | Character media console uses about `1500px` perspective, preserve-3D tilt, up to about `6deg` pointer rotation, and easing back to neutral on pointer leave. |
 
 ## Current React Alignment Against Template
 

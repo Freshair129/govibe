@@ -40,5 +40,36 @@ Migrate หน้า **Roadmap Board (View A2)** มาเป็น React Compon
 - [ ] คลิกที่ชื่อ Task แล้วรายละเอียดปรากฏใน Side Panel ถูกต้อง
 - [ ] Dependency Badge (Locked/Unlocked) อัปเดตตามสถานะงานที่ระบุ
 
+## 5. Document-Driven Roadmap Addendum
+
+The long-term Roadmap Board must not use hardcoded React arrays as canonical project state.
+
+Target workflow:
+
+```text
+LYRA / PM writes approved .md or .html roadmap/backlog/sprint docs
+  -> GoVibe parses the documents into RoadmapSnapshot
+  -> Mission Control A2 renders roadmap, assignment, progress, artifacts, review, and verification state
+  -> agents update progress through API/MCP/events
+```
+
+Implementation requirements:
+
+- Add typed roadmap shapes in `src/mission.ts`.
+- Include `sourcePath`, `sourceType`, `sourceVersion`, `sourceSection`, and `approvalStatus`.
+- Support Markdown and HTML source documents produced by LYRA/PM.
+- Replace hardcoded rows/progress with `snapshot.roadmap` or an equivalent document-derived model.
+- Keep template blueprint rows only as an honest empty-state fallback when no document or roadmap event exists.
+- Calculate progress from task status, not a hardcoded percentage.
+
+Verification additions:
+
+- [ ] A2 can render from a sample PM-authored Markdown roadmap document.
+- [ ] A2 can render from a sample PM-authored HTML roadmap document or converted HTML payload.
+- [ ] Global progress is calculated from parsed task state.
+- [ ] Each rendered task links to `sourcePath` and `sourceSection`.
+- [ ] No hardcoded `roadmapRows`, `TASK_DEFINITIONS`, or blueprint rows are treated as canonical live project progress.
+- [ ] Empty state clearly says no approved roadmap document or roadmap event is connected.
+
 ---
 **Please review and approve this Spec. Once approved, I will begin implementing the Roadmap Board.**

@@ -25,10 +25,12 @@ ATHER ranks verification evidence from strongest to weakest. Use the strongest p
 |---|---|
 | Docs-only | Link to changed docs, `git diff --check`, and source/traceability review |
 | UI | Browser verification, console check, viewport check, design doc comparison |
+| Roadmap UI / A2 | Source `.md`/`.html` document sample, parsed roadmap payload, progress calculation check, no-hardcoded-canonical-data check |
 | API/MCP | Contract check, request/response sample, permission check |
 | RBAC/ABAC | Policy decision evidence, deny/allow cases, audit log expectation |
 | HCS/JIT/Graph | H-level classification case, graph-hop query case, compaction output |
 | Agent runbook/process | Execution governance mapping, role/gate check, traceability check |
+| Deployment | GitHub CI/CD evidence or Vercel CLI deployment URL, build result, deployed smoke test, console-error check |
 
 ## Failure Reporting
 When verification cannot be run, report:
@@ -43,4 +45,5 @@ recommended next evidence:
 ## Changelog
 | Version | Date | Summary |
 |---|---|---|
+| 2.1.0 | 2026-06-12 | Added roadmap source verification and GitHub/Vercel deployment verification evidence. |
 | 2.0.0 | 2026-06-12 | Added evidence requirements for docs, UI, API/MCP, RBAC/ABAC, HCS/JIT, and process work. |

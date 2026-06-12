@@ -22,6 +22,7 @@ Use when the change affects a feature, workflow, shared UI, or multiple files.
 Examples:
 - Feature spec changes that affect implementation behavior.
 - Roadmap/task rendering behavior.
+- Document-driven roadmap parsing, progress calculation, or A2 data source changes.
 - Shared component props or core state changes.
 - External adapter behavior without security impact.
 - Documentation moves that affect references.
@@ -52,6 +53,7 @@ Escalate to HIGH when:
 - The change can expose project docs, code, or artifacts to the wrong user/agent.
 - The change can break traceability from docs to task to artifact.
 - The change changes what is considered canonical source of truth.
+- The change replaces or introduces roadmap source documents, parsing rules, or PM output contracts.
 - The change affects provider/runtime boundaries for Claude Code, Gemini CLI, OpenClaw, Hermes, or MCP clients.
 
 ## Changelog

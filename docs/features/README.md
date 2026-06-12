@@ -10,8 +10,8 @@ This folder is organized by PRD product systems. Feature specs remain human-firs
 | PRD System | Folder | Current Feature Specs |
 |---|---|---|
 | `SYSTEM-01::Mission-Control-Experience-System` | `mission-control/` | Mission Control migration, UI migration, command palette |
-| `SYSTEM-02::Project-Roadmap-Management-System` | `project-roadmap/` | Roadmap board migration |
-| `SYSTEM-03::Docs-to-Code-System` | `docs-to-code/` | Pending |
+| `SYSTEM-02::Project-Roadmap-Management-System` | `project-roadmap/` | Roadmap board migration, document-driven roadmap source |
+| `SYSTEM-03::Docs-to-Code-System` | `docs-to-code/` | Roadmap document parsing dependency pending |
 | `SYSTEM-04::Diagram-to-Doc-System` | `diagram-to-doc/` | Pending |
 | `SYSTEM-05::Agent-Team-Management-System` | `agent-team/` | Agent management, multi-agent collaboration, visual office |
 | `SYSTEM-06::Integration-Bridge-System` | `integration-bridge/` | Pending |

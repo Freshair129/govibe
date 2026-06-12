@@ -40,5 +40,14 @@ Migrate หน้า **Agent Management (View A5)** จาก HTML/JS เดิ�
 - [ ] ข้อมูลในการตั้งค่า (Config) ถูกผูกติดกับ State และบันทึกลง Store ได้จริง
 - [ ] รองรับการสลับวิดีโอ (VDO Switcher) สำหรับ Agent ที่มีหลาย Feed
 
+## 5. Template Interaction Parity Addendum
+
+The A5 React migration must preserve these interaction styles from `GoVibe-Mission-Control-template.html`:
+
+- `interactive-card`: preserve-3D transform style, hover border/glow elevation, and glare driven by `--mouse-x` / `--mouse-y`.
+- Raycast 3D Agent Cards: `raycast-perspective-container` around `1000px`, `raycast-agent-card` glass blur, shine/glare overlay, preserve-3D child lift, agent-specific hover shadow, pointer tilt up to about `15deg`, and neutral reset on pointer leave.
+- Agent drag follow-cursor: dragging a `raycast-agent-card[data-agent]` creates a fixed floating clone that follows the pointer, uses `rotate(-5deg) scale(1.05)`, fades the source card, switches to grabbing cursor state, and highlights task drop targets under the pointer.
+- Character portrait console: `character-perspective` around `1500px`, `character-tilt` preserve-3D, pointer tilt up to about `6deg`, and reset easing on pointer leave.
+
 ---
 **Please review and approve this Spec. Once approved, I will begin implementing the Agent Management system.**

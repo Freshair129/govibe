@@ -55,7 +55,7 @@ Each domain and module below must match `docs/design/SITE_MAP.md`, `src/mission.
 | A2 Roadmap Board | Renders roadmap header, progress surface, export/reset controls, assist roster cards, phase accordion, task rows, badges, and assignment selects. | Switch to A2; controls, roster cards, phase header, and task rows must be visible. |
 | A3 Capability Plugins | Renders plugin cards for transport, export, knowledge, and benchmark extension points. | Switch to A3; plugin cards and action controls must be visible without mock telemetry. |
 | A4 Brain & Config | Renders model source, Genesis Knowledge, behavior, and runtime-limit control surfaces. | Switch to A4; configuration controls must be visible without implying active backend state. |
-| A5 Agent Management | Renders `snapshot.agents` when available; otherwise shows the Agent Select infinity carousel with active stats, ability tags, EVA media/video switcher from `public/agents/eva`, sequential autoplay 01 -> 02 -> 03 -> 01, cursor glow, 3D character tilt, mobile single-column layout, and config overlay. | Switch to A5 with no agents; cycle the deck repeatedly and confirm it wraps without a scrollbar, confirm active stats/media update, move the pointer over the character console to verify tilt/glow, open Configure, and verify the EVA video sequence renders. At mobile width, deck cards and media panel must not overflow horizontally. Ingest `agents`; live roster appears and selecting an agent sends `agent.select`. |
+| A5 Agent Management | Renders `snapshot.agents` when available; otherwise shows the Agent Select infinity carousel with active stats, ability tags, EVA media/video switcher from `public/agents/eva`, sequential autoplay 01 -> 02 -> 03 -> 01, `interactive-card` glare, Raycast 3D Agent Card tilt, Agent drag follow-cursor assignment, cursor glow, 3D character tilt, mobile single-column layout, and config overlay. | Switch to A5 with no agents; cycle the deck repeatedly and confirm it wraps without a scrollbar, confirm active stats/media update, move the pointer over Raycast agent cards and verify about `15deg` tilt/shine, drag an agent card and verify a floating clone follows the cursor while task drop targets glow, move the pointer over the character console to verify about `6deg` tilt/glow, open Configure, and verify the EVA video sequence renders. At mobile width, deck cards and media panel must not overflow horizontally. Ingest `agents`; live roster appears and selecting an agent sends `agent.select`. |
 
 ### Domain B: Genesis Knowledge
 
@@ -108,3 +108,8 @@ Each domain and module below must match `docs/design/SITE_MAP.md`, `src/mission.
 - Add backend producer for `MissionEvent` over `VITE_GOVIBE_WS_URL`.
 - Add schema-specific events for roadmap tasks, AST trees, ERD tables, and vector map nodes.
 - Add automated browser smoke tests for ingest, terminal command, and domain switching.
+
+## Changelog
+
+| Version | Date | Summary |
+| --- | --- | --- |

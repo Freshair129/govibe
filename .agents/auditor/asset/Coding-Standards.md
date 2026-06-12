@@ -9,6 +9,9 @@ Guidelines for keeping GoVibe maintainable across React, Tauri, documentation pi
 - Avoid `any` unless there is a documented boundary reason.
 - Keep Mission Control views component-based; do not reintroduce raw single-file dashboard runtime as the driving architecture.
 - Follow `docs/design/DESIGN_SYSTEM.md`, `docs/design/SITE_MAP.md`, and `docs/design/DOMAIN_DETAILS.md` for UI fidelity.
+- For migrated template surfaces, also follow `docs/design/TEMPLATE_REFERENCE.md` and `docs/design/TEMPLATE_MODULARIZATION.md`.
+- A2 Roadmap Board must not treat hardcoded arrays, mock rows, or template blueprint rows as canonical project state.
+- A2 roadmap/task/progress data must come from approved Markdown or HTML source documents, parsed roadmap payloads, or explicit `MissionEvent` / `MissionSnapshot` data.
 
 ## Backend: Rust and Tauri
 - Keep Tauri commands focused and typed.
@@ -19,6 +22,7 @@ Guidelines for keeping GoVibe maintainable across React, Tauri, documentation pi
 
 ## Documentation Pipeline
 - Human-readable SWE docs are canonical.
+- PM-authored roadmap, backlog, sprint, task, micro-task, and atomic-task documents are source artifacts when approved.
 - PRD owns product intent and system boundaries.
 - SRS owns requirements when present.
 - SDD/C4 own architecture and design views.
@@ -27,6 +31,7 @@ Guidelines for keeping GoVibe maintainable across React, Tauri, documentation pi
 - Runbooks own operational procedure.
 - Test Plans own verification strategy.
 - Atoms are derived artifacts and must not silently override source docs.
+- Document-derived roadmap state must preserve traceability back to the source `.md` or `.html` file and section.
 
 ## Agent and Integration Boundaries
 - GoVibe coordinates external coding tools; it does not manage provider billing, subscription, quota, or runtime ownership.

@@ -1,5 +1,5 @@
 ---
-version: "4.0.0"
+version: "4.1.0"
 created_at: "2026-06-06T19:32:00+07:00,Boss"
 last_update: "2026-06-12T00:00:00+07:00,ATHER"
 status: "active"
@@ -31,8 +31,10 @@ Use this order when resolving conflicts:
 5. `docs/DOCS-Human-First-Atom-Extraction.md` - docs-to-atom governance
 6. `docs/features/**` - feature-level specs grouped by PRD system
 7. `docs/design/**` - visual/design source material
-8. `.agents/RUNBOOK-GoVibe-Multi-Agent.md` - multi-agent operations reference until migrated into `docs/runbooks/`
-9. `.agents/doc_writer/template/` - canonical documentation templates
+8. `.agents/pm/LYRA.md` and `.agents/pm/asset/**` - PM planning contract and roadmap/backlog templates
+9. `.agents/qa/ghost.md` and `.agents/qa/asset/**` - QA, design verification, and deployment verification contract
+10. `.agents/RUNBOOK-GoVibe-Multi-Agent.md` - multi-agent operations reference until migrated into `docs/runbooks/`
+11. `.agents/doc_writer/template/` - canonical documentation templates
 
 Human-readable SWE docs are canonical. Atoms are derived artifacts. If a derived atom disagrees with an approved SWE document, the SWE document wins.
 
@@ -83,6 +85,14 @@ source document -> requirement/section -> task -> agent assignment -> artifact -
 
 Flag missing links as drift.
 
+### 5.1 Document-Driven Roadmap Audit
+- Confirm Project Roadmap Management work uses approved Markdown or HTML source documents as the planning source.
+- Confirm LYRA-produced roadmap/backlog/sprint documents have a stable source path before UI work depends on them.
+- Confirm Mission Control A2 does not treat hardcoded arrays, mock rows, or template blueprint rows as canonical roadmap data.
+- Confirm roadmap progress is derived from parsed document/task state or from explicit `MissionEvent` / `MissionSnapshot` roadmap payloads.
+- Confirm task assignment, progress, artifact links, review state, and verification evidence remain traceable to the source roadmap/backlog document.
+- Confirm temporary blueprint rows are clearly labeled as empty-state/template fallback and cannot be mistaken for live project progress.
+
 ### 6. Governance and Security Audit
 - Confirm RBAC applies to human users.
 - Confirm ABAC applies to agents, subagents, MCP clients, services, and scheduled jobs.
@@ -90,9 +100,15 @@ Flag missing links as drift.
 - Confirm third-party agent integrations do not imply GoVibe manages provider billing, subscription, quota, or runtime ownership.
 
 ### 7. Design and UI Compliance Audit
-- Compare UI changes with `docs/design/DESIGN_SYSTEM.md`, `docs/design/SITE_MAP.md`, and `docs/design/DOMAIN_DETAILS.md`.
+- Compare UI changes with `docs/design/DESIGN_SYSTEM.md`, `docs/design/SITE_MAP.md`, `docs/design/DOMAIN_DETAILS.md`, `docs/design/TEMPLATE_REFERENCE.md`, and `docs/design/TEMPLATE_MODULARIZATION.md`.
 - Confirm Mission Control changes preserve the approved visual identity unless a design doc explicitly approves a change.
 - Confirm frontend work is verified on relevant desktop/mobile viewports when visual behavior changes.
+- Confirm A5 Agent Management preserves `interactive-card`, Raycast 3D Agent Card, Agent drag follow-cursor, cursor glow, 3D tilt, EVA video loop, no nested-card layout, and mobile adaptation when those surfaces are changed.
+
+### 7.1 Deployment Readiness Audit
+- Confirm GitHub is the base code coordination and CI/CD source for release flow.
+- Confirm Vercel deployment is verified either through GitHub-triggered CI/CD or Vercel CLI.
+- Confirm missing `.github/workflows/` or `vercel.json` is reported as deployment readiness risk, not silently accepted.
 
 ### 8. Git and Scope Audit
 - Confirm diffs are surgical and limited to the task scope.
@@ -130,7 +146,9 @@ Use this format for every audit:
 - Execution Governance C/H Mapping: PASS/FAIL
 - Feature Folder Mapping: PASS/FAIL
 - Documentation Template Compliance: PASS/FAIL
+- Document-Driven Roadmap Source: PASS/FAIL/N/A
 - Design Compliance: PASS/FAIL/N/A
+- Deployment Readiness: PASS/FAIL/N/A
 - RBAC/ABAC Compliance: PASS/FAIL/N/A
 - Verification Evidence: PASS/FAIL
 - Scope Hygiene: PASS/FAIL
@@ -152,5 +170,6 @@ Use this format for every audit:
 ## Changelog
 | Version | Date | Summary |
 |---|---|---|
+| 4.1.0 | 2026-06-12 | Added PM/QA source contracts, document-driven roadmap audit, template parity audit, and GitHub/Vercel deployment readiness audit. |
 | 4.0.0 | 2026-06-12 | Re-aligned auditor with PRD/C4/execution governance, human-first docs, feature folder mapping, traceability, RBAC/ABAC, and multi-agent governance. |
 | 3.0.0 | 2026-06-06 | Re-aligned with GoVibe monorepo and visual standards. |
