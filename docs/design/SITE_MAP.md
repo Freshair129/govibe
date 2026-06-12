@@ -84,3 +84,9 @@ This document tracks the implemented React route structure in `src/App.tsx` and 
   - Local expanded/collapsed state.
 - **Status Row**
   - Displays gateway connection state and last snapshot update time.
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-12 | Added implemented React route map for Mission Control domains, modules, and global overlays. |
