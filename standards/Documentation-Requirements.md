@@ -5,10 +5,10 @@ Every change must be accompanied by the appropriate documentation tier.
 | Change Type | Required Document | Template / Link |
 |-------------|-------------------|-----------------|
 | **Bug Fix** | `RCA` (Root Cause Analysis) | `standards/RCA-Standard.md` |
-| **New Feature** | `Feature Spec` | [Feature-Spec-Template] |
-| **Rust IPC / API** | `API Contract` (JSON Spec) | [API-Contract-Template] |
-| **Schema Change** | `Migration Plan` | [Migration-Plan-Template] |
-| **Architecture** | `ADR` (Architecture Decision Record) | [ADR-Template] |
+| **New Feature** | `Feature Spec` | `.agents/doc_writer/template/FEAT-template.md` |
+| **Rust IPC / API** | `API Contract` (JSON Spec) | `.agents/doc_writer/template/API-CONTRACT-template.md` |
+| **Schema Change** | `Migration Plan` | `.agents/doc_writer/template/MIGRATION-PLAN-template.md` |
+| **Architecture** | `ADR` (Architecture Decision Record) | `.agents/doc_writer/template/ADR-template.md` |
 
 ### Approval Workflow
 1. Agent proposes the document.

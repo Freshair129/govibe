@@ -15,32 +15,42 @@ related_docs: []
 
 # FEAT: <Feature Name>
 
-## 1. Goal
-Describe the user value and behavior.
+## 1. Overview
+Describe the feature, user value, and expected behavior.
 
-## 2. Scope
-### In Scope
+## 2. Goals and Non-Goals
+### Goals
 -
 
-### Out of Scope
+### Non-Goals
 -
 
-## 3. User Experience / Workflow
--
+## 3. User Stories
+| ID | Role | Story |
+|---|---|---|
+| US-01 |  |  |
 
 ## 4. Requirements
-| ID | Requirement | Acceptance Criteria |
-|---|---|---|
-
-## 5. Technical Notes
+### Functional Requirements
 -
+
+### Non-Functional Requirements
+-
+
+## 5. Technical Details
+- Frontend:
+- Backend:
+- Data:
 
 ## 6. PRD System Mapping
 - Primary system:
 - Secondary systems:
 
-## 7. Verification
+## 7. Acceptance Criteria
 -
 
-## 8. Open Questions
+## 8. Verification
+-
+
+## 9. Open Questions
 -

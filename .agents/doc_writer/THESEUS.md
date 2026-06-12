@@ -43,10 +43,13 @@ Use this order when creating or updating documentation:
 | C4 | Architecture context/container/component/code view | `docs/architecture/C4-*.md` | `template/C4-template.md` |
 | LLD | Low-level component or algorithm design | `docs/lld/LLD-*.md` | `template/LLD-template.md` |
 | Feature Spec | Feature-level behavior and implementation scope | `docs/features/<system-folder>/FEAT-*.md` | `template/FEAT-template.md` |
+| Migration Plan | Data, schema, or project migration procedure | `docs/migrations/MIG-*.md` | `template/MIGRATION-PLAN-template.md` |
 | API/MCP Contract | Interface and integration contract | `docs/api/API-*.md` | `template/API-CONTRACT-template.md` |
 | Runbook | Operational procedure | `docs/runbooks/RUNBOOK-*.md` | `template/RUNBOOK-template.md` |
 | Test Plan | Verification strategy and evidence requirements | `docs/test-plans/TEST-PLAN-*.md` | `template/TEST-PLAN-template.md` |
 | ADR | Architecture decision record | `docs/adr/ADR-*.md` | `template/ADR-template.md` |
+| RCA | Root cause analysis and corrective action | `docs/rca/RCA-*.md` | `template/RCA-template.md` |
+| UI/UX Design | Visual and interaction specification | `docs/design/UI-UX-*.md` or `docs/design/UX-*.md` | `template/UI-UX-DESIGN-template.md` |
 | Project Structure | Repository/folder ownership and layout contract | `docs/PROJECT-STRUCTURE-*.md` | `template/PROJECT-STRUCTURE-template.md` |
 | AGENTS | Local agent operating contract | `AGENTS.md` or `<scope>/AGENTS.md` | `template/AGENTS-template.md` |
 
@@ -76,6 +79,7 @@ If a feature spans systems, choose the primary owner folder and add cross-links.
 5. Every feature/system document must include traceability to PRD system, C/H level, risk, owner, acceptance criteria, and verification.
 6. Keep documents human-readable and self-contained at their level. Link deeper details instead of duplicating full specs.
 7. Preserve canonical source rules: PRD owns product intent, SRS owns requirements, SDD/C4 own architecture, LLD owns low-level logic, API/MCP contracts own integration behavior, Runbooks own operations, Test Plans own verification.
+8. Legacy root `templates/` is deprecated once migrated into `.agents/doc_writer/template/`; canonical templates live only in the agent writer template folder.
 
 ## Output Format
 When asked to create or update a document, respond with:
