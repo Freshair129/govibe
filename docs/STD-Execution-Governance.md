@@ -1,8 +1,8 @@
 # STD: Execution Governance Standard
 
 **Title:** Execution Governance Standard
-**Summary:** Minimum viable process selection for safe work execution, mapped to Context Scaling Tier H0-H5.
-**Version:** 2.1
+**Summary:** Minimum viable process selection for safe work execution, mapped to Context Scaling Tier H0-H6 and W-Scale fan-out control.
+**Version:** 2.2
 **Updated:** 2026-06-12
 **Role:** Governance / Process Framework
 **Legacy Alias:** R10, Complexity-Based Execution Path
@@ -25,7 +25,7 @@ Choose the minimum process that preserves correctness, safety, and maintainabili
 | **C-0** | Trivial | Text -> Code | Typo, copy, config, comment, or tiny isolated change | H0 |
 | **C-1** | Direct | Text -> Code | Small task, clear bug fix, single-file low-risk change | H0-H1 |
 | **C-2** | Doc-Driven | Text -> Doc -> Code | Feature work, multi-file work, medium-risk logic | H1-H2 |
-| **C-3** | Architecture-Driven | Text -> Doc -> Diagram -> Code | Architecture, governance, security, cross-system, platform-level work | H3-H5 |
+| **C-3** | Architecture-Driven | Text -> Doc -> Diagram -> Code | Architecture, governance, security, cross-system, platform-level work | H3-H6 |
 
 ## 3. H-Scale Mapping
 | H Tier | Scope | Typical Work |
@@ -36,25 +36,43 @@ Choose the minimum process that preserves correctness, safety, and maintainabili
 | **H3** | Epic / Module | Module integration, API/event contracts |
 | **H4** | Phase / Architecture | System architecture, governance, security model |
 | **H5** | Masterplan / Roadmap | Platform vision, operating model, enterprise-wide context |
+| **H6** | Full Network / Enterprise Ceiling | Rare full-network traversal, systemic coupling analysis, final escalation ceiling |
 
 Default mapping:
 
 ```yaml
 complexity_hop_mapping:
   C-0: H0
-  C-1: H0-H1
-  C-2: H1-H2
-  C-3: H3-H5
+  C-1: H1
+  C-2: H2
+  C-3: H3-H6
 ```
 
 Rules:
 
 - Use H3 for C-3 work that affects one module.
 - Use H4 for architecture, governance, security, and access-control changes.
-- Use H5 only for product vision, roadmap, operating model, or platform-wide direction.
+- Use H5 for product vision, roadmap, operating model, or platform-wide direction.
+- Use H6 only as the hard ceiling for full-network traversal or enterprise-wide coupling analysis.
 - Do not downgrade complexity after approval without justification.
 
-## 4. Human-First Artifact Requirements
+## 4. W-Scale Fan-out Control
+Depth and breadth must be controlled separately. `H` governs hop depth; `W` governs fan-out or branching width.
+
+| W Scale | Meaning | Rule |
+|---|---|---|
+| **W2** | Optimal | `3-5` sibling or peer connections; normal operation |
+| **W3** | Warning | `6-8` connections; lead review required |
+| **W4** | Super-hub danger | `9+` connections; block deployment until refactored |
+
+Use W-Scale when evaluating:
+
+- graph node degree
+- roadmap branching width
+- feature/task decomposition breadth
+- context packets that risk token explosion
+
+## 5. Human-First Artifact Requirements
 GoVibe uses normal SWE documents as the primary authoring format. Genesis atoms may be extracted after review, but agents and developers should not be required to author work directly as atom blocks.
 
 | Context Tier | Required Human Artifact | Optional Supporting Artifact | Derived Atom Examples |
@@ -65,8 +83,9 @@ GoVibe uses normal SWE documents as the primary authoring format. Genesis atoms 
 | **H3** | SDD for the module or integration | API/Event Contract, Integration Plan | `MOD`, `FLOW`, `API`, `PROTOCOL`, `AUDIT` |
 | **H4** | SDD, ADR, Access Model, or Architecture Standard | Threat Model, Migration Plan | `FRAMEWORK`, `STACK`, `GUARD`, `MCP` |
 | **H5** | PRD, Vision, Roadmap, or Operating Model | Governance Model | `CONCEPT`, `MCP`, `FRAMEWORK` |
+| **H6** | Enterprise architecture investigation or cross-system recovery brief | Coupling report, impact matrix | `FRAMEWORK`, `AUDIT`, `STACK`, `MCP` |
 
-## 5. Docs to Code Gate
+## 6. Docs to Code Gate
 For C-2 and C-3 work, code generation, task generation, and agent assignment should reference an approved human-readable artifact.
 
 Allowed source artifacts:
@@ -87,7 +106,7 @@ The implementation task must preserve traceability:
 source document -> requirement/section -> task -> agent assignment -> artifact -> review -> test evidence
 ```
 
-## 6. Diagram to Doc Gate
+## 7. Diagram to Doc Gate
 Diagrams are valid source inputs for architecture work, but they must be converted into reviewed documentation before implementation begins.
 
 Supported diagram inputs:
@@ -106,12 +125,12 @@ Required flow:
 diagram -> draft doc -> human review -> approved doc -> docs to code
 ```
 
-## 7. Canonical Source Rule
+## 8. Canonical Source Rule
 Human-readable SWE documents are canonical. Derived atoms support AI retrieval, graph linking, compaction, and visualization.
 
 If a derived atom conflicts with its source document, the source document wins until the owner approves a new document revision.
 
-## 8. Naming Rule
+## 9. Naming Rule
 Use `Test Plan` for testing strategy and use `SDD` or `LLD` for design. Avoid using `TDD` to mean Technical Design Document because it conflicts with Test-Driven Development.
 
 Recommended terms:
@@ -125,7 +144,7 @@ TRD = Technical Requirements Document
 Test Plan = Testing and verification strategy
 ```
 
-## 9. Verification Requirements
+## 10. Verification Requirements
 | Complexity | Required Verification |
 |---|---|
 | **C-0** | Basic validation |
@@ -133,21 +152,25 @@ Test Plan = Testing and verification strategy
 | **C-2** | Tests, spec review, and lead approval |
 | **C-3** | Tests, documentation review, diagram review, impact analysis, and user/owner approval |
 
-## 10. Required Output Format
+W-Scale checks are additionally required when work changes graph structure, decomposition breadth, routing topology, or roadmap branching behavior.
+
+## 11. Required Output Format
 Every non-trivial task response should include:
 
 ```markdown
 **Complexity:** C-X
 **Context Tier:** H-Y
+**W-Scale:** W2 / W3 / W4 or N/A
 **Risk:** LOW / MEDIUM / HIGH
 **Required Artifacts:** ...
 **Plan:** ...
 **Verification:** ...
 ```
 
-## 11. Changelog
+## 12. Changelog
 | Version | Date | Summary |
 |---|---|---|
+| **2.2** | 2026-06-12 | Expanded H-scale to H6, formalized W-Scale fan-out control, aligned C-to-H mapping with GVDOC-1004 handover normalization, and updated required output format. |
 | **2.1** | 2026-06-12 | Rewritten into readable UTF-8, added human-first artifacts, Docs to Code gate, Diagram to Doc gate, canonical source rule, and SDD/LLD naming guidance. |
 | **2.0** | 2026-06-07 | Added C-0, mapped complexity to H-scale, and clarified enforcement to reduce over-engineering. |
 | **1.0** | Previous | Initial three-level complexity model. |

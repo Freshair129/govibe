@@ -7,7 +7,7 @@ vault_id: default
 tier: process
 source_type: axiomatic
 title: "The Hybrid Masterpiece: Just-In-Time Context Rendering"
-summary: สถาปัตยกรรมระดับ End-Game ของระบบ Agentic AI ที่ผสานเลเยอร์ Storage แบบ Markdown เข้ากับเลเยอร์ Compute แบบ Graph Database เพื่อดึง Context (H0-H5) แบบ Just-In-Time
+summary: สถาปัตยกรรมระดับ End-Game ของระบบ Agentic AI ที่ผสานเลเยอร์ Storage แบบ Markdown เข้ากับเลเยอร์ Compute แบบ Graph Database เพื่อดึง Context (H0-H6) แบบ Just-In-Time
 tags:
   - architecture
   - context
@@ -43,7 +43,7 @@ role: Strategic intent / PRD
 *   **หลักการ:** เมื่อ Agent ต้องการเริ่มทำงาน (เช่น วางแผนที่ระดับ H2) Agent จะไม่ได้ไปเปิดไฟล์ `.md` มาอ่านเองตรงๆ แต่จะเรียกใช้ระบบเบื้องหลัง (GKS Parser Engine / GenesisGraph)
 *   **วิธีการ (Just-In-Time Rendering):** 
     1. ระบบ Parser จะอ่านไฟล์ `.md` แล้วสร้าง **In-Memory Graph** ขึ้นมาชั่วคราว
-    2. ค้นหาเนื้อหาแบบจำกัดวงรัศมีตาม Hop Level (H0 - H5)
+    2. ค้นหาเนื้อหาแบบจำกัดวงรัศมีตาม Hop Level (H0 - H6)
     3. **Render (สร้าง) เนื้อหาเฉพาะส่วนนั้น** ออกมาเป็น Temp File หรือ Text String ส่งกลับให้ Agent
 *   **ข้อดี:** Agent ได้รับ Context ที่ "สั่งตัดมาเฉพาะกิจ (Bespoke)" ไม่มีขยะปน เปลือง Token น้อยสุดๆ และป้องกันอาการหลอน (Context Hallucination) ได้เด็ดขาด
 
@@ -60,3 +60,4 @@ role: Strategic intent / PRD
 3. **GenesisGraph Engine:** วิ่งไปสแกนหัวข้อต่างๆ ในไฟล์ Markdown ที่ถูกบีบอัดไว้ ดึงเฉพาะ Node รอบๆ 2 Hops ออกมา
 4. **JIT Renderer:** สร้าง Virtual Document ส่งคืนให้ Agent (Agent จะไม่เห็นไฟล์เต็มๆ แต่เห็นเฉพาะข้อมูลที่จำเป็น)
 5. **Agent:** เขียนโค้ดได้อย่างแม่นยำ และส่งคำสั่ง Overwrite ทับเฉพาะส่วนหัวข้อนั้นกลับเข้าไฟล์ `.md` อย่างเนียนตา
+

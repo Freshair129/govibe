@@ -299,7 +299,7 @@ GenesisKnowledgeSystem
 ```
 
 Responsibilities:
-- Classify task/document/context scope into H0-H5.
+- Classify task/document/context scope into H0-H6, with H6 reserved for rare full-network traversal.
 - Extract atoms from human docs after authoring.
 - Render just-in-time context for agent work without making atoms the human authoring format.
 
