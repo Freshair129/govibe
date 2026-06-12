@@ -32,6 +32,7 @@ Use this order when resolving conflicts:
 6. `docs/features/**` - feature-level specs grouped by PRD system
 7. `docs/design/**` - visual/design source material
 8. `.agents/RUNBOOK-GoVibe-Multi-Agent.md` - multi-agent operations reference until migrated into `docs/runbooks/`
+9. `.agents/doc_writer/template/` - canonical documentation templates
 
 Human-readable SWE docs are canonical. Atoms are derived artifacts. If a derived atom disagrees with an approved SWE document, the SWE document wins.
 
@@ -50,7 +51,14 @@ Human-readable SWE docs are canonical. Atoms are derived artifacts. If a derived
 - Confirm C-2/C-3 work follows Docs to Code.
 - Confirm diagram-led C-3 work follows Diagram to Doc before implementation.
 
-### 3. PRD System Mapping Audit
+### 3. Documentation Template Compliance Audit
+- Confirm each document uses the correct SWE template family.
+- Confirm required frontmatter fields exist.
+- Confirm required sections exist for the document type.
+- Confirm document naming follows PRD/SRS/SDD/LLD/API/RUNBOOK/TEST-PLAN/ADR/AGENTS conventions.
+- Confirm project structure and local agent operating contracts are documented when a new workspace, package, or agent scope is introduced.
+
+### 4. PRD System Mapping Audit
 Every feature must map to one primary PRD system:
 
 ```text
@@ -66,7 +74,7 @@ SYSTEM-09 Traceability Audit Verification
 SYSTEM-10 Execution Governance
 ```
 
-### 4. Traceability Audit
+### 5. Traceability Audit
 Every non-trivial task must preserve this chain:
 
 ```text
@@ -75,18 +83,18 @@ source document -> requirement/section -> task -> agent assignment -> artifact -
 
 Flag missing links as drift.
 
-### 5. Governance and Security Audit
+### 6. Governance and Security Audit
 - Confirm RBAC applies to human users.
 - Confirm ABAC applies to agents, subagents, MCP clients, services, and scheduled jobs.
 - Confirm policy-sensitive work has audit evidence.
 - Confirm third-party agent integrations do not imply GoVibe manages provider billing, subscription, quota, or runtime ownership.
 
-### 6. Design and UI Compliance Audit
+### 7. Design and UI Compliance Audit
 - Compare UI changes with `docs/design/DESIGN_SYSTEM.md`, `docs/design/SITE_MAP.md`, and `docs/design/DOMAIN_DETAILS.md`.
 - Confirm Mission Control changes preserve the approved visual identity unless a design doc explicitly approves a change.
 - Confirm frontend work is verified on relevant desktop/mobile viewports when visual behavior changes.
 
-### 7. Git and Scope Audit
+### 8. Git and Scope Audit
 - Confirm diffs are surgical and limited to the task scope.
 - Confirm unrelated dirty worktree changes are not staged into the task.
 - Confirm generated artifacts are intentional and documented.
@@ -121,6 +129,7 @@ Use this format for every audit:
 - Documentation SSOT: PASS/FAIL
 - Execution Governance C/H Mapping: PASS/FAIL
 - Feature Folder Mapping: PASS/FAIL
+- Documentation Template Compliance: PASS/FAIL
 - Design Compliance: PASS/FAIL/N/A
 - RBAC/ABAC Compliance: PASS/FAIL/N/A
 - Verification Evidence: PASS/FAIL
