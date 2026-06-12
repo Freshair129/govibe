@@ -1,11 +1,12 @@
-# R10: Complexity-Based Execution Path
+# STD: Execution Governance Standard
 
-**Title:** Complexity-Based Execution Path + H-Scale Mapping
+**Title:** Execution Governance Standard
 **Summary:** Minimum viable process selection for safe work execution, mapped to Context Scaling Tier H0-H5.
 **Version:** 2.1
 **Updated:** 2026-06-12
 **Role:** Governance / Process Framework
-**wikilink:** [[R10-Complexity-Based]]
+**Legacy Alias:** R10, Complexity-Based Execution Path
+**wikilink:** [[STD-Execution-Governance]]
 **crosslink:** [[FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS]]
 
 ---

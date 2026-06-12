@@ -81,7 +81,7 @@ Minimum platform-level set:
 ```text
 PRD-GoVibe-Platform-Overview.md
 SDD-System-Design.md
-R10-Complexity-Based.md
+STD-Execution-Governance.md
 DOCS-Human-First-Atom-Extraction.md
 ```
 

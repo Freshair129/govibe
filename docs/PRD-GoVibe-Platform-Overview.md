@@ -20,7 +20,7 @@ GoVibe is a coordination layer, not a replacement for external coding agents.
 
 ### 2.1 Goals
 - Provide a single visual surface for CoDev project planning, execution, review, and progress tracking.
-- Let agent-written PRD, SRD, SDD, LLD, API contracts, runbooks, and test plans drive UI state and implementation tasks.
+- Let agent-written PRD, SRD, SRS, SDD, LLD, API contracts, runbooks, and test plans drive UI state and implementation tasks.
 - Let diagrams become first-class project inputs that can generate or update documentation.
 - Coordinate multiple developer-owned agent teams without taking over third-party billing, subscriptions, or runtime quotas.
 - Support RBAC for human users and ABAC for agents, subagents, MCP clients, and services.
@@ -72,12 +72,12 @@ GoVibe is a coordination layer, not a replacement for external coding agents.
 - Hybrid Just-In-Time Context Rendering loads the minimum useful document, atom, and graph context for each agent task.
 
 ### 4.7 Execution Governance and Multi-Agent Operations
-- R10 classifies work by complexity (`C-0` to `C-3`) and context tier (`H0` to `H5`) before execution.
+- The Execution Governance Standard classifies work by complexity (`C-0` to `C-3`) and context tier (`H0` to `H5`) before execution.
 - Multi-agent operations define team roles, plan approval, task claiming, file locking, PR handoff, review, and conflict resolution.
 - Complex work must preserve traceability from source document to task, agent assignment, artifact, review, and verification evidence.
 
 ## 5. Platform System Map
-GoVibe is composed of ten product systems. Each system may have its own SRD, SDD, LLD, API Contract, Runbook, or Test Plan when implementation detail is required.
+GoVibe is composed of ten product systems. Each system may have its own SRS, SRD, SDD, LLD, API Contract, Runbook, or Test Plan when implementation detail is required.
 
 ```text
 PRD::GoVibe-Platform
@@ -134,7 +134,7 @@ PRD::GoVibe-Platform
 - **Hybrid JIT Context System:** Markdown source resolver, in-memory graph builder, hop-bounded context query, virtual document renderer, context overwrite guard.
 - **Atom Extraction System:** concept, feature, module, flow, algorithm, entity, guard, API, and MCP extractors.
 - **Knowledge Graph:** node registry, edge registry, symbol linker, document backlink index, graph query engine.
-- **Block DB:** block store, version index, embedding index, retrieval ranker.
+- **GenesisBlockDB:** block store, version index,In-memory embedding index, retrieval ranker.
 
 ### 5.9 Traceability Audit Verification System
 - **Traceability Index:** document section link, task link, agent assignment link, artifact link, verification evidence link.
@@ -142,10 +142,242 @@ PRD::GoVibe-Platform
 - **Verification Matrix:** acceptance criteria check, test plan mapper, regression check, release readiness status.
 
 ### 5.10 Execution Governance System
-- **Complexity-Based Execution:** R10 complexity classifier, C0-C3 workflow selector, H-scale mapper, required artifact resolver, verification requirement resolver.
+- **Complexity-Based Execution:** task complexity classifier, C0-C3 workflow selector, H-scale mapper, required artifact resolver, verification requirement resolver.
 - **Doc-First Gate:** Docs to Code gate, Diagram to Doc gate, human approval gate, canonical source checker.
 - **Multi-Agent Operating Runbook:** coordination layers, role matrix, plan approval, branch/PR review flow, shared task list, file locking, conflict resolution.
 - **Agent Execution Policy:** assumption reporter, scope boundary checker, risk classifier, definition-of-done checker.
+
+### 5.11 Platform Product AST
+This AST is the product-level decomposition of GoVibe. It is self-contained enough to show the platform shape, but implementation details remain in SRS, SDD, LLD, API Contract, Runbook, and Test Plan documents.
+
+```text
+PRD::GoVibe-Platform
++-- META
+|   +-- ProductVision
+|   +-- ProductPositioning
+|   +-- TargetAudience
+|   +-- Goals
+|   +-- NonGoals
+|   +-- SuccessMetrics
+|
++-- OPERATING-LOOP::Docs-to-Code
+|   +-- HumanFirstSWEDocs
+|   +-- RequirementExtraction
+|   +-- TaskGeneration
+|   +-- AgentAssignment
+|   +-- ImplementationContext
+|   +-- ReviewCriteria
+|   +-- VerificationEvidence
+|
++-- OPERATING-LOOP::Diagram-to-Doc
+|   +-- DiagramIngestion
+|   +-- SemanticExtraction
+|   +-- DocumentDraftGeneration
+|   +-- HumanReviewGate
+|   +-- ApprovedDocumentPromotion
+|
++-- SYSTEM-01::Mission-Control-Experience-System
+|   +-- MODULE::Dashboard-Shell
+|   |   +-- TopNavigation
+|   |   +-- SidebarNavigation
+|   |   +-- DomainRouter
+|   |   +-- ThemeController
+|   |   +-- FooterStatusBar
+|   +-- MODULE::Mission-Control-Views
+|   |   +-- ProjectOverviewView
+|   |   +-- GenesisKnowledgeView
+|   |   +-- BlockDBView
+|   |   +-- AIBenchmarkView
+|   +-- MODULE::Command-Terminal
+|       +-- TerminalSession
+|       +-- CommandInput
+|       +-- LogRenderer
+|       +-- RuntimeBridgeAdapter
+|
++-- SYSTEM-02::Project-Roadmap-Management-System
+|   +-- MODULE::Roadmap-Board
+|   |   +-- PhaseRenderer
+|   |   +-- SprintRenderer
+|   |   +-- TaskCard
+|   |   +-- ProgressCalculator
+|   +-- MODULE::Task-Assignment
+|   |   +-- OwnerSelector
+|   |   +-- AgentAssigneeSelector
+|   |   +-- StatusTransition
+|   |   +-- BlockerMarker
+|   +-- MODULE::Artifact-Tracker
+|       +-- ArtifactLinker
+|       +-- ReviewStatus
+|       +-- EvidenceAttachment
+|
++-- SYSTEM-03::Docs-to-Code-System
+|   +-- MODULE::Document-Source-Loader
+|   |   +-- MarkdownLoader
+|   |   +-- HTMLLoader
+|   |   +-- FrontmatterParser
+|   |   +-- DocumentVersionResolver
+|   +-- MODULE::Requirement-Extractor
+|   |   +-- SectionParser
+|   |   +-- AcceptanceCriteriaExtractor
+|   |   +-- TaskCandidateExtractor
+|   |   +-- RiskHintExtractor
+|   +-- MODULE::Task-Generator
+|   |   +-- RequirementToTaskMapper
+|   |   +-- TaskDependencyResolver
+|   |   +-- AgentAssignmentSuggestion
+|   |   +-- VerificationRequirementMapper
+|   +-- MODULE::Code-Context-Packager
+|       +-- SourceDocCitation
+|       +-- ContextBundleBuilder
+|       +-- AgentPromptContextBuilder
+|
++-- SYSTEM-04::Diagram-to-Doc-System
+|   +-- MODULE::Diagram-Ingestion
+|   |   +-- MermaidParser
+|   |   +-- C4DiagramParser
+|   |   +-- ERDParser
+|   |   +-- FlowDiagramParser
+|   +-- MODULE::Diagram-Semantic-Extractor
+|   |   +-- NodeClassifier
+|   |   +-- EdgeClassifier
+|   |   +-- BoundaryDetector
+|   |   +-- DependencyExtractor
+|   +-- MODULE::Doc-Draft-Generator
+|       +-- PRDSectionDraft
+|       +-- SRSSectionDraft
+|       +-- SDDSectionDraft
+|       +-- APIContractDraft
+|       +-- HumanReviewGate
+|
++-- SYSTEM-05::Agent-Team-Management-System
+|   +-- MODULE::Agent-Roster
+|   |   +-- AgentProfile
+|   |   +-- CapabilityMatrix
+|   |   +-- AgentStatus
+|   |   +-- AgentMediaProfile
+|   +-- MODULE::Agent-Team-Orchestration
+|   |   +-- TeamBoundary
+|   |   +-- AssignmentQueue
+|   |   +-- WorkloadState
+|   |   +-- HandoffState
+|   +-- MODULE::Agent-Workspace
+|       +-- AgentPromptConfig
+|       +-- ToolPermissionView
+|       +-- RuntimeStatusView
+|       +-- OutputArtifactView
+|
++-- SYSTEM-06::Integration-Bridge-System
+|   +-- MODULE::External-Agent-Adapters
+|   |   +-- ClaudeCodeAdapter
+|   |   +-- GeminiCLIAdapter
+|   |   +-- OpenClawAdapter
+|   |   +-- HermesAdapter
+|   +-- MODULE::MCP-Bridge
+|   |   +-- MCPToolRegistry
+|   |   +-- MCPResourceRegistry
+|   |   +-- MCPPermissionMapper
+|   |   +-- MCPInvocationLogger
+|   +-- MODULE::Webhook-API-Local-Bridge
+|       +-- WebhookReceiver
+|       +-- EventNormalizer
+|       +-- APICommandDispatcher
+|       +-- LocalBridgeConnector
+|
++-- SYSTEM-07::Governance-Access-Control-System
+|   +-- MODULE::User-RBAC
+|   |   +-- UserRole
+|   |   +-- PermissionSet
+|   |   +-- ProjectMembership
+|   |   +-- RolePolicyEvaluator
+|   +-- MODULE::Agent-ABAC
+|   |   +-- SubjectAttributeBag
+|   |   +-- ResourceAttributeBag
+|   |   +-- ActionContext
+|   |   +-- PolicyDecisionPoint
+|   +-- MODULE::Policy-Enforcement
+|       +-- PolicyEnforcementPoint
+|       +-- ObligationHandler
+|       +-- DenyReasonRenderer
+|       +-- PolicyAuditLogger
+|
++-- SYSTEM-08::Genesis-Knowledge-System
+|   +-- MODULE::Hierarchy-Compaction-System
+|   |   +-- HLevelClassifier
+|   |   +-- ContextScopeResolver
+|   |   +-- GraphHopResolver
+|   |   +-- CompactionEngine
+|   |   +-- ContextBudgetPlanner
+|   +-- MODULE::Hybrid-JIT-Context-System
+|   |   +-- MarkdownSourceResolver
+|   |   +-- InMemoryGraphBuilder
+|   |   +-- HopBoundedContextQuery
+|   |   +-- VirtualDocumentRenderer
+|   |   +-- ContextOverwriteGuard
+|   +-- MODULE::Atom-Extraction-System
+|   |   +-- ConceptExtractor
+|   |   +-- FeatureExtractor
+|   |   +-- ModuleExtractor
+|   |   +-- FlowExtractor
+|   |   +-- AlgorithmExtractor
+|   |   +-- EntityExtractor
+|   |   +-- GuardExtractor
+|   |   +-- MCPExtractor
+|   +-- MODULE::Knowledge-Graph
+|   |   +-- NodeRegistry
+|   |   +-- EdgeRegistry
+|   |   +-- SymbolLinker
+|   |   +-- DocumentBacklinkIndex
+|   |   +-- GraphQueryEngine
+|   +-- MODULE::GenesisBlock-DB
+|       +-- BlockStore
+|       +-- VersionIndex
+|       +-- EmbeddingIndex
+|       +-- RetrievalRanker
+|
++-- SYSTEM-09::Traceability-Audit-Verification-System
+|   +-- MODULE::Traceability-Index
+|   |   +-- DocSectionLink
+|   |   +-- TaskLink
+|   |   +-- AgentAssignmentLink
+|   |   +-- ArtifactLink
+|   |   +-- VerificationEvidenceLink
+|   +-- MODULE::Audit-Trail
+|   |   +-- UserActionLog
+|   |   +-- AgentActionLog
+|   |   +-- PolicyDecisionLog
+|   |   +-- ArtifactChangeLog
+|   +-- MODULE::Verification-Matrix
+|       +-- AcceptanceCriteriaCheck
+|       +-- TestPlanMapper
+|       +-- RegressionCheck
+|       +-- ReleaseReadinessStatus
+|
++-- SYSTEM-10::Execution-Governance-System
+    +-- MODULE::Complexity-Based-Execution
+    |   +-- TaskComplexityClassifier
+    |   +-- C0C3WorkflowSelector
+    |   +-- HScaleMapper
+    |   +-- RequiredArtifactResolver
+    |   +-- VerificationRequirementResolver
+    +-- MODULE::Doc-First-Gate
+    |   +-- DocsToCodeGate
+    |   +-- DiagramToDocGate
+    |   +-- HumanApprovalGate
+    |   +-- CanonicalSourceChecker
+    +-- MODULE::Multi-Agent-Operating-Runbook
+    |   +-- CoordinationLayerPolicy
+    |   +-- RoleMatrix
+    |   +-- PlanApprovalFlow
+    |   +-- BranchPRReviewFlow
+    |   +-- SharedTaskListPolicy
+    |   +-- FileLockingProtocol
+    |   +-- ConflictResolutionPolicy
+    +-- MODULE::Agent-Execution-Policy
+        +-- AssumptionReporter
+        +-- ScopeBoundaryChecker
+        +-- RiskClassifier
+        +-- DefinitionOfDoneChecker
+```
 
 ## 6. User Stories
 | ID | Role | Story |
@@ -155,7 +387,7 @@ PRD::GoVibe-Platform
 | US-03 | Tech Lead | As a tech lead, I want to assign tasks to agent teams and track progress, blockers, artifacts, and reviews in one surface. |
 | US-04 | Operator | As an operator, I want to see active agents, their media, capabilities, and status so I can verify the right agent is working on the right task. |
 | US-05 | Security Owner | As a security owner, I want RBAC for users and ABAC for agents so project resources are protected by role, attributes, and execution context. |
-| US-06 | Lead Agent | As a lead agent, I want R10 and the multi-agent runbook to define execution gates so teammates know when to plan, claim, implement, review, and stop for approval. |
+| US-06 | Lead Agent | As a lead agent, I want the Execution Governance Standard and the multi-agent runbook to define execution gates so teammates know when to plan, claim, implement, review, and stop for approval. |
 
 ## 7. Success Metrics
 - **Documentation Fidelity:** UI state and generated tasks can be traced back to approved PRD, SRD, SDD, LLD, API Contract, Runbook, or Test Plan sections.
@@ -170,5 +402,5 @@ PRD::GoVibe-Platform
 ## 8. Related Architecture Documents
 - **C4 Architecture:** `docs/architecture/C4-GoVibe-Platform.md`
 - **System Design:** `docs/SDD-System-Design.md`
-- **Execution Governance:** `docs/R10-Complexity-Based.md`
+- **Execution Governance:** `docs/STD-Execution-Governance.md`
 - **Human-First Docs and Atom Extraction:** `docs/DOCS-Human-First-Atom-Extraction.md`

@@ -1,32 +1,37 @@
-# Git & Workflow Standards
+# Git and Workflow Standards
 
-## 🌿 Branching Strategy
+## Branching
+- `main`: production-ready branch.
+- Feature branches should be short-lived and scoped to one task or document set.
+- Use a clear prefix such as `feat/`, `fix/`, `docs/`, `chore/`, or `codex/`.
 
-- `main`: Production-ready code.
-- `develop`: Integration branch for sprints.
-- `feat/GV-SXXX-description`: Feature branches.
-- `fix/GV-SXXX-description`: Bug fix branches.
+## Commits
+Use concise conventional-style commits:
 
-## 📝 Commit Messages
+```text
+docs(scope): update product architecture
+feat(scope): add agent task assignment
+fix(scope): correct roadmap progress state
+chore(scope): reorganize feature specs
+```
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/):
+Every commit should have one clear purpose. Do not mix unrelated user changes, generated files, or local experiments into a task commit.
 
-- `feat(scope): ...`
-- `fix(scope): ...`
-- `docs(scope): ...`
-- `refactor(scope): ...`
-- `chore(scope): ...`
+## Pull Requests
+- One coherent task or document set per PR.
+- PR description must link the source document or task.
+- UI changes need visual evidence.
+- Code changes need relevant tests or verification evidence.
+- C-2/C-3 work needs source docs and approval evidence.
 
-*Include Task ID (e.g., `GV-S101`) in the footer or body of the commit.*
+## Staging Rules
+- Stage only files that belong to the task.
+- Leave unrelated dirty files unstaged.
+- Use `git mv` for documentation reorganization so history remains readable.
+- Never hide unrelated changes inside cleanup commits.
 
-## 🔄 Pull Requests (PRs)
-
-- **One Task per PR**: Do not bundle multiple GV tasks into one PR.
-- **Evidence Required**: Screenshots or videos for UI changes; test logs for logic.
-- **Checklist**: Must include the DoD checklist in the PR description.
-
-## 📐 DDD Workflow Hook
-
-Before any PR:
-1. Ensure `GEMINI.md` is updated if architectural changes occurred.
-2. Ensure `RCA` or `Spec` docs are committed alongside the code.
+## Auditor Checks
+- Confirm staged files match the task scope.
+- Confirm deleted or moved docs are replaced by canonical paths or references.
+- Confirm feature specs remain discoverable through `docs/features/README.md`.
+- Confirm the latest commit message matches the actual diff.

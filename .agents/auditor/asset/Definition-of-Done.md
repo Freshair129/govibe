@@ -1,29 +1,37 @@
-# Definition of Done (DoD)
+# Definition of Done
 
-GoVibe enforces a strict 3-gate verification process for every task to ensure stability and maintainability.
+GoVibe uses a documentation-first Definition of Done. A task is not done until source documents, implementation artifacts, and verification evidence agree.
 
-## 🟢 Gate 1: Acceptance Criteria
-- [ ] **Spec/Doc Approved**: Documentation-First (DDD) mandate must be met. Approval from Boss/Architect is required before coding.
-- [ ] **Docs Updated**: Relevant files updated (`README.md`, `GEMINI.md`, or JSDoc).
-- [ ] **Test Plan Approved**: Verification steps are defined and agreed upon.
+## Gate 1: Source and Scope
+- [ ] Source document is identified.
+- [ ] Primary PRD system is identified.
+- [ ] Complexity and context tier are declared.
+- [ ] Required artifacts match `docs/STD-Execution-Governance.md`.
+- [ ] Scope boundary is explicit.
+- [ ] Unrelated worktree changes are excluded.
 
-## 🔵 Gate 2: Success Criteria
-- [ ] **Code Complete**: No `TODO`, `FIXME`, or unused debug logs.
-- [ ] **Type Safety**: TypeScript strict mode passed (no `any` without extreme justification).
-- [ ] **Formatting**: Code follows `Prettier` and `ESLint` rules.
-- [ ] **Visual Fidelity**: UI matches the Glassmorphism theme and original Master Template.
-- [ ] **Build Check**: `npm run dev` and `cargo tauri dev` run without errors.
+## Gate 2: Documentation and Traceability
+- [ ] PRD/SRS/SDD/LLD/API/Runbook/Test Plan updates are complete where required.
+- [ ] Feature spec is placed under the correct `docs/features/<system-folder>/`.
+- [ ] Traceability exists from source document to task, agent assignment, artifact, review, and verification evidence.
+- [ ] Derived atoms do not override approved human-readable SWE docs.
 
-## 🔴 Gate 3: Exit Criteria
-- [ ] **Tests Passed**: Automated tests (Vitest/Rust tests) or manual verification evidence provided.
-- [ ] **Regression-Free**: Existing features remain functional.
-- [ ] **Surgical Review**: Git diff contains only lines relevant to the specific task scope.
-- [ ] **Risk Mitigated**: Any identified risks during the process are addressed or documented.
+## Gate 3: Implementation Quality
+- [ ] Code or document changes match the approved source.
+- [ ] Type checks, lint checks, builds, or equivalent validations pass when relevant.
+- [ ] UI changes comply with `docs/design/`.
+- [ ] RBAC/ABAC-sensitive changes include policy and audit evidence.
+- [ ] Diff is surgical and limited to the approved task.
 
----
-*Failure at any gate prevents the task from being marked as DONE.*
+## Gate 4: Verification and Exit
+- [ ] Automated tests pass, or manual verification evidence is attached when automation is not available.
+- [ ] Regression risk is assessed and mitigated.
+- [ ] Known failures, skipped tests, and open risks are documented.
+- [ ] Owner/lead approval exists for C-2/C-3 work.
 
-## CHANGELOG
+Failure at any required gate prevents the task from being marked done.
 
-| Version | Date | Status | Summary |
-|---------|------|--------|---------|
+## Changelog
+| Version | Date | Summary |
+|---|---|---|
+| 2.0.0 | 2026-06-12 | Updated DoD for PRD/C4/execution governance, feature folder mapping, traceability, and RBAC/ABAC governance. |

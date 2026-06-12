@@ -64,7 +64,7 @@ flowchart TB
     DocsCore["Docs to Code Core"]
     DiagramCore["Diagram to Doc Core"]
     AgentCore["Agent Team Core"]
-    ExecGov["Execution Governance Core\nR10 + Runbook Gates"]
+    ExecGov["Execution Governance Core\nStandard + Runbook Gates"]
   end
 
   subgraph Knowledge["Knowledge Runtime"]
@@ -136,7 +136,7 @@ flowchart TB
 | Governance Access Control | RBAC, ABAC, Policy Enforcement |
 | Genesis Knowledge HCS | HCS, JIT, Atom Extraction, Knowledge Graph, Block DB |
 | Traceability Audit Verification | Audit Store, Trace Store, Verification Matrix components |
-| Execution Governance | R10, Doc-First Gate, Multi-Agent Operating Runbook |
+| Execution Governance | Execution Governance Standard, Doc-First Gate, Multi-Agent Operating Runbook |
 
 ## 5. C3 - Component View
 
@@ -307,7 +307,7 @@ Responsibilities:
 ```text
 ExecutionGovernance
 +-- ComplexityBasedExecution
-|   +-- R10ComplexityClassifier
+|   +-- TaskComplexityClassifier
 |   +-- C0C3WorkflowSelector
 |   +-- HScaleMapper
 |   +-- RequiredArtifactResolver
@@ -445,7 +445,7 @@ ExecutionGovernanceService
 | Governance Access Control | Governance Runtime | RBAC, ABAC, Policy Enforcement | SRS, SDD, Access Model, Threat Model |
 | Genesis Knowledge HCS | Knowledge Runtime | HCS, JIT, Atom Extraction, Graph, Block DB | SRS, SDD, LLD, API Contract |
 | Traceability Audit Verification | Audit/Trace Store | Traceability Index, Audit Trail, Verification Matrix | SRS, SDD, Test Plan |
-| Execution Governance | Execution Governance Core | R10, Doc-First Gate, Multi-Agent Runbook | R10, Runbook, Test Plan |
+| Execution Governance | Execution Governance Core | Execution Governance Standard, Doc-First Gate, Multi-Agent Runbook | Standard, Runbook, Test Plan |
 
 ## 9. Open Questions
 - Should HCS have its own standalone SRS and SDD under `docs/hcs/`?
