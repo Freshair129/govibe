@@ -1,0 +1,274 @@
+version: "1.0"
+root_contract:
+  global_context:
+    - agent.md
+    - GEMINI.md
+
+defaults:
+  mode: doc
+  max_files: 16
+  max_chars_per_file: 12000
+  include_extensions:
+    - .md
+    - .html
+    - .txt
+    - .yaml
+    - .yml
+
+modes:
+  doc:
+    include:
+      - global_context
+      - agent_contract
+      - agent_default_context
+      - scope_context
+
+  plan:
+    include:
+      - global_context
+      - agent_contract
+      - agent_default_context
+      - scope_context
+
+  audit:
+    include:
+      - global_context
+      - agent_contract
+      - agent_default_context
+      - scope_context
+      - scope_verification_context
+
+  atomic:
+    include:
+      - global_context
+      - agent_contract
+      - scope_atomic_context
+
+agents:
+  theseus:
+    label: THESEUS
+    role: doc_writer
+    contract: .agents/doc_writer/THESEUS.md
+    default_context:
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    allowed_scopes:
+      - docs/features/
+      - docs/design/
+      - docs/api/
+      - docs/architecture/
+
+  lyra:
+    label: LYRA
+    role: pm
+    contract: .agents/pm/LYRA.md
+    default_context:
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+      - docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md
+    allowed_scopes:
+      - docs/roadmap/
+      - docs/features/project-roadmap/
+      - docs/features/
+
+  ather:
+    label: ATHER
+    role: auditor
+    contract: .agents/auditor/ATHER.md
+    default_context:
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    allowed_scopes:
+      - docs/
+      - src/
+      - public/
+      - comp/
+
+scopes:
+  docs/features/agent-team:
+    preferred_agent: theseus
+    context:
+      - docs/features/agent-team/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/features/agent-team/
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
+      - .agents/qa/ghost.md
+
+  docs/features/project-roadmap:
+    preferred_agent: lyra
+    context:
+      - docs/features/project-roadmap/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/features/project-roadmap/
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
+      - .agents/qa/ghost.md
+
+  docs/features/genesis-knowledge-system:
+    preferred_agent: theseus
+    context:
+      - docs/features/genesis-knowledge-system/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/features/genesis-knowledge-system/
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
+
+  docs/design:
+    preferred_agent: theseus
+    context:
+      - docs/design/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/design/
+    verification_context:
+      - .agents/qa/ghost.md
+
+  docs:
+    preferred_agent: ather
+    context:
+      - docs/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
+
+  docs/features/mission-control:
+    preferred_agent: theseus
+    context:
+      - docs/features/mission-control/
+      - docs/design/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/features/mission-control/
+      - docs/design/SITE_MAP.md
+      - docs/design/DOMAIN_DETAILS.md
+      - docs/design/TEMPLATE_REFERENCE.md
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
+      - .agents/qa/ghost.md
+
+  docs/features/docs-to-code:
+    preferred_agent: theseus
+    context:
+      - docs/features/docs-to-code/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/features/docs-to-code/
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
+
+  docs/features/diagram-to-doc:
+    preferred_agent: theseus
+    context:
+      - docs/features/diagram-to-doc/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/features/diagram-to-doc/
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
+
+  docs/features/governance-access:
+    preferred_agent: theseus
+    context:
+      - docs/features/governance-access/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/features/governance-access/
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
+
+  docs/features/integration-bridge:
+    preferred_agent: theseus
+    context:
+      - docs/features/integration-bridge/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/features/integration-bridge/
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
+
+  docs/features/traceability-audit:
+    preferred_agent: ather
+    context:
+      - docs/features/traceability-audit/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/features/traceability-audit/
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
+      - .agents/qa/ghost.md
+
+  docs/features/execution-governance:
+    preferred_agent: ather
+    context:
+      - docs/features/execution-governance/
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/architecture/C4-GoVibe-Platform.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+      - docs/features/README.md
+    atomic_context:
+      - docs/features/execution-governance/
+      - docs/STD-Execution-Governance.md
+    verification_context:
+      - .agents/auditor/ATHER.md
