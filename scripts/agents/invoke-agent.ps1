@@ -202,6 +202,17 @@ function Resolve-LocalPolicy {
         throw "Scope '$($BuilderResult.scope)' only allows local sidecar execution for atomic mode."
     }
 
+    # Dynamic Constraint Injection based on Tier
+    $scopeTier = Get-NestedProperty (Get-NestedProperty $BuilderResult "scopeExecutionPolicy") "local_model_tier"
+    $agentTier = Get-NestedProperty (Get-NestedProperty $BuilderResult "agentExecutionPolicy") "local_model_tier"
+    $selectedTier = if ($scopeTier) { [string]$scopeTier } elseif ($agentTier) { [string]$agentTier } else { "default" }
+    
+    $tierConstraints = Get-NestedProperty $localSidecar "tier_constraints"
+    $tierLimit = Get-NestedProperty $tierConstraints $selectedTier
+    if ($tierLimit) {
+        $localSidecar.max_chars_per_file = [int]$tierLimit
+    }
+
     return $localSidecar
 }
 
@@ -306,9 +317,17 @@ function Invoke-OllamaAttempt {
         [Parameter(Mandatory = $true)][string]$PromptText
     )
 
+    $stdinPath = Join-Path $env:TEMP ("ollama-agent-stdin-" + [guid]::NewGuid().ToString() + ".txt")
     $stderrPath = Join-Path $env:TEMP ("ollama-agent-stderr-" + [guid]::NewGuid().ToString() + ".txt")
     try {
-        $stdout = $PromptText | & ollama run $SelectedModel 2> $stderrPath
+        # Use UTF8 without BOM for compatibility
+        $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+        [System.IO.File]::WriteAllText($stdinPath, $PromptText, $utf8NoBom)
+
+        # Use Get-Content -Raw to read the whole file and pipe it, 
+        # which is often more stable for large buffers than direct variable piping
+        $stdout = Get-Content -Raw -Path $stdinPath | & ollama run $SelectedModel 2> $stderrPath
+        
         $stdoutText = ($stdout | Out-String).Trim()
         $stderrText = if (Test-Path $stderrPath) { (Get-Content -Path $stderrPath | Out-String).Trim() } else { "" }
         return [pscustomobject]@{
@@ -320,6 +339,7 @@ function Invoke-OllamaAttempt {
         }
     }
     finally {
+        Remove-Item -LiteralPath $stdinPath -ErrorAction SilentlyContinue
         Remove-Item -LiteralPath $stderrPath -ErrorAction SilentlyContinue
     }
 }

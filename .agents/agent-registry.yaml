@@ -28,11 +28,17 @@ local_sidecar:
     - atomic
     - audit
   model_tiers:
-    tiny: llama3.2:1b
-    default: qwen3.5:4b
-    retry: gemma4:e2b
+    tiny: llama3.2:1b    # 1b: stable up to 32k chars
+    default: qwen3.5:4b  # 4b: stable up to 24k chars
+    pro: gemma4:9b       # 9b: limit at 16,000 chars
+    retry: gemma4:e2b    # 12b: limit at 12,000 chars
+  tier_constraints:
+    tiny: 32000
+    default: 24000
+    pro: 16000
+    retry: 12000
   max_files: 8
-  max_chars_per_file: 8000
+  max_chars_per_file: 8000 # Global default safety fallback
   output_contract:
     sections:
       - Task Summary
@@ -50,6 +56,8 @@ defaults:
     - .txt
     - .yaml
     - .yml
+    - .ps1
+    - .mjs
 
 modes:
   doc:
@@ -78,6 +86,7 @@ modes:
     include:
       - global_context
       - agent_contract
+      - agent_default_context
       - scope_atomic_context
 
 agents:
