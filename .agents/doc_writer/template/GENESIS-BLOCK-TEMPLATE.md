@@ -5,6 +5,7 @@ doc_id: {{DOC_ID}}
 created: "{{TIMESTAMP}},{{USER}}"
 updated: "{{TIMESTAMP}},{{USER}}"
 version: "1.0.0b"
+status: active
 state: active
 type: genesis
 vault_id: default

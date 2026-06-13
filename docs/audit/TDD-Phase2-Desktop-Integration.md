@@ -2,7 +2,7 @@
 
 **Feature ID:** `GV-S200`
 **Status:** `PROPOSED`
-**Reference:** [PRD-Platform-Overview.md], [SDD-System-Design.md]
+**Reference:** [PRD-GoVibe-Platform-Overview.md], [SDD-System-Design.md]
 
 ## 1. Overview
 Implementation details for bridging the React frontend with the Rust backend in the Tauri desktop application. This phase focuses on real-time telemetry, terminal execution, and GenesisBlockDB connectivity.

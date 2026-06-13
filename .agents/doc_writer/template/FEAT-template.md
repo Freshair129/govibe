@@ -49,8 +49,14 @@ Describe the feature, user value, and expected behavior.
 ## 7. Acceptance Criteria
 -
 
-## 8. Verification
+## 8. Success Criteria
 -
 
-## 9. Open Questions
+## 9. Verification
+-
+
+## 10. Definition of Done
+-
+
+## 11. Open Questions
 -

@@ -5,6 +5,7 @@ doc_id: GVDOC-1004
 created: "2026-06-12T19:15:00+07:00,GKS Lead Architect"
 updated: "2026-06-12T19:15:00+07:00,GKS Lead Architect"
 version: "2.2.0-Release"
+status: active
 state: active
 type: handover-specification
 vault_id: default

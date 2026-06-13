@@ -85,7 +85,7 @@ Teammate finishes code → creates PR (GitHub)
 Closes GV-{X}
 
 ## Documents
-- **Roadmap** `docs/roadmap.md`
+- **Roadmap** `docs/roadmap/ROADMAP-govibe-mcp-runtime.md`
 - **IMP:** `.eva/devlog/implement/EVA-IMP-{XXXX}.md`
 - **TSK:** `.eva/devlog/tasks/EVA-TSK-{DATE}-{NNN}.md`
 

@@ -81,6 +81,7 @@ If a feature spans systems, choose the primary owner folder and add cross-links.
 7. Keep documents human-readable and self-contained at their level. Link deeper details instead of duplicating full specs.
 8. Preserve canonical source rules: PRD owns product intent, SRS owns requirements, SDD/C4 own architecture, LLD owns low-level logic, API/MCP contracts own integration behavior, Runbooks own operations, Test Plans own verification.
 9. Legacy root `templates/` is deprecated once migrated into `.agents/doc_writer/template/`; canonical templates live only in the agent writer template folder.
+10. Run `npm run docs:validate` before preparing agent-ingested context. Run `npm run baseline:check` before starting the next feature baseline.
 
 ## Output Format
 When asked to create or update a document, respond with:

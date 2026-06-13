@@ -2,7 +2,7 @@
 
 **Feature ID:** `GV-S101`
 **Status:** `COMPLETED`
-**Reference:** [PRD-Platform-Overview.md], [SDD-System-Design.md]
+**Reference:** [PRD-GoVibe-Platform-Overview.md], [SDD-System-Design.md]
 
 ## 1. Overview
 Implementation details for extracting local state from the desktop application into a shared, persistent global store.

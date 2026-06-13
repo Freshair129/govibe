@@ -25,29 +25,38 @@ Purpose, scope, definitions, and source PRD references.
 |---|---|---|---|
 | FR-001 |  | MUST |  |
 
-## 4. Non-Functional Requirements
+## 4. Acceptance Criteria
+-
+
+## 5. Success Criteria
+-
+
+## 6. Non-Functional Requirements
 | ID | Requirement | Target |
 |---|---|---|
 | NFR-001 | Performance |  |
 
-## 5. Data Requirements
+## 7. Data Requirements
 - Inputs:
 - Outputs:
 - Persistence:
 
-## 6. Interface Requirements
+## 8. Interface Requirements
 - UI:
 - API/MCP:
 - File/document:
 
-## 7. Security and Governance Requirements
+## 9. Security and Governance Requirements
 - RBAC:
 - ABAC:
 - Audit:
 
-## 8. Traceability Matrix
+## 10. Traceability Matrix
 | Requirement | PRD Goal/System | Design Doc | Test Evidence |
 |---|---|---|---|
 
-## 9. Open Questions
+## 11. Definition of Done
+-
+
+## 12. Open Questions
 -

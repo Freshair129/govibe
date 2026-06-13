@@ -8,6 +8,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "tsc --noEmit",
+    "docs:validate": "node scripts/docs/validate-docs.mjs",
+    "baseline:check": "npm run docs:validate && npm run lint && npm run build",
     "preview": "vite preview",
     "mcp:dev": "node scripts/mcp/govibe-mcp-server.mjs",
     "mission:dev": "node scripts/mcp/govibe-mcp-server.mjs"
