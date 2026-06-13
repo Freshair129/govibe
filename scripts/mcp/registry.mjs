@@ -12,13 +12,13 @@ export const toolCatalog = [
       properties: {
         actor: { type: "string" },
         project: { type: "string" },
-        agent: { type: "string" },
+        agent_id: { type: "string" },
         scope: { type: "string" },
         task: { type: "string" },
         mode: { type: "string", enum: ["doc", "plan", "audit", "atomic"] },
         executor: { type: "string" },
       },
-      required: ["actor", "task"],
+      required: ["actor", "task", "agent_id"],
     },
   },
   {
@@ -76,6 +76,28 @@ export const toolCatalog = [
         action: { type: "string" },
       },
       required: ["actor", "action"],
+    },
+  },
+  {
+    name: "govibe.workspace.initialize",
+    description: "Initialize the GoVibe agent workspace infrastructure.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+      },
+      required: ["actor"],
+    },
+  },
+  {
+    name: "govibe.workspace.validate",
+    description: "Validate the current workspace against STD-Execution-Governance standards.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+      },
+      required: ["actor"],
     },
   },
 ];

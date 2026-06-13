@@ -1,6 +1,10 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+
+const execAsync = promisify(exec);
 
 import { govibeRuntime } from "./runtime-core.mjs";
 import { getResourceByUri } from "./registry.mjs";
@@ -23,7 +27,9 @@ function buildAuditRef(capability) {
 export async function handleToolCall(name, args = {}) {
   switch (name) {
     case "govibe.agent.run": {
-      const response = await govibeRuntime.runAgent(args);
+      // Map agent_id to the agent field expected by the runtime
+      const payload = { ...args, agent: args.agent_id };
+      const response = await govibeRuntime.runAgent(payload);
       return {
         content: asTextContent(
           [
@@ -31,6 +37,7 @@ export async function handleToolCall(name, args = {}) {
             "",
             `actor: ${args.actor ?? "unknown"}`,
             `project: ${args.project ?? "n/a"}`,
+            `agent_id: ${args.agent_id ?? "n/a"}`,
             `scope: ${args.scope ?? "n/a"}`,
             `mode: ${args.mode ?? "n/a"}`,
             `executor: ${args.executor ?? "policy-resolved"}`,
@@ -122,6 +129,44 @@ export async function handleToolCall(name, args = {}) {
           auditRef: buildAuditRef(name),
         },
       };
+    case "govibe.workspace.initialize": {
+      const { stdout, stderr } = await execAsync("node scripts/agents/govibe-init.mjs", { cwd: workspaceRoot });
+      return {
+        content: asTextContent(
+          [
+            "GoVibe workspace initialization completed.",
+            "",
+            `actor: ${args.actor ?? "unknown"}`,
+            "",
+            stdout || stderr || "No output returned.",
+          ].join("\n"),
+        ),
+        structuredContent: {
+          capability: name,
+          success: true,
+          auditRef: buildAuditRef(name),
+        },
+      };
+    }
+    case "govibe.workspace.validate": {
+      const { stdout, stderr } = await execAsync("node packages/govibe-core/bin/validate.mjs", { cwd: workspaceRoot });
+      return {
+        content: asTextContent(
+          [
+            "GoVibe workspace validation completed.",
+            "",
+            `actor: ${args.actor ?? "unknown"}`,
+            "",
+            stdout || stderr || "No output returned.",
+          ].join("\n"),
+        ),
+        structuredContent: {
+          capability: name,
+          success: true,
+          auditRef: buildAuditRef(name),
+        },
+      };
+    }
     default:
       throw new Error(`Unknown tool: ${name}`);
   }

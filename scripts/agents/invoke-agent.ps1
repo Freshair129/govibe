@@ -1,6 +1,6 @@
 param(
     [Parameter(Mandatory = $false)]
-    [string]$Agent,
+    [string]$AgentId,
 
     [Parameter(Mandatory = $false)]
     [string]$Scope,
@@ -90,8 +90,8 @@ function Invoke-PromptBuilder {
         "--json"
     )
 
-    if ($Agent) {
-        $nodeArgs += @("--agent", $Agent)
+    if ($AgentId) {
+        $nodeArgs += @("--agent", $AgentId)
     }
 
     if ($Scope) {

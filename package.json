@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "govibe": "./packages/govibe-core/bin/init.mjs"
+  },
   "description": "GoVibe Mission Control - React dashboard with real data entrypoints",
   "scripts": {
     "dev": "vite",

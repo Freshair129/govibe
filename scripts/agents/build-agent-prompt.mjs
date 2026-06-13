@@ -229,7 +229,7 @@ function main() {
   const registry = parseYaml(fs.readFileSync(registryPath, "utf8"));
   const scopeInfo = findScopeConfig(registry, args.scope ?? "");
 
-  let agentKey = args.agent;
+  let agentKey = args.agent_id ?? args.agent;
   if (!agentKey && scopeInfo?.value?.preferred_agent) {
     agentKey = scopeInfo.value.preferred_agent;
   }
