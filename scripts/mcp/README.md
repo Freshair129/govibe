@@ -10,6 +10,14 @@ Current scope:
 - `govibe.roadmap.update`
 - `govibe.deploy.vercel`
 
+Smoke test:
+
+```powershell
+npm run mcp:smoke
+```
+
+The smoke test starts the MCP server over stdio, lists tools, loads the document-driven roadmap, applies a roadmap overlay update, and runs `govibe.agent.run` through the shared launcher in prompt-build mode.
+
 The scaffold is intentionally thin:
 
 - stdio JSON-RPC framing

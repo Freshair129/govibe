@@ -29,7 +29,7 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | ID | Parent ID | Type | Title | PRD System | Priority | Owner | Source Section | Dependencies | Acceptance | Status | Progress |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | TASK-001-runtime-core | SPRINT-01 | task | Build shared roadmap runtime core | SYSTEM-06 | P1 | eva | Runtime Core | docs/PRD-GoVibe-MCP-Orchestration.md | Runtime can discover, parse, and serve roadmap sources | done | 100 |
-| TASK-002-mcp-bind | SPRINT-01 | task | Bind MCP tools to real launcher and roadmap services | SYSTEM-06 | P1 | atlas | MCP Tool Binding | TASK-001-runtime-core | MCP tools return live data instead of placeholder scaffold text | in-progress | 70 |
+| TASK-002-mcp-bind | SPRINT-01 | task | Bind MCP tools to real launcher and roadmap services | SYSTEM-06 | P1 | atlas | MCP Tool Binding | TASK-001-runtime-core | MCP tools return live data instead of placeholder scaffold text | done | 100 |
 | TASK-003-gateway-bootstrap | SPRINT-01 | task | Bootstrap Mission Control from sidecar snapshot and ws events | SYSTEM-02 | P1 | qwen | Mission Gateway | TASK-001-runtime-core | A2 renders live roadmap snapshot from sidecar | in-progress | 55 |
 
 ## Task Breakdown
@@ -52,5 +52,5 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | Task ID | QA Status | Audit Status | Deployment Status | Updated At |
 |---|---|---|---|---|
 | TASK-001-runtime-core | passed | passed | n/a | 2026-06-13T10:00:00Z |
-| TASK-002-mcp-bind | pending | pending | n/a | 2026-06-13T10:05:00Z |
+| TASK-002-mcp-bind | passed | passed | n/a | 2026-06-13T21:10:20+07:00 |
 | TASK-003-gateway-bootstrap | passed | passed | n/a | 2026-06-13T20:55:53+07:00 |
