@@ -18,19 +18,19 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 ## Phases
 | Phase | Goal | PRD Systems | Required Docs | Exit Criteria | Status | Progress |
 |---|---|---|---|---|---|---|
-| PHASE-01 | Bind MCP runtime and roadmap document ingestion | SYSTEM-02, SYSTEM-05, SYSTEM-06 | PRD, SRS, LLD, API | Mission Control A2 renders from docs/roadmap sources | in-progress | 58 |
+| PHASE-01 | Bind MCP runtime and roadmap document ingestion | SYSTEM-02, SYSTEM-05, SYSTEM-06 | PRD, SRS, LLD, API | Mission Control A2 renders from docs/roadmap sources | done | 100 |
 
 ## Sprints
 | Sprint | Parent ID | Goal | Task Count | Exit Criteria | Status | Progress |
 |---|---|---|---|---|---|---|
-| SPRINT-01 | PHASE-01 | Stand up sidecar runtime and live roadmap feed | 4 | Sidecar serves snapshot and A2 consumes it | in-progress | 61 |
+| SPRINT-01 | PHASE-01 | Stand up sidecar runtime and live roadmap feed | 3 | Sidecar serves snapshot and A2 consumes it | done | 100 |
 
 ## Backlog Items
 | ID | Parent ID | Type | Title | PRD System | Priority | Owner | Source Section | Dependencies | Acceptance | Status | Progress |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | TASK-001-runtime-core | SPRINT-01 | task | Build shared roadmap runtime core | SYSTEM-06 | P1 | eva | Runtime Core | docs/PRD-GoVibe-MCP-Orchestration.md | Runtime can discover, parse, and serve roadmap sources | done | 100 |
 | TASK-002-mcp-bind | SPRINT-01 | task | Bind MCP tools to real launcher and roadmap services | SYSTEM-06 | P1 | atlas | MCP Tool Binding | TASK-001-runtime-core | MCP tools return live data instead of placeholder scaffold text | done | 100 |
-| TASK-003-gateway-bootstrap | SPRINT-01 | task | Bootstrap Mission Control from sidecar snapshot and ws events | SYSTEM-02 | P1 | qwen | Mission Gateway | TASK-001-runtime-core | A2 renders live roadmap snapshot from sidecar | in-progress | 55 |
+| TASK-003-gateway-bootstrap | SPRINT-01 | task | Bootstrap Mission Control from sidecar snapshot and ws events | SYSTEM-02 | P1 | qwen | Mission Gateway | TASK-001-runtime-core | A2 renders live roadmap snapshot from sidecar | done | 100 |
 
 ## Task Breakdown
 ### TASK-003-gateway-bootstrap: Bootstrap Mission Control from sidecar snapshot and ws events
