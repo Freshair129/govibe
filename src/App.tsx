@@ -171,6 +171,13 @@ function getRoadmapVerificationBadges(snapshot: RoadmapSnapshot, node: WorkflowT
   ];
 }
 
+function getRoadmapSourceMeta(snapshot: RoadmapSnapshot, node: WorkflowTaskNode) {
+  const sourcePath = snapshot.sourcePath ?? node.sourcePath;
+  const sourceSection = node.sourceSection;
+  if (!sourcePath && !sourceSection) return null;
+  return { sourcePath, sourceSection };
+}
+
 function getRoadmapStats(snapshot?: RoadmapSnapshot) {
   if (!snapshot) {
     return {
@@ -464,13 +471,20 @@ function TemplateTaskRow({ row }: { row: typeof roadmapRows[number] }) {
 function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: WorkflowTaskNode }) {
   const assignee = getRoadmapAssignee(snapshot, node);
   const badges = getRoadmapVerificationBadges(snapshot, node);
+  const sourceMeta = getRoadmapSourceMeta(snapshot, node);
   return (
     <article className="template-task-row">
       <div>
         <span>{getRoadmapScope(node)}</span>
         <strong>{node.title}</strong>
         {node.summary ? <p>{node.summary}</p> : null}
-        {node.sourceSection ? <p>Source: {node.sourceSection}</p> : null}
+        {sourceMeta ? (
+          <div className="task-source-meta" aria-label={`Source for ${node.title}`}>
+            <span>Source</span>
+            {sourceMeta.sourceSection ? <code>{sourceMeta.sourceSection}</code> : null}
+            {sourceMeta.sourcePath ? <small>{sourceMeta.sourcePath}</small> : null}
+          </div>
+        ) : null}
         <div className="task-badges">
           <em>{formatRoadmapState(node.state)}</em>
           {badges.map((badge) => <em key={`${node.id}-${badge}`}>{badge}</em>)}

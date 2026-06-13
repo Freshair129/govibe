@@ -2019,6 +2019,41 @@ footer {
   margin-top: 8px;
 }
 
+.task-source-meta {
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(0,0,0,0.2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-top: 10px;
+  max-width: 100%;
+  padding: 8px 10px;
+}
+
+.task-source-meta span {
+  color: var(--accent);
+  flex: 0 0 auto;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  font-weight: 900;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.task-source-meta code,
+.task-source-meta small {
+  color: var(--muted);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px;
+  overflow-wrap: anywhere;
+}
+
+.task-source-meta code {
+  color: var(--text);
+}
+
 .template-task-row label {
   color: var(--muted);
   display: grid;

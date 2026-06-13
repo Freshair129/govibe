@@ -37,9 +37,9 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 - [x] SUBTASK-003.1 Add snapshot bootstrap request in MissionGateway
   - [x] MICRO-003.1.1 Derive ws url from VITE_GOVIBE_API_URL when VITE_GOVIBE_WS_URL is missing
     - [x] ATOMIC-003.1.1.1 Fetch /mission/snapshot before opening websocket
-- [ ] SUBTASK-003.2 Display source metadata in A2
-  - [ ] MICRO-003.2.1 Show task source section in task rows
-    - [ ] ATOMIC-003.2.1.1 Render source section below task summary
+- [x] SUBTASK-003.2 Display source metadata in A2
+  - [x] MICRO-003.2.1 Show task source section in task rows
+    - [x] ATOMIC-003.2.1.1 Render source section below task summary
 
 ## Assignments
 | Task ID | Subject ID | Subject Type | Policy Model | Assigned At | Assigned By |
