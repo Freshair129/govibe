@@ -11,6 +11,8 @@
 
 Provide a stable bridge layer between GoVibe and external agents, tools, and services through MCP, API, webhook, and local adapters without taking over third-party billing or execution ownership.
 
+MCP is the primary orchestration interface for this bridge layer. Mission Control and CLI are caller surfaces, not the source of orchestration business rules.
+
 ## 2. Integration Scope
 
 - `Claude Code`
@@ -34,4 +36,4 @@ Provide a stable bridge layer between GoVibe and external agents, tools, and ser
 - Invocation logs preserve actor, action, target, and result metadata.
 - The bridge can distinguish platform coordination from external provider billing.
 - Adapter failures surface as operational state, not silent data loss.
-
+- Mission Control and CLI can consume the same governed orchestration capabilities without duplicating policy or routing logic.

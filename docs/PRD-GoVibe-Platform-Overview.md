@@ -15,6 +15,12 @@ The platform is built around two operating loops:
 
 GoVibe keeps the visual identity of Mission Control, but the product center is project coordination: progress tracking, agent team management, access control, knowledge retrieval, and delivery visibility.
 
+The platform uses three coordinated surfaces:
+
+- `Mission Control UI` as the visual control plane
+- `MCP Server` as the primary orchestration interface
+- `GoVibe CLI` as a thin human/operator and automation surface
+
 ## 2. Product Positioning
 GoVibe is a coordination layer, not a replacement for external coding agents.
 
@@ -65,7 +71,7 @@ GoVibe is a coordination layer, not a replacement for external coding agents.
 - ABAC governs agents, subagents, MCP clients, services, and scheduled jobs.
 - Policy decisions should be auditable and traceable to project, task, resource, action, and context.
 
-### 4.6 Genesis Knowledge and Block DB
+### 4.6 Genesis Knowledge and GenesisBlock DB
 - Human-readable SWE documents are transformed into internal knowledge atoms only after authoring.
 - Atoms such as `CONCEPT`, `MOD`, `FEAT`, `FLOW`, `ALGO`, `ENTITY`, `GUARD`, `API`, and `MCP` are derived knowledge artifacts.
 - The knowledge layer supports graph retrieval, context compaction, symbol linking, and Mission Control visualization.
@@ -75,6 +81,11 @@ GoVibe is a coordination layer, not a replacement for external coding agents.
 - The Execution Governance Standard classifies work by complexity (`C-0` to `C-3`) and context tier (`H0` to `H5`) before execution.
 - Multi-agent operations define team roles, plan approval, task claiming, file locking, PR handoff, review, and conflict resolution.
 - Complex work must preserve traceability from source document to task, agent assignment, artifact, review, and verification evidence.
+
+### 4.8 Orchestration Interfaces
+- MCP is the primary orchestration interface for governed tools, resources, state mutation, and agent execution.
+- Mission Control consumes orchestration capabilities as a visual control plane and should not own business rules for execution policy or roadmap mutation.
+- GoVibe CLI is a thin operator and automation surface over the same orchestration rules.
 
 ## 5. Platform System Map
 GoVibe is composed of ten product systems. Each system may have its own SRS, SRD, SDD, LLD, API Contract, Runbook, or Test Plan when implementation detail is required.
@@ -121,7 +132,7 @@ PRD::GoVibe-Platform
 
 ### 5.6 Integration Bridge System
 - **External Agent Adapters:** Claude Code, Gemini CLI, OpenClaw, Hermes, and future coding-agent adapters.
-- **MCP Bridge:** tool registry, resource registry, permission mapper, invocation logger.
+- **MCP Server / Bridge:** tool registry, resource registry, permission mapper, invocation logger, orchestration contract.
 - **Webhook/API/Local Bridge:** webhook receiver, event normalizer, command dispatcher, local bridge connector.
 
 ### 5.7 Governance Access Control System
@@ -186,7 +197,7 @@ PRD::GoVibe-Platform
 |   +-- MODULE::Mission-Control-Views
 |   |   +-- ProjectOverviewView
 |   |   +-- GenesisKnowledgeView
-|   |   +-- BlockDBView
+|   |   +-- GenesisBlockDBView
 |   |   +-- AIBenchmarkView
 |   +-- MODULE::Command-Terminal
 |       +-- TerminalSession

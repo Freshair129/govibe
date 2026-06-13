@@ -50,13 +50,18 @@ flowchart LR
 - Keep traceability across roadmap, task, agent assignment, artifact, review, and verification.
 
 ## 4. C2 - Container View
-The platform is composed of UI, core orchestration, knowledge, governance, integration, and storage containers.
+The platform is composed of UI, operator, orchestration, core, knowledge, governance, integration, and storage containers.
 
 ```mermaid
 flowchart TB
   subgraph Client["Client Surfaces"]
-    MissionUI["Mission Control UI\nReact / Vite / Tauri WebView"]
+    MissionUI["Mission Control UI\nReact / Vite"]
     Terminal["Floating Terminal"]
+    GovibeCLI["GoVibe CLI\nThin operator shell"]
+  end
+
+  subgraph Orchestration["Orchestration Runtime"]
+    MCPServer["GoVibe MCP Server"]
   end
 
   subgraph Core["Core Platform Runtime"]
@@ -82,10 +87,10 @@ flowchart TB
   end
 
   subgraph Integration["Integration Runtime"]
-    MCPBridge["MCP Bridge"]
     AgentAdapters["External Agent Adapters"]
     Webhooks["Webhook / API / Local Bridge"]
     GitHubBridge["GitHub Bridge"]
+    DeployAdapter["Deployment Adapter"]
   end
 
   subgraph Storage["Storage"]
@@ -99,7 +104,16 @@ flowchart TB
   MissionUI --> DocsCore
   MissionUI --> DiagramCore
   MissionUI --> AgentCore
+  MissionUI --> MCPServer
   Terminal --> ExecGov
+  GovibeCLI --> MCPServer
+
+  MCPServer --> ProjectCore
+  MCPServer --> DocsCore
+  MCPServer --> AgentCore
+  MCPServer --> ExecGov
+  MCPServer --> Policy
+  MCPServer --> AuditStore
 
   ProjectCore --> StateStore
   DocsCore --> DocStore
@@ -119,9 +133,11 @@ flowchart TB
   ABAC --> Policy
   Policy --> AuditStore
 
-  MCPBridge --> AgentAdapters
+  MCPServer --> AgentAdapters
   Webhooks --> AgentAdapters
   GitHubBridge --> GitHub["GitHub"]
+  MCPServer --> DeployAdapter
+  DeployAdapter --> GitHub
 ```
 
 ### C2 Container Mapping To PRD Systems
@@ -131,8 +147,8 @@ flowchart TB
 | Project Roadmap Management | Project and Roadmap Core, State Store |
 | Docs to Code | Docs to Code Core, Document Store, Atom Extraction |
 | Diagram to Doc | Diagram to Doc Core, Document Store |
-| Agent Team Management | Agent Team Core, Integration Runtime |
-| Integration Bridge | MCP Bridge, Agent Adapters, Webhooks, GitHub Bridge |
+| Agent Team Management | Agent Team Core, GoVibe MCP Server, Integration Runtime |
+| Integration Bridge | GoVibe MCP Server, Agent Adapters, Webhooks, GitHub Bridge, Deployment Adapter |
 | Governance Access Control | RBAC, ABAC, Policy Enforcement |
 | Genesis Knowledge HCS | HCS, JIT, Atom Extraction, Knowledge Graph, Block DB |
 | Traceability Audit Verification | Audit Store, Trace Store, Verification Matrix components |
@@ -236,7 +252,38 @@ Responsibilities:
 - Track agent teams as project contributors, not provider billing identities.
 - Assign tasks and show status, artifacts, tool access, and handoff state.
 
-### 5.5 Governance Access Control
+### 5.5 Integration Bridge / MCP Server
+```text
+GoVibeMCPServer
++-- ToolRegistry
+|   +-- AgentTools
+|   +-- DocsTools
+|   +-- RoadmapTools
+|   +-- ProgressTools
+|   +-- AuditTools
+|   +-- DeployTools
++-- ResourceRegistry
+|   +-- ApprovedDocs
+|   +-- RoadmapSnapshots
+|   +-- ContextPackets
+|   +-- CapabilityMetadata
++-- OrchestrationCore
+|   +-- ContextResolver
+|   +-- ExecutionRouter
+|   +-- RoadmapMutationGateway
+|   +-- DeploymentGateway
++-- InvocationAudit
+    +-- InvocationLogger
+    +-- TraceabilityLinker
+    +-- DenyReasonFormatter
+```
+
+Responsibilities:
+- Expose GoVibe orchestration capabilities through governed MCP tools and resources.
+- Keep Mission Control UI and GoVibe CLI as callers rather than business-rule owners.
+- Route execution, roadmap, document, audit, and deployment operations through one capability surface.
+
+### 5.6 Governance Access Control
 ```text
 GovernanceAccessControl
 +-- UserRBAC
@@ -261,7 +308,7 @@ Responsibilities:
 - Apply ABAC to agents, subagents, MCP clients, services, and scheduled jobs.
 - Audit every policy decision that affects project resources.
 
-### 5.6 Genesis Knowledge System
+### 5.7 Genesis Knowledge System
 ```text
 GenesisKnowledgeSystem
 +-- HierarchyCompactionSystem
@@ -303,7 +350,7 @@ Responsibilities:
 - Extract atoms from human docs after authoring.
 - Render just-in-time context for agent work without making atoms the human authoring format.
 
-### 5.7 Execution Governance
+### 5.8 Execution Governance
 ```text
 ExecutionGovernance
 +-- ComplexityBasedExecution
@@ -422,6 +469,21 @@ ExecutionGovernanceService
 +-- blockOrApproveExecution(task)
 ```
 
+### 6.6 MCP Orchestration
+```text
+McpOrchestrationService
++-- initializeServer()
++-- listTools()
++-- listResources()
++-- readResource(uri)
++-- callTool(name, arguments)
++-- resolveCallerIdentity(actor)
++-- evaluateGovernance(actor, action, resource, context)
++-- resolveContextPacket(scope, selectors, bounds)
++-- dispatchOperation(capability, payload)
++-- recordInvocation(auditRecord)
+```
+
 ## 7. Architecture Rules
 - PRD is the product SSOT.
 - SRS is the requirement SSOT when added.
@@ -441,7 +503,7 @@ ExecutionGovernanceService
 | Docs to Code | Docs Core | Loader, Extractor, Task Generator, Context Packager | SRS, SDD, LLD, Test Plan |
 | Diagram to Doc | Diagram Core | Ingestion, Semantic Extractor, Draft Generator | SRS, SDD, LLD |
 | Agent Team Management | Agent Core | Roster, Team Orchestration, Workspace | SRS, SDD, Runbook |
-| Integration Bridge | Integration Runtime | MCP Bridge, Agent Adapters, Webhooks, GitHub Bridge | API Contract, MCP Contract |
+| Integration Bridge | GoVibe MCP Server, Integration Runtime | Tool Registry, Resource Registry, Orchestration Core, Agent Adapters, Webhooks, GitHub Bridge | PRD, SRS, LLD, ADR, API Contract, MCP Contract |
 | Governance Access Control | Governance Runtime | RBAC, ABAC, Policy Enforcement | SRS, SDD, Access Model, Threat Model |
 | Genesis Knowledge HCS | Knowledge Runtime | HCS, JIT, Atom Extraction, Graph, Block DB | SRS, SDD, LLD, API Contract |
 | Traceability Audit Verification | Audit/Trace Store | Traceability Index, Audit Trail, Verification Matrix | SRS, SDD, Test Plan |
