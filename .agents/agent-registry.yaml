@@ -93,7 +93,7 @@ agents:
   theseus:
     label: THESEUS
     role: doc_writer
-    contract: .agents/doc_writer/THESEUS.md
+    contract: .agents/doc_writer/AGENT.md
     execution_policy:
       default_executor: codex
       allowed_executors:
@@ -116,7 +116,7 @@ agents:
   lyra:
     label: LYRA
     role: pm
-    contract: .agents/pm/LYRA.md
+    contract: .agents/pm/AGENT.md
     execution_policy:
       default_executor: codex
       allowed_executors:
@@ -139,7 +139,7 @@ agents:
   ather:
     label: ATHER
     role: auditor
-    contract: .agents/auditor/ATHER.md
+    contract: .agents/auditor/AGENT.md
     execution_policy:
       default_executor: codex
       allowed_executors:
@@ -162,14 +162,14 @@ agents:
   janus:
     label: JANUS
     role: devops
-    contract: .agents/devops/JANUS.md
+    contract: .agents/devops/AGENT.md
     execution_policy:
       default_executor: codex
       allowed_executors:
         - codex
         - ollama
       default_mode: atomic
-      local_model_tier: retry # Use Gemma4 12b for complex infra tasks
+      local_model_tier: retry
     default_context:
       - docs/rca/
       - scripts/
@@ -180,7 +180,24 @@ agents:
       - .vercel/
       - workflows/
 
-scopes:
+  rkoi:
+    label: RKOI
+    role: tech_lead
+    contract: .agents/tech_lead/AGENT.md
+    execution_policy:
+      default_executor: codex
+      allowed_executors:
+        - codex
+      default_mode: audit
+      local_model_tier: default
+    default_context:
+      - src/
+      - docs/
+    allowed_scopes:
+      - src/
+      - docs/
+
+  theseus:
   docs/features/agent-team:
     preferred_agent: theseus
     execution_policy:
