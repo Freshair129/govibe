@@ -7,8 +7,10 @@ import {
   type DomainId,
   type MissionCommand,
   type MissionSnapshot,
+  type RoadmapSnapshot,
   type ThemeMode,
   type ViewId,
+  type WorkflowTaskNode,
 } from "./mission";
 
 const domainOrder = Object.values(missionDomains);
@@ -144,6 +146,80 @@ const roadmapRows = [
   { scope: "NFR", title: "วัด drift จริงระหว่าง 2 เครื่อง", state: "Blueprint", assignee: "Unassigned" },
   { scope: "NFR", title: "ทดสอบบน iOS Safari + Android Chrome", state: "Blueprint", assignee: "Unassigned" },
 ];
+
+const actionableRoadmapTypes = new Set(["task", "sub-task", "micro-task", "atomic-task"]);
+
+function formatRoadmapState(state: string) {
+  return state.replace(/_/g, " ");
+}
+
+function getRoadmapScope(node: WorkflowTaskNode) {
+  return node.type.replace(/-/g, " ").toUpperCase();
+}
+
+function getRoadmapAssignee(snapshot: RoadmapSnapshot, node: WorkflowTaskNode) {
+  const assignment = snapshot.assignments.find((item) => item.taskId === node.id);
+  return assignment?.subjectId ?? node.assigneeId ?? "Unassigned";
+}
+
+function getRoadmapVerificationBadges(snapshot: RoadmapSnapshot, node: WorkflowTaskNode) {
+  const verification = snapshot.verifications.find((item) => item.taskId === node.id);
+  return [
+    verification?.qaStatus ? `QA ${verification.qaStatus}` : "QA pending",
+    verification?.auditStatus ? `Audit ${verification.auditStatus}` : "Audit pending",
+    verification?.deploymentStatus ? `Deploy ${verification.deploymentStatus}` : "Deploy n/a",
+  ];
+}
+
+function getRoadmapStats(snapshot?: RoadmapSnapshot) {
+  if (!snapshot) {
+    return {
+      total: 36,
+      done: 19,
+      active: 17,
+      progress: 53,
+      label: "Blueprint",
+    };
+  }
+
+  const actionableNodes = snapshot.nodes.filter((node) => actionableRoadmapTypes.has(node.type));
+  const total = actionableNodes.length;
+  const done = actionableNodes.filter((node) => node.state === "done").length;
+  const active = actionableNodes.filter((node) => node.state !== "done").length;
+  const progress = total > 0
+    ? Math.round(actionableNodes.reduce((sum, node) => sum + (node.progress ?? (node.state === "done" ? 100 : 0)), 0) / total)
+    : 0;
+
+  return {
+    total,
+    done,
+    active,
+    progress,
+    label: total > 0 ? `${progress}% Live` : "Waiting for source",
+  };
+}
+
+function getPrimaryRoadmapPhase(snapshot?: RoadmapSnapshot) {
+  if (!snapshot) return null;
+
+  const phaseNode = snapshot.nodes.find((node) => node.type === "phase");
+  if (phaseNode) {
+    const phaseChildren = snapshot.nodes.filter((node) => node.parentId === phaseNode.id);
+    const fallbackChildren = snapshot.nodes.filter((node) => node.id !== phaseNode.id && node.type !== "roadmap");
+    return {
+      phase: phaseNode,
+      tasks: (phaseChildren.length > 0 ? phaseChildren : fallbackChildren).filter((node) => node.type !== "phase"),
+    };
+  }
+
+  const rootRoadmap = snapshot.nodes.find((node) => node.type === "roadmap");
+  if (!rootRoadmap) return null;
+
+  return {
+    phase: rootRoadmap,
+    tasks: snapshot.nodes.filter((node) => node.id !== rootRoadmap.id),
+  };
+}
 
 const capabilityBlueprints = [
   { title: "Transport Plugin", body: "WebSocket, HTTP command endpoint, browser event, and postMessage adapters.", status: "Ready for wiring" },
@@ -378,6 +454,31 @@ function TemplateTaskRow({ row }: { row: typeof roadmapRows[number] }) {
         Assign to
         <select defaultValue={row.assignee}>
           <option>{row.assignee}</option>
+          {templateAgents.map((agent) => <option key={agent.name}>{agent.name}</option>)}
+        </select>
+      </label>
+    </article>
+  );
+}
+
+function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: WorkflowTaskNode }) {
+  const assignee = getRoadmapAssignee(snapshot, node);
+  const badges = getRoadmapVerificationBadges(snapshot, node);
+  return (
+    <article className="template-task-row">
+      <div>
+        <span>{getRoadmapScope(node)}</span>
+        <strong>{node.title}</strong>
+        {node.summary ? <p>{node.summary}</p> : null}
+        <div className="task-badges">
+          <em>{formatRoadmapState(node.state)}</em>
+          {badges.map((badge) => <em key={`${node.id}-${badge}`}>{badge}</em>)}
+        </div>
+      </div>
+      <label>
+        Assign to
+        <select value={assignee} disabled aria-label={`Assignment for ${node.title}`}>
+          <option>{assignee}</option>
           {templateAgents.map((agent) => <option key={agent.name}>{agent.name}</option>)}
         </select>
       </label>
@@ -832,7 +933,7 @@ function Heatmap({ snapshot }: { snapshot: MissionSnapshot }) {
   );
 }
 
-function RoadmapBoard() {
+function LegacyRoadmapBoard() {
   const [exportOpen, setExportOpen] = useState(false);
   const [openPhase, setOpenPhase] = useState(true);
   return (
@@ -881,6 +982,82 @@ function RoadmapBoard() {
             <div className="task-list">
               <p>ก่อนเริ่ม Sprint จริง ต้องพิสูจน์ให้ได้ว่าระบบ YouTube IFrame API ทำงานร่วมกับ WebSocket sync ในการจัดพิกัดเวลาของเพลงได้เสถียรบนมือถือ 2 เครื่อง และหาข้อจำกัดระบบ</p>
               {roadmapRows.slice(1).map((row) => <TemplateTaskRow key={row.title} row={row} />)}
+            </div>
+          ) : null}
+        </section>
+      </div>
+    </div>
+  );
+}
+
+void LegacyRoadmapBoard;
+
+function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
+  const [exportOpen, setExportOpen] = useState(false);
+  const [openPhase, setOpenPhase] = useState(true);
+  const roadmap = snapshot.roadmap;
+  const stats = getRoadmapStats(roadmap);
+  const livePhase = getPrimaryRoadmapPhase(roadmap);
+
+  return (
+    <div className="view-stack">
+      <section className="panel roadmap-header">
+        <div>
+          <ViewHeader eyebrow="Planning" title="CoVibe Development Roadmap" desc="Roadmap state should come from approved docs and live mission events." />
+        </div>
+        <div className="roadmap-progress">
+          <span>Project progress</span>
+          <strong>{stats.label}</strong>
+          <div><i style={{ width: `${stats.progress}%` }} /></div>
+        </div>
+        <div className="roadmap-stats">
+          <article><strong>{stats.total}</strong><span>Total items</span></article>
+          <article><strong>{stats.done}</strong><span>Completed</span></article>
+          <article><strong>{stats.active}</strong><span>Active</span></article>
+        </div>
+        <div className="roadmap-actions">
+          <div className="export-menu">
+            <button onClick={() => setExportOpen((value) => !value)}>Export</button>
+            {exportOpen ? (
+              <div>
+                <button>JSON</button>
+                <button>YAML</button>
+                <button>Markdown</button>
+              </div>
+            ) : null}
+          </div>
+          <button>Reset Board</button>
+        </div>
+      </section>
+      <div className="roadmap-layout">
+        <section className="panel assist-roster">
+          <h2>AI Assist Roster</h2>
+          <p>{roadmap ? "Assignment state is connected to the live roadmap snapshot." : "Drag a card to assign an agent to a task when roadmap events are connected."}</p>
+          {templateAgents.map((agent) => <TemplateAgentCard key={agent.name} agent={agent} compact />)}
+        </section>
+        <section className="panel roadmap-accordion">
+          <button className="phase-header" type="button" onClick={() => setOpenPhase((value) => !value)}>
+            <span>{livePhase?.phase.type === "roadmap" ? "Roadmap" : livePhase ? getRoadmapScope(livePhase.phase) : "Phase 0"}</span>
+            <strong>{livePhase?.phase.title ?? "Feasibility Spike"}</strong>
+            <em>{livePhase ? formatRoadmapState(livePhase.phase.state) : "Blueprint"}</em>
+          </button>
+          {openPhase ? (
+            <div className="task-list">
+              {livePhase ? (
+                <>
+                  <p>{livePhase.phase.summary ?? `Live roadmap source: ${roadmap?.sourcePath ?? "connected event source"}`}</p>
+                  {livePhase.tasks.length > 0 ? livePhase.tasks.map((node) => (
+                    <WorkflowTaskRow key={node.id} snapshot={roadmap!} node={node} />
+                  )) : (
+                    <EmptyState title="No tasks in live phase" body="The roadmap snapshot is connected, but this phase does not include child task nodes yet." />
+                  )}
+                </>
+              ) : (
+                <>
+                  <p>Waiting for an approved roadmap document or roadmap mission event. Blueprint rows remain visible as fallback only.</p>
+                  {roadmapRows.slice(1).map((row) => <TemplateTaskRow key={row.title} row={row} />)}
+                </>
+              )}
             </div>
           ) : null}
         </section>
@@ -1137,7 +1314,7 @@ function RenderView({
   if (activeView === "D2") return <Heatmap snapshot={snapshot} />;
   if (activeView === "D3") return <CampaignLogsView snapshot={snapshot} />;
   if (activeView === "D1") return <ReactorRunTrigger send={send} />;
-  if (activeView === "A2") return <RoadmapBoard />;
+  if (activeView === "A2") return <RoadmapBoard snapshot={snapshot} />;
   if (activeView === "A3") return <CapabilityPlugins />;
   if (activeView === "A4") return <BrainConfig />;
   if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;

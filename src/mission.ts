@@ -40,6 +40,84 @@ export type ChartSeries = {
   color?: string;
 };
 
+export type WorkflowTaskState =
+  | "proposed"
+  | "classified"
+  | "awaiting_doc"
+  | "ready_for_plan"
+  | "planned"
+  | "ready_for_assignment"
+  | "assigned"
+  | "in_progress"
+  | "handoff_pending"
+  | "qa_review"
+  | "audit_review"
+  | "blocked"
+  | "done";
+
+export type WorkflowTaskType =
+  | "roadmap"
+  | "phase"
+  | "epic"
+  | "sprint"
+  | "task"
+  | "sub-task"
+  | "micro-task"
+  | "atomic-task";
+
+export type WorkflowTaskNode = {
+  id: string;
+  parentId?: string;
+  type: WorkflowTaskType;
+  title: string;
+  summary?: string;
+  state: WorkflowTaskState;
+  assigneeId?: string;
+  assigneeType?: "human" | "agent" | "team" | "service";
+  progress?: number;
+  tags?: string[];
+  artifactLinks?: string[];
+  reviewLinks?: string[];
+  verificationLinks?: string[];
+};
+
+export type WorkflowAssignment = {
+  taskId: string;
+  subjectId: string;
+  subjectType: "human" | "agent" | "team" | "service";
+  policyModel: "RBAC" | "ABAC";
+  assignedAt: string;
+  assignedBy?: string;
+};
+
+export type WorkflowHandoff = {
+  taskId: string;
+  fromId: string;
+  toId: string;
+  requiredArtifact?: string;
+  note?: string;
+  createdAt: string;
+  state: "pending" | "accepted" | "rejected" | "completed";
+};
+
+export type WorkflowVerification = {
+  taskId: string;
+  qaStatus?: "pending" | "passed" | "failed";
+  auditStatus?: "pending" | "passed" | "failed";
+  deploymentStatus?: "pending" | "passed" | "failed" | "n/a";
+  lastUpdatedAt?: string;
+};
+
+export type RoadmapSnapshot = {
+  sourcePath: string;
+  sourceType: "markdown" | "html" | "api" | "mcp" | "event";
+  updatedAt: string;
+  nodes: WorkflowTaskNode[];
+  assignments: WorkflowAssignment[];
+  handoffs: WorkflowHandoff[];
+  verifications: WorkflowVerification[];
+};
+
 export type MissionSnapshot = {
   connectionState: ConnectionState;
   updatedAt?: string;
@@ -62,6 +140,7 @@ export type MissionSnapshot = {
     coreTemp: number;
   };
   campaignLogs: string[];
+  roadmap?: RoadmapSnapshot;
 };
 
 export type MissionEvent =
@@ -71,7 +150,12 @@ export type MissionEvent =
   | { type: "chart.update"; chart: MissionSnapshot["chart"] }
   | { type: "agents.update"; agents: AgentRecord[] }
   | { type: "graph.update"; graph: MissionSnapshot["graph"] }
-  | { type: "heatmap.update"; heatmap: NonNullable<MissionSnapshot["heatmap"]> };
+  | { type: "heatmap.update"; heatmap: NonNullable<MissionSnapshot["heatmap"]> }
+  | { type: "roadmap.snapshot"; roadmap: RoadmapSnapshot }
+  | { type: "roadmap.node.update"; node: WorkflowTaskNode }
+  | { type: "roadmap.assignment"; assignment: WorkflowAssignment }
+  | { type: "roadmap.handoff"; handoff: WorkflowHandoff }
+  | { type: "roadmap.verification"; verification: WorkflowVerification };
 
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
@@ -177,8 +261,27 @@ function mergeSnapshot(current: MissionSnapshot, patch: Partial<MissionSnapshot>
     specs: patch.specs ?? current.specs,
     symbols: patch.symbols ?? current.symbols,
     campaignLogs: patch.campaignLogs ?? current.campaignLogs,
+    roadmap: patch.roadmap ?? current.roadmap,
     updatedAt: patch.updatedAt ?? new Date().toISOString(),
   };
+}
+
+function ensureRoadmapSnapshot(current?: RoadmapSnapshot): RoadmapSnapshot {
+  return current ?? {
+    sourcePath: "event://mission-gateway",
+    sourceType: "event",
+    updatedAt: new Date().toISOString(),
+    nodes: [],
+    assignments: [],
+    handoffs: [],
+    verifications: [],
+  };
+}
+
+function upsertByKey<T>(items: T[], next: T, matches: (item: T) => boolean) {
+  const index = items.findIndex(matches);
+  if (index === -1) return [...items, next];
+  return items.map((item, itemIndex) => itemIndex === index ? next : item);
 }
 
 export class MissionGateway {
@@ -226,6 +329,63 @@ export class MissionGateway {
     if (event.type === "agents.update") this.setSnapshot({ agents: event.agents });
     if (event.type === "graph.update") this.setSnapshot({ graph: event.graph });
     if (event.type === "heatmap.update") this.setSnapshot({ heatmap: event.heatmap });
+    if (event.type === "roadmap.snapshot") this.setSnapshot({ roadmap: event.roadmap });
+    if (event.type === "roadmap.node.update") {
+      const roadmap = ensureRoadmapSnapshot(this.snapshot.roadmap);
+      this.setSnapshot({
+        roadmap: {
+          ...roadmap,
+          updatedAt: new Date().toISOString(),
+          nodes: upsertByKey(roadmap.nodes, event.node, (node) => node.id === event.node.id),
+        },
+      });
+    }
+    if (event.type === "roadmap.assignment") {
+      const roadmap = ensureRoadmapSnapshot(this.snapshot.roadmap);
+      this.setSnapshot({
+        roadmap: {
+          ...roadmap,
+          updatedAt: new Date().toISOString(),
+          assignments: upsertByKey(
+            roadmap.assignments,
+            event.assignment,
+            (assignment) => assignment.taskId === event.assignment.taskId,
+          ),
+        },
+      });
+    }
+    if (event.type === "roadmap.handoff") {
+      const roadmap = ensureRoadmapSnapshot(this.snapshot.roadmap);
+      this.setSnapshot({
+        roadmap: {
+          ...roadmap,
+          updatedAt: new Date().toISOString(),
+          handoffs: upsertByKey(
+            roadmap.handoffs,
+            event.handoff,
+            (handoff) => (
+              handoff.taskId === event.handoff.taskId
+              && handoff.fromId === event.handoff.fromId
+              && handoff.toId === event.handoff.toId
+            ),
+          ),
+        },
+      });
+    }
+    if (event.type === "roadmap.verification") {
+      const roadmap = ensureRoadmapSnapshot(this.snapshot.roadmap);
+      this.setSnapshot({
+        roadmap: {
+          ...roadmap,
+          updatedAt: new Date().toISOString(),
+          verifications: upsertByKey(
+            roadmap.verifications,
+            event.verification,
+            (verification) => verification.taskId === event.verification.taskId,
+          ),
+        },
+      });
+    }
   }
 
   async send(command: MissionCommand) {
