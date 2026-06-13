@@ -53,4 +53,4 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 |---|---|---|---|---|
 | TASK-001-runtime-core | passed | passed | n/a | 2026-06-13T10:00:00Z |
 | TASK-002-mcp-bind | pending | pending | n/a | 2026-06-13T10:05:00Z |
-| TASK-003-gateway-bootstrap | pending | pending | n/a | 2026-06-13T10:10:00Z |
+| TASK-003-gateway-bootstrap | passed | passed | n/a | 2026-06-13T20:55:53+07:00 |
