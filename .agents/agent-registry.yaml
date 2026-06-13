@@ -91,7 +91,7 @@ modes:
 
 agents:
   theseus:
-    label: THESEUS
+    label: THESEUS (เทซีอุซ)
     role: doc_writer
     contract: .agents/doc_writer/AGENT.md
     execution_policy:
@@ -114,7 +114,7 @@ agents:
       - docs/architecture/
 
   lyra:
-    label: LYRA
+    label: LYRA (ไลรา)
     role: pm
     contract: .agents/pm/AGENT.md
     execution_policy:
@@ -137,7 +137,7 @@ agents:
       - docs/features/
 
   ather:
-    label: ATHER
+    label: ATHER (เอเธอร์)
     role: auditor
     contract: .agents/auditor/AGENT.md
     execution_policy:
@@ -160,7 +160,7 @@ agents:
       - comp/
 
   janus:
-    label: JANUS
+    label: JANUS (เจนัส)
     role: devops
     contract: .agents/devops/AGENT.md
     execution_policy:
@@ -181,7 +181,7 @@ agents:
       - workflows/
 
   rkoi:
-    label: RKOI
+    label: RKOI (อาโคย)
     role: tech_lead
     contract: .agents/tech_lead/AGENT.md
     execution_policy:
