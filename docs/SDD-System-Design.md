@@ -3,9 +3,10 @@
 **Status:** `APPROVED` (via ADR-001)
 **Author:** Rwang (Senior Dev)
 **Date:** 2026-06-06
+**Runtime:** GoVibe-native (IPC-based)
 
 ## 1. System Overview
-The GoVibe platform is built as a highly modular **Monorepo** to support multiple distribution channels (Desktop, Mobile, Web) while sharing the same "brain" (Core Logic) and "jewelry" (UI Components).
+The GoVibe platform is built as a highly modular **Monorepo** to support multiple distribution channels (Desktop, Mobile, Web) while sharing the same "brain" (Core Logic) and "jewelry" (UI Components). The platform has shifted to a GoVibe-native IPC-based runtime backed by GenesisBlockDB, replacing earlier Obsidian-based prototyping.
 
 The C4 architecture view for this system is maintained in `docs/architecture/C4-GoVibe-Platform.md`.
 
@@ -15,6 +16,8 @@ The C4 architecture view for this system is maintained in `docs/architecture/C4-
 - **Frontend Framework**: Vite + React 19 (TypeScript).
 - **Styling**: Tailwind CSS v4 + Glassmorphism CSS.
 - **State Management**: Zustand v5 + Persistence Middleware.
+- **Runtime Backend**: GoVibe-native IPC (Rust-managed)
+- **Knowledge Backend**: GenesisBlockDB (Atomic/Vector)
 - **Icons**: Lucide React + FontAwesome 6 (CDN).
 
 ## 3. Architecture Layers
@@ -22,23 +25,25 @@ The C4 architecture view for this system is maintained in `docs/architecture/C4-
 - **Store**: Zustand-based global state.
 - **SSOT**: Centralized types, constants, and data models.
 - **Utilities**: Shared logic (Data fetching, Terminal simulation).
+- **Runtime IPC Client**: Connector for native runtime services.
 
 ### 3.2 `@govibe/ui` (The Jewelry)
 - **Components**: Shared Glassmorphism UI elements (Buttons, Cards, Modals).
 - **Design System**: Atomic components following the visual vibe.
 
 ### 3.3 `@govibe/desktop` (The Body)
-- **Tauri**: Rust backend for local system access.
+- **Tauri**: Rust backend for local system access, IPC bridge.
 - **React**: Main application shell and domain views.
 
 ## 4. Data Flow
 1. **User Action**: Triggered in `@govibe/desktop`.
-2. **State Change**: Action dispatched to `@govibe/core` store.
-3. **UI Sync**: Store notifies all subscribing components across the app.
-4. **Persistence**: Store automatically saves state to `localStorage`.
+2. **IPC Dispatch**: Action sent via IPC to native runtime.
+3. **State Change**: Action dispatched to `@govibe/core` store after runtime confirmation.
+4. **UI Sync**: Store notifies all subscribing components across the app.
+5. **Persistence**: Store updates GenesisBlockDB.
 
 ## 5. Documentation Pipeline Architecture
-GoVibe uses human-first SWE documents as the canonical authoring format. Genesis atoms are derived knowledge artifacts for agent retrieval, graph linking, compaction, and Mission Control visualization.
+GoVibe uses human-first SWE documents as the canonical authoring format. Genesis atoms are derived knowledge artifacts for agent retrieval, graph linking, compaction, and Mission Control visualization, now managed directly in GenesisBlockDB.
 
 ### 5.1 Canonical Document Types
 - **PRD**: Product intent, target users, goals, non-goals, success metrics.
@@ -53,7 +58,7 @@ GoVibe uses human-first SWE documents as the canonical authoring format. Genesis
 1. A human or agent writes a normal SWE document.
 2. The document is reviewed and approved as the source of truth.
 3. GoVibe extracts structured requirements, tasks, acceptance criteria, policy hints, and artifact links.
-4. Mission Control renders roadmap, assignment, progress, and review state from the document-derived model.
+4. Mission Control renders roadmap, assignment, progress, and review state from the document-derived model in GenesisBlockDB.
 5. Agents implement against the approved document context.
 6. Verification evidence links back to document sections and task records.
 
@@ -64,7 +69,7 @@ GoVibe uses human-first SWE documents as the canonical authoring format. Genesis
 4. Once approved, the document can enter the Docs to Code flow.
 
 ### 5.4 Atom Extraction Boundary
-Atoms are internal derived artifacts, not the required writing format for developers.
+Atoms are internal derived artifacts managed by the IPC runtime, not the required writing format for developers.
 
 | SWE Source | Derived Atom Examples |
 |---|---|
@@ -79,7 +84,7 @@ Atoms are internal derived artifacts, not the required writing format for develo
 If a human-readable SWE document conflicts with a derived atom, the SWE document remains canonical until the owner approves a document update.
 
 ## 6. Security & Safety
-- **Tauri Isolation**: Only exposed Rust commands can be called by the frontend.
+- **Tauri Isolation**: Only exposed Rust commands can be called by the frontend via IPC.
 - **Strict Typing**: TypeScript enforced across all packages.
 - **Human Review Gate**: Diagram-derived and atom-derived content must be approved before it becomes canonical.
-- **Access Control Split**: RBAC applies to human users; ABAC applies to agents, subagents, MCP clients, services, and scheduled jobs.
+- **Access Control Split**: RBAC applies to human users; ABAC applies to agents, subagents, MCP clients, services, and scheduled jobs within the GenesisBlockDB governance model.

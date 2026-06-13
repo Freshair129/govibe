@@ -40,9 +40,11 @@ Use this runbook when work includes one or more of the following:
 ## 3. Preconditions
 
 - Product and system intent already exists in approved human-readable SWE docs.
+- MemoryOS V3 state management active.
 - Work has a declared complexity level `C-0` to `C-3`.
 - Work has a declared context tier `H0` to `H6`.
 - Work declares `W-Scale` when breadth, branching, or decomposition fan-out matters.
+- Agent-ID governance enforced (ADR-006/007/008).
 - Human access is governed by RBAC.
 - Agent, subagent, MCP, and service access is governed by ABAC.
 - Roadmap state comes from approved `.md` or `.html` documents, parsed payloads, or explicit mission events, not from hardcoded UI arrays.

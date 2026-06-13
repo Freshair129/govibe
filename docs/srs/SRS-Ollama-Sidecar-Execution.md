@@ -19,7 +19,7 @@ related_docs:
 
 This document defines the software requirements for the Ollama sidecar execution path inside GoVibe.
 
-The goal is to let GoVibe route bounded local subagent work through Ollama for atomic-task execution while preserving the existing registry-driven prompt-building workflow and keeping Codex as the lead orchestrator.
+The goal is to let GoVibe route bounded local subagent work through Ollama for atomic-task execution via the IPC-based runtime while preserving the existing registry-driven prompt-building workflow and keeping Codex as the lead orchestrator.
 
 Key terms:
 

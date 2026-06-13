@@ -21,7 +21,7 @@ related_docs:
 
 This document defines the software requirements for the GoVibe MCP Server.
 
-The MCP Server is the primary orchestration interface for GoVibe. It exposes governed tools and resources for Mission Control, CLI, lead agents, sidecar executors, and external automation surfaces.
+The MCP Server is the primary orchestration interface for GoVibe. It exposes governed tools and resources for Mission Control, CLI, lead agents, sidecar executors, and external automation surfaces through the GoVibe-native IPC-based runtime.
 
 ## 2. System Context
 

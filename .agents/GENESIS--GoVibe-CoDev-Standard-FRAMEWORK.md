@@ -6,23 +6,17 @@ block_id: GB-3A-G001
 status: deprecated
 vault_id: default
 source_type: axiomatic
-summary: Legacy framework vision reference for earlier GoVibe platform direction. Not the current execution contract.
+summary: Legacy framework vision reference. Superseded by STD-Execution-Governance (MemoryOS V3). Not the current execution contract.
 created_at: "2026-06-02T19:40:00+07:00"
-updated_at: "2026-06-12T21:10:00+07:00"
-manifest_version: "2.0"
+updated_at: "2026-06-13T10:00:00+07:00"
+manifest_version: "3.0"
 ---
 
 # GENESIS - Legacy Framework Reference
 
-This document is retained as a legacy/reference framework artifact.
+This document is retained as a legacy/reference framework artifact. 
 
-It may describe earlier platform vision such as:
-- Tauri-first runtime
-- monorepo packaging
-- Capacitor/mobile rollout
-- GenesisBlockDB implementation ambitions
-
-Those items are **not** the default current execution truth for this workspace.
+It describes deprecated vision, now superseded by the MemoryOS V3 architecture and STD-Execution-Governance standards.
 
 ## Current Execution Contract
 For active work in `G:\govibe`, follow these documents first:

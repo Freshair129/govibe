@@ -15,7 +15,7 @@ related_docs:
 # SRS: Genesis Block Cognitive Engine
 
 ## 1. Introduction
-เอกสารฉบับนี้ระบุข้อกำหนดฟังก์ชันการทำงานของ Genesis Block ในฐานะระบบจัดการบริบท (Context Management) สำหรับ AI Agents โดยอ้างอิงมาตรฐานการบีบอัดและ Scaling ตาม `FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS`
+เอกสารฉบับนี้ระบุข้อกำหนดฟังก์ชันการทำงานของ Genesis Block ในฐานะระบบจัดการบริบท (Context Management) สำหรับ AI Agents โดยอ้างอิงมาตรฐานการบีบอัดและ Scaling ตาม `FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS` ทำงานภายใน GoVibe-native runtime ผ่าน IPC interface และจัดการข้อมูลผ่าน **GenesisBlockDB**
 
 ## 2. Functional Requirements
 

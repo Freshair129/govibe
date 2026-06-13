@@ -1,15 +1,23 @@
+---
+block_manifest:
+  core:
+    id: "[[AGENT::GEMINI_CLI_CONTEXT]]"
+    block_id: "[[GKS::GENESIS_BLOCK_V3]]"
+    context_scaling_tier: "H4"
+---
+
 # GoVibe - GEMINI.md
 
 This file gives Gemini and other AI coding agents the current operating context for the GoVibe workspace.
 
 For the canonical root agent contract, also read:
 
-- `agent.md`
+- `AGENT.md`
 - `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 
 ## Project Overview
 
-GoVibe is an AI-native visual CoDev and project management platform. It coordinates human developers, their agent teams, project documents, roadmap progress, artifacts, access policy, and third-party AI coding tools through API and MCP integrations.
+GoVibe is an AI-native visual CoDev and project management platform. It coordinates human developers, their agent teams, project documents, roadmap progress, artifacts, access policy, and third-party AI coding tools through API and MCP integrations, leveraging MemoryOS V3 (Native Runtime / GenesisBlockDB).
 
 GoVibe is not a billing or quota manager for Claude Code, Gemini CLI, OpenClaw, Hermes, or other third-party coding tools. GoVibe is the project management, progress tracking, agent management, traceability, and visual coordination layer.
 
@@ -58,14 +66,14 @@ Read these documents before changing architecture, product behavior, UI contract
 14. `docs/design/TEMPLATE_REFERENCE.md`
 15. `docs/design/TEMPLATE_MODULARIZATION.md`
 
-Human SWE docs are canonical. Atoms and generated views are derived.
+Human SWE docs are canonical. Atoms and generated views are derived via MemoryOS V3.
 
-## Agent Operating Contracts
+## Agent Operating Contracts (ID-based)
 
-- PM and roadmap planning: `.agents/pm/LYRA.md`
-- Documentation writer and templates: `.agents/doc_writer/THESEUS.md`, `.agents/doc_writer/template/`
-- Auditor and compliance gates: `.agents/auditor/ATHER.md`, `.agents/auditor/asset/`
-- QA and release verification: `.agents/qa/ghost.md`, `.agents/qa/asset/`
+- PM and roadmap planning: `[[AGENT::LYRA]]`
+- Documentation writer and templates: `[[AGENT::THESEUS]]`
+- Auditor and compliance gates: `[[AGENT::ATHER]]`
+- QA and release verification: `[[AGENT::GHOST]]`
 
 Atomic-task sidecar execution may be routed through Ollama by the scripts in `scripts/agents/`, but Codex remains the lead orchestrator.
 
@@ -81,7 +89,7 @@ Atomic-task sidecar execution may be routed through Ollama by the scripts in `sc
 
 ## Document-Driven Roadmap
 
-PM/LYRA may create roadmap, backlog, sprint, task, micro-task, and atomic-task source files under:
+`[[AGENT::LYRA]]` may create roadmap, backlog, sprint, task, micro-task, and atomic-task source files under:
 
 ```text
 docs/roadmap/ROADMAP-<slug>.md
@@ -120,10 +128,11 @@ npm run lint
 npm run build
 ```
 
-For UI changes, also perform browser verification and console-error checks. Use `.agents/qa/asset/` for detailed QA checklists.
+For UI changes, also perform browser verification and console-error checks. Use `[[AGENT::GHOST]]`'s assets for detailed QA checklists.
 
 ## Changelog
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.3.0 | 2026-06-13 | ID-based agent references, MemoryOS V3 integration, traceability headers. |
 | 0.2.0 | 2026-06-12 | Updated to current Vite React app, GoVibe docs SSOT, PM/QA/auditor contracts, document-driven roadmap, design/template parity, and Vercel deployment guidance. |
