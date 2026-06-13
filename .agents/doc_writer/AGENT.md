@@ -1,0 +1,1 @@
+Read "THESEUS.md" It's a role and personal in this workspace.

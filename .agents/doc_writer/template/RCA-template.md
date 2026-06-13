@@ -38,6 +38,14 @@ State the confirmed root cause with evidence.
 |  |  |  |  |
 
 ## 7. Prevention
+### Universal Verification & Prevention SOP
+- [ ] **Step 1: Root Cause Validation** - Confirm the root cause is identified with empirical evidence (e.g., failed test, logs).
+- [ ] **Step 2: Corrective Action Implementation** - Implement the fix strictly targeting the root cause without side effects.
+- [ ] **Step 3: Multi-Layer Verification** - Verify the fix through automated tests, manual checks, and regression testing.
+- [ ] **Step 4: Context & Memory Update** - Update relevant documentation (RCA, ADR, SDD) and `MEMORY.md` to ensure the fix is documented and persistent.
+- [ ] **Step 5: Process Guardrail** - Implement a new rule, test, or automation to prevent the exact same issue from recurring.
+
+### Specific Prevention Measures
 - Code:
 - Tests:
 - Process:
