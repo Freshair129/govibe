@@ -28,17 +28,17 @@ local_sidecar:
     - atomic
     - audit
   model_tiers:
-    tiny: llama3.2:1b    # 1b: stable up to 32k chars
-    default: qwen3.5:4b  # 4b: stable up to 24k chars
-    pro: gemma4:9b       # 9b: limit at 16,000 chars
-    retry: gemma4:e2b    # 12b: limit at 12,000 chars
+    tiny: llama3.2:1b
+    default: qwen3.5:4b
+    pro: gemma4:9b
+    retry: gemma4:e2b
   tier_constraints:
     tiny: 32000
     default: 24000
     pro: 16000
     retry: 12000
   max_files: 8
-  max_chars_per_file: 8000 # Global default safety fallback
+  max_chars_per_file: 8000
   output_contract:
     sections:
       - Task Summary
@@ -66,14 +66,12 @@ modes:
       - agent_contract
       - agent_default_context
       - scope_context
-
   plan:
     include:
       - global_context
       - agent_contract
       - agent_default_context
       - scope_context
-
   audit:
     include:
       - global_context
@@ -81,7 +79,6 @@ modes:
       - agent_default_context
       - scope_context
       - scope_verification_context
-
   atomic:
     include:
       - global_context
@@ -197,7 +194,7 @@ agents:
       - src/
       - docs/
 
-  theseus:
+scopes:
   docs/features/agent-team:
     preferred_agent: theseus
     execution_policy:
@@ -218,8 +215,8 @@ agents:
       - docs/features/agent-team/
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
-      - .agents/qa/ghost.md
+      - .agents/auditor/AGENT.md
+      - .agents/qa/AGENT.md
 
   docs/features/project-roadmap:
     preferred_agent: lyra
@@ -240,8 +237,8 @@ agents:
       - docs/features/project-roadmap/
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
-      - .agents/qa/ghost.md
+      - .agents/auditor/AGENT.md
+      - .agents/qa/AGENT.md
 
   docs/features/genesis-knowledge-system:
     preferred_agent: theseus
@@ -263,7 +260,7 @@ agents:
       - docs/features/genesis-knowledge-system/
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
+      - .agents/auditor/AGENT.md
 
   docs/design:
     preferred_agent: theseus
@@ -282,7 +279,7 @@ agents:
     atomic_context:
       - docs/design/
     verification_context:
-      - .agents/qa/ghost.md
+      - .agents/qa/AGENT.md
 
   docs:
     preferred_agent: ather
@@ -299,7 +296,7 @@ agents:
       - docs/architecture/C4-GoVibe-Platform.md
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
+      - .agents/auditor/AGENT.md
 
   docs/features/mission-control:
     preferred_agent: theseus
@@ -325,8 +322,8 @@ agents:
       - docs/design/TEMPLATE_REFERENCE.md
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
-      - .agents/qa/ghost.md
+      - .agents/auditor/AGENT.md
+      - .agents/qa/AGENT.md
 
   docs/features/docs-to-code:
     preferred_agent: theseus
@@ -348,7 +345,7 @@ agents:
       - docs/features/docs-to-code/
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
+      - .agents/auditor/AGENT.md
 
   docs/features/diagram-to-doc:
     preferred_agent: theseus
@@ -370,7 +367,7 @@ agents:
       - docs/features/diagram-to-doc/
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
+      - .agents/auditor/AGENT.md
 
   docs/features/governance-access:
     preferred_agent: theseus
@@ -392,7 +389,7 @@ agents:
       - docs/features/governance-access/
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
+      - .agents/auditor/AGENT.md
 
   docs/features/integration-bridge:
     preferred_agent: theseus
@@ -414,7 +411,7 @@ agents:
       - docs/features/integration-bridge/
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
+      - .agents/auditor/AGENT.md
 
   docs/features/traceability-audit:
     preferred_agent: ather
@@ -436,8 +433,8 @@ agents:
       - docs/features/traceability-audit/
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
-      - .agents/qa/ghost.md
+      - .agents/auditor/AGENT.md
+      - .agents/qa/AGENT.md
 
   docs/features/execution-governance:
     preferred_agent: ather
@@ -459,4 +456,4 @@ agents:
       - docs/features/execution-governance/
       - docs/STD-Execution-Governance.md
     verification_context:
-      - .agents/auditor/ATHER.md
+      - .agents/auditor/AGENT.md
