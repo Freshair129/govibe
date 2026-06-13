@@ -77,7 +77,7 @@ flowchart TB
     JIT["Hybrid JIT Context System"]
     Atom["Atom Extraction System"]
     Graph["Knowledge Graph"]
-    BlockDB["Block DB / Retrieval Index"]
+    BlockDB["GenesisBlock DB / Retrieval Index"]
   end
 
   subgraph Security["Governance Runtime"]
@@ -150,7 +150,7 @@ flowchart TB
 | Agent Team Management | Agent Team Core, GoVibe MCP Server, Integration Runtime |
 | Integration Bridge | GoVibe MCP Server, Agent Adapters, Webhooks, GitHub Bridge, Deployment Adapter |
 | Governance Access Control | RBAC, ABAC, Policy Enforcement |
-| Genesis Knowledge HCS | HCS, JIT, Atom Extraction, Knowledge Graph, Block DB |
+| Genesis Knowledge System | HCS, JIT, Atom Extraction, Knowledge Graph, GenesisBlock DB |
 | Traceability Audit Verification | Audit Store, Trace Store, Verification Matrix components |
 | Execution Governance | Execution Governance Standard, Doc-First Gate, Multi-Agent Operating Runbook |
 
