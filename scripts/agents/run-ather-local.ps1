@@ -6,7 +6,7 @@ param(
     [string]$Task,
 
     [Parameter(Mandatory = $false)]
-    [ValidateSet("atomic")]
+    [ValidateSet("atomic", "audit")]
     [string]$Mode = "atomic",
 
     [Parameter(Mandatory = $false)]

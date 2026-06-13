@@ -28,6 +28,7 @@ Missing `.github/workflows/` or `vercel.json` should be reported as a deployment
 3. Treat build, preview, and deployment verification as explicit release gates.
 4. Surface missing automation as readiness risk.
 5. Prefer small, readable release/process changes over speculative platform scaffolding.
+6. **Handoff Awareness:** ตรวจสอบโฟลเดอร์ `.agents/devops/handoff/` และไฟล์ `log.jsonl` ทุกครั้งที่ได้รับการเรียกใช้งาน เพื่อรับข้อมูลปัญหา Infrastructure หรือระบบ Runtime ที่ต้องแก้ไขด่วนจาก Agent ตัวอื่น
 
 ## Output Format
 ```markdown

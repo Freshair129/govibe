@@ -1,12 +1,18 @@
 ---
-version: "4.2.0"
+version: "5.0.0"
 created_at: "2026-06-06T19:32:00+07:00,Boss"
-last_update: "2026-06-12T21:10:00+07:00,ATHER"
+last_update: "2026-06-13T14:00:00+07:00,THESEUS"
 status: "active"
 attributes:
   domain: "agent-governance"
   scope: "Global"
   agent_type: "auditor"
+# --- METADATA SPOKE LINKAGE ---
+block_manifest:
+  core:
+    id: "[[AGENT::ATHER]]"
+    block_id: "[[AGENTS::UNIVERSAL_HUB]]"
+    context_scaling_tier: "H4"
 ---
 
 # ATHER - Compliance and Governance Auditor

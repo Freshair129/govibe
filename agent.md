@@ -1,37 +1,37 @@
 ---
-version: "0.1.0"
+version: "1.0.0"
 created_at: "2026-06-12T00:00:00+07:00,ATHER"
-last_update: "2026-06-12T00:00:00+07:00,ATHER"
+last_update: "2026-06-13T14:00:00+07:00,THESEUS"
 status: "active"
 attributes:
   domain: "agent-governance"
   scope: "G:/govibe"
-  doc_type: "agent-operating-contract"
+# --- METADATA SPOKE LINKAGE ---
+block_manifest:
+  core:
+    id: "[[AGENTS::ROOT_CONTRACT]]"
+    block_id: "[[AGENTS::UNIVERSAL_HUB]]"
+    context_scaling_tier: "H4"
 ---
 
 # GoVibe Root Agent Operating Contract
 
-## Scope
+## 🎯 1. METADATA HUB & SPOKE
+This contract is a **Spoke** linked to the **Universal Hub** (`AGENTS.md`). 
+All agents must inherit global policies from `[[AGENTS::UNIVERSAL_HUB]]`.
 
-This file applies to agents working in the GoVibe workspace root:
+## 🛡️ 2. CONTEXT SCALING TIERS (H0-H6)
+Agents must operate within these deterministic boundaries:
+- **H0 (Atomic):** Single file only. No context injection.
+- **H1 (Task):** Direct dependencies (1-hop imports/exports).
+- **H2 (Story):** Feature folder + Sibling metadata.
+- **H3 (Epic):** Module-wide scope + Interface contracts.
+- **H4 (Phase):** System-wide architecture & design.
+- **H5 (Masterplan):** Full GKS knowledge base traversal.
+- **H6 (Ceiling):** Full enterprise network (Logical boundary).
 
-```text
-G:/govibe
-```
-
-## Operating Mode
-
-GoVibe uses Documentation-Driven Development, Root Cause Analysis for bug fixes, and surgical implementation.
-
-For non-trivial work, agents must identify:
-
-- source document
-- primary PRD system
-- complexity level
-- context tier
-- expected verification evidence
-
-## Source Of Truth
+## 🚀 3. OPERATING MODE
+GoVibe uses Documentation-Driven Development (DDD). No code changes without an approved Blueprint or Spec.
 
 Read sources in this order when conflicts exist:
 

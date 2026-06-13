@@ -3,6 +3,7 @@ root_contract:
   global_context:
     - agent.md
     - GEMINI.md
+    - AGENTS.md
 
 executor_defaults:
   default: codex
@@ -19,11 +20,13 @@ executors:
     transport: ollama_cli
     allowed_modes:
       - atomic
+      - audit
 
 local_sidecar:
   enabled: true
   allowed_modes:
     - atomic
+    - audit
   model_tiers:
     tiny: llama3.2:1b
     default: qwen3.5:4b
@@ -147,6 +150,27 @@ agents:
       - public/
       - comp/
 
+  janus:
+    label: JANUS
+    role: devops
+    contract: .agents/devops/JANUS.md
+    execution_policy:
+      default_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      default_mode: atomic
+      local_model_tier: retry # Use Gemma4 12b for complex infra tasks
+    default_context:
+      - docs/rca/
+      - scripts/
+      - package.json
+    allowed_scopes:
+      - scripts/
+      - .agents/devops/
+      - .vercel/
+      - workflows/
+
 scopes:
   docs/features/agent-team:
     preferred_agent: theseus
@@ -241,7 +265,7 @@ scopes:
       allowed_executors:
         - codex
         - ollama
-      local_mode_policy: atomic_only
+      local_mode_policy: any
       local_model_tier: tiny
     context:
       - docs/
