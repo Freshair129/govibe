@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { discoverRoadmapSources, parseRoadmapSource } from "./roadmap-parser.mjs";
+import { writeRoadmapMarkdownExport } from "./roadmap-exporter.mjs";
 import { SessionTracker } from "../../packages/govibe-core/bin/session-tracker.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -307,6 +308,37 @@ export class GovibeRuntime {
       auditRef: buildAuditRef("govibe.roadmap.update"),
       mutationType,
       roadmap: this.snapshot.roadmap,
+    };
+  }
+
+  async exportRoadmapMarkdown(args = {}) {
+    const roadmap = args.source
+      ? await this.reloadRoadmap(args.source)
+      : this.snapshot.roadmap ?? await this.reloadRoadmap();
+
+    if (!roadmap) {
+      throw new Error("No roadmap snapshot is available to export.");
+    }
+
+    const outputPath = args.outputPath
+      ? path.resolve(workspaceRoot, args.outputPath)
+      : undefined;
+    const result = await writeRoadmapMarkdownExport(roadmap, {
+      workspaceRoot,
+      roadmapDir,
+      outputPath,
+      overwrite: args.overwrite === true,
+      generatedAt: args.generatedAt,
+    });
+
+    this.appendTerminal("sys", `Roadmap exported: ${result.relativeOutputPath}`);
+    return {
+      capability: "govibe.roadmap.export",
+      auditRef: buildAuditRef("govibe.roadmap.export"),
+      source: roadmap.sourcePath,
+      outputPath: result.relativeOutputPath,
+      nodeCount: result.nodeCount,
+      taskCount: result.taskCount,
     };
   }
 

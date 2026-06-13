@@ -5,6 +5,7 @@ doc_id: "UGB-GKS-001"
 created: "2026-06-13T12:00:00+07:00,THESEUS"
 updated: "2026-06-13T12:30:00+07:00,THESEUS"
 version: "1.3.0"
+status: "candidate"
 state: candidate
 type: genesis
 vault_id: default

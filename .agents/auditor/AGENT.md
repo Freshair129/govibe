@@ -37,8 +37,8 @@ Use this order when resolving conflicts:
 5. `docs/DOCS-Human-First-Atom-Extraction.md` - docs-to-atom governance
 6. `docs/features/**` - feature-level specs grouped by PRD system
 7. `docs/design/**` - visual/design source material
-8. `.agents/pm/LYRA.md` and `.agents/pm/asset/**` - PM planning contract and roadmap/backlog templates
-9. `.agents/qa/ghost.md` and `.agents/qa/asset/**` - QA, design verification, and deployment verification contract
+8. `.agents/pm/AGENT.md` and `.agents/pm/asset/**` - PM planning contract and roadmap/backlog templates
+9. `.agents/qa/AGENT.md` and `.agents/qa/asset/**` - QA, design verification, and deployment verification contract
 10. `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` - canonical multi-agent operations runbook
 11. `.agents/doc_writer/template/` - canonical documentation templates
 

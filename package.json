@@ -15,6 +15,7 @@
     "baseline:check": "npm run docs:validate && npm run lint && npm run build",
     "preview": "vite preview",
     "mcp:smoke": "node scripts/mcp/smoke-test.mjs",
+    "roadmap:export": "node scripts/mcp/export-roadmap.mjs",
     "mcp:dev": "node scripts/mcp/govibe-mcp-server.mjs",
     "mission:dev": "node scripts/mcp/govibe-mcp-server.mjs"
   },

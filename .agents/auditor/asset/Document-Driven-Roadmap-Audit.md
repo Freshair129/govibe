@@ -8,7 +8,7 @@ Use this checklist for Project Roadmap Management, A2 Roadmap Board, Docs to Cod
 - `docs/SDD-System-Design.md`
 - `docs/DOCS-Human-First-Atom-Extraction.md`
 - `docs/features/project-roadmap/`
-- `.agents/pm/LYRA.md`
+- `.agents/pm/AGENT.md`
 - `.agents/pm/asset/Roadmap-Template.md`
 - `.agents/pm/asset/Backlog-Template.md`
 

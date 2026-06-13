@@ -65,6 +65,21 @@ export const toolCatalog = [
     },
   },
   {
+    name: "govibe.roadmap.export",
+    description: "Export the live roadmap snapshot to a task-level Markdown artifact under docs/roadmap.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+        project: { type: "string" },
+        source: { type: "string" },
+        outputPath: { type: "string" },
+        overwrite: { type: "boolean" },
+      },
+      required: ["actor"],
+    },
+  },
+  {
     name: "govibe.deploy.vercel",
     description: "Trigger or inspect a Vercel-oriented deployment operation.",
     inputSchema: {

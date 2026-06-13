@@ -109,6 +109,23 @@ export async function handleToolCall(name, args = {}) {
         },
       };
     }
+    case "govibe.roadmap.export": {
+      const result = await govibeRuntime.exportRoadmapMarkdown(args);
+      return {
+        content: asTextContent(
+          [
+            "GoVibe roadmap snapshot exported to a Markdown artifact.",
+            "",
+            `source: ${result.source ?? "n/a"}`,
+            `outputPath: ${result.outputPath}`,
+            `tasks: ${result.taskCount}`,
+          ].join("\n"),
+        ),
+        structuredContent: {
+          ...result,
+        },
+      };
+    }
     case "govibe.deploy.vercel":
       return {
         content: asTextContent(

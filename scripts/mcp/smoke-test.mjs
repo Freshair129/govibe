@@ -1,12 +1,16 @@
 import { spawn } from "node:child_process";
+import { unlink } from "node:fs/promises";
 
 const requiredTools = [
   "govibe.agent.run",
   "govibe.docs.resolve",
   "govibe.roadmap.load",
   "govibe.roadmap.update",
+  "govibe.roadmap.export",
   "govibe.deploy.vercel",
 ];
+
+const smokeExportPath = "docs/roadmap/ROADMAP-smoke-export.md";
 
 function encodeMessage(payload) {
   const body = Buffer.from(JSON.stringify(payload), "utf8");
@@ -169,6 +173,34 @@ async function main() {
     const updatedNode = roadmapUpdate.structuredContent?.roadmap?.nodes?.find((node) => node.id === "TASK-002-mcp-bind");
     assert(updatedNode?.progress === 88, "roadmap.update did not apply overlay progress.");
 
+    const roadmapExport = await client.request("tools/call", {
+      name: "govibe.roadmap.export",
+      arguments: {
+        actor: "smoke-test",
+        project: "govibe",
+        outputPath: smokeExportPath,
+        overwrite: true,
+      },
+    });
+    assert(roadmapExport.structuredContent?.outputPath === smokeExportPath, "roadmap.export did not write the expected output path.");
+    assert(roadmapExport.structuredContent?.taskCount >= 3, "roadmap.export did not include task-level rows.");
+
+    const exportedLoad = await client.request("tools/call", {
+      name: "govibe.roadmap.load",
+      arguments: {
+        actor: "smoke-test",
+        project: "govibe",
+        source: smokeExportPath,
+        outputShape: "snapshot",
+      },
+    });
+    const exportedRoadmap = exportedLoad.structuredContent?.roadmap;
+    assert(exportedRoadmap?.sourcePath === smokeExportPath, "exported roadmap did not load back from the export path.");
+    assert(
+      exportedRoadmap?.nodes?.some((node) => node.id === "TASK-002-mcp-bind" && node.progress === 88),
+      "exported roadmap did not preserve the updated task row.",
+    );
+
     const agentRun = await client.request("tools/call", {
       name: "govibe.agent.run",
       arguments: {
@@ -194,6 +226,9 @@ async function main() {
     console.log(`agent launcher exit: ${agentRun.structuredContent.result.exitCode}`);
   } finally {
     client.close();
+    await unlink(smokeExportPath).catch((error) => {
+      if (error?.code !== "ENOENT") throw error;
+    });
   }
 }
 
