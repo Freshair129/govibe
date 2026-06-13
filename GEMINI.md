@@ -47,12 +47,16 @@ Read these documents before changing architecture, product behavior, UI contract
 3. `docs/SDD-System-Design.md`
 4. `docs/STD-Execution-Governance.md`
 5. `docs/DOCS-Human-First-Atom-Extraction.md`
-6. `docs/features/README.md`
-7. `docs/design/DESIGN_SYSTEM.md`
-8. `docs/design/SITE_MAP.md`
-9. `docs/design/DOMAIN_DETAILS.md`
-10. `docs/design/TEMPLATE_REFERENCE.md`
-11. `docs/design/TEMPLATE_MODULARIZATION.md`
+6. `docs/srs/SRD-Genesis-Block.md` (Genesis Block Requirements Definition)
+7. `docs/srs/SRS-Genesis-Block.md` (Genesis Block Core SRS)
+8. `docs/architecture/SDD-Genesis-Block.md` (Genesis Block Core SDD)
+9. `docs/specs/SPEC-Genesis-Block.md` (Genesis Block Technical Spec)
+10. `docs/features/README.md`
+11. `docs/design/DESIGN_SYSTEM.md`
+12. `docs/design/SITE_MAP.md`
+13. `docs/design/DOMAIN_DETAILS.md`
+14. `docs/design/TEMPLATE_REFERENCE.md`
+15. `docs/design/TEMPLATE_MODULARIZATION.md`
 
 Human SWE docs are canonical. Atoms and generated views are derived.
 
