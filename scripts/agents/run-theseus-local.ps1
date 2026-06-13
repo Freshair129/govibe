@@ -36,7 +36,7 @@ param(
 $invokeScript = Join-Path $PSScriptRoot "invoke-agent.ps1"
 
 & $invokeScript `
-    -Agent "theseus" `
+    -AgentId "theseus" `
     -Scope $Scope `
     -Task $Task `
     -Mode $Mode `
