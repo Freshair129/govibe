@@ -194,6 +194,25 @@ agents:
       - src/
       - docs/
 
+  archon:
+    label: ARCHON (อาคอน)
+    role: cto
+    contract: .agents/cto/AGENT.md
+    execution_policy:
+      default_executor: codex
+      allowed_executors:
+        - codex
+      default_mode: plan
+      local_model_tier: retry
+    default_context:
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/SDD-System-Design.md
+      - docs/STD-Execution-Governance.md
+    allowed_scopes:
+      - docs/architecture/
+      - docs/adr/
+      - .agents/
+
 scopes:
   docs/features/agent-team:
     preferred_agent: theseus
