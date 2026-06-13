@@ -5,7 +5,7 @@ This file gives Gemini and other AI coding agents the current operating context 
 For the canonical root agent contract, also read:
 
 - `agent.md`
-- `.agents/RUNBOOK-GoVibe-Multi-Agent.md`
+- `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 
 ## Project Overview
 
@@ -62,6 +62,8 @@ Human SWE docs are canonical. Atoms and generated views are derived.
 - Documentation writer and templates: `.agents/doc_writer/THESEUS.md`, `.agents/doc_writer/template/`
 - Auditor and compliance gates: `.agents/auditor/ATHER.md`, `.agents/auditor/asset/`
 - QA and release verification: `.agents/qa/ghost.md`, `.agents/qa/asset/`
+
+Atomic-task sidecar execution may be routed through Ollama by the scripts in `scripts/agents/`, but Codex remains the lead orchestrator.
 
 ## Development Rules
 

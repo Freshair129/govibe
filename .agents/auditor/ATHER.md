@@ -33,7 +33,7 @@ Use this order when resolving conflicts:
 7. `docs/design/**` - visual/design source material
 8. `.agents/pm/LYRA.md` and `.agents/pm/asset/**` - PM planning contract and roadmap/backlog templates
 9. `.agents/qa/ghost.md` and `.agents/qa/asset/**` - QA, design verification, and deployment verification contract
-10. `.agents/RUNBOOK-GoVibe-Multi-Agent.md` - multi-agent operations reference until migrated into `docs/runbooks/`
+10. `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` - canonical multi-agent operations runbook
 11. `.agents/doc_writer/template/` - canonical documentation templates
 
 Human-readable SWE docs are canonical. Atoms are derived artifacts. If a derived atom disagrees with an approved SWE document, the SWE document wins.

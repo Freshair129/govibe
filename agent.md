@@ -55,7 +55,9 @@ Human-readable SWE documents are canonical. Genesis atoms and generated files ar
 - Documentation writer: `.agents/doc_writer/THESEUS.md`
 - Auditor: `.agents/auditor/ATHER.md`
 - QA and release verification: `.agents/qa/ghost.md`
-- Multi-agent runbook: `.agents/RUNBOOK-GoVibe-Multi-Agent.md`
+- Multi-agent runbook: `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
+
+Bounded atomic-task sidecar execution may run through Ollama via the launcher scripts, while Codex remains the lead orchestrator for broader task coordination.
 
 ## Required Workflows
 

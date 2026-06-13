@@ -291,6 +291,11 @@ function main() {
     registry: normalizeRel(path.relative(rootDir, registryPath)),
     includeKeys,
     contextFiles: contextFiles.map((filePath) => normalizeRel(path.relative(rootDir, filePath))),
+    executorDefaults: registry.executor_defaults ?? {},
+    executors: registry.executors ?? {},
+    localSidecar: registry.local_sidecar ?? {},
+    agentExecutionPolicy: agentConfig.execution_policy ?? {},
+    scopeExecutionPolicy: scopeInfo?.value?.execution_policy ?? {},
     prompt,
   };
 

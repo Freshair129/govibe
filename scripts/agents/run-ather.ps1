@@ -27,9 +27,21 @@ param(
     [Parameter(Mandatory = $false)]
     [string]$Model,
 
+    [Parameter(Mandatory = $false)]
+    [ValidateSet("codex", "ollama")]
+    [string]$Executor,
+
+    [Parameter(Mandatory = $false)]
+    [string]$LocalModel,
+
+    [Parameter(Mandatory = $false)]
+    [ValidateSet("text", "json")]
+    [string]$OutputFormat = "text",
+
     [switch]$InvokeCodex,
     [switch]$CodexJson,
     [switch]$Ephemeral,
+    [switch]$RetryLargerLocalModel,
     [switch]$AsJson,
     [switch]$PrintPrompt
 )
@@ -47,9 +59,12 @@ $invokeScript = Join-Path $PSScriptRoot "invoke-agent.ps1"
     -OutputPath $OutputPath `
     -CodexOutputPath $CodexOutputPath `
     -Model $Model `
+    -Executor $Executor `
+    -LocalModel $LocalModel `
+    -OutputFormat $OutputFormat `
     -InvokeCodex:$InvokeCodex `
     -CodexJson:$CodexJson `
     -Ephemeral:$Ephemeral `
+    -RetryLargerLocalModel:$RetryLargerLocalModel `
     -AsJson:$AsJson `
     -PrintPrompt:$PrintPrompt
-

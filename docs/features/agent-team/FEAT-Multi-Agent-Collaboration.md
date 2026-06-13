@@ -1,5 +1,7 @@
 # FEAT-MULTI-AGENT-COLLAB: Multi-Agent Collaboration Engine Spec
 
+> Legacy subview-oriented spec. Use `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md` as the system-level SSOT for workflow semantics.
+
 **Task ID:** GV-S411
 **Status:** APPROVED
 **Date:** 2026-06-07

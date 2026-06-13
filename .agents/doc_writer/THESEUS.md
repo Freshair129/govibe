@@ -31,7 +31,7 @@ Use this order when creating or updating documentation:
 5. `docs/DOCS-Human-First-Atom-Extraction.md` - docs-to-atom policy
 6. `docs/features/README.md` - feature system folder map
 7. `docs/design/**` - design source material
-8. `.agents/RUNBOOK-GoVibe-Multi-Agent.md` - multi-agent operations reference until migrated to `docs/runbooks/`
+8. `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` - canonical multi-agent operations runbook
 
 ## Documentation Types
 

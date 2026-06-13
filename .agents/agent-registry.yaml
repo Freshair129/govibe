@@ -4,6 +4,39 @@ root_contract:
     - agent.md
     - GEMINI.md
 
+executor_defaults:
+  default: codex
+
+executors:
+  codex:
+    transport: codex_exec
+    allowed_modes:
+      - doc
+      - plan
+      - audit
+      - atomic
+  ollama:
+    transport: ollama_cli
+    allowed_modes:
+      - atomic
+
+local_sidecar:
+  enabled: true
+  allowed_modes:
+    - atomic
+  model_tiers:
+    tiny: llama3.2:1b
+    default: qwen3.5:4b
+    retry: gemma4:e2b
+  max_files: 8
+  max_chars_per_file: 8000
+  output_contract:
+    sections:
+      - Task Summary
+      - Assumptions or Blockers
+      - Files Inspected
+      - Recommended Next Step
+
 defaults:
   mode: doc
   max_files: 16
@@ -49,6 +82,13 @@ agents:
     label: THESEUS
     role: doc_writer
     contract: .agents/doc_writer/THESEUS.md
+    execution_policy:
+      default_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      default_mode: doc
+      local_model_tier: default
     default_context:
       - docs/PRD-GoVibe-Platform-Overview.md
       - docs/architecture/C4-GoVibe-Platform.md
@@ -65,6 +105,13 @@ agents:
     label: LYRA
     role: pm
     contract: .agents/pm/LYRA.md
+    execution_policy:
+      default_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      default_mode: plan
+      local_model_tier: default
     default_context:
       - docs/PRD-GoVibe-Platform-Overview.md
       - docs/architecture/C4-GoVibe-Platform.md
@@ -81,6 +128,13 @@ agents:
     label: ATHER
     role: auditor
     contract: .agents/auditor/ATHER.md
+    execution_policy:
+      default_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      default_mode: audit
+      local_model_tier: tiny
     default_context:
       - docs/PRD-GoVibe-Platform-Overview.md
       - docs/architecture/C4-GoVibe-Platform.md
@@ -96,6 +150,13 @@ agents:
 scopes:
   docs/features/agent-team:
     preferred_agent: theseus
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: default
     context:
       - docs/features/agent-team/
       - docs/PRD-GoVibe-Platform-Overview.md
@@ -112,6 +173,13 @@ scopes:
 
   docs/features/project-roadmap:
     preferred_agent: lyra
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: default
     context:
       - docs/features/project-roadmap/
       - docs/PRD-GoVibe-Platform-Overview.md
@@ -127,6 +195,13 @@ scopes:
 
   docs/features/genesis-knowledge-system:
     preferred_agent: theseus
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: default
     context:
       - docs/features/genesis-knowledge-system/
       - docs/PRD-GoVibe-Platform-Overview.md
@@ -142,6 +217,13 @@ scopes:
 
   docs/design:
     preferred_agent: theseus
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: default
     context:
       - docs/design/
       - docs/PRD-GoVibe-Platform-Overview.md
@@ -154,6 +236,13 @@ scopes:
 
   docs:
     preferred_agent: ather
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: tiny
     context:
       - docs/
       - docs/PRD-GoVibe-Platform-Overview.md
@@ -164,6 +253,13 @@ scopes:
 
   docs/features/mission-control:
     preferred_agent: theseus
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: default
     context:
       - docs/features/mission-control/
       - docs/design/
@@ -184,6 +280,13 @@ scopes:
 
   docs/features/docs-to-code:
     preferred_agent: theseus
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: default
     context:
       - docs/features/docs-to-code/
       - docs/PRD-GoVibe-Platform-Overview.md
@@ -199,6 +302,13 @@ scopes:
 
   docs/features/diagram-to-doc:
     preferred_agent: theseus
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: default
     context:
       - docs/features/diagram-to-doc/
       - docs/PRD-GoVibe-Platform-Overview.md
@@ -214,6 +324,13 @@ scopes:
 
   docs/features/governance-access:
     preferred_agent: theseus
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: default
     context:
       - docs/features/governance-access/
       - docs/PRD-GoVibe-Platform-Overview.md
@@ -229,6 +346,13 @@ scopes:
 
   docs/features/integration-bridge:
     preferred_agent: theseus
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: default
     context:
       - docs/features/integration-bridge/
       - docs/PRD-GoVibe-Platform-Overview.md
@@ -244,6 +368,13 @@ scopes:
 
   docs/features/traceability-audit:
     preferred_agent: ather
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: tiny
     context:
       - docs/features/traceability-audit/
       - docs/PRD-GoVibe-Platform-Overview.md
@@ -260,6 +391,13 @@ scopes:
 
   docs/features/execution-governance:
     preferred_agent: ather
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: atomic_only
+      local_model_tier: tiny
     context:
       - docs/features/execution-governance/
       - docs/PRD-GoVibe-Platform-Overview.md
