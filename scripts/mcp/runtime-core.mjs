@@ -4,6 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { discoverRoadmapSources, parseRoadmapSource } from "./roadmap-parser.mjs";
+import { SessionTracker } from "../../packages/govibe-core/bin/session-tracker.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const roadmapDir = path.join(workspaceRoot, "docs", "roadmap");
@@ -79,6 +80,7 @@ function formatAgentRunResult(stdout, stderr, exitCode) {
 export class GovibeRuntime {
   constructor() {
     this.snapshot = createEmptySnapshot();
+    this.sessionTracker = new SessionTracker(workspaceRoot);
     this.listeners = new Set();
     this.overlay = {
       nodes: new Map(),
@@ -92,7 +94,7 @@ export class GovibeRuntime {
 
   async initialize() {
     await this.reloadRoadmap();
-    this.appendTerminal("sys", "GoVibe runtime initialized.");
+    this.appendTerminal("sys", `GoVibe runtime initialized. Session ID: ${this.sessionTracker.sessionId}`);
     return this.snapshot;
   }
 
@@ -175,6 +177,10 @@ export class GovibeRuntime {
     return roadmap;
   }
 
+  async closeSession() {
+    return await this.sessionTracker.generateSummary();
+  }
+
   async listRoadmapSources() {
     return this.discoverSources();
   }
@@ -225,14 +231,15 @@ export class GovibeRuntime {
       child.on("close", (exitCode) => resolve(formatAgentRunResult(stdout, stderr, exitCode ?? 1)));
     });
 
-    this.appendTerminal("agent", `Agent run completed for ${args.agent ?? "resolved-agent"} (${args.scope ?? "no-scope"}).`);
+    this.appendTerminal("agent", `Agent run completed for ${args.agent_id ?? "resolved-agent"} (${args.scope ?? "no-scope"}).`);
+    this.sessionTracker.logEvent("agent_run", { args, result });
     return {
       capability: "govibe.agent.run",
       auditRef: buildAuditRef("govibe.agent.run"),
       request: args,
       result,
     };
-  }
+    }
 
   async applyRoadmapMutation(args = {}) {
     const mutationType = args.mutationType ?? "";
