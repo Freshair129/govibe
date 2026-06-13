@@ -12,6 +12,7 @@ export const toolCatalog = [
       properties: {
         actor: { type: "string" },
         project: { type: "string" },
+        agent: { type: "string" },
         scope: { type: "string" },
         task: { type: "string" },
         mode: { type: "string", enum: ["doc", "plan", "audit", "atomic"] },
@@ -57,7 +58,7 @@ export const toolCatalog = [
         actor: { type: "string" },
         project: { type: "string" },
         nodeId: { type: "string" },
-        mutationType: { type: "string" },
+        mutationType: { type: "string", enum: ["node.update", "assignment", "handoff", "verification", "reload"] },
         payload: { type: "object" },
       },
       required: ["actor", "nodeId", "mutationType"],
@@ -100,6 +101,13 @@ export const resourceCatalog = [
     description: "Canonical multi-agent workflow runbook.",
     mimeType: "text/markdown",
     path: "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+  },
+  {
+    uri: "govibe://roadmap/sources",
+    name: "GoVibe Roadmap Sources",
+    description: "Available roadmap source files under docs/roadmap.",
+    mimeType: "application/json",
+    path: "docs/roadmap",
   },
 ];
 

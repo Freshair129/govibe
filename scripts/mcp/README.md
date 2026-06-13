@@ -14,12 +14,13 @@ The scaffold is intentionally thin:
 
 - stdio JSON-RPC framing
 - tool and resource registry
-- placeholder handlers aligned to PRD/SRS/LLD
+- shared runtime core for MCP and Mission Control
 - local document resource reads for approved SSOT docs
+- HTTP snapshot/command sidecar
+- WebSocket mission event stream
 
 Next implementation steps:
 
-1. bind `govibe.agent.run` to the existing registry-driven launcher flow
-2. bind roadmap operations to mission event and document-derived state adapters
-3. bind deploy operations to governed GitHub and Vercel adapters
-4. connect RBAC and ABAC evaluation into tool execution
+1. connect roadmap mutation UI controls to the live overlay endpoints
+2. bind deploy operations to governed GitHub and Vercel adapters
+3. connect RBAC and ABAC evaluation into tool execution

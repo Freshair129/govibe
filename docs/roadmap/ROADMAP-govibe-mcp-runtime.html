@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <body>
+    <div
+      data-govibe-roadmap
+      data-id="RM-govibe-mcp-runtime-html"
+      data-title="GoVibe MCP Runtime HTML"
+      data-status="approved"
+      data-version="0.1.0"
+      data-progress="52"
+    >
+      <section
+        data-roadmap-node
+        data-id="PHASE-HTML-01"
+        data-parent-id="RM-govibe-mcp-runtime-html"
+        data-type="phase"
+        data-title="HTML Contract Roadmap Feed"
+        data-state="in-progress"
+        data-progress="52"
+        data-source-section="HTML Contract / Phase"
+      >
+        <p data-summary>Validate that Mission Control can render a roadmap source from the GoVibe HTML contract.</p>
+      </section>
+
+      <section
+        data-roadmap-node
+        data-id="SPRINT-HTML-01"
+        data-parent-id="PHASE-HTML-01"
+        data-type="sprint"
+        data-title="HTML Snapshot Ingestion"
+        data-state="in-progress"
+        data-progress="48"
+        data-source-section="HTML Contract / Sprint"
+      >
+        <p data-summary>Load the HTML roadmap source through the sidecar and broadcast a roadmap.snapshot event.</p>
+      </section>
+
+      <section
+        data-roadmap-node
+        data-id="TASK-HTML-001"
+        data-parent-id="SPRINT-HTML-01"
+        data-type="task"
+        data-title="Parse HTML roadmap nodes"
+        data-state="done"
+        data-progress="100"
+        data-assignee="eva"
+        data-source-section="HTML Contract / Nodes"
+        data-tags="SYSTEM-02;SYSTEM-06"
+      >
+        <p data-summary>Convert GoVibe HTML contract nodes into the normalized workflow snapshot shape.</p>
+      </section>
+
+      <section
+        data-roadmap-node
+        data-id="TASK-HTML-002"
+        data-parent-id="SPRINT-HTML-01"
+        data-type="task"
+        data-title="Broadcast HTML-derived snapshot over websocket"
+        data-state="in-progress"
+        data-progress="40"
+        data-assignee="atlas"
+        data-source-section="HTML Contract / WebSocket"
+        data-tags="SYSTEM-02;SYSTEM-06"
+      >
+        <p data-summary>Push the parsed HTML roadmap into the same mission event flow as markdown sources.</p>
+      </section>
+
+      <div
+        data-roadmap-assignment
+        data-task-id="TASK-HTML-001"
+        data-subject-id="eva"
+        data-subject-type="agent"
+        data-policy-model="ABAC"
+        data-assigned-at="2026-06-13T09:30:00Z"
+        data-assigned-by="lyra"
+      ></div>
+
+      <div
+        data-roadmap-assignment
+        data-task-id="TASK-HTML-002"
+        data-subject-id="atlas"
+        data-subject-type="agent"
+        data-policy-model="ABAC"
+        data-assigned-at="2026-06-13T09:40:00Z"
+        data-assigned-by="lyra"
+      ></div>
+
+      <div
+        data-roadmap-verification
+        data-task-id="TASK-HTML-001"
+        data-qa-status="passed"
+        data-audit-status="passed"
+        data-deployment-status="n/a"
+        data-updated-at="2026-06-13T10:15:00Z"
+      ></div>
+
+      <div
+        data-roadmap-verification
+        data-task-id="TASK-HTML-002"
+        data-qa-status="pending"
+        data-audit-status="pending"
+        data-deployment-status="n/a"
+        data-updated-at="2026-06-13T10:20:00Z"
+      ></div>
+    </div>
+  </body>
+</html>

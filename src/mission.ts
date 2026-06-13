@@ -79,6 +79,8 @@ export type WorkflowTaskNode = {
   artifactLinks?: string[];
   reviewLinks?: string[];
   verificationLinks?: string[];
+  sourcePath?: string;
+  sourceSection?: string;
 };
 
 export type WorkflowAssignment = {
@@ -111,6 +113,8 @@ export type WorkflowVerification = {
 export type RoadmapSnapshot = {
   sourcePath: string;
   sourceType: "markdown" | "html" | "api" | "mcp" | "event";
+  sourceVersion?: string;
+  approvalStatus?: string;
   updatedAt: string;
   nodes: WorkflowTaskNode[];
   assignments: WorkflowAssignment[];
@@ -288,6 +292,7 @@ export class MissionGateway {
   private snapshot = emptySnapshot;
   private listeners = new Set<(snapshot: MissionSnapshot) => void>();
   private socket?: WebSocket;
+  private bootstrapPromise?: Promise<void>;
 
   constructor(private options: { wsUrl?: string; httpBaseUrl?: string } = {}) {}
 
@@ -304,21 +309,65 @@ export class MissionGateway {
   }
 
   connect() {
-    if (!this.options.wsUrl || this.socket) return;
+    if (this.bootstrapPromise) return;
+    this.bootstrapPromise = this.bootstrap();
+  }
+
+  private async bootstrap() {
+    const hasHttp = Boolean(this.options.httpBaseUrl);
+    const wsUrl = this.options.wsUrl ?? this.deriveWsUrl();
+
+    if (!hasHttp && !wsUrl) return;
+
     this.setSnapshot({ connectionState: "connecting" });
+
+    if (hasHttp) {
+      try {
+        const response = await fetch(`${this.options.httpBaseUrl?.replace(/\/$/, "")}/mission/snapshot`);
+        if (!response.ok) {
+          throw new Error(`Snapshot bootstrap failed with ${response.status}`);
+        }
+        const snapshot = await response.json() as MissionSnapshot;
+        this.setSnapshot({
+          ...snapshot,
+          connectionState: wsUrl ? "connecting" : "connected",
+        });
+      } catch {
+        if (!wsUrl) {
+          this.setSnapshot({ connectionState: "error" });
+          return;
+        }
+      }
+    }
+
+    if (!wsUrl || this.socket) {
+      return;
+    }
+
     try {
-      const socket = new WebSocket(this.options.wsUrl);
+      const socket = new WebSocket(wsUrl);
       this.socket = socket;
       socket.addEventListener("open", () => this.setSnapshot({ connectionState: "connected" }));
       socket.addEventListener("message", (event) => this.handleEvent(JSON.parse(event.data) as MissionEvent));
       socket.addEventListener("close", () => {
         this.socket = undefined;
         this.setSnapshot({ connectionState: "disconnected" });
+        this.bootstrapPromise = undefined;
       });
       socket.addEventListener("error", () => this.setSnapshot({ connectionState: "error" }));
     } catch {
       this.setSnapshot({ connectionState: "error" });
+      this.bootstrapPromise = undefined;
     }
+  }
+
+  private deriveWsUrl() {
+    if (!this.options.httpBaseUrl) return undefined;
+    const url = new URL(this.options.httpBaseUrl);
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    url.pathname = "/mission/ws";
+    url.search = "";
+    return url.toString();
   }
 
   handleEvent(event: MissionEvent) {
@@ -422,9 +471,18 @@ export class MissionGateway {
   }
 }
 
+function resolveLocalApiFallback() {
+  if (typeof window === "undefined") return undefined;
+  const { hostname, protocol } = window.location;
+  if (hostname !== "127.0.0.1" && hostname !== "localhost") {
+    return undefined;
+  }
+  return `${protocol}//${hostname}:4310`;
+}
+
 export const missionGateway = new MissionGateway({
   wsUrl: import.meta.env.VITE_GOVIBE_WS_URL,
-  httpBaseUrl: import.meta.env.VITE_GOVIBE_API_URL,
+  httpBaseUrl: import.meta.env.VITE_GOVIBE_API_URL ?? resolveLocalApiFallback(),
 });
 
 declare global {

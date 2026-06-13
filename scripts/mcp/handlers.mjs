@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { govibeRuntime } from "./runtime-core.mjs";
 import { getResourceByUri } from "./registry.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -21,11 +22,12 @@ function buildAuditRef(capability) {
 
 export async function handleToolCall(name, args = {}) {
   switch (name) {
-    case "govibe.agent.run":
+    case "govibe.agent.run": {
+      const response = await govibeRuntime.runAgent(args);
       return {
         content: asTextContent(
           [
-            "GoVibe MCP agent execution scaffold accepted the request.",
+            "GoVibe agent execution completed through the shared launcher runtime.",
             "",
             `actor: ${args.actor ?? "unknown"}`,
             `project: ${args.project ?? "n/a"}`,
@@ -34,21 +36,20 @@ export async function handleToolCall(name, args = {}) {
             `executor: ${args.executor ?? "policy-resolved"}`,
             `task: ${args.task ?? "n/a"}`,
             "",
-            "Next implementation step: bind this tool to the existing agent registry, prompt builder, and execution router.",
+            response.result.stdout || response.result.stderr || "No output returned.",
           ].join("\n"),
         ),
         structuredContent: {
-          accepted: true,
-          capability: name,
-          auditRef: buildAuditRef(name),
-          request: args,
+          ...response,
         },
       };
-    case "govibe.docs.resolve":
+    }
+    case "govibe.docs.resolve": {
+      const packet = await govibeRuntime.resolveDocs(args.selectors ?? []);
       return {
         content: asTextContent(
           [
-            "GoVibe MCP docs resolution scaffold returned a bounded reference packet.",
+            "GoVibe docs resolver returned a bounded packet from approved selectors.",
             "",
             `actor: ${args.actor ?? "unknown"}`,
             `scope: ${args.scope ?? "n/a"}`,
@@ -57,50 +58,50 @@ export async function handleToolCall(name, args = {}) {
           ].join("\n"),
         ),
         structuredContent: {
-          accepted: true,
           capability: name,
           selectors: args.selectors ?? [],
+          packet,
           auditRef: buildAuditRef(name),
         },
       };
-    case "govibe.roadmap.load":
+    }
+    case "govibe.roadmap.load": {
+      const roadmap = await govibeRuntime.reloadRoadmap(args.source);
       return {
         content: asTextContent(
           [
-            "GoVibe MCP roadmap load scaffold returned a placeholder document-driven snapshot.",
+            "GoVibe roadmap loader returned a live document-driven snapshot.",
             "",
-            "Mission Control should consume approved roadmap docs or explicit mission events rather than hardcoded arrays.",
+            `source: ${roadmap?.sourcePath ?? "none"}`,
+            `nodes: ${roadmap?.nodes.length ?? 0}`,
+            `assignments: ${roadmap?.assignments.length ?? 0}`,
           ].join("\n"),
         ),
         structuredContent: {
-          accepted: true,
           capability: name,
-          source: args.source ?? "docs/roadmap",
+          source: roadmap?.sourcePath ?? args.source ?? "docs/roadmap",
           outputShape: args.outputShape ?? "snapshot",
+          roadmap,
           auditRef: buildAuditRef(name),
         },
       };
-    case "govibe.roadmap.update":
+    }
+    case "govibe.roadmap.update": {
+      const result = await govibeRuntime.applyRoadmapMutation(args);
       return {
         content: asTextContent(
           [
-            "GoVibe MCP roadmap update scaffold captured the requested mutation shape.",
+            "GoVibe roadmap mutation applied to the live overlay state.",
             "",
             `nodeId: ${args.nodeId ?? "n/a"}`,
             `mutationType: ${args.mutationType ?? "n/a"}`,
-            "",
-            "Next implementation step: validate workflow transitions and emit normalized mission events.",
           ].join("\n"),
         ),
         structuredContent: {
-          accepted: true,
-          capability: name,
-          nodeId: args.nodeId ?? null,
-          mutationType: args.mutationType ?? null,
-          payload: args.payload ?? {},
-          auditRef: buildAuditRef(name),
+          ...result,
         },
       };
+    }
     case "govibe.deploy.vercel":
       return {
         content: asTextContent(
@@ -130,6 +131,18 @@ export async function handleResourceRead(uri) {
   const resource = getResourceByUri(uri);
   if (!resource) {
     throw new Error(`Unknown resource: ${uri}`);
+  }
+
+  if (uri === "govibe://roadmap/sources") {
+    return {
+      contents: [
+        {
+          uri: resource.uri,
+          mimeType: resource.mimeType,
+          text: JSON.stringify(await govibeRuntime.listRoadmapSources(), null, 2),
+        },
+      ],
+    };
   }
 
   const filePath = path.resolve(workspaceRoot, resource.path);

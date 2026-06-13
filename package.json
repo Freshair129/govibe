@@ -9,14 +9,17 @@
     "build": "tsc && vite build",
     "lint": "tsc --noEmit",
     "preview": "vite preview",
-    "mcp:dev": "node scripts/mcp/govibe-mcp-server.mjs"
+    "mcp:dev": "node scripts/mcp/govibe-mcp-server.mjs",
+    "mission:dev": "node scripts/mcp/govibe-mcp-server.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.6.0",
+    "node-html-parser": "^7.1.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "typescript": "~5.8.3",
-    "vite": "^7.0.4"
+    "vite": "^7.0.4",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

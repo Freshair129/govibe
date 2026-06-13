@@ -470,6 +470,7 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
         <span>{getRoadmapScope(node)}</span>
         <strong>{node.title}</strong>
         {node.summary ? <p>{node.summary}</p> : null}
+        {node.sourceSection ? <p>Source: {node.sourceSection}</p> : null}
         <div className="task-badges">
           <em>{formatRoadmapState(node.state)}</em>
           {badges.map((badge) => <em key={`${node.id}-${badge}`}>{badge}</em>)}

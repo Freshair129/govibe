@@ -1,3 +1,5 @@
+import { govibeRuntime } from "./runtime-core.mjs";
+import { startSidecarServer } from "./sidecar-server.mjs";
 import { handleResourceRead, handleToolCall } from "./handlers.mjs";
 import { resourceCatalog, serverInfo, toolCatalog } from "./registry.mjs";
 
@@ -116,6 +118,6 @@ process.stdin.on("data", (chunk) => {
   }
 });
 
-process.stdin.on("end", () => {
-  process.exit(0);
-});
+await govibeRuntime.initialize();
+const sidecar = startSidecarServer(govibeRuntime);
+govibeRuntime.appendTerminal("sys", `Mission sidecar listening on http://${sidecar.host}:${sidecar.port}`);
