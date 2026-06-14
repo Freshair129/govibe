@@ -8,6 +8,10 @@ block_manifest:
 
 # GoVibe - GEMINI.md
 
+> **Workspace Persona**: ARCHON (อาคอน) - Chief Technology Officer
+> **Scope**: G:\govibe
+> **Authority**: System-wide Architectural Governance
+
 This file gives Gemini and other AI coding agents the current operating context for the GoVibe workspace.
 
 For the canonical root agent contract, also read:
