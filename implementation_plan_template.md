@@ -3,10 +3,12 @@
 > **Source**: [Untitled-1.html](file:///G:/covibe/Untitled-1.html) (6,740 lines, 429KB)
 > **Target**: `g:/govibe/` — Tauri v2 + Vite + React-TS
 > **Methodology**: Documentation-Driven Development (DDD)
-> **Version**: 1.0.0
+> **Version**: 1.1.0
 > **Created**: 2026-06-06T07:20:00+07:00, Rwang
+> **Updated**: 2026-06-14T11:30:00+07:00, Rwang
 
 ---
+
 CoVibe คือ โปรเจคที่ html นี้กำลังtacking  เราจะใช้ระบบ html นี้เป็น  
 GoVibe :: AI-Native Visual Vibe Code Platform
 Visual Vibe Code Platform ของไทย 🇹🇭 “No coding No problem” 
@@ -18,7 +20,57 @@ Visual Vibe Code Platform ของไทย 🇹🇭 “No coding No problem”
 3. ติดตั้ง Capacitor                           (เมื่อพร้อม go native)
    verify: npx cap run android/ios ทำงานได้
 
-โดยสร้างเป็น  Ultraplan แบ่ง  phase และ sprint + backlog +DoD ภายใต้ DDD มา ผมจะส่งต่อให้ Agent
+โดยสร้างเป็น  MASTERPLAN แบ่ง  phase ย่อยเป็น epic แตก sprint + backlog เป็น Task 4 ระดับ 
+1. Task:: TSK-{masterplanId}{phasenumber}{epicnumber}{sprintnumber}-{tasknumber}
+   example TSK-GVMP01P01EP01SPR02-01 แปลได้ว่า Task ของ โปรเจค GoVibe Master Plan ที่ 1 Phase 1 Epic 1 Sprint 2 task 1
+   **masterplanId:: {Projectcodename}MP{number}
+   exsample 
+        Projectcodename:: GoVibe: GV
+        MasterPlan: MP
+        number: 01
+        = GVMP01
+   **phasenumber:: {2 digti}
+   exsample 
+        Phase: Phase 1
+        number: 01
+        = 01
+   **epicnumber:: {2 digti}
+   exsample 
+        Epic: Epic 1
+        number: 01
+        = 01
+   **sprintnumber:: {2 digti}
+   exsample 
+        Sprint: Sprint 2
+        number: 02
+        = 02
+   **tasknumber:: {2 digti}
+   exsample 
+        Task: Task 1
+        number: 01
+        = 01
+   **example:: TSK-GVMP01P01EP01SPR02-01 
+**
+2. Sub-Task::SUB-TSK{parent-task}   
+   **parent-task:: {parent-task}   
+   exsample 
+        Sub-Task::S-TSK{TSK-GVMP01P01EP01SPR02-01}
+   **example:: S-TSK-GVMP01P01EP01SPR02-01
+**
+3. Micro-Task::M-TSK{parent-task}
+**parent-task:: {parent-task} 
+   exsample 
+        Micro-Task::M-TSK{TSK-GVMP01P01EP01SPR02-01}
+   **example:: M-TSK-GVMP01P01EP01SPR02-01
+**
+4. Atomic-Task::A-TSK{parent-task}
+**parent-task:: {parent-task} 
+   exsample 
+        Atomic-Task::A-TSK{TSK-GVMP01P01EP01SPR02-01}
+   **example:: A-TSK-GVMP01P01EP01SPR02-01
+**
+
+
 
 ## ⚙️ Conventions
 
@@ -32,7 +84,7 @@ Visual Vibe Code Platform ของไทย 🇹🇭 “No coding No problem”
 
 ### Definition of Done (DoD) Template
 
-ทุก task ต้องผ่าน 3 gates:
+**ทุก Task  ต้องผ่าน 3 gates::**
 
 ```
 ■ Acceptance Criteria
@@ -56,21 +108,23 @@ Visual Vibe Code Platform ของไทย 🇹🇭 “No coding No problem”
 > **Goal**: สร้าง project structure + extract design system ให้พร้อมรับ components
 > **Sprint**: S0 (1 sprint)
 
+### [Epic EP00] Foundation Scaffold
+
 ---
 
-### Sprint S0 — Project Bootstrap
+#### Sprint S0 — Project Bootstrap
 
 |   Task ID   |           Task                     |Pt|    Mode    |    Dependency    | symbollink |   Source Lines   |  Assign To  |
 |  ---------  |    -----------------               |--|   ------   |   ------------   |    ----    |   -----------    | ----------- |
-| **GV-S001** | Scaffold Tauri v2 + Vite React-TS  | 3|   SERIAL   |    `GV-S001`     | `d:/GoVibe`|   L01–L111       |  EVA Agent  |
-| **GV-S002** | Configure and"GoVibe", identifier  | 1|   SERIAL   |    -             |`tauri.conf.json`|  |  |
-| **GV-S003** | Extract CSS design tokens → `src/styles/globals.css` | 5 |  PARALLEL-A | `GV-S001` | L71–L111 |
-| **GV-S004** | Extract glassmorphism + card styles → `src/styles/glassmorphism.css` | 3 |  PARALLEL-A | `GV-S001` | L142–L730 |
-| **GV-S005** | Extract animations + keyframes → `src/styles/animations.css` | 3 |  PARALLEL-A | `GV-S001` | L121–L187, L401–L591 |
-| **GV-S006** | Extract component-specific CSS (sidebar, terminal, carousel, config) → `src/styles/components.css` | 5 |  PARALLEL-A | `GV-S001` | L189–L870, L884–L1812 |
-| **GV-S007** | Setup Tailwind CSS properly (install package, config, remove CDN script) | 2 | 🔀 PARALLEL-A | `GV-S001` | L22, L32–L68 |
+| **TSK-GVMP01P00EP00SPR00-01** | Scaffold Tauri v2 + Vite React-TS  | 3|   SERIAL   |    -             | `d:/GoVibe`|   L01–L111       |  EVA Agent  |
+| **TSK-GVMP01P00EP00SPR00-02** | Configure and"GoVibe", identifier  | 1|   SERIAL   |    -             |`tauri.conf.json`|  |  |
+| **TSK-GVMP01P00EP00SPR00-03** | Extract CSS design tokens → `src/styles/globals.css` | 5 |  PARALLEL-A | `TSK-GVMP01P00EP00SPR00-01` | L71–L111 | |
+| **TSK-GVMP01P00EP00SPR00-04** | Extract glassmorphism + card styles → `src/styles/glassmorphism.css` | 3 |  PARALLEL-A | `TSK-GVMP01P00EP00SPR00-01` | L142–L730 | |
+| **TSK-GVMP01P00EP00SPR00-05** | Extract animations + keyframes → `src/styles/animations.css` | 3 |  PARALLEL-A | `TSK-GVMP01P00EP00SPR00-01` | L121–L187, L401–L591 | |
+| **TSK-GVMP01P00EP00SPR00-06** | Extract component-specific CSS (sidebar, terminal, carousel, config) → `src/styles/components.css` | 5 |  PARALLEL-A | `TSK-GVMP01P00EP00SPR00-01` | L189–L870, L884–L1812 | |
+| **TSK-GVMP01P00EP00SPR00-07** | Setup Tailwind CSS properly (install package, config, remove CDN script) | 2 | 🔀 PARALLEL-A | `TSK-GVMP01P00EP00SPR00-01` | L22, L32–L68 | |
 
-**Parallel Group A**: GV-S003, GV-S004, GV-S005, GV-S006, GV-S007 — ทำพร้อมกันได้ทั้ง 5 task (ไม่ depend กัน) หลัง GV-S001 เสร็จ
+**Parallel Group A**: TSK-GVMP01P00EP00SPR00-03, TSK-GVMP01P00EP00SPR00-04, TSK-GVMP01P00EP00SPR00-05, TSK-GVMP01P00EP00SPR00-06, TSK-GVMP01P00EP00SPR00-07 — ทำพร้อมกันได้ทั้ง 5 task (ไม่ depend กัน) หลัง TSK-GVMP01P00EP00SPR00-01 เสร็จ
 
 #### DoD — Sprint S0
 ```
@@ -92,33 +146,35 @@ Visual Vibe Code Platform ของไทย 🇹🇭 “No coding No problem”
 > **Goal**: สร้าง layout skeleton (Header, Sidebar, routing) ที่ navigate ระหว่าง 4 domains ได้
 > **Sprints**: S1a (Layout), S1b (State + Routing)
 
----
-
-### Sprint S1a — Layout Components
-
-| Task ID | Task | Points | Mode | Dependency | Source Lines |
-|---------|------|--------|------|------------|--------------|
-| **GV-S101** | `core/state.ts` — Extract `appState` + `siteMap` config | 3 | ⛓️ SERIAL | `GV-S003` | L4461–L4519 |
-| **GV-S102** | `components/layout/Header.tsx` — Domain tab switcher, WS status, theme toggle | 5 | 🔀 PARALLEL-B | `GV-S101` | L1822–L1881 |
-| **GV-S103** | `components/layout/Sidebar.tsx` — Collapsible sidebar, sub-nav rendering, expanded-lock | 5 | 🔀 PARALLEL-B | `GV-S101` | L1886–L1917 |
-| **GV-S104** | `components/layout/MainLayout.tsx` — Flex layout container (header + sidebar + main) | 3 | 🔓 LOCK | `GV-S102`, `GV-S103` |
-| **GV-S105** | `components/shared/ThemeToggle.tsx` — Dark/light toggle with CSS var switching | 2 | 🔀 PARALLEL-B | `GV-S101` | L4729–L4758 |
-| **GV-S106** | `components/shared/ShimmerTitle.tsx` — Gradient animated text component | 1 | 🔀 PARALLEL-B | `GV-S005` | L169–L187 |
-| **GV-S107** | `components/layout/Footer.tsx` — Status bar footer | 1 | 🔀 PARALLEL-B | `GV-S101` | L4382–L4388 |
-
-**Parallel Group B**: GV-S102, GV-S103, GV-S105, GV-S106, GV-S107 — ทำพร้อมกันได้ (ต้องการแค่ GV-S101)
-
-**🔓 LOCK**: GV-S104 ต้องรอ GV-S102 (Header) + GV-S103 (Sidebar) ทั้งคู่เสร็จก่อน
+### [Epic EP01] App Shell Layout & Routing
 
 ---
 
-### Sprint S1b — Domain Routing & View Switching
+#### Sprint S1a — Layout Components
 
 | Task ID | Task | Points | Mode | Dependency | Source Lines |
 |---------|------|--------|------|------------|--------------|
-| **GV-S108** | `switchDomain()` logic → React state + domain context provider | 3 | ⛓️ SERIAL | `GV-S104` | L4596–L4656 |
-| **GV-S109** | `switchMainView()` logic → view component lazy loading | 3 | ⛓️ SERIAL | `GV-S108` | L4658–L4711 |
-| **GV-S110** | Empty placeholder components สำหรับ 17 views (render title + "Coming Soon") | 2 | ⛓️ SERIAL | `GV-S108` |
+| **TSK-GVMP01P01EP01SPR01-01** | `core/state.ts` — Extract `appState` + `siteMap` config | 3 | ⛓️ SERIAL | `TSK-GVMP01P00EP00SPR00-03` | L4461–L4519 |
+| **TSK-GVMP01P01EP01SPR01-02** | `components/layout/Header.tsx` — Domain tab switcher, WS status, theme toggle | 5 | 🔀 PARALLEL-B | `TSK-GVMP01P01EP01SPR01-01` | L1822–L1881 |
+| **TSK-GVMP01P01EP01SPR01-03** | `components/layout/Sidebar.tsx` — Collapsible sidebar, sub-nav rendering, expanded-lock | 5 | 🔀 PARALLEL-B | `TSK-GVMP01P01EP01SPR01-01` | L1886–L1917 |
+| **TSK-GVMP01P01EP01SPR01-04** | `components/layout/MainLayout.tsx` — Flex layout container (header + sidebar + main) | 3 | 🔓 LOCK | `TSK-GVMP01P01EP01SPR01-02`, `TSK-GVMP01P01EP01SPR01-03` | |
+| **TSK-GVMP01P01EP01SPR01-05** | `components/shared/ThemeToggle.tsx` — Dark/light toggle with CSS var switching | 2 | 🔀 PARALLEL-B | `TSK-GVMP01P01EP01SPR01-01` | L4729–L4758 |
+| **TSK-GVMP01P01EP01SPR01-06** | `components/shared/ShimmerTitle.tsx` — Gradient animated text component | 1 | 🔀 PARALLEL-B | `TSK-GVMP01P01EP01SPR01-05` | L169–L187 |
+| **TSK-GVMP01P01EP01SPR01-07** | `components/layout/Footer.tsx` — Status bar footer | 1 | 🔀 PARALLEL-B | `TSK-GVMP01P01EP01SPR01-01` | L4382–L4388 |
+
+**Parallel Group B**: TSK-GVMP01P01EP01SPR01-02, TSK-GVMP01P01EP01SPR01-03, TSK-GVMP01P01EP01SPR01-05, TSK-GVMP01P01EP01SPR01-06, TSK-GVMP01P01EP01SPR01-07 — ทำพร้อมกันได้ (ต้องการแค่ TSK-GVMP01P01EP01SPR01-01)
+
+**🔓 LOCK**: TSK-GVMP01P01EP01SPR01-04 ต้องรอ TSK-GVMP01P01EP01SPR01-02 (Header) + TSK-GVMP01P01EP01SPR01-03 (Sidebar) ทั้งคู่เสร็จก่อน
+
+---
+
+#### Sprint S1b — Domain Routing & View Switching
+
+| Task ID | Task | Points | Mode | Dependency | Source Lines |
+|---------|------|--------|------|------------|--------------|
+| **TSK-GVMP01P01EP01SPR02-01** | `switchDomain()` logic → React state + domain context provider | 3 | ⛓️ SERIAL | `TSK-GVMP01P01EP01SPR01-04` | L4596–L4656 |
+| **TSK-GVMP01P01EP01SPR02-02** | `switchMainView()` logic → view component lazy loading | 3 | ⛓️ SERIAL | `TSK-GVMP01P01EP01SPR02-01` | L4658–L4711 |
+| **TSK-GVMP01P01EP01SPR02-03** | Empty placeholder components สำหรับ 17 views (render title + "Coming Soon") | 2 | ⛓️ SERIAL | `TSK-GVMP01P01EP01SPR02-01` | |
 
 #### DoD — Phase 1
 ```
@@ -142,22 +198,24 @@ Visual Vibe Code Platform ของไทย 🇹🇭 “No coding No problem”
 > **Goal**: ย้าย HTML + JS logic ของ 17 views เข้า React components
 > **Sprints**: S2a (Domain A), S2b (Domain B), S2c (Domain C), S2d (Domain D)
 
+### [Epic EP02] Domain Component Migration
+
 ---
 
-### Sprint S2a — Domain A: Project Overview (5 views)
+#### Sprint S2a — Domain A: Project Overview (5 views)
 
 | Task ID | Task | Points | Mode | Dependency | Source Lines |
 |---------|------|--------|------|------------|--------------|
-| **GV-S201** | `domains/overview/Dashboard.tsx` (view-A1) — Stats grid, Chart.js integration, Reactor Telemetry panel | 8 | 🔀 PARALLEL-C | `GV-S110` | L1926–L2013 |
-| **GV-S202** | `domains/overview/Roadmap.tsx` (view-A2) — Accordion phases, task cards, 3-state checkboxes, export (JSON/YAML/MD), agent drag-assign | 13 | 🔀 PARALLEL-C | `GV-S110` | L2016–L3457 + L4760–L5130 |
-| **GV-S203** | `domains/overview/Plugins.tsx` (view-A3) — Capability plugins listing | 3 | 🔀 PARALLEL-C | `GV-S110` | L3458–L3493 |
-| **GV-S204** | `domains/overview/BrainConfig.tsx` (view-A4) — Brain & Config panel | 3 | 🔀 PARALLEL-C | `GV-S110` | L3494–L3556 |
-| **GV-S205** | `domains/overview/AgentManagement.tsx` (view-A5) — Character select carousel, 3D tilt, flip card config, video switcher | 13 | 🔀 PARALLEL-C | `GV-S110` | L3557–L3872 + L7100–L7394 (initAgentManagement) |
+| **TSK-GVMP01P02EP02SPR03-01** | `domains/overview/Dashboard.tsx` (view-A1) — Stats grid, Chart.js integration, Reactor Telemetry panel | 8 | 🔀 PARALLEL-C | `TSK-GVMP01P01EP01SPR02-03` | L1926–L2013 |
+| **TSK-GVMP01P02EP02SPR03-02** | `domains/overview/Roadmap.tsx` (view-A2) — Accordion phases, task cards, 3-state checkboxes, export (JSON/YAML/MD), agent drag-assign | 13 | 🔀 PARALLEL-C | `TSK-GVMP01P01EP01SPR02-03` | L2016–L3457 + L4760–L5130 |
+| **TSK-GVMP01P02EP02SPR03-03** | `domains/overview/Plugins.tsx` (view-A3) — Capability plugins listing | 3 | 🔀 PARALLEL-C | `TSK-GVMP01P01EP01SPR02-03` | L3458–L3493 |
+| **TSK-GVMP01P02EP02SPR03-04** | `domains/overview/BrainConfig.tsx` (view-A4) — Brain & Config panel | 3 | 🔀 PARALLEL-C | `TSK-GVMP01P01EP01SPR02-03` | L3494–L3556 |
+| **TSK-GVMP01P02EP02SPR03-05** | `domains/overview/AgentManagement.tsx` (view-A5) — Character select carousel, 3D tilt, flip card config, video switcher | 13 | 🔀 PARALLEL-C | `TSK-GVMP01P01EP01SPR02-03` | L3557–L3872 + L7100–L7394 (initAgentManagement) |
 
-**Parallel Group C**: GV-S201–GV-S205 ทำพร้อมกันได้ทั้ง 5 task (แต่ละ view เป็น independent component)
+**Parallel Group C**: TSK-GVMP01P02EP02SPR03-01–TSK-GVMP01P02EP02SPR03-05 ทำพร้อมกันได้ทั้ง 5 task (แต่ละ view เป็น independent component)
 
 > [!IMPORTANT]
-> **GV-S202 (Roadmap)** เป็น task ใหญ่ที่สุด (13 pts) เพราะรวม:
+> **TSK-GVMP01P02EP02SPR03-02 (Roadmap)** เป็น task ใหญ่ที่สุด (13 pts) เพราะรวม:
 > - Task definitions data (~70 lines of structured objects per phase)
 > - Drag-and-drop agent assignment
 > - LocalStorage state persistence
@@ -165,7 +223,7 @@ Visual Vibe Code Platform ของไทย 🇹🇭 “No coding No problem”
 > - Phase accordion with progress calculation
 
 > [!IMPORTANT]
-> **GV-S205 (Agent Management)** เป็น task ใหญ่เท่ากัน (13 pts) เพราะรวม:
+> **TSK-GVMP01P02EP02SPR03-05 (Agent Management)** เป็น task ใหญ่เท่ากัน (13 pts) เพราะรวม:
 > - Character portrait carousel with vertical arc layout
 > - 3D perspective tilt on mouse move
 > - Flip card animation (front: stats → back: config form)
@@ -175,48 +233,48 @@ Visual Vibe Code Platform ของไทย 🇹🇭 “No coding No problem”
 
 ---
 
-### Sprint S2b — Domain B: Genesis Knowledge (4 views)
+#### Sprint S2b — Domain B: Genesis Knowledge (4 views)
 
 | Task ID | Task | Points | Mode | Dependency | Source Lines |
 |---------|------|--------|------|------------|--------------|
-| **GV-S206** | `domains/genesis/AstTree.tsx` (view-B1) — Code line selector, draggable AST nodes, SVG bezier edges | 5 | 🔀 PARALLEL-D | `GV-S110` | L3877–L3955 |
-| **GV-S207** | `domains/genesis/BusinessSpec.tsx` (view-B2) — Static protocol specification | 2 | 🔀 PARALLEL-D | `GV-S110` | L3958–L3974 |
-| **GV-S208** | `domains/genesis/InteractiveGraph.tsx` (view-B3) — Draggable 2D graph canvas (Cytoscape or custom) | 5 | 🔀 PARALLEL-D | `GV-S110` | L3977–L3994 |
-| **GV-S209** | `domains/genesis/CallGraph.tsx` (view-B4) — Cytoscape.js call graph, depth controls, node inspector panel | 8 | 🔀 PARALLEL-D | `GV-S110` | L3997–L4051 |
+| **TSK-GVMP01P02EP02SPR04-01** | `domains/genesis/AstTree.tsx` (view-B1) — Code line selector, draggable AST nodes, SVG bezier edges | 5 | 🔀 PARALLEL-D | `TSK-GVMP01P01EP01SPR02-03` | L3877–L3955 |
+| **TSK-GVMP01P02EP02SPR04-02** | `domains/genesis/BusinessSpec.tsx` (view-B2) — Static protocol specification | 2 | 🔀 PARALLEL-D | `TSK-GVMP01P01EP01SPR02-03` | L3958–L3974 |
+| **TSK-GVMP01P02EP02SPR04-03** | `domains/genesis/InteractiveGraph.tsx` (view-B3) — Draggable 2D graph canvas (Cytoscape or custom) | 5 | 🔀 PARALLEL-D | `TSK-GVMP01P01EP01SPR02-03` | L3977–L3994 |
+| **TSK-GVMP01P02EP02SPR04-04** | `domains/genesis/CallGraph.tsx` (view-B4) — Cytoscape.js call graph, depth controls, node inspector panel | 8 | 🔀 PARALLEL-D | `TSK-GVMP01P01EP01SPR02-03` | L3997–L4051 |
 
-**Parallel Group D**: GV-S206–GV-S209 ทำพร้อมกันได้ทั้ง 4 task
+**Parallel Group D**: TSK-GVMP01P02EP02SPR04-01–TSK-GVMP01P02EP02SPR04-04 ทำพร้อมกันได้ทั้ง 4 task
 
 > [!WARNING]
-> **GV-S209 (Call Graph)** depends on `cytoscape` npm package — ต้อง `npm install cytoscape @types/cytoscape` ก่อน
+> **TSK-GVMP01P02EP02SPR04-04 (Call Graph)** depends on `cytoscape` npm package — ต้อง `npm install cytoscape @types/cytoscape` ก่อน
 
 ---
 
-### Sprint S2c — Domain C: Block DB (5 views) — 🔑 GenesisBlockDB Frontend
+#### Sprint S2c — Domain C: Block DB (5 views) — 🔑 GenesisBlockDB Frontend
 
 | Task ID | Task | Points | Mode | Dependency | Source Lines |
 |---------|------|--------|------|------------|--------------|
-| **GV-S210** | `domains/blockdb/SymbolExplorer.tsx` (view-C1) — Symbol table with filter search | 3 | 🔀 PARALLEL-E | `GV-S110` | L4056–L4106 |
-| **GV-S211** | `domains/blockdb/IntelligenceZoo.tsx` (view-C2) — Agent roster cards | 3 | 🔀 PARALLEL-E | `GV-S110` | L4109–L4140 |
-| **GV-S212** | `domains/blockdb/SrsDebugger.tsx` (view-C3) — Query input, dual RAG output comparison | 3 | 🔀 PARALLEL-E | `GV-S110` | L4143–L4171 |
-| **GV-S213** | `domains/blockdb/ErdSchema.tsx` (view-C4) — Draggable ERD table cards with SVG edges | 5 | 🔀 PARALLEL-E | `GV-S110` | L4174–L4218 |
-| **GV-S214** | `domains/blockdb/HnswVectorMap.tsx` (view-C5) — HNSW layer switcher with zone visualization | 3 | 🔀 PARALLEL-E | `GV-S110` | L4221–L4260 |
+| **TSK-GVMP01P02EP02SPR05-01** | `domains/blockdb/SymbolExplorer.tsx` (view-C1) — Symbol table with filter search | 3 | 🔀 PARALLEL-E | `TSK-GVMP01P01EP01SPR02-03` | L4056–L4106 |
+| **TSK-GVMP01P02EP02SPR05-02** | `domains/blockdb/IntelligenceZoo.tsx` (view-C2) — Agent roster cards | 3 | 🔀 PARALLEL-E | `TSK-GVMP01P01EP01SPR02-03` | L4109–L4140 |
+| **TSK-GVMP01P02EP02SPR05-03** | `domains/blockdb/SrsDebugger.tsx` (view-C3) — Query input, dual RAG output comparison | 3 | 🔀 PARALLEL-E | `TSK-GVMP01P01EP01SPR02-03` | L4143–L4171 |
+| **TSK-GVMP01P02EP02SPR05-04** | `domains/blockdb/ErdSchema.tsx` (view-C4) — Draggable ERD table cards with SVG edges | 5 | 🔀 PARALLEL-E | `TSK-GVMP01P01EP01SPR02-03` | L4174–L4218 |
+| **TSK-GVMP01P02EP02SPR05-05** | `domains/blockdb/HnswVectorMap.tsx` (view-C5) — HNSW layer switcher with zone visualization | 3 | 🔀 PARALLEL-E | `TSK-GVMP01P01EP01SPR02-03` | L4221–L4260 |
 
-**Parallel Group E**: GV-S210–GV-S214 ทำพร้อมกันได้ทั้ง 5 task
+**Parallel Group E**: TSK-GVMP01P02EP02SPR05-01–TSK-GVMP01P02EP02SPR05-05 ทำพร้อมกันได้ทั้ง 5 task
 
 > [!NOTE]
-> Sprint S2c เป็น "static UI migration" ก่อน — **จะเชื่อมกับ Tauri IPC ใน Phase 3 (GV-S301–S304)**
+> Sprint S2c เป็น "static UI migration" ก่อน — **จะเชื่อมกับ Tauri IPC ใน Phase 3 (TSK-GVMP01P03EP03SPR07-01–07)**
 
 ---
 
-### Sprint S2d — Domain D: AI Benchmark (3 views)
+#### Sprint S2d — Domain D: AI Benchmark (3 views)
 
 | Task ID | Task | Points | Mode | Dependency | Source Lines |
 |---------|------|--------|------|------------|--------------|
-| **GV-S215** | `domains/benchmark/ReactorRun.tsx` (view-D1) — Power regulator slider, safety run progress, oscilloscope Web Audio canvas | 8 | 🔀 PARALLEL-F | `GV-S110` | L4265–L4331 |
-| **GV-S216** | `domains/benchmark/CyberHeatmap.tsx` (view-D2) — 8×8 thermal grid, real-time randomizer, overview stats | 5 | 🔀 PARALLEL-F | `GV-S110` | L4334–L4358 |
-| **GV-S217** | `domains/benchmark/EabsLogs.tsx` (view-D3) — Static campaign log viewer | 2 | 🔀 PARALLEL-F | `GV-S110` | L4361–L4376 |
+| **TSK-GVMP01P02EP02SPR06-01** | `domains/benchmark/ReactorRun.tsx` (view-D1) — Power regulator slider, safety run progress, oscilloscope Web Audio canvas | 8 | 🔀 PARALLEL-F | `TSK-GVMP01P01EP01SPR02-03` | L4265–L4331 |
+| **TSK-GVMP01P02EP02SPR06-02** | `domains/benchmark/CyberHeatmap.tsx` (view-D2) — 8×8 thermal grid, real-time randomizer, overview stats | 5 | 🔀 PARALLEL-F | `TSK-GVMP01P01EP01SPR02-03` | L4334–L4358 |
+| **TSK-GVMP01P02EP02SPR06-03** | `domains/benchmark/EabsLogs.tsx` (view-D3) — Static campaign log viewer | 2 | 🔀 PARALLEL-F | `TSK-GVMP01P01EP01SPR02-03` | L4361–L4376 |
 
-**Parallel Group F**: GV-S215–GV-S217 ทำพร้อมกันได้ทั้ง 3 task
+**Parallel Group F**: TSK-GVMP01P02EP02SPR06-01–TSK-GVMP01P02EP02SPR06-03 ทำพร้อมกันได้ทั้ง 3 task
 
 #### DoD — Phase 2 (ทุก view)
 ```
@@ -240,27 +298,29 @@ Visual Vibe Code Platform ของไทย 🇹🇭 “No coding No problem”
 > **Goal**: สร้าง Rust IPC commands เพื่อเชื่อม frontend กับ GenesisBlockDB
 > **Sprint**: S3
 
+### [Epic EP03] Rust IPC Backend Integration
+
 ---
 
-### Sprint S3 — Rust IPC & Frontend Hooks
+#### Sprint S3 — Rust IPC & Frontend Hooks
 
 | Task ID | Task | Points | Mode | Dependency | Source Lines |
 |---------|------|--------|------|------------|--------------|
-| **GV-S301** | `src-tauri/src/commands/mod.rs` — Command module structure | 1 | ⛓️ SERIAL | `GV-S001` | — |
-| **GV-S302** | `src-tauri/src/commands/genesis_db.rs` — Stub commands: `query_symbol()`, `insert_block()`, `list_symbols()` | 5 | ⛓️ SERIAL | `GV-S301` | — |
-| **GV-S303** | `src-tauri/src/commands/symbol_link.rs` — Stub commands: `resolve_symlink()`, `embed_code_block()` | 5 | 🔀 PARALLEL-G | `GV-S301` | — |
-| **GV-S304** | `src/hooks/useGenesisDb.ts` — React hook wrapping `@tauri-apps/api invoke()` calls | 3 | 🔓 LOCK | `GV-S302`, `GV-S303` | — |
-| **GV-S305** | Wire `useGenesisDb` into `SymbolExplorer.tsx` (view-C1) — replace static table with IPC query | 3 | 🔓 LOCK | `GV-S304`, `GV-S210` | — |
-| **GV-S306** | Wire `useGenesisDb` into `SrsDebugger.tsx` (view-C3) — send query via IPC | 3 | 🔓 LOCK | `GV-S304`, `GV-S212` | — |
-| **GV-S307** | Register all commands in `lib.rs` → `generate_handler![]` | 2 | 🔓 LOCK | `GV-S302`, `GV-S303` | — |
+| **TSK-GVMP01P03EP03SPR07-01** | `src-tauri/src/commands/mod.rs` — Command module structure | 1 | ⛓️ SERIAL | `TSK-GVMP01P00EP00SPR00-01` | — |
+| **TSK-GVMP01P03EP03SPR07-02** | `src-tauri/src/commands/genesis_db.rs` — Stub commands: `query_symbol()`, `insert_block()`, `list_symbols()` | 5 | ⛓️ SERIAL | `TSK-GVMP01P03EP03SPR07-01` | — |
+| **TSK-GVMP01P03EP03SPR07-03** | `src-tauri/src/commands/symbol_link.rs` — Stub commands: `resolve_symlink()`, `embed_code_block()` | 5 | 🔀 PARALLEL-G | `TSK-GVMP01P03EP03SPR07-01` | — |
+| **TSK-GVMP01P03EP03SPR07-04** | `src/hooks/useGenesisDb.ts` — React hook wrapping `@tauri-apps/api invoke()` calls | 3 | 🔓 LOCK | `TSK-GVMP01P03EP03SPR07-02`, `TSK-GVMP01P03EP03SPR07-03` | — |
+| **TSK-GVMP01P03EP03SPR07-05** | Wire `useGenesisDb` into `SymbolExplorer.tsx` (view-C1) — replace static table with IPC query | 3 | 🔓 LOCK | `TSK-GVMP01P03EP03SPR07-04`, `TSK-GVMP01P02EP02SPR05-01` | — |
+| **TSK-GVMP01P03EP03SPR07-06** | Wire `useGenesisDb` into `SrsDebugger.tsx` (view-C3) — send query via IPC | 3 | 🔓 LOCK | `TSK-GVMP01P03EP03SPR07-04`, `TSK-GVMP01P02EP02SPR05-03` | — |
+| **TSK-GVMP01P03EP03SPR07-07** | Register all commands in `lib.rs` → `generate_handler![]` | 2 | 🔓 LOCK | `TSK-GVMP01P03EP03SPR07-02`, `TSK-GVMP01P03EP03SPR07-03` | — |
 
-**Parallel Group G**: GV-S302, GV-S303 ทำพร้อมกันได้
+**Parallel Group G**: TSK-GVMP01P03EP03SPR07-02, TSK-GVMP01P03EP03SPR07-03 ทำพร้อมกันได้
 
 **🔓 LOCK Chain**:
 ```
-GV-S301 → GV-S302 + GV-S303 (parallel) → GV-S307
-                                         → GV-S304 → GV-S305 (ต้องรอ GV-S210 ด้วย)
-                                                   → GV-S306 (ต้องรอ GV-S212 ด้วย)
+TSK-GVMP01P03EP03SPR07-01 → TSK-GVMP01P03EP03SPR07-02 + TSK-GVMP01P03EP03SPR07-03 (parallel) → TSK-GVMP01P03EP03SPR07-07
+                                                                                       → TSK-GVMP01P03EP03SPR07-04 → TSK-GVMP01P03EP03SPR07-05 (ต้องรอ TSK-GVMP01P02EP02SPR05-01 ด้วย)
+                                                                                                                 → TSK-GVMP01P03EP03SPR07-06 (ต้องรอ TSK-GVMP02EP02SPR05-03 ด้วย)
 ```
 
 #### DoD — Phase 3
@@ -284,31 +344,33 @@ GV-S301 → GV-S302 + GV-S303 (parallel) → GV-S307
 > **Goal**: Floating terminal, WebSocket (optional), HITL modal, integration test
 > **Sprints**: S4a (Overlays), S4b (Integration)
 
----
-
-### Sprint S4a — Floating Overlays & WebSocket
-
-| Task ID | Task | Points | Mode | Dependency | Source Lines |
-|---------|------|--------|------|------------|--------------|
-| **GV-S401** | `components/terminal/FloatingTerminal.tsx` — Draggable terminal window, shell selector, log output, input line | 5 | 🔀 PARALLEL-H | `GV-S104` | L4422–L4457 |
-| **GV-S402** | `components/overlays/HitlModal.tsx` — Human-in-the-loop verification modal | 3 | 🔀 PARALLEL-H | `GV-S104` | L4392–L4420 |
-| **GV-S403** | `core/websocket.ts` — Optional WS client (connect, reconnect, message handler) | 5 | 🔀 PARALLEL-H | `GV-S101` | L4521–L4593 |
-| **GV-S404** | `hooks/useWebSocket.ts` — React hook for WS state + terminal log integration | 3 | 🔓 LOCK | `GV-S403`, `GV-S401` | — |
-
-**Parallel Group H**: GV-S401, GV-S402, GV-S403 ทำพร้อมกันได้
-
-**🔓 LOCK**: GV-S404 ต้องรอ GV-S403 (WS client) + GV-S401 (Terminal component)
+### [Epic EP04] App Polish & Overlays
 
 ---
 
-### Sprint S4b — Integration Testing & Final Polish
+#### Sprint S4a — Floating Overlays & WebSocket
 
 | Task ID | Task | Points | Mode | Dependency | Source Lines |
 |---------|------|--------|------|------------|--------------|
-| **GV-S405** | Interactive card 3D effects — mouse glare, hover border, tilt transform | 2 | 🔀 PARALLEL-I | Phase 2 complete |
-| **GV-S406** | `GlassPanel.tsx` — Reusable glass card component (replace repeated patterns) | 2 | 🔀 PARALLEL-I | Phase 2 complete |
-| **GV-S407** | Full navigation integration test — click through all 17 views, verify no crash | 3 | ⛓️ SERIAL | ALL tasks | — |
-| **GV-S408** | Update GEMINI.md to reflect GoVibe project structure | 2 | ⛓️ SERIAL | `GV-S407` | — |
+| **TSK-GVMP01P04EP04SPR08-01** | `components/terminal/FloatingTerminal.tsx` — Draggable terminal window, shell selector, log output, input line | 5 | 🔀 PARALLEL-H | `TSK-GVMP01P01EP01SPR01-04` | L4422–L4457 |
+| **TSK-GVMP01P04EP04SPR08-02** | `components/overlays/HitlModal.tsx` — Human-in-the-loop verification modal | 3 | 🔀 PARALLEL-H | `TSK-GVMP01P01EP01SPR01-04` | L4392–L4420 |
+| **TSK-GVMP01P04EP04SPR08-03** | `core/websocket.ts` — Optional WS client (connect, reconnect, message handler) | 5 | 🔀 PARALLEL-H | `TSK-GVMP01P01EP01SPR01-01` | L4521–L4593 |
+| **TSK-GVMP01P04EP04SPR08-04** | `hooks/useWebSocket.ts` — React hook for WS state + terminal log integration | 3 | 🔓 LOCK | `TSK-GVMP01P04EP04SPR08-03`, `TSK-GVMP01P04EP04SPR08-01` | — |
+
+**Parallel Group H**: TSK-GVMP01P04EP04SPR08-01, TSK-GVMP01P04EP04SPR08-02, TSK-GVMP01P04EP04SPR08-03 ทำพร้อมกันได้
+
+**🔓 LOCK**: TSK-GVMP01P04EP04SPR08-04 ต้องรอ TSK-GVMP01P04EP04SPR08-03 (WS client) + TSK-GVMP01P04EP04SPR08-01 (Terminal component)
+
+---
+
+#### Sprint S4b — Integration Testing & Final Polish
+
+| Task ID | Task | Points | Mode | Dependency | Source Lines |
+|---------|------|--------|------|------------|--------------|
+| **TSK-GVMP01P04EP04SPR09-01** | Interactive card 3D effects — mouse glare, hover border, tilt transform | 2 | 🔀 PARALLEL-I | Phase 2 complete |
+| **TSK-GVMP01P04EP04SPR09-02** | `GlassPanel.tsx` — Reusable glass card component (replace repeated patterns) | 2 | 🔀 PARALLEL-I | Phase 2 complete |
+| **TSK-GVMP01P04EP04SPR09-03** | Full navigation integration test — click through all 17 views, verify no crash | 3 | ⛓️ SERIAL | ALL tasks | — |
+| **TSK-GVMP01P04EP04SPR09-04** | Update GEMINI.md to reflect GoVibe project structure | 2 | ⛓️ SERIAL | `TSK-GVMP01P04EP04SPR09-03` | — |
 
 #### DoD — Phase 4 (Final)
 ```
@@ -333,13 +395,13 @@ GV-S301 → GV-S302 + GV-S303 (parallel) → GV-S307
 ```mermaid
 graph TD
     subgraph "Phase 0 — Foundation"
-        S001["GV-S001<br/>Scaffold Project"]
-        S002["GV-S002<br/>Tauri Config"]
-        S003["GV-S003<br/>globals.css"]
-        S004["GV-S004<br/>glassmorphism.css"]
-        S005["GV-S005<br/>animations.css"]
-        S006["GV-S006<br/>components.css"]
-        S007["GV-S007<br/>Tailwind Setup"]
+        S001["TSK-GVMP01P00EP00SPR00-01<br/>Scaffold Project"]
+        S002["TSK-GVMP01P00EP00SPR00-02<br/>Tauri Config"]
+        S003["TSK-GVMP01P00EP00SPR00-03<br/>globals.css"]
+        S004["TSK-GVMP01P00EP00SPR00-04<br/>glassmorphism.css"]
+        S005["TSK-GVMP01P00EP00SPR00-05<br/>animations.css"]
+        S006["TSK-GVMP01P00EP00SPR00-06<br/>components.css"]
+        S007["TSK-GVMP01P00EP00SPR00-07<br/>Tailwind Setup"]
         
         S001 --> S002
         S001 --> S003
@@ -350,16 +412,16 @@ graph TD
     end
     
     subgraph "Phase 1 — Shell"
-        S101["GV-S101<br/>core/state.ts"]
-        S102["GV-S102<br/>Header.tsx"]
-        S103["GV-S103<br/>Sidebar.tsx"]
-        S104["GV-S104<br/>MainLayout.tsx"]
-        S105["GV-S105<br/>ThemeToggle"]
-        S106["GV-S106<br/>ShimmerTitle"]
-        S107["GV-S107<br/>Footer"]
-        S108["GV-S108<br/>switchDomain"]
-        S109["GV-S109<br/>switchMainView"]
-        S110["GV-S110<br/>17 Placeholders"]
+        S101["TSK-GVMP01P01EP01SPR01-01<br/>core/state.ts"]
+        S102["TSK-GVMP01P01EP01SPR01-02<br/>Header.tsx"]
+        S103["TSK-GVMP01P01EP01SPR01-03<br/>Sidebar.tsx"]
+        S104["TSK-GVMP01P01EP01SPR01-04<br/>MainLayout.tsx"]
+        S105["TSK-GVMP01P01EP01SPR01-05<br/>ThemeToggle"]
+        S106["TSK-GVMP01P01EP01SPR01-06<br/>ShimmerTitle"]
+        S107["TSK-GVMP01P01EP01SPR01-07<br/>Footer"]
+        S108["TSK-GVMP01P01EP01SPR02-01<br/>switchDomain"]
+        S109["TSK-GVMP01P01EP01SPR02-02<br/>switchMainView"]
+        S110["TSK-GVMP01P01EP01SPR02-03<br/>17 Placeholders"]
         
         S003 --> S101
         S101 --> S102
@@ -375,23 +437,23 @@ graph TD
     end
     
     subgraph "Phase 2 — Views"
-        S201["GV-S201<br/>Dashboard A1"]
-        S202["GV-S202<br/>Roadmap A2"]
-        S203["GV-S203<br/>Plugins A3"]
-        S204["GV-S204<br/>BrainConfig A4"]
-        S205["GV-S205<br/>AgentMgmt A5"]
-        S206["GV-S206<br/>AST Tree B1"]
-        S207["GV-S207<br/>BizSpec B2"]
-        S208["GV-S208<br/>Graph B3"]
-        S209["GV-S209<br/>CallGraph B4"]
-        S210["GV-S210<br/>SymbolExplorer C1"]
-        S211["GV-S211<br/>IntelZoo C2"]
-        S212["GV-S212<br/>SRS Debugger C3"]
-        S213["GV-S213<br/>ERD Schema C4"]
-        S214["GV-S214<br/>HNSW Map C5"]
-        S215["GV-S215<br/>ReactorRun D1"]
-        S216["GV-S216<br/>Heatmap D2"]
-        S217["GV-S217<br/>EABS Logs D3"]
+        S201["TSK-GVMP01P02EP02SPR03-01<br/>Dashboard A1"]
+        S202["TSK-GVMP01P02EP02SPR03-02<br/>Roadmap A2"]
+        S203["TSK-GVMP01P02EP02SPR03-03<br/>Plugins A3"]
+        S204["TSK-GVMP01P02EP02SPR03-04<br/>BrainConfig A4"]
+        S205["TSK-GVMP01P02EP02SPR03-05<br/>AgentMgmt A5"]
+        S206["TSK-GVMP01P02EP02SPR04-01<br/>AST Tree B1"]
+        S207["TSK-GVMP01P02EP02SPR04-02<br/>BizSpec B2"]
+        S208["TSK-GVMP01P02EP02SPR04-03<br/>Graph B3"]
+        S209["TSK-GVMP01P02EP02SPR04-04<br/>CallGraph B4"]
+        S210["TSK-GVMP01P02EP02SPR05-01<br/>SymbolExplorer C1"]
+        S211["TSK-GVMP01P02EP02SPR05-02<br/>IntelZoo C2"]
+        S212["TSK-GVMP01P02EP02SPR05-03<br/>SRS Debugger C3"]
+        S213["TSK-GVMP01P02EP02SPR05-04<br/>ERD Schema C4"]
+        S214["TSK-GVMP01P02EP02SPR05-05<br/>HNSW Map C5"]
+        S215["TSK-GVMP01P02EP02SPR06-01<br/>ReactorRun D1"]
+        S216["TSK-GVMP01P02EP02SPR06-02<br/>Heatmap D2"]
+        S217["TSK-GVMP01P02EP02SPR06-03<br/>EABS Logs D3"]
         
         S110 --> S201
         S110 --> S202
@@ -413,13 +475,13 @@ graph TD
     end
     
     subgraph "Phase 3 — Rust Backend"
-        S301["GV-S301<br/>commands/mod.rs"]
-        S302["GV-S302<br/>genesis_db.rs"]
-        S303["GV-S303<br/>symbol_link.rs"]
-        S304["GV-S304<br/>useGenesisDb Hook"]
-        S305["GV-S305<br/>Wire C1"]
-        S306["GV-S306<br/>Wire C3"]
-        S307["GV-S307<br/>Register Commands"]
+        S301["TSK-GVMP01P03EP03SPR07-01<br/>commands/mod.rs"]
+        S302["TSK-GVMP01P03EP03SPR07-02<br/>genesis_db.rs"]
+        S303["TSK-GVMP01P03EP03SPR07-03<br/>symbol_link.rs"]
+        S304["TSK-GVMP01P03EP03SPR07-04<br/>useGenesisDb Hook"]
+        S305["TSK-GVMP01P03EP03SPR07-05<br/>Wire C1"]
+        S306["TSK-GVMP01P03EP03SPR07-06<br/>Wire C3"]
+        S307["TSK-GVMP01P03EP03SPR07-07<br/>Register Commands"]
         
         S001 --> S301
         S301 --> S302
@@ -435,12 +497,12 @@ graph TD
     end
     
     subgraph "Phase 4 — Polish"
-        S401["GV-S401<br/>FloatingTerminal"]
-        S402["GV-S402<br/>HITL Modal"]
-        S403["GV-S403<br/>WS Client"]
-        S404["GV-S404<br/>useWebSocket"]
-        S407["GV-S407<br/>Integration Test"]
-        S408["GV-S408<br/>Update Docs"]
+        S401["TSK-GVMP01P04EP04SPR08-01<br/>FloatingTerminal"]
+        S402["TSK-GVMP01P04EP04SPR08-02<br/>HITL Modal"]
+        S403["TSK-GVMP01P04EP04SPR08-03<br/>WS Client"]
+        S404["TSK-GVMP01P04EP04SPR08-04<br/>useWebSocket"]
+        S407["TSK-GVMP01P04EP04SPR09-03<br/>Integration Test"]
+        S408["TSK-GVMP01P04EP04SPR09-04<br/>Update Docs"]
         
         S104 --> S401
         S104 --> S402
@@ -457,16 +519,16 @@ graph TD
 
 | Sprint | Phase | Tasks | Total Points | Duration Est. | Parallel Slots |
 |--------|-------|-------|-------------|--------------|----------------|
-| **S0** | Foundation | GV-S001–S007 | 22 | 1–2 days | 5 parallel after S001 |
-| **S1a** | Shell: Layout | GV-S101–S107 | 20 | 1–2 days | 5 parallel after S101 |
-| **S1b** | Shell: Routing | GV-S108–S110 | 8 | 0.5 day | serial |
-| **S2a** | Domain A | GV-S201–S205 | 40 | 3–4 days | 5 parallel |
-| **S2b** | Domain B | GV-S206–S209 | 20 | 1–2 days | 4 parallel |
-| **S2c** | Domain C | GV-S210–S214 | 17 | 1–2 days | 5 parallel |
-| **S2d** | Domain D | GV-S215–S217 | 15 | 1–2 days | 3 parallel |
-| **S3** | Rust Backend | GV-S301–S307 | 22 | 2–3 days | partial parallel |
-| **S4a** | Overlays | GV-S401–S404 | 16 | 1–2 days | 3 parallel |
-| **S4b** | Polish | GV-S405–S408 | 9 | 1 day | partial parallel |
+| **S0** | Foundation | TSK-GVMP01P00EP00SPR00-01–TSK-GVMP01P00EP00SPR00-07 | 22 | 1–2 days | 5 parallel after S001 |
+| **S1a** | Shell: Layout | TSK-GVMP01P01EP01SPR01-01–TSK-GVMP01P01EP01SPR01-07 | 20 | 1–2 days | 5 parallel after S101 |
+| **S1b** | Shell: Routing | TSK-GVMP01P01EP01SPR02-01–TSK-GVMP01P01EP01SPR02-03 | 8 | 0.5 day | serial |
+| **S2a** | Domain A | TSK-GVMP01P02EP02SPR03-01–TSK-GVMP01P02EP02SPR03-05 | 40 | 3–4 days | 5 parallel |
+| **S2b** | Domain B | TSK-GVMP01P02EP02SPR04-01–TSK-GVMP01P02EP02SPR04-04 | 20 | 1–2 days | 4 parallel |
+| **S2c** | Domain C | TSK-GVMP01P02EP02SPR05-01–TSK-GVMP01P02EP02SPR05-05 | 17 | 1–2 days | 5 parallel |
+| **S2d** | Domain D | TSK-GVMP01P02EP02SPR06-01–TSK-GVMP01P02EP02SPR06-03 | 15 | 1–2 days | 3 parallel |
+| **S3** | Rust Backend | TSK-GVMP01P03EP03SPR07-01–TSK-GVMP01P03EP03SPR07-07 | 22 | 2–3 days | partial parallel |
+| **S4a** | Overlays | TSK-GVMP01P04EP04SPR08-01–TSK-GVMP01P04EP04SPR08-04 | 16 | 1–2 days | 3 parallel |
+| **S4b** | Polish | TSK-GVMP01P04EP04SPR09-01–TSK-GVMP01P04EP04SPR09-04 | 9 | 1 day | partial parallel |
 | | | **44 tasks** | **~189 pts** | **~12–18 days** | |
 
 ---
@@ -490,12 +552,12 @@ graph TD
 เมื่อ assign task ให้ agent อื่น ให้ระบุ:
 
 ```yaml
-task_id: GV-S201
+task_id: TSK-GVMP01P02EP02SPR03-01
 source_file: "g:/covibe/Untitled-1.html"
 source_lines: "L1926–L2013"
 target_file: "g:/govibe/src/domains/overview/Dashboard.tsx"
 dependencies:
-  - GV-S110 (must be DONE)
+  - TSK-GVMP01P01EP01SPR02-03 (must be DONE)
 dod_gates: [acceptance, success, exit]
 complexity: C-2  # DDD: Text → Doc → Code
 ```
