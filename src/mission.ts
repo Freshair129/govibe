@@ -26,6 +26,30 @@ export type AgentRecord = {
   speed: string;
   accent?: string;
   avatarUrl?: string;
+  fleet?: AgentFleetMetadata;
+};
+
+export type AgentScopeStatus =
+  | "in_scope"
+  | "needs_change_request"
+  | "blocked_by_missing_req"
+  | "ready_for_assignment";
+
+export type AgentFleetMetadata = {
+  fleetRole?: string;
+  jobTitleEquivalent?: string;
+  domain?: string;
+  cluster?: string;
+  responsibility?: string[];
+  authority?: {
+    can?: string[];
+    cannot?: string[];
+  };
+  sourceRefs?: string[];
+  approvalGate?: string;
+  scopeBoundary?: string;
+  outOfScope?: string[];
+  scopeStatus?: AgentScopeStatus;
 };
 
 export type MetricCard = {

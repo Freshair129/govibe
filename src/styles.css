@@ -998,6 +998,87 @@ footer {
   resize: vertical;
 }
 
+.agent-fleet-panel {
+  background: color-mix(in srgb, var(--surface), transparent 18%);
+  border: 1px solid color-mix(in srgb, var(--accent) 36%, transparent);
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  margin-top: 18px;
+  padding: 16px;
+}
+
+.agent-fleet-panel header,
+.agent-fleet-panel footer {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.agent-fleet-panel header span,
+.agent-fleet-panel footer small,
+.fleet-meta-grid span,
+.fleet-authority-grid span {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.agent-fleet-panel header strong {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: 999px;
+  color: var(--text);
+  padding: 4px 8px;
+  text-transform: capitalize;
+}
+
+.fleet-meta-grid,
+.fleet-authority-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fleet-meta-grid article,
+.fleet-authority-grid > div {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.fleet-meta-grid strong,
+.fleet-authority-grid strong {
+  font-size: 0.9rem;
+}
+
+.fleet-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.fleet-chip-row span {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  color: var(--text);
+  font-size: 0.78rem;
+  padding: 5px 8px;
+}
+
+.agent-fleet-panel footer {
+  align-items: flex-start;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.agent-fleet-panel footer small {
+  max-width: 58%;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
 .graph-layout,
 .roadmap-layout,
 .hnsw-layout,

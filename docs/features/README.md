@@ -13,7 +13,7 @@ This folder is organized by PRD product systems. Feature specs remain human-firs
 | `SYSTEM-02::Project-Roadmap-Management-System` | `project-roadmap/` | Roadmap board migration, document-driven roadmap source |
 | `SYSTEM-03::Docs-to-Code-System` | `docs-to-code/` | System spec, roadmap document parsing dependency |
 | `SYSTEM-04::Diagram-to-Doc-System` | `diagram-to-doc/` | System spec |
-| `SYSTEM-05::Agent-Team-Management-System` | `agent-team/` | Agent management, multi-agent workflow, multi-agent collaboration, visual office |
+| `SYSTEM-05::Agent-Team-Management-System` | `agent-team/` | Agent management, visual agent fleet, multi-agent workflow, multi-agent collaboration, visual office |
 | `SYSTEM-06::Integration-Bridge-System` | `integration-bridge/` | MCP integration bridge |
 | `SYSTEM-07::Governance-Access-Control-System` | `governance-access/` | RBAC / ABAC governance |
 | `SYSTEM-08::Genesis-Knowledge-System` | `genesis-knowledge-system/` | GenesisBlockDB, AST, call graph, Markdown renderer, HNSW, compaction, hybrid JIT context |

@@ -738,12 +738,15 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
                 <button onClick={() => setConfigOpen((value) => !value)}>{configOpen ? "Close Config" : "Configure"}</button>
               </div>
               {!configOpen ? (
-                <div className="metric-grid compact">
-                  <article><span>Model</span><strong>{active.model}</strong></article>
-                  <article><span>Tasks</span><strong>{active.tasks}</strong></article>
-                  <article><span>Accuracy</span><strong>{active.accuracy}</strong></article>
-                  <article><span>Speed</span><strong>{active.speed}</strong></article>
-                </div>
+                <>
+                  <div className="metric-grid compact">
+                    <article><span>Model</span><strong>{active.model}</strong></article>
+                    <article><span>Tasks</span><strong>{active.tasks}</strong></article>
+                    <article><span>Accuracy</span><strong>{active.accuracy}</strong></article>
+                    <article><span>Speed</span><strong>{active.speed}</strong></article>
+                  </div>
+                  <AgentFleetMetadataPanel agent={active} />
+                </>
               ) : (
                 <div className="agent-config-grid">
                   <label>
@@ -772,6 +775,49 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
         </div>
       )}
     </div>
+  );
+}
+
+function AgentFleetMetadataPanel({ agent }: { agent: AgentRecord }) {
+  const fleet = agent.fleet;
+  if (!fleet) return null;
+
+  const scopeStatus = fleet.scopeStatus?.replace(/_/g, " ") ?? "metadata only";
+  const authorityCan = fleet.authority?.can ?? [];
+  const authorityCannot = fleet.authority?.cannot ?? [];
+
+  return (
+    <section className="agent-fleet-panel" aria-label="Visual Agent Fleet role metadata">
+      <header>
+        <span>Role / provenance metadata</span>
+        <strong>{scopeStatus}</strong>
+      </header>
+      <div className="fleet-meta-grid">
+        <article><span>Fleet Role</span><strong>{fleet.fleetRole ?? agent.role}</strong></article>
+        <article><span>Job Title</span><strong>{fleet.jobTitleEquivalent ?? "Unspecified"}</strong></article>
+        <article><span>Domain</span><strong>{fleet.domain ?? "Unspecified"}</strong></article>
+        <article><span>Cluster</span><strong>{fleet.cluster ?? "Unspecified"}</strong></article>
+      </div>
+      {fleet.responsibility?.length ? (
+        <div className="fleet-chip-row">
+          {fleet.responsibility.map((item) => <span key={item}>{item}</span>)}
+        </div>
+      ) : null}
+      <div className="fleet-authority-grid">
+        <div>
+          <strong>Can</strong>
+          {authorityCan.length ? authorityCan.map((item) => <span key={item}>{item}</span>) : <span>Not specified</span>}
+        </div>
+        <div>
+          <strong>Cannot</strong>
+          {authorityCannot.length ? authorityCannot.map((item) => <span key={item}>{item}</span>) : <span>Not specified</span>}
+        </div>
+      </div>
+      <footer>
+        <span>{fleet.approvalGate ?? "Approval gate not specified"}</span>
+        <small>{fleet.sourceRefs?.slice(0, 2).join(" | ") ?? "No source refs"}</small>
+      </footer>
+    </section>
   );
 }
 

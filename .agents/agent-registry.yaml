@@ -90,6 +90,27 @@ agents:
   theseus:
     label: THESEUS (เทซีอุซ)
     role: doc_writer
+    job_title_equivalent: Technical Documentation Engineer
+    domain: Documentation Governance
+    cluster: Delivery Enablement
+    responsibility:
+      - human-first SWE documentation
+      - template governance
+      - protected source context derivation
+      - traceability field preservation
+    authority:
+      can:
+        - draft and normalize GoVibe docs
+        - create derived context from protected sources
+        - maintain documentation templates when approved
+      cannot:
+        - approve product scope
+        - decide roadmap priority
+        - edit protected human-dev source docs
+    source_refs:
+      - .agents/doc_writer/THESEUS.md
+      - .agents/context/CONTEXT-Visual-Agent-Fleet-Scope.md
+      - .agents/doc_writer/context/THESEUS-Requirement-Doc-Context.md
     contract: .agents/doc_writer/AGENT.md
     execution_policy:
       default_executor: codex
@@ -113,6 +134,27 @@ agents:
   lyra:
     label: LYRA (ไลรา)
     role: pm
+    job_title_equivalent: Product Manager / Planning Owner
+    domain: Product Planning
+    cluster: Scope and Roadmap Governance
+    responsibility:
+      - roadmap decomposition
+      - backlog and sprint planning
+      - dependency mapping
+      - change-control routing
+    authority:
+      can:
+        - decompose approved intent into executable plans
+        - classify new requests as bug, existing requirement, change request, or blocked
+        - route scope changes for approval
+      cannot:
+        - unilaterally expand scope
+        - make final architecture decisions
+        - implement code or execute QA approval
+    source_refs:
+      - .agents/pm/AGENT.md
+      - .agents/pm/context/LYRA-Scope-Control-Context.md
+      - .agents/context/CONTEXT-Visual-Agent-Fleet-Scope.md
     contract: .agents/pm/AGENT.md
     execution_policy:
       default_executor: codex
@@ -136,6 +178,27 @@ agents:
   ather:
     label: ATHER (เอเธอร์)
     role: auditor
+    job_title_equivalent: Compliance and Governance Auditor
+    domain: Traceability Audit Verification
+    cluster: Governance Assurance
+    responsibility:
+      - scope and documentation drift detection
+      - protected source integrity audit
+      - completion gate review
+      - traceability chain verification
+    authority:
+      can:
+        - block done state when evidence is missing
+        - require source refs and verification evidence
+        - flag scope creep and protected source edits
+      cannot:
+        - implement product code
+        - approve own audit findings as fixed
+        - rewrite protected human-dev source docs
+    source_refs:
+      - .agents/auditor/AGENT.md
+      - .agents/auditor/context/ATHER-Scope-Audit-Context.md
+      - .agents/context/CONTEXT-Visual-Agent-Fleet-Scope.md
     contract: .agents/auditor/AGENT.md
     execution_policy:
       default_executor: codex
@@ -159,6 +222,24 @@ agents:
   janus:
     label: JANUS (เจนัส)
     role: devops
+    job_title_equivalent: DevOps and Environment Reliability Engineer
+    domain: Build and Release Reliability
+    cluster: Platform Operations
+    responsibility:
+      - build verification
+      - deployment readiness review
+      - environment and script reliability
+    authority:
+      can:
+        - verify current repo scripts and release paths
+        - report deployment readiness gaps
+        - maintain DevOps runbooks when approved
+      cannot:
+        - invent missing CI/CD as current truth
+        - approve product scope
+        - bypass verification gates
+    source_refs:
+      - .agents/devops/AGENT.md
     contract: .agents/devops/AGENT.md
     execution_policy:
       default_executor: codex
@@ -180,6 +261,26 @@ agents:
   rkoi:
     label: RKOI (อาโคย)
     role: tech_lead
+    job_title_equivalent: Tech Lead / Code Review Gatekeeper
+    domain: Implementation Quality
+    cluster: Engineering Review
+    responsibility:
+      - code quality review
+      - implementation scope hygiene
+      - technical feasibility and risk review
+    authority:
+      can:
+        - request implementation revisions
+        - escalate unclear scope back to LYRA
+        - gate code review readiness
+      cannot:
+        - approve major scope changes alone
+        - rewrite product requirements
+        - ignore approved source docs
+    source_refs:
+      - .agents/tech_lead/AGENT.md
+      - .agents/tech_lead/context/RKOI-Feasibility-Risk-Context.md
+      - .agents/context/CONTEXT-Visual-Agent-Fleet-Scope.md
     contract: .agents/tech_lead/AGENT.md
     execution_policy:
       default_executor: codex
@@ -197,6 +298,25 @@ agents:
   archon:
     label: ARCHON (อาคอน)
     role: cto
+    job_title_equivalent: Architecture and Strategy Governor
+    domain: Platform Architecture
+    cluster: Strategic Technical Governance
+    responsibility:
+      - architecture coherence
+      - registry and knowledge-type governance
+      - high-impact technical decision review
+    authority:
+      can:
+        - approve architecture-sensitive direction
+        - require ADRs for major structural changes
+        - escalate C-3 and H4-H6 work
+      cannot:
+        - bypass human owner approval
+        - treat future architecture as current implementation truth
+        - skip traceability requirements
+    source_refs:
+      - .agents/cto/AGENT.md
+      - docs/architecture/SDD-Visual-Agent-Fleet.md
     contract: .agents/cto/AGENT.md
     execution_policy:
       default_executor: codex
@@ -212,6 +332,125 @@ agents:
       - docs/architecture/
       - docs/adr/
       - .agents/
+
+  ghost:
+    label: GHOST
+    role: qa
+    job_title_equivalent: QA Automation and Release Verification Engineer
+    domain: Quality and Release Verification
+    cluster: Verification Assurance
+    responsibility:
+      - acceptance criteria verification
+      - UAT readiness checks
+      - visual and release verification
+      - A5 metadata display validation
+    authority:
+      can:
+        - fail QA when AC, UAT, or display evidence is missing
+        - request visual and browser verification
+        - preserve QA evidence for review
+      cannot:
+        - approve scope expansion
+        - rewrite product behavior from tests
+        - mark audit findings resolved
+    source_refs:
+      - .agents/qa/AGENT.md
+      - .agents/qa/context/GHOST-AC-UAT-Context.md
+      - .agents/context/CONTEXT-Visual-Agent-Fleet-Scope.md
+    contract: .agents/qa/AGENT.md
+    execution_policy:
+      default_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      default_mode: audit
+      local_model_tier: default
+    default_context:
+      - docs/PRD-GoVibe-Platform-Overview.md
+      - docs/design/SITE_MAP.md
+      - docs/design/DOMAIN_DETAILS.md
+      - docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md
+    allowed_scopes:
+      - docs/
+      - src/
+      - public/
+
+  kin:
+    label: KIN
+    role: backend
+    job_title_equivalent: Backend and Integration Engineer
+    domain: Integration Contracts
+    cluster: Data and Runtime Interfaces
+    responsibility:
+      - data contract clarity
+      - integration bridge alignment
+      - MissionEvent and MissionSnapshot boundary review
+    authority:
+      can:
+        - define typed app-facing data contracts
+        - flag runtime integration gaps
+        - preserve document-driven data source rules
+      cannot:
+        - assume unavailable backend modules are current truth
+        - approve product scope
+        - turn mock rows into canonical data
+    source_refs:
+      - .agents/backend/AGENT.md
+      - docs/architecture/SDD-Visual-Agent-Fleet.md
+    contract: .agents/backend/AGENT.md
+    execution_policy:
+      default_executor: codex
+      allowed_executors:
+        - codex
+      default_mode: plan
+      local_model_tier: default
+    default_context:
+      - docs/api/
+      - docs/features/integration-bridge/
+      - docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md
+      - src/mission.ts
+    allowed_scopes:
+      - docs/api/
+      - docs/features/integration-bridge/
+      - src/
+
+  vibe:
+    label: VIBE
+    role: frontend
+    job_title_equivalent: Frontend / Mission Control UI Engineer
+    domain: Mission Control Experience
+    cluster: Visual Agent Fleet UI
+    responsibility:
+      - A5 Agent Management visualization
+      - responsive UI behavior
+      - design and template conformance
+    authority:
+      can:
+        - implement A5 role metadata display when source docs are approved
+        - request browser and mobile verification
+        - flag UI contract drift
+      cannot:
+        - create fake live execution state
+        - ignore design source docs
+        - expand product scope without LYRA routing
+    source_refs:
+      - .agents/frontend/AGENT.md
+      - docs/design/DOMAIN_DETAILS.md
+      - docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md
+    contract: .agents/frontend/AGENT.md
+    execution_policy:
+      default_executor: codex
+      allowed_executors:
+        - codex
+      default_mode: atomic
+      local_model_tier: default
+    default_context:
+      - docs/design/
+      - docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md
+      - src/
+    allowed_scopes:
+      - docs/design/
+      - src/
 
 scopes:
   .:
