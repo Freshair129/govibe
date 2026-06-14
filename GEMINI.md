@@ -12,8 +12,8 @@ This file gives Gemini and other AI coding agents the current operating context 
 
 For the canonical root agent contract, also read:
 
-- `AGENT.md`
-- `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
+Persona and role: `.agents/cto/AGENT.md`
+runbooks and workflow: `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 
 ## Project Overview
 
