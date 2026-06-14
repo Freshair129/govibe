@@ -214,6 +214,20 @@ agents:
       - .agents/
 
 scopes:
+  .:
+    preferred_agent: archon
+    execution_policy:
+      preferred_executor: codex
+      allowed_executors:
+        - codex
+        - ollama
+      local_mode_policy: any
+      local_model_tier: retry
+    context:
+      - src/
+      - docs/
+      - .agents/
+
   docs/features/agent-team:
     preferred_agent: theseus
     execution_policy:
