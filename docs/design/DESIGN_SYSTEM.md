@@ -94,7 +94,12 @@ A5 uses a dark glass interactive-card system derived from the Mission Control te
 
 ## Template-Aligned Surfaces
 
-- A2 includes roadmap header controls, export/reset affordances, assist roster cards, and detailed task rows from the template blueprint.
+- A2 includes roadmap header controls, export/reset affordances, assist roster cards, phase containers, sprint containers, and detailed task containers from the template blueprint.
+- A2 task detail dropdowns must render from `Task Container` records, not from title-only roadmap nodes. A `WorkflowTaskNode` may identify hierarchy and status, but the detailed dropdown needs a task container for symbol links, DoD, changelog, token telemetry, PIC, executor, approver, and auditor fields.
+- A2 must preserve this hierarchy: Roadmap Source -> Phase Container -> Sprint Container -> Task Container -> Task Detail Dropdown.
+- A2 task containers must include code/doc/test symbol links, version, complexity, requirement type, status, token usage, Definition of Done split into Acceptance Criteria, Success Criteria, and Exit Criteria, changelog, created/updated metadata, task ID, and per-task export controls for JSON, YAML, and Markdown.
+- A2 must render missing task container fields as `unavailable` or an explicit disabled reason. It must not synthesize fake links, fake token splits, fake completion, or fake assignee data to make the dropdown look complete.
+- A2 must display `PIC`, `Executor`, `Approver`, and `Auditor` as distinct responsibility fields. The executor may be Codex or another agent, but the PIC remains responsible for outcome, handoff, and closure.
 - A5 includes the Agent Select infinity card-deck carousel, active-agent stats, ability tags, bottom controls, EVA video switcher and media console from `public/agents/eva`, sequential autoplay from EVA video 01 to 02 to 03 and back to 01, pointer-driven cursor glow, 3D tilt on the character console, and a config overlay when no live agents are connected. Live agents still render from `snapshot.agents`.
 - A5 interactive cards must preserve the template's `interactive-card` behavior: preserve-3D transform style, hover border and glow elevation, and a glare layer driven by `--mouse-x` and `--mouse-y`.
 - A5 agent config cards must preserve the template's Raycast 3D card style: `raycast-perspective-container` perspective around `1000px`, `raycast-agent-card` glass blur, preserve-3D children, shine or glare layer, hover accent shadow per agent, and pointer-driven `rotateX` and `rotateY` tilt up to about `15deg` with `scale(1.04)`.
@@ -125,10 +130,70 @@ The UI accepts real data through:
 - `govibe:mission-event`: custom browser event carrying `MissionEvent`.
 - C3 Data Ingest form: manual JSON `MissionEvent` ingestion.
 
+## A2 Task Container Contract
+
+`Task Container` is the design and data contract for the expanded task card shown inside the A2 roadmap dropdown. It is more detailed than a roadmap node and is the minimum structure needed to match `GoVibe-Mission-Control-template.html`.
+
+```yaml
+task_container_id:
+task_id:
+legacy_task_id:
+legacy_code:
+parent_phase_id:
+parent_sprint_id:
+title:
+requirement_type:
+complexity:
+status:
+version:
+pic:
+executor:
+approver:
+auditor:
+assignee:
+completed_by:
+symbol_links:
+  code:
+  doc:
+  test:
+definition_of_done:
+  acceptance_criteria:
+    - criterion:
+      checked:
+  success_criteria:
+    - criterion:
+      checked:
+  exit_criteria:
+    - criterion:
+      checked:
+changelog:
+created_at:
+last_update:
+token_telemetry:
+  model_name:
+  context_length:
+  predicted_token_usage:
+  actual_input_tokens:
+  actual_output_tokens:
+  tool_calling_tokens:
+  total_token_usage:
+export:
+  json:
+  yaml:
+  markdown:
+ui_state:
+  dropdown_default:
+  expanded:
+  disabled_reason:
+```
+
+Implementation code remains blocked until this contract is represented in the roadmap source and verified by ATHER/GHOST.
+
 ## Changelog
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 2.6.0 | 2026-06-14 | Added the A2 Task Container contract for template-parity roadmap detail dropdowns, including PIC/Executor separation and token telemetry display rules. |
 | 2.5.1 | 2026-06-13 | Cleaned the design SSOT by removing stray reference snippets, normalizing interactive-card guidance, and keeping only GoVibe-relevant design contracts. |
 | 2.2.0 | 2026-06-10 | Expanded domain detail views to match the template more closely: A2 task rows, A5 select screen, AST/graph/spec/zoo/heatmap/log blueprints. |
 | 2.1.0 | 2026-06-10 | Added template-aligned surfaces, hover sidebar behavior, filterable table, graph controls, debugger panes, ERD/vector/safety command surfaces, and PRODUCT.md context. |

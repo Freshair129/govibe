@@ -10,8 +10,9 @@ This document tracks the implemented React route structure in `src/App.tsx` and 
   - Shows empty states when no telemetry has arrived.
 - **A2: Roadmap Board**
   - Implemented as a React roadmap surface.
-  - Shows Phase, Sprint, Epic, User Story, and Task lanes.
-  - Expects roadmap task snapshots through the mission gateway.
+  - Shows Development Roadmap hierarchy: roadmap source, phase containers, sprint containers, task containers, and task detail dropdowns.
+  - Expects roadmap hierarchy snapshots and Task Container records through the mission gateway.
+  - Task detail dropdowns show symbol links, Definition of Done, changelog, task metadata, PIC/Executor/Approver/Auditor, token telemetry, and per-task export controls.
 - **A3: Capability Plugins**
   - Implemented as a React capability surface.
   - Shows Transport, Runtime, and Workspace capability slots.
@@ -89,4 +90,5 @@ This document tracks the implemented React route structure in `src/App.tsx` and 
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.2.0 | 2026-06-14 | Clarified that A2 consumes roadmap hierarchy plus Task Container detail records for template-parity dropdowns. |
 | 0.1.0 | 2026-06-12 | Added implemented React route map for Mission Control domains, modules, and global overlays. |

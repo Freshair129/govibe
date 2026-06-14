@@ -21,6 +21,25 @@ The dashboard renders from:
 - `symbols`
 - `heatmap`
 - `campaignLogs`
+- `roadmap`
+
+### A2 Task Container
+
+A2 roadmap task detail dropdowns require `Task Container` records in addition to roadmap hierarchy nodes. The container supplies detailed fields that must not be inferred from a title-only `WorkflowTaskNode`.
+
+Required task container fields:
+
+- `task_container_id`, `task_id`, `legacy_task_id`, and `legacy_code`
+- `parent_phase_id` and `parent_sprint_id`
+- `pic`, `executor`, `approver`, and `auditor`
+- `symbol_links.code`, `symbol_links.doc`, and `symbol_links.test`
+- `definition_of_done.acceptance_criteria`
+- `definition_of_done.success_criteria`
+- `definition_of_done.exit_criteria`
+- `changelog`, `created_at`, and `last_update`
+- `token_telemetry.model_name`, `context_length`, `predicted_token_usage`, `actual_input_tokens`, `actual_output_tokens`, `tool_calling_tokens`, and `total_token_usage`
+- `export.json`, `export.yaml`, and `export.markdown`
+- `ui_state.dropdown_default`, `expanded`, and `disabled_reason`
 
 ### MissionEvent
 
@@ -33,6 +52,11 @@ Supported event types:
 - `agents.update`
 - `graph.update`
 - `heatmap.update`
+- `roadmap.snapshot`
+- `roadmap.node.update`
+- `roadmap.assignment`
+- `roadmap.handoff`
+- `roadmap.verification`
 
 ### MissionCommand
 
@@ -52,7 +76,7 @@ Each domain and module below must match `docs/design/SITE_MAP.md`, `src/mission.
 | Module | Implemented Evidence | Verification |
 | --- | --- | --- |
 | A1 Real-time Dashboard | Renders metrics, chart, and reactor rows from `MissionSnapshot`. | Ingest a `snapshot` payload with metrics; A1 must update and remove the no-telemetry empty state. |
-| A2 Roadmap Board | Renders roadmap header, progress surface, export/reset controls, assist roster cards, phase accordion, task rows, badges, and assignment selects. | Switch to A2; controls, roster cards, phase header, and task rows must be visible. |
+| A2 Roadmap Board | Renders roadmap header, progress surface, export/reset controls, assist roster cards, phase accordion, sprint blocks, task container dropdowns, badges, symbol links, DoD, changelog, token telemetry, PIC/Executor/Approver/Auditor fields, task ID, and per-task export controls. | Load a roadmap snapshot with at least one Task Container generated from `docs/roadmap/BACKLOG-p1-mvp-core.md`; switch to A2; expand a task dropdown; verify `MVP Core`, `SPRINT 1A`, `SYMBOL LINKS`, `DEFINITION OF DONE`, `CHANGELOG`, `TASK ID`, `TOKENS USED`, `PIC`, `Executor`, `EXPORT TASK`, and `TSK-CVB01P0109B` are visible. The unfinished queue task must be visibly not done. |
 | A3 Capability Plugins | Renders plugin cards for transport, export, knowledge, and benchmark extension points. | Switch to A3; plugin cards and action controls must be visible without mock telemetry. |
 | A4 Brain & Config | Renders model source, Genesis Knowledge, behavior, and runtime-limit control surfaces. | Switch to A4; configuration controls must be visible without implying active backend state. |
 | A5 Agent Management | Renders `snapshot.agents` when available; otherwise shows the Agent Select infinity carousel with active stats, ability tags, EVA media/video switcher from `public/agents/eva`, sequential autoplay 01 -> 02 -> 03 -> 01, `interactive-card` glare, Raycast 3D Agent Card tilt, Agent drag follow-cursor assignment, cursor glow, 3D character tilt, mobile single-column layout, and config overlay. Visual Agent Fleet metadata may be shown as configuration/provenance only: agent identity, fleet role, job-title equivalent, domain, cluster, responsibility badges, authority boundaries, source refs, and scope status. | Switch to A5 with no agents; cycle the deck repeatedly and confirm it wraps without a scrollbar, confirm active stats/media update, move the pointer over Raycast agent cards and verify about `15deg` tilt/shine, drag an agent card and verify a floating clone follows the cursor while task drop targets glow, move the pointer over the character console to verify about `6deg` tilt/glow, open Configure, and verify the EVA video sequence renders. At mobile width, deck cards and media panel must not overflow horizontally. Ingest `agents`; live roster appears and selecting an agent sends `agent.select`. If Visual Agent Fleet metadata is present, verify it is labeled as role/provenance metadata and does not imply live execution without runtime data. |
@@ -102,14 +126,18 @@ Each domain and module below must match `docs/design/SITE_MAP.md`, `src/mission.
 - Empty state appears when no data is connected.
 - Ingesting a valid `MissionEvent` updates visible UI.
 - No UI module should use random or hardcoded mock telemetry to imply a live backend.
+- A2 task detail dropdowns render from Task Container records; missing fields appear as `unavailable`.
+- A2 displays `PIC`, `Executor`, `Approver`, and `Auditor` as distinct responsibility fields.
 
 ## Known Follow-ups
 
 - Add backend producer for `MissionEvent` over `VITE_GOVIBE_WS_URL`.
 - Add schema-specific events for roadmap tasks, AST trees, ERD tables, and vector map nodes.
+- Add runtime support for A2 Task Container records after the design/data contract is approved.
 - Add automated browser smoke tests for ingest, terminal command, and domain switching.
 
 ## Changelog
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 0.2.0 | 2026-06-14 | Added A2 Task Container verification requirements for template-parity roadmap task detail dropdowns. |

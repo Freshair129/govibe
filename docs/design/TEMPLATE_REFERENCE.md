@@ -48,7 +48,7 @@ The template `siteMap` contains the same 17 modules as the React implementation:
 | View | Template behavior to preserve in React |
 | --- | --- |
 | A1 | Command Control Center header, telemetry metric cards, chart panel, Reactor Telemetry panel. Template uses mock values; React must use live `MissionSnapshot` data or honest empty states. |
-| A2 | Roadmap header card, global progress, stats, export menu, reset board, AI assist roster, detailed roadmap checklist/accordion. |
+| A2 | Roadmap header card, global progress, stats, export menu, reset board, AI assist roster, phase accordion, sprint block, and detailed task dropdown cards backed by Task Container records. |
 | A3 | Capability plugin management surface. Preserve plugin-slot density and operational controls when data events exist. |
 | A4 | Brain/config panels with model/runtime controls. Preserve config feel without storing secrets in markup. |
 | A5 | Agent Management Carousel: Agent Select stats, ability tags, infinity card-deck roster navigation without scrollbars, `interactive-card` mouse glare, Raycast 3D Agent Card style, Agent drag follow-cursor assignment style, video switcher, character media console with sequential EVA video playback, cursor glow, 3D tilt, configure/flip behavior, model source controls, sliders/meters, local/cloud endpoint settings, and a mobile single-column adaptation. React must avoid hardcoded secret values. |
@@ -73,6 +73,34 @@ The template `siteMap` contains the same 17 modules as the React implementation:
 - Any static structural labels are allowed only when they define the surface contract, not when they pretend to be backend data.
 - Replace template secrets and sample credentials with empty inputs, redacted placeholders, or real configuration events.
 
+## A2 Task Detail Reference
+
+The template task dropdown card is the visual reference for A2 `Task Container` rendering. React must reproduce the information architecture without copying the legacy imperative script as runtime.
+
+Required A2 hierarchy:
+
+```text
+Roadmap Source
+  -> Phase Container
+    -> Sprint Container
+      -> Task Container
+        -> Task Detail Dropdown
+```
+
+Required task dropdown content:
+
+- Sprint badge, sprint title, duration, and progress.
+- Task header with status icon, collapse affordance, task title, requirement type badge, complexity badge, document/code/test indicators, and completed-by state.
+- `SYMBOL LINKS` section with code link, doc link, and test link.
+- Metadata row with version, complexity, requirement type, status, and tokens used.
+- Responsibility row that keeps `PIC`, `Executor`, `Approver`, and `Auditor` separate from assignee/completed-by display.
+- `DEFINITION OF DONE (DOD)` section split into Acceptance Criteria, Success Criteria, and Exit Criteria.
+- `CHANGELOG` block with version/update metadata.
+- Created/updated metadata and task ID.
+- `EXPORT TASK` controls for JSON, YAML, and Markdown.
+
+If a task container omits a field, React must show `unavailable` or an explicit disabled reason. It must not invent symbol links, token splits, completion state, or owner fields.
+
 ## A5 Interaction Style Reference
 
 The React migration must preserve these template-level interaction contracts from `GoVibe-Mission-Control-template.html`:
@@ -89,7 +117,7 @@ The React migration must preserve these template-level interaction contracts fro
 ## Current React Alignment Against Template
 
 - Sidebar now starts collapsed, expands on hover, supports lock/collapse, and shows collapsed tooltips.
-- A2 now includes the roadmap header, progress area, export menu, reset action, assist roster cards, accordion phase header, task rows, badges, and assignment selects. It still needs real roadmap event shapes before task state can be backed by data.
+- A2 now includes the roadmap header, progress area, export menu, reset action, assist roster cards, accordion phase header, task rows, badges, and assignment selects. It still needs Task Container-backed task detail dropdowns before it reaches template parity.
 - A5 now includes the template-style Agent Select infinity carousel with active stats, ability tags, deck navigation, bottom controls, EVA video switcher/media console sourced from `public/agents/eva`, sequential 01 -> 02 -> 03 playback, cursor glow, 3D character tilt, config overlay, no nested card wrappers, and a mobile single-column adaptation when no live agents are connected. It still needs backend-backed config persistence before save/dirty-state controls are meaningful.
 - A3 now has plugin cards and action controls rather than a generic live shell.
 - A4 now has runtime configuration control surfaces rather than a generic live shell.
@@ -115,3 +143,4 @@ The React app should still pass:
 - Browser load without console errors
 - Domain switching A/B/C/D with exact module names
 - No fake live data when no transport or snapshot exists
+- Task detail dropdowns show Task Container data or explicit unavailable values
