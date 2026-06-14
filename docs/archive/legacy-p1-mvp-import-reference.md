@@ -1,3 +1,11 @@
+# Legacy P1 MVP Import Reference
+
+> **Source**: Archived from legacy `.agents/pm/asset/PLAN_Template.md`
+> **Date**: 2026-06-14
+> **Status**: Reference Only
+
+---
+
 # GoVibe Standard Implementation Plan: Import P1 MVP Core Backlog With Model Telemetry
 ```yaml
 Source: `C:/Users/freshair/Downloads/p1-mvp-core-.json`
@@ -103,27 +111,3 @@ Exit Criteria:
 - [_] `npm run baseline:check` passes or reports only known pre-existing warnings
 - [_] No runtime code is added
 - [_] No protected source under `.agents/Visual-Agent-Fleet-Scope/**` is edited
-
-## Task Blocks
-
-
-### TSK-GVMP01P05EP01SPR01-01
-- ***Assign To***: LYRA
-- ***Model Name***: GPT-5
-- ***Context Length***: 128k
-- ***Complexity***: 3
-- ***SymbolLink***: 
-- ***ETA***: 3-4 days
----
-| Status | Task details  | Mode | Dependency |Tool Calling| Predicted Token Usage | Actual Input Tokens | Actual Output Tokens |Total Token Usage|Start Time | End Time |
-|---|---|---|---|---|---|---|---|---|---|---|
-|waiting| Inspect P1 MVP JSON and define import mapping| --- | --- | --- | --- | --- | --- | --- | --- | --- |
----
-**Task log**
-```
-[SYSTEM][10:50]: Waiting For Approval
-
-```
-**Exit Criteria:**
-- [_] ..............
-- [_] ..............
