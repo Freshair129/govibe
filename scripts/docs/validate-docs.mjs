@@ -93,6 +93,72 @@ function parseFrontmatter(content) {
   return data;
 }
 
+function parseMarkdownTable(lines, startIndex) {
+  const tableLines = [];
+  let index = startIndex;
+  while (index < lines.length && lines[index].trim().startsWith("|")) {
+    tableLines.push(lines[index]);
+    index += 1;
+  }
+  if (tableLines.length < 2) return null;
+  const headers = tableLines[0].split("|").slice(1, -1).map((cell) => cell.trim());
+  const rows = tableLines.slice(2).map((line) => {
+    const cells = line.split("|").slice(1, -1).map((cell) => cell.trim());
+    return Object.fromEntries(headers.map((header, columnIndex) => [header, cells[columnIndex] ?? ""]));
+  });
+  return { rows, nextIndex: index };
+}
+
+function collectSectionTables(content) {
+  const lines = content.split(/\r?\n/);
+  const tables = new Map();
+  for (let index = 0; index < lines.length; index += 1) {
+    const heading = lines[index].match(/^##\s+(.+)$/);
+    if (!heading) continue;
+    for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
+      if (lines[cursor].trim().startsWith("|")) {
+        const parsed = parseMarkdownTable(lines, cursor);
+        if (parsed) {
+          tables.set(heading[1].trim(), parsed.rows);
+          index = parsed.nextIndex - 1;
+        }
+        break;
+      }
+      if (lines[cursor].startsWith("## ")) break;
+    }
+  }
+  return tables;
+}
+
+function getColumn(row, aliases) {
+  for (const alias of aliases) {
+    const key = Object.keys(row).find((candidate) => candidate.trim().toLowerCase() === alias.toLowerCase());
+    if (key) return row[key];
+  }
+  return "";
+}
+
+function isActionableType(type) {
+  return ["task", "sub-task", "micro-task", "atomic-task"].includes(String(type ?? "").trim().toLowerCase());
+}
+
+function checkTemporalOrder(file, row, label) {
+  const validFrom = getColumn(row, ["Valid From"]);
+  const validTo = getColumn(row, ["Valid To"]);
+  const recordedAt = getColumn(row, ["Recorded At"]);
+  const supersededAt = getColumn(row, ["Superseded At"]);
+  if (validFrom && Number.isNaN(Date.parse(validFrom))) addError(file, `${label}: Valid From is not a valid timestamp.`);
+  if (validTo && Number.isNaN(Date.parse(validTo))) addError(file, `${label}: Valid To is not a valid timestamp.`);
+  if (recordedAt && Number.isNaN(Date.parse(recordedAt))) addError(file, `${label}: Recorded At is not a valid timestamp.`);
+  if (supersededAt && Number.isNaN(Date.parse(supersededAt))) addError(file, `${label}: Superseded At is not a valid timestamp.`);
+  if (validFrom && validTo && Date.parse(validFrom) > Date.parse(validTo)) {
+    addError(file, `${label}: Valid From must be before or equal to Valid To.`);
+  }
+  if (recordedAt && supersededAt && Date.parse(recordedAt) > Date.parse(supersededAt)) {
+    addError(file, `${label}: Recorded At must be before or equal to Superseded At.`);
+  }
+}
+
 function hasSection(content, names) {
   return names.some((name) => {
     const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -282,6 +348,69 @@ function checkLegacyDocs(markdownFiles) {
   }
 }
 
+function checkRoadmapTemporalIntegrity(markdownFiles) {
+  const roadmapFiles = markdownFiles.filter((file) => /^docs\/roadmap\/(ROADMAP|BACKLOG|SPRINT)-.+\.md$/i.test(file));
+
+  for (const file of roadmapFiles) {
+    const tables = collectSectionTables(readRepoFile(file));
+    const nodes = [];
+    const seen = new Set();
+
+    for (const row of tables.get("Phases") ?? []) {
+      const id = getColumn(row, ["Phase", "ID"]);
+      if (!id) continue;
+      nodes.push({ id, parentId: "", type: "phase" });
+      checkTemporalOrder(file, row, `node ${id}`);
+    }
+    for (const row of tables.get("Sprints") ?? []) {
+      const id = getColumn(row, ["Sprint", "ID"]);
+      if (!id) continue;
+      nodes.push({ id, parentId: getColumn(row, ["Parent ID", "Parent Epic", "Parent Phase"]), type: "sprint" });
+      checkTemporalOrder(file, row, `node ${id}`);
+    }
+    for (const row of tables.get("Backlog Items") ?? []) {
+      const id = getColumn(row, ["ID"]);
+      if (!id) continue;
+      nodes.push({ id, parentId: getColumn(row, ["Parent ID", "Parent", "Parent Epic", "Parent Sprint"]), type: getColumn(row, ["Type"]) || "task" });
+      checkTemporalOrder(file, row, `node ${id}`);
+    }
+    for (const row of tables.get("Nodes") ?? []) {
+      const id = getColumn(row, ["ID"]);
+      if (!id) continue;
+      nodes.push({ id, parentId: getColumn(row, ["Parent ID"]), type: getColumn(row, ["Type"]) || "task" });
+      checkTemporalOrder(file, row, `node ${id}`);
+    }
+
+    for (const node of nodes) {
+      if (seen.has(node.id)) addError(file, `Duplicate roadmap node id: ${node.id}.`);
+      seen.add(node.id);
+    }
+
+    const nodeIds = new Set(nodes.map((node) => node.id));
+    for (const node of nodes) {
+      if (node.parentId && !nodeIds.has(node.parentId)) {
+        addError(file, `Broken parentId for ${node.id}: ${node.parentId}.`);
+      }
+    }
+
+    const actionableIds = new Set(nodes.filter((node) => isActionableType(node.type)).map((node) => node.id));
+    for (const [section, rows] of [
+      ["Assignments", tables.get("Assignments") ?? []],
+      ["Handoffs", tables.get("Handoffs") ?? []],
+      ["Verification", tables.get("Verification") ?? []],
+    ]) {
+      for (const row of rows) {
+        const taskId = getColumn(row, ["Task ID"]);
+        if (!taskId) continue;
+        if (!actionableIds.has(taskId)) {
+          addError(file, `${section} references unknown or non-actionable taskId: ${taskId}.`);
+        }
+        checkTemporalOrder(file, row, `${section} ${taskId}`);
+      }
+    }
+  }
+}
+
 function main() {
   const markdownFiles = [
     ...walk("docs").filter((file) => file.endsWith(".md")),
@@ -300,6 +429,7 @@ function main() {
   checkTemplateSections();
   checkPathReferences(referenceFiles);
   checkLegacyDocs(markdownFiles);
+  checkRoadmapTemporalIntegrity(markdownFiles);
 
   printReport();
 

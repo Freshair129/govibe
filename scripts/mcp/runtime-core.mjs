@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 import { discoverRoadmapSources, parseRoadmapSource } from "./roadmap-parser.mjs";
 import { writeRoadmapMarkdownExport } from "./roadmap-exporter.mjs";
+import { compareTemporalOrder, createTemporalVersion, isTemporalVisible, nextVersion } from "./temporal-versioning.mjs";
 import { SessionTracker } from "../../packages/govibe-core/bin/session-tracker.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -50,6 +51,44 @@ function buildAuditRef(capability) {
   return `${capability}:${new Date().toISOString()}`;
 }
 
+function keyForHandoff(handoff) {
+  return `${handoff.taskId}:${handoff.fromId}:${handoff.toId}`;
+}
+
+function activeTemporalRecords(records, options = {}) {
+  return records.filter((record) => isTemporalVisible(record, options));
+}
+
+function latestByKey(records, keySelector, options = {}) {
+  const selected = new Map();
+  for (const record of activeTemporalRecords(records, options)) {
+    const key = keySelector(record);
+    const existing = selected.get(key);
+    if (!existing || Date.parse(record.recordedAt ?? "") >= Date.parse(existing.recordedAt ?? "")) {
+      selected.set(key, record);
+    }
+  }
+  return Array.from(selected.values());
+}
+
+function ensureTemporalItem(item, fallback = {}) {
+  const temporal = createTemporalVersion({
+    version: item.version ?? fallback.version,
+    validFrom: item.validFrom ?? fallback.validFrom,
+    validTo: item.validTo ?? fallback.validTo,
+    recordedAt: item.recordedAt ?? fallback.recordedAt,
+    supersededAt: item.supersededAt ?? fallback.supersededAt,
+  });
+  return { ...item, ...temporal };
+}
+
+function validateTemporalItem(item, label) {
+  const errors = compareTemporalOrder(item);
+  if (errors.length > 0) {
+    throw new Error(`${label}: ${errors.join(" ")}`);
+  }
+}
+
 function inferRoadmapSourcePath(explicitSource, sources) {
   if (explicitSource) {
     return path.isAbsolute(explicitSource) ? explicitSource : path.join(workspaceRoot, explicitSource);
@@ -84,6 +123,12 @@ export class GovibeRuntime {
     this.sessionTracker = new SessionTracker(workspaceRoot);
     this.listeners = new Set();
     this.overlay = {
+      nodes: new Map(),
+      assignments: new Map(),
+      handoffs: new Map(),
+      verifications: new Map(),
+    };
+    this.temporalHistory = {
       nodes: new Map(),
       assignments: new Map(),
       handoffs: new Map(),
@@ -134,7 +179,7 @@ export class GovibeRuntime {
     }));
   }
 
-  async reloadRoadmap(explicitSource) {
+  async reloadRoadmap(explicitSource, options = {}) {
     const sources = await discoverRoadmapSources(roadmapDir);
     this.availableSources = sources;
     const selectedSource = inferRoadmapSourcePath(explicitSource, sources);
@@ -145,15 +190,59 @@ export class GovibeRuntime {
 
     const parsed = await parseRoadmapSource(selectedSource);
     this.activeRoadmapSource = selectedSource;
-    const overlayNodes = Array.from(this.overlay.nodes.values());
-    const overlayAssignments = Array.from(this.overlay.assignments.values());
-    const overlayHandoffs = Array.from(this.overlay.handoffs.values());
-    const overlayVerifications = Array.from(this.overlay.verifications.values());
+    const overlayNodes = latestByKey(
+      Array.from(this.temporalHistory.nodes.values()).flat(),
+      (node) => node.id,
+      options,
+    );
+    const overlayAssignments = latestByKey(
+      Array.from(this.temporalHistory.assignments.values()).flat(),
+      (assignment) => assignment.taskId,
+      options,
+    );
+    const overlayHandoffs = latestByKey(
+      Array.from(this.temporalHistory.handoffs.values()).flat(),
+      keyForHandoff,
+      options,
+    );
+    const overlayVerifications = latestByKey(
+      Array.from(this.temporalHistory.verifications.values()).flat(),
+      (verification) => verification.taskId,
+      options,
+    );
 
     let roadmap = {
       ...parsed,
       sourcePath: toRelativePath(selectedSource),
+      ...createTemporalVersion({
+        version: parsed.sourceVersion,
+        validFrom: parsed.validFrom,
+        validTo: parsed.validTo,
+        recordedAt: parsed.recordedAt,
+        supersededAt: parsed.supersededAt,
+      }, parsed.updatedAt),
     };
+
+    roadmap.nodes = latestByKey(
+      roadmap.nodes.map((node) => ensureTemporalItem(node, roadmap)),
+      (node) => node.id,
+      options,
+    );
+    roadmap.assignments = latestByKey(
+      roadmap.assignments.map((assignment) => ensureTemporalItem(assignment, roadmap)),
+      (assignment) => assignment.taskId,
+      options,
+    );
+    roadmap.handoffs = latestByKey(
+      roadmap.handoffs.map((handoff) => ensureTemporalItem(handoff, roadmap)),
+      keyForHandoff,
+      options,
+    );
+    roadmap.verifications = latestByKey(
+      roadmap.verifications.map((verification) => ensureTemporalItem(verification, roadmap)),
+      (verification) => verification.taskId,
+      options,
+    );
 
     for (const node of overlayNodes) {
       roadmap.nodes = upsertByKey(roadmap.nodes, node, (item) => item.id === node.id);
@@ -244,9 +333,13 @@ export class GovibeRuntime {
 
   async applyRoadmapMutation(args = {}) {
     const mutationType = args.mutationType ?? "";
+    const temporalOptions = {
+      asOfValidAt: args.asOfValidAt,
+      asOfRecordedAt: args.asOfRecordedAt,
+    };
 
     if (mutationType === "reload") {
-      const roadmap = await this.reloadRoadmap(args.payload?.source);
+      const roadmap = await this.reloadRoadmap(args.payload?.source, temporalOptions);
       return {
         capability: "govibe.roadmap.update",
         auditRef: buildAuditRef("govibe.roadmap.update"),
@@ -257,44 +350,102 @@ export class GovibeRuntime {
 
     let event;
     if (mutationType === "node.update") {
+      const history = this.temporalHistory.nodes.get(args.nodeId) ?? [];
+      const now = new Date().toISOString();
       const nextNode = {
         ...(this.snapshot.roadmap?.nodes.find((node) => node.id === args.nodeId) ?? { id: args.nodeId, type: "task", title: args.nodeId, state: "planned" }),
         ...args.payload,
         id: args.nodeId,
+        ...createTemporalVersion({
+          version: args.payload?.version ?? nextVersion(history),
+          validFrom: args.payload?.validFrom,
+          validTo: args.payload?.validTo,
+          recordedAt: args.payload?.recordedAt,
+          supersededAt: args.payload?.supersededAt,
+        }, now),
       };
+      validateTemporalItem(nextNode, `node ${args.nodeId}`);
+      this.temporalHistory.nodes.set(args.nodeId, [
+        ...history.map((record) => record.supersededAt ? record : { ...record, supersededAt: nextNode.recordedAt }),
+        nextNode,
+      ]);
       this.overlay.nodes.set(args.nodeId, nextNode);
       event = { type: "roadmap.node.update", node: nextNode };
     } else if (mutationType === "assignment") {
+      const history = this.temporalHistory.assignments.get(args.nodeId) ?? [];
+      const now = new Date().toISOString();
       const assignment = {
         taskId: args.nodeId,
         subjectId: args.payload?.subjectId,
         subjectType: args.payload?.subjectType ?? "agent",
         policyModel: args.payload?.policyModel ?? "ABAC",
-        assignedAt: args.payload?.assignedAt ?? new Date().toISOString(),
+        assignedAt: args.payload?.assignedAt ?? now,
         assignedBy: args.payload?.assignedBy,
+        ...createTemporalVersion({
+          version: args.payload?.version ?? nextVersion(history),
+          validFrom: args.payload?.validFrom,
+          validTo: args.payload?.validTo,
+          recordedAt: args.payload?.recordedAt,
+          supersededAt: args.payload?.supersededAt,
+        }, now),
       };
+      validateTemporalItem(assignment, `assignment ${args.nodeId}`);
+      this.temporalHistory.assignments.set(args.nodeId, [
+        ...history.map((record) => record.supersededAt ? record : { ...record, supersededAt: assignment.recordedAt }),
+        assignment,
+      ]);
       this.overlay.assignments.set(args.nodeId, assignment);
       event = { type: "roadmap.assignment", assignment };
     } else if (mutationType === "handoff") {
+      const now = new Date().toISOString();
       const handoff = {
         taskId: args.nodeId,
         fromId: args.payload?.fromId,
         toId: args.payload?.toId,
         requiredArtifact: args.payload?.requiredArtifact,
         note: args.payload?.note,
-        createdAt: args.payload?.createdAt ?? new Date().toISOString(),
+        createdAt: args.payload?.createdAt ?? now,
         state: args.payload?.state ?? "pending",
+        ...createTemporalVersion({
+          version: args.payload?.version,
+          validFrom: args.payload?.validFrom,
+          validTo: args.payload?.validTo,
+          recordedAt: args.payload?.recordedAt,
+          supersededAt: args.payload?.supersededAt,
+        }, now),
       };
-      this.overlay.handoffs.set(`${handoff.taskId}:${handoff.fromId}:${handoff.toId}`, handoff);
+      const handoffKey = keyForHandoff(handoff);
+      const history = this.temporalHistory.handoffs.get(handoffKey) ?? [];
+      handoff.version = handoff.version ?? nextVersion(history);
+      validateTemporalItem(handoff, `handoff ${handoffKey}`);
+      this.temporalHistory.handoffs.set(handoffKey, [
+        ...history.map((record) => record.supersededAt ? record : { ...record, supersededAt: handoff.recordedAt }),
+        handoff,
+      ]);
+      this.overlay.handoffs.set(handoffKey, handoff);
       event = { type: "roadmap.handoff", handoff };
     } else if (mutationType === "verification") {
+      const history = this.temporalHistory.verifications.get(args.nodeId) ?? [];
+      const now = new Date().toISOString();
       const verification = {
         taskId: args.nodeId,
         qaStatus: args.payload?.qaStatus,
         auditStatus: args.payload?.auditStatus,
         deploymentStatus: args.payload?.deploymentStatus,
-        lastUpdatedAt: args.payload?.lastUpdatedAt ?? new Date().toISOString(),
+        lastUpdatedAt: args.payload?.lastUpdatedAt ?? now,
+        ...createTemporalVersion({
+          version: args.payload?.version ?? nextVersion(history),
+          validFrom: args.payload?.validFrom,
+          validTo: args.payload?.validTo,
+          recordedAt: args.payload?.recordedAt,
+          supersededAt: args.payload?.supersededAt,
+        }, now),
       };
+      validateTemporalItem(verification, `verification ${args.nodeId}`);
+      this.temporalHistory.verifications.set(args.nodeId, [
+        ...history.map((record) => record.supersededAt ? record : { ...record, supersededAt: verification.recordedAt }),
+        verification,
+      ]);
       this.overlay.verifications.set(args.nodeId, verification);
       event = { type: "roadmap.verification", verification };
     } else {
@@ -307,14 +458,19 @@ export class GovibeRuntime {
       capability: "govibe.roadmap.update",
       auditRef: buildAuditRef("govibe.roadmap.update"),
       mutationType,
-      roadmap: this.snapshot.roadmap,
+      roadmap: await this.reloadRoadmap(undefined, temporalOptions),
+      history: {
+        nodes: args.nodeId ? this.temporalHistory.nodes.get(args.nodeId) ?? [] : [],
+        assignments: args.nodeId ? this.temporalHistory.assignments.get(args.nodeId) ?? [] : [],
+        verifications: args.nodeId ? this.temporalHistory.verifications.get(args.nodeId) ?? [] : [],
+      },
     };
   }
 
   async exportRoadmapMarkdown(args = {}) {
     const roadmap = args.source
-      ? await this.reloadRoadmap(args.source)
-      : this.snapshot.roadmap ?? await this.reloadRoadmap();
+      ? await this.reloadRoadmap(args.source, args)
+      : await this.reloadRoadmap(undefined, args);
 
     if (!roadmap) {
       throw new Error("No roadmap snapshot is available to export.");

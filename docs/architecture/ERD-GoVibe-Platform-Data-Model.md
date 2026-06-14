@@ -66,6 +66,8 @@ erDiagram
     string source_id
     string generated_at
     string source_version
+    string valid_from
+    string recorded_at
   }
 
   ROADMAP_NODE {
@@ -75,6 +77,11 @@ erDiagram
     string title
     string status
     string source_section
+    string version
+    string valid_from
+    string valid_to
+    string recorded_at
+    string superseded_at
   }
 
   TASK_ASSIGNMENT {
@@ -83,6 +90,10 @@ erDiagram
     string agent_id
     string state
     string assigned_at
+    string version
+    string valid_from
+    string recorded_at
+    string superseded_at
   }
 
   HANDOFF_RECORD {
@@ -91,6 +102,9 @@ erDiagram
     string from_actor
     string to_actor
     string handoff_state
+    string valid_from
+    string recorded_at
+    string superseded_at
   }
 
   VERIFICATION_RECORD {
@@ -98,6 +112,9 @@ erDiagram
     string node_id
     string verification_type
     string verification_state
+    string valid_from
+    string recorded_at
+    string superseded_at
   }
 
   AGENT_PROFILE {
@@ -114,6 +131,8 @@ erDiagram
     string executor
     string mode
     string outcome
+    string valid_from
+    string recorded_at
   }
 
   EXECUTION_ARTIFACT {
@@ -122,6 +141,8 @@ erDiagram
     string artifact_type
     string artifact_path
     string summary
+    string valid_from
+    string recorded_at
   }
 
   USER_ACCOUNT {
@@ -197,6 +218,13 @@ The bounded context bundle prepared for an execution run from docs, roadmap stat
 ### TRACE_LINK
 Cross-reference record that lets GoVibe answer "why does this task, artifact, or run exist?"
 
+### BI-TEMPORAL VERSION FIELDS
+GoVibe separates business time from system transaction time:
+
+- `valid_from` / `valid_to` describe when a fact is true for the work.
+- `recorded_at` / `superseded_at` describe when GoVibe learned or replaced that fact.
+- Lower-level task records can inherit hub metadata from parent roadmap nodes while keeping their own temporal version history.
+
 ## 5. Data Flow Summary
 1. Approved documents define product, requirements, architecture, and execution rules.
 2. A roadmap source file is created from that approved intent.
@@ -226,6 +254,7 @@ Cross-reference record that lets GoVibe answer "why does this task, artifact, or
 - Keep execution artifacts and audit events tied to explicit execution runs.
 - Preserve trace links between docs, roadmap nodes, context packets, runs, and verification outcomes.
 - Allow the same conceptual model to map to mixed storage backends.
+- Preserve bi-temporal history for mutable roadmap, assignment, handoff, verification, run, and artifact facts.
 
 ## 8. Traceability
 | Concern | Supporting Doc |

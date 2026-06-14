@@ -2,6 +2,8 @@ import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { parse as parseHtml } from "node-html-parser";
 
+import { createTemporalVersion, readTemporalColumns } from "./temporal-versioning.mjs";
+
 const roadmapFilePattern = /^(ROADMAP|BACKLOG|SPRINT)-.+\.(md|html)$/i;
 
 function parseFrontmatter(text) {
@@ -151,7 +153,7 @@ function collectSectionTables(body) {
   return sections;
 }
 
-function parseChecklistNodes(body, sourcePath) {
+function parseChecklistNodes(body, sourcePath, parsedAt) {
   const lines = body.split(/\r?\n/);
   const nodes = [];
   const stack = [];
@@ -192,6 +194,7 @@ function parseChecklistNodes(body, sourcePath) {
       progress: checked ? 100 : 0,
       sourcePath,
       sourceSection: currentParentId ?? "Task Breakdown",
+      ...createTemporalVersion({}, parsedAt),
     });
     stack.push({ indent, id });
   }
@@ -200,6 +203,7 @@ function parseChecklistNodes(body, sourcePath) {
 }
 
 function buildMarkdownSnapshot(text, sourcePath) {
+  const parsedAt = new Date().toISOString();
   const { data, body } = parseFrontmatter(text);
   const titleMatch = body.match(/^#\s+(.+)$/m);
   const title = titleMatch?.[1]?.trim() ?? path.basename(sourcePath);
@@ -214,6 +218,13 @@ function buildMarkdownSnapshot(text, sourcePath) {
     progress: parseNumber(data.progress) ?? 0,
     sourcePath,
     sourceSection: "Document Root",
+    ...createTemporalVersion({
+      version: data.version,
+      validFrom: data.valid_from,
+      validTo: data.valid_to,
+      recordedAt: data.recorded_at,
+      supersededAt: data.superseded_at,
+    }, parsedAt),
   }];
 
   for (const row of sections.get("Phases") ?? []) {
@@ -228,6 +239,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
       progress: parseNumber(getColumn(row, ["Progress"])),
       sourcePath,
       sourceSection: "Phases",
+      ...readTemporalColumns((aliases) => getColumn(row, aliases), parsedAt),
     });
   }
 
@@ -243,6 +255,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
       progress: parseNumber(getColumn(row, ["Progress"])),
       sourcePath,
       sourceSection: "Sprints",
+      ...readTemporalColumns((aliases) => getColumn(row, aliases), parsedAt),
     });
   }
 
@@ -261,6 +274,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
       sourceSection: getColumn(row, ["Source Section"]) || "Backlog Items",
       tags: parseDelimitedList(getColumn(row, ["PRD System", "Priority"])),
       artifactLinks: parseDelimitedList(getColumn(row, ["Dependencies"])),
+      ...readTemporalColumns((aliases) => getColumn(row, aliases), parsedAt),
     });
   }
 
@@ -278,10 +292,11 @@ function buildMarkdownSnapshot(text, sourcePath) {
       sourceSection: getColumn(row, ["Source Section"]) || "Nodes",
       tags: parseDelimitedList(getColumn(row, ["Tags"])),
       artifactLinks: parseDelimitedList(getColumn(row, ["Artifacts"])),
+      ...readTemporalColumns((aliases) => getColumn(row, aliases), parsedAt),
     });
   }
 
-  for (const node of parseChecklistNodes(body, sourcePath)) {
+  for (const node of parseChecklistNodes(body, sourcePath, parsedAt)) {
     if (!nodes.some((existing) => existing.id === node.id)) {
       nodes.push(node);
     }
@@ -294,6 +309,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
     policyModel: getColumn(row, ["Policy Model"]) || "ABAC",
     assignedAt: getColumn(row, ["Assigned At"]) || new Date().toISOString(),
     assignedBy: getColumn(row, ["Assigned By"]) || undefined,
+    ...readTemporalColumns((aliases) => getColumn(row, aliases), parsedAt),
   }));
 
   const handoffs = (sections.get("Handoffs") ?? []).map((row) => ({
@@ -304,6 +320,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
     note: getColumn(row, ["Note"]) || undefined,
     createdAt: getColumn(row, ["Created At"]) || new Date().toISOString(),
     state: getColumn(row, ["State"]) || "pending",
+    ...readTemporalColumns((aliases) => getColumn(row, aliases), parsedAt),
   }));
 
   const verifications = (sections.get("Verification") ?? []).map((row) => ({
@@ -312,6 +329,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
     auditStatus: getColumn(row, ["Audit Status"]) || undefined,
     deploymentStatus: getColumn(row, ["Deployment Status"]) || undefined,
     lastUpdatedAt: getColumn(row, ["Updated At"]) || undefined,
+    ...readTemporalColumns((aliases) => getColumn(row, aliases), parsedAt),
   }));
 
   return {
@@ -319,7 +337,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
     sourceType: "markdown",
     sourceVersion: data.version ?? "0.1.0",
     approvalStatus: data.status ?? "draft",
-    updatedAt: new Date().toISOString(),
+    updatedAt: parsedAt,
     nodes,
     assignments,
     handoffs,
@@ -328,6 +346,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
 }
 
 function buildHtmlSnapshot(text, sourcePath) {
+  const parsedAt = new Date().toISOString();
   const root = parseHtml(text);
   const contractRoot = root.querySelector("[data-govibe-roadmap]");
   if (!contractRoot) {
@@ -343,6 +362,13 @@ function buildHtmlSnapshot(text, sourcePath) {
     progress: parseNumber(contractRoot.getAttribute("data-progress")) ?? 0,
     sourcePath,
     sourceSection: "Document Root",
+    ...createTemporalVersion({
+      version: contractRoot.getAttribute("data-node-version") ?? contractRoot.getAttribute("data-version"),
+      validFrom: contractRoot.getAttribute("data-valid-from"),
+      validTo: contractRoot.getAttribute("data-valid-to"),
+      recordedAt: contractRoot.getAttribute("data-recorded-at"),
+      supersededAt: contractRoot.getAttribute("data-superseded-at"),
+    }, parsedAt),
   }];
 
   for (const element of contractRoot.querySelectorAll("[data-roadmap-node]")) {
@@ -359,6 +385,13 @@ function buildHtmlSnapshot(text, sourcePath) {
       sourceSection: element.getAttribute("data-source-section") || "HTML Contract",
       tags: parseDelimitedList(element.getAttribute("data-tags")),
       artifactLinks: parseDelimitedList(element.getAttribute("data-artifacts")),
+      ...createTemporalVersion({
+        version: element.getAttribute("data-version"),
+        validFrom: element.getAttribute("data-valid-from"),
+        validTo: element.getAttribute("data-valid-to"),
+        recordedAt: element.getAttribute("data-recorded-at"),
+        supersededAt: element.getAttribute("data-superseded-at"),
+      }, parsedAt),
     });
   }
 
@@ -369,6 +402,13 @@ function buildHtmlSnapshot(text, sourcePath) {
     policyModel: element.getAttribute("data-policy-model") || "ABAC",
     assignedAt: element.getAttribute("data-assigned-at") || new Date().toISOString(),
     assignedBy: element.getAttribute("data-assigned-by") || undefined,
+    ...createTemporalVersion({
+      version: element.getAttribute("data-version"),
+      validFrom: element.getAttribute("data-valid-from"),
+      validTo: element.getAttribute("data-valid-to"),
+      recordedAt: element.getAttribute("data-recorded-at"),
+      supersededAt: element.getAttribute("data-superseded-at"),
+    }, parsedAt),
   }));
 
   const handoffs = contractRoot.querySelectorAll("[data-roadmap-handoff]").map((element) => ({
@@ -379,6 +419,13 @@ function buildHtmlSnapshot(text, sourcePath) {
     note: element.getAttribute("data-note") || undefined,
     createdAt: element.getAttribute("data-created-at") || new Date().toISOString(),
     state: element.getAttribute("data-state") || "pending",
+    ...createTemporalVersion({
+      version: element.getAttribute("data-version"),
+      validFrom: element.getAttribute("data-valid-from"),
+      validTo: element.getAttribute("data-valid-to"),
+      recordedAt: element.getAttribute("data-recorded-at"),
+      supersededAt: element.getAttribute("data-superseded-at"),
+    }, parsedAt),
   }));
 
   const verifications = contractRoot.querySelectorAll("[data-roadmap-verification]").map((element) => ({
@@ -387,6 +434,13 @@ function buildHtmlSnapshot(text, sourcePath) {
     auditStatus: element.getAttribute("data-audit-status") || undefined,
     deploymentStatus: element.getAttribute("data-deployment-status") || undefined,
     lastUpdatedAt: element.getAttribute("data-updated-at") || undefined,
+    ...createTemporalVersion({
+      version: element.getAttribute("data-version"),
+      validFrom: element.getAttribute("data-valid-from"),
+      validTo: element.getAttribute("data-valid-to"),
+      recordedAt: element.getAttribute("data-recorded-at"),
+      supersededAt: element.getAttribute("data-superseded-at"),
+    }, parsedAt),
   }));
 
   return {
@@ -394,7 +448,7 @@ function buildHtmlSnapshot(text, sourcePath) {
     sourceType: "html",
     sourceVersion: contractRoot.getAttribute("data-version") ?? "0.1.0",
     approvalStatus: contractRoot.getAttribute("data-status") ?? "draft",
-    updatedAt: new Date().toISOString(),
+    updatedAt: parsedAt,
     nodes,
     assignments,
     handoffs,

@@ -11,6 +11,9 @@ const requiredTools = [
 ];
 
 const smokeExportPath = "docs/roadmap/ROADMAP-smoke-export.md";
+const firstRecordedAt = "2026-06-13T01:00:00.000Z";
+const secondRecordedAt = "2026-06-13T02:00:00.000Z";
+const historicalQueryAt = "2026-06-13T01:30:00.000Z";
 
 function encodeMessage(payload) {
   const body = Buffer.from(JSON.stringify(payload), "utf8");
@@ -167,11 +170,63 @@ async function main() {
           state: "in_progress",
           sourcePath: "docs/roadmap/ROADMAP-govibe-mcp-runtime.md",
           sourceSection: "MCP Tool Binding",
+          validFrom: "2026-06-13T00:00:00.000Z",
+          recordedAt: firstRecordedAt,
         },
       },
     });
     const updatedNode = roadmapUpdate.structuredContent?.roadmap?.nodes?.find((node) => node.id === "TASK-002-mcp-bind");
     assert(updatedNode?.progress === 88, "roadmap.update did not apply overlay progress.");
+    assert(updatedNode?.recordedAt === firstRecordedAt, "roadmap.update did not preserve recordedAt.");
+
+    const secondRoadmapUpdate = await client.request("tools/call", {
+      name: "govibe.roadmap.update",
+      arguments: {
+        actor: "smoke-test",
+        project: "govibe",
+        nodeId: "TASK-002-mcp-bind",
+        mutationType: "node.update",
+        payload: {
+          progress: 91,
+          state: "qa_review",
+          validFrom: "2026-06-13T00:00:00.000Z",
+          recordedAt: secondRecordedAt,
+        },
+      },
+    });
+    const secondUpdatedNode = secondRoadmapUpdate.structuredContent?.roadmap?.nodes?.find((node) => node.id === "TASK-002-mcp-bind");
+    assert(secondUpdatedNode?.progress === 91, "second roadmap.update did not expose the latest version.");
+
+    const historicalLoad = await client.request("tools/call", {
+      name: "govibe.roadmap.load",
+      arguments: {
+        actor: "smoke-test",
+        project: "govibe",
+        source: "docs/roadmap/ROADMAP-govibe-mcp-runtime.md",
+        asOfValidAt: "2026-06-13T00:30:00.000Z",
+        asOfRecordedAt: historicalQueryAt,
+      },
+    });
+    const historicalNode = historicalLoad.structuredContent?.roadmap?.nodes?.find((node) => node.id === "TASK-002-mcp-bind");
+    assert(historicalNode?.progress === 88, "asOfRecordedAt did not return the historical task version.");
+
+    const futureUpdate = await client.request("tools/call", {
+      name: "govibe.roadmap.update",
+      arguments: {
+        actor: "smoke-test",
+        project: "govibe",
+        nodeId: "TASK-003-gateway-bootstrap",
+        mutationType: "node.update",
+        payload: {
+          progress: 7,
+          state: "blocked",
+          validFrom: "2099-01-01T00:00:00.000Z",
+          recordedAt: "2026-06-13T03:00:00.000Z",
+        },
+      },
+    });
+    const futureCurrentNode = futureUpdate.structuredContent?.roadmap?.nodes?.find((node) => node.id === "TASK-003-gateway-bootstrap");
+    assert(futureCurrentNode?.progress !== 7, "future validFrom affected the current roadmap view.");
 
     const roadmapExport = await client.request("tools/call", {
       name: "govibe.roadmap.export",
@@ -197,9 +252,12 @@ async function main() {
     const exportedRoadmap = exportedLoad.structuredContent?.roadmap;
     assert(exportedRoadmap?.sourcePath === smokeExportPath, "exported roadmap did not load back from the export path.");
     assert(
-      exportedRoadmap?.nodes?.some((node) => node.id === "TASK-002-mcp-bind" && node.progress === 88),
+      exportedRoadmap?.nodes?.some((node) => node.id === "TASK-002-mcp-bind" && node.progress === 91),
       "exported roadmap did not preserve the updated task row.",
     );
+    const exportedTemporalNode = exportedRoadmap?.nodes?.find((node) => node.id === "TASK-002-mcp-bind");
+    assert(exportedTemporalNode?.recordedAt === secondRecordedAt, "export/load round trip did not preserve Recorded At.");
+    assert(exportedTemporalNode?.version, "export/load round trip did not preserve Version.");
 
     const agentRun = await client.request("tools/call", {
       name: "govibe.agent.run",

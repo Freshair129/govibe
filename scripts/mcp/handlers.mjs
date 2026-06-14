@@ -73,7 +73,7 @@ export async function handleToolCall(name, args = {}) {
       };
     }
     case "govibe.roadmap.load": {
-      const roadmap = await govibeRuntime.reloadRoadmap(args.source);
+      const roadmap = await govibeRuntime.reloadRoadmap(args.source, args);
       return {
         content: asTextContent(
           [

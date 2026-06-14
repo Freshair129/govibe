@@ -1,6 +1,8 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { temporalColumns } from "./temporal-versioning.mjs";
+
 function slugify(value) {
   return String(value ?? "roadmap")
     .toLowerCase()
@@ -22,6 +24,16 @@ function stateForMarkdown(value) {
 function progressForMarkdown(value) {
   const numberValue = Number(value);
   return Number.isFinite(numberValue) ? String(numberValue) : "0";
+}
+
+function temporalCells(item) {
+  return [
+    item.version ?? "",
+    item.validFrom ?? "",
+    item.validTo ?? "",
+    item.recordedAt ?? "",
+    item.supersededAt ?? "",
+  ];
 }
 
 function row(cells) {
@@ -107,7 +119,7 @@ export function renderRoadmapMarkdown(roadmap, options = {}) {
     "",
     "## Phases",
     table(
-      ["Phase", "Goal", "PRD Systems", "Required Docs", "Exit Criteria", "Status", "Progress"],
+      ["Phase", "Goal", "PRD Systems", "Required Docs", "Exit Criteria", "Status", "Progress", ...temporalColumns],
       phases.map((node) => [
         node.id,
         node.title,
@@ -116,12 +128,13 @@ export function renderRoadmapMarkdown(roadmap, options = {}) {
         node.summary ?? "",
         stateForMarkdown(node.state),
         progressForMarkdown(node.progress),
+        ...temporalCells(node),
       ]),
     ),
     "",
     "## Sprints",
     table(
-      ["Sprint", "Parent ID", "Goal", "Task Count", "Exit Criteria", "Status", "Progress"],
+      ["Sprint", "Parent ID", "Goal", "Task Count", "Exit Criteria", "Status", "Progress", ...temporalColumns],
       sprints.map((node) => [
         node.id,
         node.parentId ?? "",
@@ -130,12 +143,13 @@ export function renderRoadmapMarkdown(roadmap, options = {}) {
         node.summary ?? "",
         stateForMarkdown(node.state),
         progressForMarkdown(node.progress),
+        ...temporalCells(node),
       ]),
     ),
     "",
     "## Backlog Items",
     table(
-      ["ID", "Parent ID", "Type", "Title", "PRD System", "Priority", "Owner", "Source Section", "Dependencies", "Acceptance", "Status", "Progress"],
+      ["ID", "Parent ID", "Type", "Title", "PRD System", "Priority", "Owner", "Source Section", "Dependencies", "Acceptance", "Status", "Progress", ...temporalColumns],
       tasks.map((node) => [
         node.id,
         node.parentId ?? "",
@@ -149,12 +163,13 @@ export function renderRoadmapMarkdown(roadmap, options = {}) {
         node.summary ?? "",
         stateForMarkdown(node.state),
         progressForMarkdown(node.progress),
+        ...temporalCells(node),
       ]),
     ),
     "",
     "## Assignments",
     table(
-      ["Task ID", "Subject ID", "Subject Type", "Policy Model", "Assigned At", "Assigned By"],
+      ["Task ID", "Subject ID", "Subject Type", "Policy Model", "Assigned At", "Assigned By", ...temporalColumns],
       (roadmap.assignments ?? []).map((assignment) => [
         assignment.taskId,
         assignment.subjectId,
@@ -162,12 +177,13 @@ export function renderRoadmapMarkdown(roadmap, options = {}) {
         assignment.policyModel,
         assignment.assignedAt,
         assignment.assignedBy ?? "",
+        ...temporalCells(assignment),
       ]),
     ),
     "",
     "## Handoffs",
     table(
-      ["Task ID", "From ID", "To ID", "Required Artifact", "Note", "Created At", "State"],
+      ["Task ID", "From ID", "To ID", "Required Artifact", "Note", "Created At", "State", ...temporalColumns],
       (roadmap.handoffs ?? []).map((handoff) => [
         handoff.taskId,
         handoff.fromId,
@@ -176,18 +192,20 @@ export function renderRoadmapMarkdown(roadmap, options = {}) {
         handoff.note ?? "",
         handoff.createdAt,
         handoff.state,
+        ...temporalCells(handoff),
       ]),
     ),
     "",
     "## Verification",
     table(
-      ["Task ID", "QA Status", "Audit Status", "Deployment Status", "Updated At"],
+      ["Task ID", "QA Status", "Audit Status", "Deployment Status", "Updated At", ...temporalColumns],
       (roadmap.verifications ?? []).map((verification) => [
         verification.taskId,
         verification.qaStatus ?? "",
         verification.auditStatus ?? "",
         verification.deploymentStatus ?? "",
         verification.lastUpdatedAt ?? "",
+        ...temporalCells(verification),
       ]),
     ),
     "",

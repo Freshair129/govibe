@@ -65,7 +65,15 @@ export type WorkflowTaskType =
   | "micro-task"
   | "atomic-task";
 
-export type WorkflowTaskNode = {
+export type TemporalVersion = {
+  version?: string;
+  validFrom?: string;
+  validTo?: string;
+  recordedAt?: string;
+  supersededAt?: string;
+};
+
+export type WorkflowTaskNode = TemporalVersion & {
   id: string;
   parentId?: string;
   type: WorkflowTaskType;
@@ -83,7 +91,7 @@ export type WorkflowTaskNode = {
   sourceSection?: string;
 };
 
-export type WorkflowAssignment = {
+export type WorkflowAssignment = TemporalVersion & {
   taskId: string;
   subjectId: string;
   subjectType: "human" | "agent" | "team" | "service";
@@ -92,7 +100,7 @@ export type WorkflowAssignment = {
   assignedBy?: string;
 };
 
-export type WorkflowHandoff = {
+export type WorkflowHandoff = TemporalVersion & {
   taskId: string;
   fromId: string;
   toId: string;
@@ -102,7 +110,7 @@ export type WorkflowHandoff = {
   state: "pending" | "accepted" | "rejected" | "completed";
 };
 
-export type WorkflowVerification = {
+export type WorkflowVerification = TemporalVersion & {
   taskId: string;
   qaStatus?: "pending" | "passed" | "failed";
   auditStatus?: "pending" | "passed" | "failed";
@@ -110,7 +118,7 @@ export type WorkflowVerification = {
   lastUpdatedAt?: string;
 };
 
-export type RoadmapSnapshot = {
+export type RoadmapSnapshot = TemporalVersion & {
   sourcePath: string;
   sourceType: "markdown" | "html" | "api" | "mcp" | "event";
   sourceVersion?: string;

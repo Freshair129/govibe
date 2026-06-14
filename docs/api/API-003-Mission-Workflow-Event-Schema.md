@@ -44,7 +44,15 @@ This contract does not prescribe storage format for PM-authored docs. It defines
 ### 4.1 Workflow task
 
 ```ts
-type WorkflowTaskNode = {
+type TemporalVersion = {
+  version?: string;
+  validFrom?: string;
+  validTo?: string;
+  recordedAt?: string;
+  supersededAt?: string;
+};
+
+type WorkflowTaskNode = TemporalVersion & {
   id: string;
   parentId?: string;
   type: "roadmap" | "phase" | "epic" | "sprint" | "task" | "sub-task" | "micro-task" | "atomic-task";
@@ -77,7 +85,7 @@ type WorkflowTaskNode = {
 ### 4.2 Workflow assignment
 
 ```ts
-type WorkflowAssignment = {
+type WorkflowAssignment = TemporalVersion & {
   taskId: string;
   subjectId: string;
   subjectType: "human" | "agent" | "team" | "service";
@@ -90,7 +98,7 @@ type WorkflowAssignment = {
 ### 4.3 Workflow handoff
 
 ```ts
-type WorkflowHandoff = {
+type WorkflowHandoff = TemporalVersion & {
   taskId: string;
   fromId: string;
   toId: string;
@@ -104,7 +112,7 @@ type WorkflowHandoff = {
 ### 4.4 Workflow verification
 
 ```ts
-type WorkflowVerification = {
+type WorkflowVerification = TemporalVersion & {
   taskId: string;
   qaStatus?: "pending" | "passed" | "failed";
   auditStatus?: "pending" | "passed" | "failed";
@@ -116,7 +124,7 @@ type WorkflowVerification = {
 ### 4.5 Roadmap snapshot
 
 ```ts
-type RoadmapSnapshot = {
+type RoadmapSnapshot = TemporalVersion & {
   sourcePath: string;
   sourceType: "markdown" | "html" | "api" | "mcp" | "event";
   updatedAt: string;
@@ -126,6 +134,17 @@ type RoadmapSnapshot = {
   verifications: WorkflowVerification[];
 };
 ```
+
+### 4.6 Bi-temporal query options
+
+```ts
+type RoadmapQueryOptions = {
+  asOfValidAt?: string;
+  asOfRecordedAt?: string;
+};
+```
+
+`asOfValidAt` selects records by business/effective time. `asOfRecordedAt` selects records by transaction/audit time. When omitted, consumers receive the current valid and current recorded state.
 
 ## 5. Mission Snapshot Extension
 
@@ -205,6 +224,9 @@ May consume:
 - `progress` must be between `0` and `100`.
 - `sourcePath` must be preserved for traceability when the source is document-derived.
 - Event consumers must merge updates without silently dropping verification or artifact state.
+- `validFrom` must be before or equal to `validTo` when both are present.
+- `recordedAt` must be before or equal to `supersededAt` when both are present.
+- Runtime fields use `camelCase`; document frontmatter can keep governance `snake_case`.
 
 ## 10. Example Event
 
@@ -236,4 +258,3 @@ May consume:
 - `docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md`
 - `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 - `docs/design/DOMAIN_DETAILS.md`
-
