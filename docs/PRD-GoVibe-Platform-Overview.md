@@ -11,7 +11,7 @@ block_manifest:
 **Status:** `DRAFT`
 **Author:** Rwang (Senior Dev)
 **Date:** 2026-06-06
-**Updated:** 2026-06-13
+**Updated:** 2026-06-14
 
 ## 1. Product Vision
 GoVibe is an AI-native visual CoDev and project management platform for coordinating human developers, their agent teams, project documents, roadmap progress, artifacts, and third-party AI coding tools through API and MCP integrations, leveraging MemoryOS V3 (Native Runtime / GenesisBlockDB).
@@ -72,6 +72,9 @@ GoVibe is a coordination layer, not a replacement for external coding agents.
 ### 4.4 Agent Team Management
 - Agent roster, agent team assignment, capability metadata, and current work state.
 - Agent media and status panels for operator confidence.
+- Visual Agent Fleet governance maps agent identity to fleet role, job-title equivalent, domain, cluster, responsibility, authority boundary, source refs, and scope status.
+- Protected human-dev workflow material is used as upstream context only; derived agent context must preserve source refs and must not mutate the protected source.
+- Scope expansion is routed through change-control impact assessment before LYRA accepts it into a plan.
 - External agent integration through API, MCP, webhook, local bridge, or file-based workflows.
 
 ### 4.5 Governance and Access Control

@@ -10,6 +10,7 @@ prd_system: "SYSTEM-05::Agent-Team-Management-System"
 related_docs:
   - "docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
+  - "docs/adr/ADR-012-Visual-Agent-Fleet-Governance.md"
   - ".agents/context/CONTEXT-Visual-Agent-Fleet-Scope.md"
 ---
 
@@ -20,6 +21,8 @@ related_docs:
 Visual Agent Fleet is the governance and display layer that maps GoVibe agent identities to role contracts, job-title equivalents, authority boundaries, source references, and A5 visualization metadata.
 
 It does not execute agents directly. It provides the context and metadata needed for planning, assignment, audit, QA, and future UI rendering.
+
+The architectural decision for this boundary is recorded in `docs/adr/ADR-012-Visual-Agent-Fleet-Governance.md`.
 
 ## 2. Architecture Context
 

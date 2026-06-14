@@ -13,6 +13,7 @@ risk: "MEDIUM"
 related_docs:
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md"
+  - "docs/adr/ADR-012-Visual-Agent-Fleet-Governance.md"
   - "docs/architecture/SDD-Visual-Agent-Fleet.md"
   - ".agents/context/CONTEXT-Visual-Agent-Fleet-Scope.md"
 ---
@@ -77,6 +78,7 @@ The system maps each agent identity to a fleet role, job-title equivalent, domai
 - Frontend: A5 can render fleet role cards from agent registry or normalized MissionSnapshot agent metadata.
 - Backend/Data: Registry metadata remains in `.agents/agent-registry.yaml`; future runtime payloads may normalize the same shape into MissionSnapshot.
 - Documentation: FEAT and SDD are source docs; `.agents/context/` and role packet files are derived context.
+- Decision record: `docs/adr/ADR-012-Visual-Agent-Fleet-Governance.md` owns the architecture decision for protected-source derivation, registry metadata, and A5 as the v1 consumer.
 - Audit: ATHER uses protected-source and scope-control checks before done state.
 
 ## 6. PRD System Mapping
