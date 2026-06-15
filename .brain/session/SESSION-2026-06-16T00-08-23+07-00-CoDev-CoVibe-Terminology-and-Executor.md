@@ -3,7 +3,7 @@
 ```yaml
 session_id: SESSION-2026-06-16T00-08-23+07-00-CoDev-CoVibe-Terminology-and-Executor
 title: CoDev CoVibe terminology, Gemini role-review tooling, and bounded external executor workflow
-status: docs_ready_for_commit
+status: pilot_completed_pending_validation
 complexity: C-3
 risk: HIGH
 methodology: DDD + CoDev multi-agent execution
@@ -24,19 +24,21 @@ target_artifacts:
   - G:/govibe/docs/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md
   - G:/govibe/docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md
   - G:/govibe/docs/change-requests/feedback/FEAT-CoDev-CoVibe-Terminology-Definition-feedback.md
-  - G:/govibe/docs/runbooks/RUNBOOK-CoVibe-Freelance-Executor.md
-  - G:/govibe/.agents/context/CONTEXT-CoVibe-Freelance-Executor.md
-  - G:/govibe/docs/change-requests/feedback/RUNBOOK-CoVibe-Freelance-Executor-feedback.md
+  - G:/govibe/docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md
+  - G:/govibe/.agents/context/CONTEXT-Bounded-External-Executor.md
+  - G:/govibe/docs/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md
+  - G:/govibe/docs/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md
+  - G:/govibe/docs/change-requests/feedback/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review-feedback.md
   - G:/govibe/.gemini/commands/govibe/role-review.toml
   - G:/govibe/.gemini/commands/govibe/new-feature-review.toml
   - C:/Users/freshair/.agents/skills/gemini-role-review/SKILL.md
   - C:/Users/freshair/.agents/skills/gemini-role-review/agents/openai.yaml
   - C:/Users/freshair/.agents/skills/gemini-role-review/scripts/invoke-gemini-role-review.ps1
 gate_status:
-  terminology_note: approved_for_doc_refinement
-  external_executor_workflow: ready_for_trial
-  prd_c4_propagation: pending_next_session
-  pilot_execution: pending_next_session
+  terminology_note: propagated_to_prd
+  external_executor_workflow: renamed_and_ready
+  prd_c4_propagation: prd_only_completed_c4_still_deferred
+  pilot_execution: completed
   commit: pending
 ```
 
@@ -55,7 +57,7 @@ The session also produced reusable Gemini review tooling:
 1. `CoDev` and `CoVibe` were kept as collaboration-mode terminology, not new top-level PRD systems.
 2. `MCP` was not replaced or downgraded.
 3. `CoVibe` was accepted as the product-facing idea for intra-owner orchestration.
-4. A SWE-friendly naming direction was preferred for future workflow documents, but the current runbook/context artifacts remain on the older `CoVibe Freelance Executor` naming and should be renamed in the next session.
+4. The executor workflow artifacts were renamed to the SWE-friendly `Bounded External Executor` wording while keeping `CoVibe` as the collaboration mode in content.
 5. Gemini CLI is treated as a bounded external executor or freelance support worker, never as final approver or product owner.
 
 ## Review Outcomes
@@ -81,16 +83,36 @@ The session also produced reusable Gemini review tooling:
   - terminology note accepted as terminology-only layer
   - next step should propagate a narrow terminology section into the PRD
 
-### RUNBOOK: CoVibe Freelance Executor Workflow
+### RUNBOOK: Bounded External Executor Workflow
 
-- Runbook created at `docs/runbooks/RUNBOOK-CoVibe-Freelance-Executor.md`
-- Context container created at `.agents/context/CONTEXT-CoVibe-Freelance-Executor.md`
-- Feedback artifact created at `docs/change-requests/feedback/RUNBOOK-CoVibe-Freelance-Executor-feedback.md`
+- Runbook renamed to `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
+- Context container renamed to `.agents/context/CONTEXT-Bounded-External-Executor.md`
+- Feedback artifact renamed to `docs/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md`
 - Consensus:
   - LYRA ready_for_trial
   - ARCHON ready_for_trial
   - THESEUS ready_for_trial
   - ATHER ready_for_trial
+
+### PILOT-01: PRD Terminology External Executor Review
+
+- Pilot packet created at `docs/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md`
+- Pilot feedback artifact created at `docs/change-requests/feedback/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review-feedback.md`
+- Gemini CLI session id: `80c13691-1a11-4536-881c-a559d03f3c79`
+- Outcome:
+  - structured YAML returned within scope
+  - PRD terminology insertion accepted as narrow enough
+  - workflow sync accepted as aligned with current system boundaries
+- Telemetry:
+  - model: `gemini-3.1-flash-lite`
+  - input tokens: `31456`
+  - candidate tokens: `614`
+  - thought tokens: `1446`
+  - total tokens: `51534`
+- Scope-control notes:
+  - Gemini stayed inside the supplied packet and read only the requested documents
+  - first attempt hit a quota-reset retry window, then succeeded automatically
+  - no C4 rewrite, PRD system-map expansion, or MCP replacement was suggested
 
 ## Tooling Added
 
@@ -123,29 +145,17 @@ Purpose:
 
 ## Known Follow-Up Items
 
-1. Rename:
-   - `RUNBOOK-CoVibe-Freelance-Executor.md`
-   - `CONTEXT-CoVibe-Freelance-Executor.md`
-   - `RUNBOOK-CoVibe-Freelance-Executor-feedback.md`
-   to SWE-friendly names such as `Bounded External Executor Workflow`
-
-2. Propagate terminology:
-   - add `CoDev` / `CoVibe` terminology section into `docs/PRD-GoVibe-Platform-Overview.md`
-   - sync terminology in `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md`
-
-3. Run bounded pilot:
-   - choose one real task
-   - attach context container
-   - send packet to Gemini CLI
-   - record artifact, token cost, and failure notes
+1. Validate the updated doc set and clear any metadata or cross-link issues.
+2. Decide whether a future C4 wording pass should be proposed as a separate approved doc step.
+3. Reuse the pilot packet shape for other bounded external-executor review flows if needed.
 
 ## Recommended Next Session
 
 Recommended priority order:
 
-1. rename CoVibe freelance executor docs to SWE-friendly names
-2. insert narrow terminology section into PRD
-3. prepare `PILOT-01` bounded external executor packet
+1. finish validation and commit the terminology-plus-pilot artifact set
+2. keep C4 untouched unless a new approval step explicitly opens that scope
+3. reuse the bounded external executor packet only for similarly narrow doc-review tasks
 
 ## Working Tree Note
 
@@ -153,6 +163,7 @@ At session close, the worktree still contains uncommitted documentation and hand
 
 - CoDev / CoVibe positioning review
 - terminology-definition note and feedback
-- CoVibe freelance executor workflow and feedback
+- bounded external executor workflow and feedback
+- pilot packet and feedback
 - project Gemini slash commands
 - `.agents/devops/handoff/log.jsonl`

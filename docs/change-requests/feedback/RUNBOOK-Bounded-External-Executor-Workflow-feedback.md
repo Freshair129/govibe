@@ -1,19 +1,19 @@
 ---
-title: "Feedback: RUNBOOK CoVibe Freelance Executor"
-doc_id: "FEEDBACK-RUNBOOK-COVIBE-FREELANCE-EXECUTOR"
+title: "Feedback: RUNBOOK Bounded External Executor Workflow"
+doc_id: "FEEDBACK-RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW"
 status: "draft"
-version: "0.1.0"
-updated: "2026-06-15"
+version: "0.2.1"
+updated: "2026-06-16"
 owner: "CODEx"
 auditor: "ATHER"
 source_of_truth: true
 related_docs:
-  - "docs/runbooks/RUNBOOK-CoVibe-Freelance-Executor.md"
-  - ".agents/context/CONTEXT-CoVibe-Freelance-Executor.md"
+  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - ".agents/context/CONTEXT-Bounded-External-Executor.md"
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
 ---
 
-# Feedback: RUNBOOK CoVibe Freelance Executor
+# Feedback: RUNBOOK Bounded External Executor Workflow
 
 ## 1. Collection Method
 
@@ -27,8 +27,8 @@ Gemini model routing:
 
 Reviewed inputs:
 
-- `docs/runbooks/RUNBOOK-CoVibe-Freelance-Executor.md`
-- `.agents/context/CONTEXT-CoVibe-Freelance-Executor.md`
+- `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
+- `.agents/context/CONTEXT-Bounded-External-Executor.md`
 - `docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md`
 - `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md`
 - `docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md`
@@ -45,7 +45,7 @@ Reviewed inputs:
 
 Consensus:
 
-- The CoVibe freelance executor workflow is ready for trial.
+- The Bounded External Executor workflow is ready for trial under the CoVibe collaboration mode.
 - No reviewer requested ADR before a bounded pilot.
 - No reviewer requested PRD or C4 restructuring first.
 - Main residual risks are runtime scope widening and lead-review bottlenecks, not document shape.
@@ -93,8 +93,8 @@ reason: "The workflow preserves accountability on the lead side and provides eno
 Proceed with a bounded CoVibe pilot:
 
 - choose one narrow real task
-- attach `CONTEXT-CoVibe-Freelance-Executor.md`
-- use Gemini CLI as freelance executor
+- attach `CONTEXT-Bounded-External-Executor.md`
+- use Gemini CLI as bounded external executor
 - return the artifact for lead review
 - record outcome, token cost, and any scope-control failures
 
@@ -112,6 +112,8 @@ If the pilot reveals repeated packet drift or review overload, the next doc step
 - optional telemetry logging for external executor runs
 
 ## 6. Raw Feedback Digest
+
+The raw feedback below preserves the original review wording. Canonical active documentation uses `Bounded External Executor` and `support executor` terminology.
 
 ### LYRA
 

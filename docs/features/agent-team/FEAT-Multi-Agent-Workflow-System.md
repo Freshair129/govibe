@@ -15,11 +15,16 @@
 
 Define the canonical workflow system for multi-agent execution in GoVibe.
 
-This system governs how human users, lead agents, PM agents, execution agents, QA, auditors, and third-party tool bridges coordinate planning, assignment, implementation, handoff, review, and closure.
+This system governs how human users, lead agents, PM agents, execution agents, QA, auditors, and third-party tool bridges coordinate planning, assignment, implementation, handoff, review, and closure across both `CoDev` and `CoVibe` collaboration modes.
 
 ## 2. Why This Exists
 
 GoVibe is not a billing wrapper around third-party AI tools. It is the orchestration, progress tracking, traceability, and project-management layer for developer-owned agent teams.
+
+Within that layer:
+
+- `CoDev` covers multi-party coordination between separate human-owned delivery parties and their agent teams.
+- `CoVibe` covers lead-side orchestration where one primary owner or lead agent uses bounded support agents or bounded external executors.
 
 The workflow system exists to ensure:
 
@@ -37,6 +42,7 @@ Included:
 - doc-first gate for non-trivial work
 - PM decomposition from roadmap to atomic-task
 - assignment routing to human or agent team
+- collaboration-mode support for both `CoDev` multi-party execution and `CoVibe` lead-plus-support execution
 - handoff workflow between PM, executor, QA, and auditor
 - event/state expectations for Mission Control visibility
 - evidence and closure requirements
@@ -110,6 +116,7 @@ Request
 ### 5.6 Multi-agent execution and handoff
 
 - The system must support sequential and parallel agent execution.
+- The system must support both `CoDev` multi-party coordination and `CoVibe` lead-agent coordination with bounded support executors.
 - The system must support Codex-led orchestration with Ollama sidecar execution for bounded atomic-task work.
 - A task handoff must identify:
   - source task ID
@@ -118,6 +125,7 @@ Request
   - required artifact or evidence
   - expected next state
 - The system must support internal agent teams and external tool bridges as execution participants.
+- External execution participants may operate as bounded support executors under `CoVibe` when lead-side governance and handoff rules remain in force.
 - Local sidecar execution must be restricted to bounded context and must not silently widen scope beyond atomic context policy.
 
 ### 5.7 Verification and closeout
@@ -175,6 +183,7 @@ Primary consumers:
 
 - GoVibe may orchestrate external tools through API, MCP, webhook, local bridge, or file-based exchange.
 - External tools are treated as execution providers, not as the source of truth for project state.
+- `CoDev` and `CoVibe` do not change current system ownership; they clarify whether the workflow is coordinating multiple delivery parties or a lead side with bounded support execution.
 - Workflow state must be normalized into GoVibe-owned documents, snapshots, or events before it is considered canonical.
 - In v1, Ollama is a local sidecar executor for `atomic` work only and is not a replacement for Codex-led orchestration.
 

@@ -1,9 +1,9 @@
 ---
-title: "RUNBOOK: CoVibe Freelance Executor Workflow"
-doc_id: "RUNBOOK-COVIBE-FREELANCE-EXECUTOR"
+title: "RUNBOOK: Bounded External Executor Workflow"
+doc_id: "RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW"
 status: "draft"
-version: "0.1.0"
-updated: "2026-06-15"
+version: "0.2.1"
+updated: "2026-06-16"
 owner: "LYRA"
 auditor: "ATHER"
 source_of_truth: true
@@ -13,14 +13,14 @@ related_docs:
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md"
   - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
-  - ".agents/context/CONTEXT-CoVibe-Freelance-Executor.md"
+  - ".agents/context/CONTEXT-Bounded-External-Executor.md"
 ---
 
-# RUNBOOK: CoVibe Freelance Executor Workflow
+# RUNBOOK: Bounded External Executor Workflow
 
 ## 1. Purpose
 
-Define how GoVibe can use `CoVibe` as a practical execution mode where a primary owner or main agent hires an external executor such as Gemini CLI for bounded work, similar to hiring a freelancer in a real delivery workflow.
+Define how GoVibe can use `CoVibe` as a practical execution mode where a primary owner or main agent uses an external executor such as Gemini CLI for bounded work under lead-side governance.
 
 This runbook is an operating model, not a PRD system change.
 
@@ -29,7 +29,7 @@ This runbook is an operating model, not a PRD system change.
 In this runbook:
 
 - `Human owner` or `main agent` remains the accountable lead.
-- `Gemini CLI` acts as a bounded external executor or freelance worker.
+- `Gemini CLI` acts as a bounded external executor or support executor.
 - `GoVibe` remains the coordination and traceability layer.
 
 Canonical shape:
@@ -38,7 +38,7 @@ Canonical shape:
 [Human]
   -> [Main Agent / Lead Orchestrator]
   -> [CoVibe packet]
-  -> [Freelance Executor: Gemini CLI]
+  -> [Bounded External Executor: Gemini CLI]
   -> [Returned artifact / feedback]
   -> [QA / Audit / Human decision]
 ```
@@ -103,7 +103,7 @@ source_docs:
   - docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md
   - docs/PRD-GoVibe-Platform-Overview.md
   - docs/architecture/C4-GoVibe-Platform.md
-context_container: .agents/context/CONTEXT-CoVibe-Freelance-Executor.md
+context_container: .agents/context/CONTEXT-Bounded-External-Executor.md
 expected_output: YAML review response or feedback artifact
 verification_gate: docs:validate plus lead-agent review
 return_path: docs/change-requests/feedback/
@@ -115,10 +115,10 @@ out_of_scope:
 
 ## 6. Prompt Template
 
-Use this prompt when sending a bounded freelance packet to Gemini CLI.
+Use this prompt when sending a bounded external-executor packet to Gemini CLI.
 
 ```text
-You are acting as a freelance support executor inside the GoVibe CoVibe workflow.
+You are acting as a bounded external support executor inside the GoVibe CoVibe workflow.
 
 Role:
 - You are not the product owner.
@@ -177,7 +177,7 @@ Minimum packet to send:
 
 ## 8. Context Container Contract
 
-Every CoVibe freelance run should have one compact context container that includes:
+Every CoVibe bounded external-executor run should have one compact context container that includes:
 
 - mission and role framing
 - source-of-truth order
@@ -198,7 +198,7 @@ The context container should be compact, derived, and source-cited.
 
 ## 10. Success Criteria
 
-- CoVibe can be used as a practical freelancer-style operating mode.
+- CoVibe can be used as a practical support-executor operating mode.
 - External executor work is bounded and reviewable.
 - The main agent can offload support work without losing governance control.
 
@@ -209,3 +209,10 @@ The context container should be compact, derived, and source-cited.
 - Context container contract exists.
 - A concrete context container is linked for Gemini CLI packet usage.
 - The workflow is ready for review before further automation is added.
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 0.2.1 | 2026-06-16 | Replaced remaining freelance analogy wording in active guidance with bounded support-executor terminology. |
+| 0.2.0 | 2026-06-16 | Renamed the workflow to the SWE-friendly bounded external executor wording and updated the canonical context link. |

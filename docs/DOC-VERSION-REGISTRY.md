@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.1+draft"
-updated: "2026-06-15"
+version: "0.1.2+draft"
+updated: "2026-06-16"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -29,13 +29,13 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.1+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
-| PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.1.0+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
+| PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.2.0+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
 | PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.1.0+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
 
 ## 4. Roadmap and Planning
@@ -43,6 +43,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.1.0+draft` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
 | Backlog | `IMP-GVMP01P05EP01` | `tracked-outside-registry` | pending-classification | LYRA | `.agents/.devlog/implement/IMP-GVMP01P05EP01.md` |
 
 ## 5. Agent Governance
@@ -53,7 +54,14 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Feature | `FEAT-visual-agent-fleet-system` | `0.1.0` | migration-needed | THESEUS | `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md` |
 | Architecture | `SDD-visual-agent-fleet` | `0.1.0` | migration-needed | THESEUS / ARCHON | `docs/architecture/SDD-Visual-Agent-Fleet.md` |
 
-## 6. Migration Notes
+## 6. Runbooks And Context Packets
+
+| Group | Doc ID | Version | Status | Owner | Path |
+|---|---|---|---|---|---|
+| Runbook | `RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW` | `0.2.1` | draft | LYRA | `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` |
+| Context | `CONTEXT-BOUNDED-EXTERNAL-EXECUTOR` | `0.2.1` | draft | THESEUS | `.agents/context/CONTEXT-Bounded-External-Executor.md` |
+
+## 7. Migration Notes
 
 - `migration-needed` means the document exists but does not yet use the canonical versioning format required by the new standard.
 - `proposed-migration` means the document is active but still needs metadata normalization in a later sweep.
@@ -64,5 +72,6 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-06-16 | ATHER / THESEUS | Registered the MVP developer trial master plan and bounded external executor active docs. |
 | 0.1.1+draft | 2026-06-15 | ATHER / THESEUS | Synced registry entries with the updated document versioning governance standard and the diff gate automation note. |
 | 0.1.0+draft | 2026-06-15 | ATHER / THESEUS | Initial audit registry for canonical document version tracking and migration visibility. |

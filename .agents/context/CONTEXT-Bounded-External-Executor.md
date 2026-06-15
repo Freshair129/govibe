@@ -1,24 +1,24 @@
 ---
-title: "CONTEXT: CoVibe Freelance Executor"
-doc_id: "CONTEXT-COVIBE-FREELANCE-EXECUTOR"
+title: "CONTEXT: Bounded External Executor"
+doc_id: "CONTEXT-BOUNDED-EXTERNAL-EXECUTOR"
 status: "draft"
-version: "0.1.0"
-updated: "2026-06-15"
+version: "0.2.1"
+updated: "2026-06-16"
 owner: "THESEUS"
 auditor: "ATHER"
 source_of_truth: false
 related_docs:
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
-  - "docs/runbooks/RUNBOOK-CoVibe-Freelance-Executor.md"
+  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
 ---
 
-# CONTEXT: CoVibe Freelance Executor
+# CONTEXT: Bounded External Executor
 
 ## 1. Purpose
 
-This context container is the compact packet attached to a Gemini CLI run when GoVibe uses `CoVibe` as a freelancer-style execution mode.
+This context container is the compact packet attached to a Gemini CLI run when GoVibe uses `CoVibe` as a bounded support-executor mode.
 
 ## 2. Role Framing
 
@@ -81,3 +81,10 @@ Default return path for review or doc-support work:
 - `docs/change-requests/feedback/`
 
 If the lead packet defines another path, that packet wins.
+
+## 9. Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 0.2.1 | 2026-06-16 | Replaced freelance analogy wording with bounded support-executor terminology in the active context packet. |
+| 0.2.0 | 2026-06-16 | Renamed the canonical context artifact to the bounded external executor wording while preserving CoVibe as the collaboration mode. |

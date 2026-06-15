@@ -1,8 +1,8 @@
 ---
 doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-15"
+version: "0.2.0+draft"
+updated: "2026-06-16"
 owner: "Rwang (Senior Dev)"
 source_of_truth: true
 block_manifest:
@@ -51,6 +51,14 @@ GoVibe is a coordination layer, not a replacement for external coding agents.
 - GoVibe does not replace third-party AI coding tools.
 - GoVibe does not require human developers to write Genesis atoms directly.
 - GoVibe does not make atom files the canonical source of truth when a human-readable SWE document exists.
+
+### 2.3 Collaboration Terminology
+`CoDev` and `CoVibe` are narrow GoVibe collaboration terms that sit on top of the current platform system map.
+
+- `CoDev` means the inter-owner or inter-team coordination mode where multiple human-owned delivery parties and their agent teams collaborate through GoVibe.
+- `CoVibe` means the intra-owner orchestration mode where one primary owner or lead agent coordinates bounded support agents or bounded external executors.
+- Both terms are terminology layers over `SYSTEM-05::Agent-Team-Management-System` with supporting bridge behavior through `SYSTEM-06::Integration-Bridge-System`.
+- This terminology refinement does not add a new top-level PRD system, does not replace `MCP`, and does not change C4 scope in this phase.
 
 ## 3. Target Audience
 - **Human Developers:** Working with personal or team AI agents during normal software delivery.
@@ -127,4 +135,5 @@ PRD::GoVibe-Platform
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.2.0 | 2026-06-16 | Added the narrow CoDev and CoVibe terminology subsection under product positioning without changing the current system map. |
 | 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the PRD with the document versioning governance standard. |
