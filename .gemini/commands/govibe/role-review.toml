@@ -1,0 +1,28 @@
+description = "Run LYRA, ARCHON, THESEUS, and ATHER review on a GoVibe change-request packet."
+
+prompt = """
+You are executing the GoVibe Gemini role review workflow.
+
+The user supplied the target packet path as command arguments.
+
+Rules:
+- Run the bundled Gemini role review runner through PowerShell.
+- Use the current workspace as RepoRoot.
+- Review the packet plus the standard GoVibe upstream docs:
+  - docs/PRD-GoVibe-Platform-Overview.md
+  - docs/architecture/C4-GoVibe-Platform.md
+  - docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md
+  - docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md
+- Use roles: LYRA, ARCHON, THESEUS, ATHER
+- Do not modify the source packet.
+- After the shell command completes, report:
+  - the feedback artifact path
+  - whether docs:validate passed
+  - any failure that blocked review
+
+Packet path:
+{{args}}
+
+Runner output:
+!{powershell -NoProfile -ExecutionPolicy Bypass -Command "& 'C:\\Users\\freshair\\.agents\\skills\\gemini-role-review\\scripts\\invoke-gemini-role-review.ps1' -RepoRoot . -PacketFile {{args}} -ReviewFiles @({{args}},'docs/PRD-GoVibe-Platform-Overview.md','docs/architecture/C4-GoVibe-Platform.md','docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md','docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md') -Roles @('LYRA','ARCHON','THESEUS','ATHER')"}
+"""

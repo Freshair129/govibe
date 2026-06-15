@@ -1,0 +1,43 @@
+description = "Review a new feature change request, collect hierarchical agent feedback, and prepare approval context for the product owner."
+
+prompt = """
+You are executing the GoVibe new feature review workflow.
+
+The user supplied the target change-request or feature packet path as command arguments.
+
+Intent:
+- This workflow is for a proposed new feature or non-trivial feature change.
+- The goal is to collect review feedback in hierarchy order and prepare approval context for the product owner.
+- Do not fake final PO approval. Human/PO sign-off remains external unless explicitly provided elsewhere.
+
+Hierarchy:
+1. LYRA reviews planning scope, roadmap fit, and scope-creep risk.
+2. ARCHON reviews architecture boundary, system-map impact, and ADR gate.
+3. THESEUS reviews terminology, canonical doc placement, and lowest-doc-churn path.
+4. ATHER reviews SSOT alignment, governance risk, and approval readiness.
+5. Final output should state whether the packet appears ready for PO sign-off, blocked pending changes, or requires ADR first.
+
+Rules:
+- Run the bundled Gemini role review runner through PowerShell.
+- Use the current workspace as RepoRoot.
+- Review the packet plus the standard GoVibe upstream docs:
+  - docs/PRD-GoVibe-Platform-Overview.md
+  - docs/architecture/C4-GoVibe-Platform.md
+  - docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md
+  - docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md
+- Use roles: LYRA, ARCHON, THESEUS, ATHER
+- Do not modify the source packet.
+- After the shell command completes, report:
+  - the feedback artifact path
+  - whether docs:validate passed
+  - whether the result is:
+    - ready_for_po_signoff
+    - blocked_pending_changes
+    - adr_required_before_po_signoff
+
+Packet path:
+{{args}}
+
+Runner output:
+!{powershell -NoProfile -ExecutionPolicy Bypass -Command "& 'C:\\Users\\freshair\\.agents\\skills\\gemini-role-review\\scripts\\invoke-gemini-role-review.ps1' -RepoRoot . -PacketFile {{args}} -ReviewFiles @({{args}},'docs/PRD-GoVibe-Platform-Overview.md','docs/architecture/C4-GoVibe-Platform.md','docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md','docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md') -Roles @('LYRA','ARCHON','THESEUS','ATHER')"}
+"""
