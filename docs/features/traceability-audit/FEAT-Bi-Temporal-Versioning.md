@@ -84,3 +84,9 @@ If a leaf record lacks source or governance fields, consumers resolve effective 
 - Parser and exporter round trip temporal columns.
 - Smoke tests cover current, historical, future-valid, and legacy-source behavior.
 - `npm run docs:validate`, `npm run mcp:smoke`, and `npm run baseline:check` pass.
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Added changelog footer to align the bi-temporal feature with the document versioning governance standard. |

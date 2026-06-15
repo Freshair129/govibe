@@ -1,4 +1,6 @@
 ---
+doc_id: "AGENT-THESEUS"
+owner: "THESEUS"
 version: "2.1.0"
 created_at: "2026-06-06T19:52:20+07:00,Boss"
 last_update: "2026-06-12T21:10:00+07:00,THESEUS"
@@ -118,5 +120,6 @@ Summary:
 ## Changelog
 | Version | Date | Summary |
 |---|---|---|
+| 2.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the documentation agent contract with the document versioning governance standard. |
 | 2.1.0 | 2026-06-12 | Normalized SYSTEM-08 naming, added H0-H6 and W-Scale guidance to documentation output, and kept template governance aligned with current SSOT. |
 | 2.0.0 | 2026-06-12 | Normalized THESEUS around PRD/C4/SDD/STD execution governance, feature system folders, and SWE templates. |

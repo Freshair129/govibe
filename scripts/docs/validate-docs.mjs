@@ -23,8 +23,21 @@ const requiredTemplates = [
   "UI-UX-DESIGN-template.md",
 ];
 
-const requiredFrontmatter = ["doc_id", "status", "version", "updated"];
+const requiredFrontmatter = ["doc_id", "status", "version"];
 const ingestionFrontmatter = ["owner", "source_of_truth"];
+const canonicalVersionPattern = /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-(?:alpha|beta|rc|ga|deprecated|archived)(?:\.\d+)?)?(?:\+[a-z][a-z0-9-]*)?$/;
+const governedDocPatterns = [
+  /^docs\/STD-.+\.md$/i,
+  /^docs\/PRD-.+\.md$/i,
+  /^docs\/roadmap\/.+\.md$/i,
+  /^docs\/CONCEPT--.+\.md$/i,
+  /^docs\/DOC-VERSION-REGISTRY\.md$/i,
+  /^docs\/features\/traceability-audit\/.+\.md$/i,
+  /^\.agents\/auditor\/AGENT\.md$/i,
+  /^\.agents\/pm\/AGENT\.md$/i,
+  /^\.agents\/doc_writer\/THESEUS\.md$/i,
+  /^\.agents\/doc_writer\/template\/AGENTS-template\.md$/i,
+];
 const ignoredDirs = new Set([".git", "node_modules", "dist", ".vercel", ".vite", ".turbo"]);
 const results = {
   errors: [],
@@ -142,6 +155,10 @@ function isActionableType(type) {
   return ["task", "sub-task", "micro-task", "atomic-task"].includes(String(type ?? "").trim().toLowerCase());
 }
 
+function isGovernedDoc(file) {
+  return governedDocPatterns.some((pattern) => pattern.test(file));
+}
+
 function checkTemporalOrder(file, row, label) {
   const validFrom = getColumn(row, ["Valid From"]);
   const validTo = getColumn(row, ["Valid To"]);
@@ -231,10 +248,8 @@ function checkDocIds(markdownFiles) {
       seen.set(frontmatter.doc_id, file);
     }
 
-    const isSourceOfTruth = frontmatter.source_of_truth === "true";
     const isCanonicalTemplate = file.startsWith(`${templateRoot}/`);
-    const isDocsCanonical = file.startsWith("docs/") && !file.startsWith("docs/archive/");
-    const mustPassFrontmatter = isSourceOfTruth || isCanonicalTemplate || isDocsCanonical;
+    const mustPassFrontmatter = isGovernedDoc(file) || isCanonicalTemplate;
 
     for (const field of requiredFrontmatter) {
       if (!frontmatter[field]) {
@@ -247,12 +262,78 @@ function checkDocIds(markdownFiles) {
       }
     }
 
-    if (isSourceOfTruth) {
+    if (!frontmatter.updated && !frontmatter.last_update) {
+      const message = "Missing required frontmatter field: updated (or last_update).";
+      if (mustPassFrontmatter) {
+        addError(file, message);
+      } else {
+        addWarning(file, message);
+      }
+    }
+
+    if (mustPassFrontmatter && frontmatter.version && !canonicalVersionPattern.test(frontmatter.version)) {
+      addError(file, `Non-canonical version format: ${frontmatter.version}. Use MAJOR.MINOR.PATCH[-stage][+edition].`);
+    }
+
+    if (frontmatter.source_of_truth === "true" && isGovernedDoc(file)) {
       for (const field of ingestionFrontmatter) {
         if (!frontmatter[field]) {
           addError(file, `Source-of-truth ingestion doc is missing frontmatter field: ${field}.`);
         }
       }
+    }
+
+    if (mustPassFrontmatter && !hasSection(content, ["Changelog"])) {
+      addError(file, "Missing required section: Changelog.");
+    }
+  }
+}
+
+function checkDocumentVersionRegistry(markdownFiles) {
+  const registryPath = "docs/DOC-VERSION-REGISTRY.md";
+  if (!existsSync(repoResolve(registryPath))) return;
+
+  const registry = readRepoFile(registryPath);
+  const tables = collectSectionTables(registry);
+  const rows = [...tables.values()].flat();
+  const placeholderStatus = /migration-needed|unregistered|tracked-outside-registry|pending-classification/i;
+  const fileMap = new Map(markdownFiles.map((file) => [file, parseFrontmatter(readRepoFile(file))]));
+
+  for (const row of rows) {
+    const cleanCell = (value) => String(value ?? "").replace(/`/g, "").trim();
+    const docId = cleanCell(getColumn(row, ["Doc ID"]));
+    const version = cleanCell(getColumn(row, ["Version"]));
+    const status = cleanCell(getColumn(row, ["Status"]));
+    const owner = cleanCell(getColumn(row, ["Owner"]));
+    const path = cleanCell(getColumn(row, ["Path"]));
+    if (!docId || !version || !path) continue;
+    if (placeholderStatus.test(status)) continue;
+
+    if (!existsSync(repoResolve(path))) {
+      addError(registryPath, `Registry path does not exist: ${path}`);
+      continue;
+    }
+
+    const frontmatter = fileMap.get(path);
+    if (!frontmatter?.doc_id) {
+      addError(registryPath, `Registry entry points to a file without doc_id frontmatter: ${path}`);
+      continue;
+    }
+
+    if (frontmatter.doc_id !== docId) {
+      addError(registryPath, `Registry doc_id mismatch for ${path}: expected ${docId}, found ${frontmatter.doc_id}.`);
+    }
+
+    if (frontmatter.version && frontmatter.version !== version) {
+      addError(registryPath, `Registry version mismatch for ${path}: expected ${version}, found ${frontmatter.version}.`);
+    }
+
+    if (frontmatter.status && status && frontmatter.status !== status) {
+      addError(registryPath, `Registry status mismatch for ${path}: expected ${status}, found ${frontmatter.status}.`);
+    }
+
+    if (owner && frontmatter.owner && owner !== frontmatter.owner) {
+      addWarning(registryPath, `Registry owner mismatch for ${path}: expected ${owner}, found ${frontmatter.owner}.`);
     }
   }
 }
@@ -313,8 +394,10 @@ function checkPathReferences(files) {
       results.checked.pathReferences += 1;
       if (!existsSync(repoResolve(normalized))) {
         const message = `Referenced path does not exist: ${candidate}`;
-        if (file.startsWith(".agents/") || file.startsWith("standards/") || file.startsWith("docs/runbooks/")) {
+        if (file.startsWith(".agents/") || file.startsWith("standards/") || file.startsWith("docs/runbooks/") || file.startsWith(".agents/pm/change request/")) {
           addError(file, message);
+        } else if (file.startsWith("docs/archive/")) {
+          addWarning(file, message);
         } else {
           addWarning(file, message);
         }
@@ -426,6 +509,7 @@ function main() {
 
   checkTemplateRegistry();
   checkDocIds(markdownFiles);
+  checkDocumentVersionRegistry(markdownFiles);
   checkTemplateSections();
   checkPathReferences(referenceFiles);
   checkLegacyDocs(markdownFiles);

@@ -1,4 +1,10 @@
 ---
+doc_id: "PRD-GOVIBE-MCP-ORCHESTRATION"
+status: "draft"
+version: "0.1.0+draft"
+updated: "2026-06-15"
+owner: "GoVibe"
+source_of_truth: true
 block_manifest:
   core:
     id: "[[DOC::PRD_MCP_ORCHESTRATION]]"
@@ -73,3 +79,9 @@ GoVibe should treat its orchestration surfaces as layered:
 The business rules for permissions, context injection, task routing, and state mutation should live behind the orchestration interface, not inside presentation layers.
 
 *(Remaining sections preserved...)*
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the orchestration PRD with the document versioning governance standard. |

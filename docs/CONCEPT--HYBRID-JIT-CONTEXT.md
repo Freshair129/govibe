@@ -1,8 +1,13 @@
----
+﻿---
+doc_id: "CONCEPT--HYBRID-JIT-CONTEXT"
 id: CONCEPT--HYBRID-JIT-CONTEXT
+version: "0.1.0+draft"
+updated: "2026-06-15"
 phase: 1
 type: concept
 status: stable
+owner: "THESEUS"
+source_of_truth: true
 vault_id: default
 tier: process
 source_type: axiomatic
@@ -60,4 +65,12 @@ role: Strategic intent / PRD
 3. **GenesisGraph Engine:** วิ่งไปสแกนหัวข้อต่างๆ ในไฟล์ Markdown ที่ถูกบีบอัดไว้ ดึงเฉพาะ Node รอบๆ 2 Hops ออกมา
 4. **JIT Renderer:** สร้าง Virtual Document ส่งคืนให้ Agent (Agent จะไม่เห็นไฟล์เต็มๆ แต่เห็นเฉพาะข้อมูลที่จำเป็น)
 5. **Agent:** เขียนโค้ดได้อย่างแม่นยำ และส่งคำสั่ง Overwrite ทับเฉพาะส่วนหัวข้อนั้นกลับเข้าไฟล์ `.md` อย่างเนียนตา
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the concept doc with the document versioning governance standard. |
+
+
 

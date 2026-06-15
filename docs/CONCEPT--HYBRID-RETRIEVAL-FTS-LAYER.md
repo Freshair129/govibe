@@ -1,8 +1,13 @@
 ---
+doc_id: "CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER"
 id: CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER
+version: "0.1.0+draft"
+updated: "2026-06-15"
 phase: 1
 type: concept
 status: stable
+owner: "THESEUS"
+source_of_truth: true
 vault_id: default
 tier: process
 source_type: axiomatic
@@ -80,3 +85,9 @@ Without FTS the hybrid pipeline is mis-named: it's only 3 layers. Closing the ga
 
 - [[CONCEPT--COGNITIVE-LAYER-FACADE]]
 - [[CONCEPT--MEMORY-SUBSYSTEM]]
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the concept doc with the document versioning governance standard. |

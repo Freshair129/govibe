@@ -1,4 +1,6 @@
 ---
+doc_id: "AGENT-ATHER"
+owner: "ATHER"
 version: "5.0.0"
 created_at: "2026-06-06T19:32:00+07:00,Boss"
 last_update: "2026-06-13T14:00:00+07:00,THESEUS"
@@ -178,6 +180,7 @@ Use this format for every audit:
 ## Changelog
 | Version | Date | Summary |
 |---|---|---|
+| 5.0.0 | 2026-06-15 | Added canonical doc_id metadata to align the auditor agent contract with the document versioning governance standard. |
 | 4.2.0 | 2026-06-12 | Normalized SYSTEM-08 naming, expanded audit output to H0-H6, added W-Scale to governance output, and clarified deployment-gap wording. |
 | 4.1.0 | 2026-06-12 | Added PM/QA source contracts, document-driven roadmap audit, template parity audit, and GitHub/Vercel deployment readiness audit. |
 | 4.0.0 | 2026-06-12 | Re-aligned auditor with PRD/C4/execution governance, human-first docs, feature folder mapping, traceability, RBAC/ABAC, and multi-agent governance. |

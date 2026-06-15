@@ -49,3 +49,9 @@ Service
 
 ## 7. Open Questions
 -
+
+## Changelog
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Initial template scaffold aligned with document versioning governance. |
+

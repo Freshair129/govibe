@@ -1,4 +1,4 @@
----
+﻿---
 title: "RCA: <Incident or Problem Name>"
 doc_id: "RCA-<slug>"
 status: "draft"
@@ -52,3 +52,9 @@ State the confirmed root cause with evidence.
 
 ## 8. Related Documents
 -
+
+## Changelog
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Initial template scaffold aligned with document versioning governance. |
+

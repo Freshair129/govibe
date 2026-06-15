@@ -1,7 +1,11 @@
 ---
+doc_id: "ROADMAP-GOVIBE-MCP-RUNTIME"
 id: RM-govibe-mcp-runtime
-version: 0.1.0
+version: "0.1.0+draft"
+updated: "2026-06-15"
 status: approved
+owner: "LYRA"
+source_of_truth: true
 ---
 
 # ROADMAP: GoVibe MCP Runtime
@@ -64,3 +68,9 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | TASK-003-gateway-bootstrap | passed | passed | n/a | 2026-06-13T20:55:53+07:00 |
 | TASK-004-roadmap-md-export | passed | passed | n/a | 2026-06-14T06:33:25+07:00 |
 | TASK-005-bi-temporal-versioning | passed | passed | n/a | 2026-06-14T07:28:37+07:00 |
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the roadmap with the document versioning governance standard. |

@@ -1,10 +1,10 @@
----
+﻿---
 title: {{TITLE}}
 summary: {{SUMMARY}}
 doc_id: {{DOC_ID}}
 created: "{{TIMESTAMP}},{{USER}}"
 updated: "{{TIMESTAMP}},{{USER}}"
-version: "1.0.0b"
+version: "1.0.0-beta"
 status: active
 state: active
 type: genesis
@@ -77,3 +77,9 @@ graph TD
   ```
 - **Schema:**
   {{ENTITY_SCHEMA}}
+
+## Changelog
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Initial template scaffold aligned with document versioning governance. |
+

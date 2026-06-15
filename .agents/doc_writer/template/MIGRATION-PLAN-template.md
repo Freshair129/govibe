@@ -1,4 +1,4 @@
----
+﻿---
 title: "MIGRATION PLAN: <Project or Data Set>"
 doc_id: "MIGRATION-PLAN-<slug>"
 status: "draft"
@@ -41,3 +41,9 @@ Describe why the migration is needed and what is being moved.
 
 ## 7. Related Documents
 -
+
+## Changelog
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Initial template scaffold aligned with document versioning governance. |
+

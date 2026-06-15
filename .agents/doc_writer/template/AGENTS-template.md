@@ -1,4 +1,5 @@
 ﻿---
+doc_id: "AGENT-TEMPLATE"
 version: "0.1.0"
 created_at: "YYYY-MM-DDTHH:mm:ss+07:00,<owner>"
 last_update: "YYYY-MM-DDTHH:mm:ss+07:00,<owner>"
@@ -69,3 +70,7 @@ Document any local rule that differs from the root instruction.
 ## Changelog
 | Version | Date | Summary |
 |---|---|---|
+| 0.1.0 | YYYY-MM-DD | Initial agent operating contract template with canonical doc_id metadata. |
+
+
+

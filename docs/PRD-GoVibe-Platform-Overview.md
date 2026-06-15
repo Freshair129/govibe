@@ -1,4 +1,10 @@
 ---
+doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
+status: "draft"
+version: "0.1.0+draft"
+updated: "2026-06-15"
+owner: "Rwang (Senior Dev)"
+source_of_truth: true
 block_manifest:
   core:
     id: "[[DOC::PRD_PLATFORM_OVERVIEW]]"
@@ -116,3 +122,9 @@ PRD::GoVibe-Platform
 ```
 
 *(Remaining sections preserved...)*
+
+## Changelog
+
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the PRD with the document versioning governance standard. |

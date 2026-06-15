@@ -1,9 +1,18 @@
+---
+doc_id: "STD-EXECUTION-GOVERNANCE"
+status: "stable"
+version: "2.2.0+ga"
+updated: "2026-06-15"
+owner: "GoVibe"
+source_of_truth: true
+---
+
 # STD: Execution Governance Standard
 
 **Title:** Execution Governance Standard
 **Summary:** Minimum viable process selection for safe work execution, mapped to Context Scaling Tier H0-H6 and W-Scale fan-out control.
-**Version:** 2.2
-**Updated:** 2026-06-12
+**Version:** 2.2.0+ga
+**Updated:** 2026-06-15
 **Role:** Governance / Process Framework
 **Legacy Alias:** R10, Complexity-Based Execution Path
 **wikilink:** [[STD-Execution-Governance]]
@@ -170,6 +179,7 @@ Every non-trivial task response should include:
 ## 12. Changelog
 | Version | Date | Summary |
 |---|---|---|
+| **2.2.0+ga** | 2026-06-15 | Added canonical doc_id/version metadata and aligned the standard with the document versioning governance policy. |
 | **2.2** | 2026-06-12 | Expanded H-scale to H6, formalized W-Scale fan-out control, aligned C-to-H mapping with GVDOC-1004 handover normalization, and updated required output format. |
 | **2.1** | 2026-06-12 | Rewritten into readable UTF-8, added human-first artifacts, Docs to Code gate, Diagram to Doc gate, canonical source rule, and SDD/LLD naming guidance. |
 | **2.0** | 2026-06-07 | Added C-0, mapped complexity to H-scale, and clarified enforcement to reduce over-engineering. |

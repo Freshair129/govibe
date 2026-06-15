@@ -1,4 +1,6 @@
 ---
+doc_id: "AGENT-LYRA"
+owner: "LYRA"
 version: "2.2.0"
 created_at: "2026-06-06T19:50:20+07:00,Boss"
 last_update: "2026-06-12T21:10:00+07:00,LYRA"
@@ -290,6 +292,7 @@ When responding as LYRA:
 ## Changelog
 | Version | Date | Summary |
 |---|---|---|
+| 2.2.0 | 2026-06-15 | Added canonical doc_id metadata to align the PM agent contract with the document versioning governance standard. |
 | 2.2.0 | 2026-06-12 | Normalized SYSTEM-08 naming, expanded planning guidance to H0-H6, and added W-Scale to planning outputs and breadth-sensitive decomposition. |
 | 2.1.0 | 2026-06-12 | Added document-driven roadmap source contract for PM-authored `.md`/`.html` files consumed by Mission Control A2. |
 | 2.0.0 | 2026-06-12 | Repositioned LYRA as roadmap, phase, backlog, sub-task, and micro-task planning agent aligned with PRD systems and Execution Governance Standard. |

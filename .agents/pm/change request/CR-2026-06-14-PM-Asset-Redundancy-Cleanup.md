@@ -1,4 +1,4 @@
----
+﻿---
 title: "CR: PM Asset Redundancy Cleanup and Telemetry Alignment"
 doc_id: "CR-2026-06-14-pm-asset-redundancy-cleanup"
 status: "approve_with_conditions"
@@ -10,7 +10,7 @@ auditor: "ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-02::Project-Roadmap-Management-System"
 related_docs:
-  - ".agents/pm/asset/PLAN_Template.md"
+  - ".agents/pm/asset/Implementation-Plan-Template.md"
   - ".agents/pm/asset/Backlog-Template.md"
   - ".agents/pm/asset/Roadmap-Template.md"
   - ".agents/pm/asset/Planning-Decomposition-Standard.md"
@@ -22,19 +22,19 @@ related_docs:
 
 ```yaml
 change_requested: "Consolidate and normalize PM asset templates in `.agents/pm/asset/` to remove redundancy and align with H4 Tier telemetry standards (Model Name, Context Length, Token Telemetry)."
-reason: "Existing templates overlap in scope, and `PLAN_Template.md` contains legacy execution data that should reside in `docs/roadmap/`. Current templates lack mandatory token telemetry columns required for GoVibe execution governance."
+reason: "Existing templates overlap in scope, and Implementation-Plan-Template.md contains execution data that should reside in `docs/roadmap/`. Current templates lack mandatory token telemetry columns required for GoVibe execution governance."
 business_value: "Reduce documentation maintenance overhead, ensure planning consistency across all tiers (H5-H0), and enable accurate token usage prediction vs. actual auditing."
 affected_requirement:
   - "STD-Execution-Governance"
   - "Documentation-Requirements"
 affected_tasks:
-  - "Rename `PLAN_Template.md` to `Implementation-Plan-Template.md` and strip legacy data."
+  - "Rename PLAN_Template.md to Implementation-Plan-Template.md and strip legacy data."
   - "Update `Backlog-Template.md` with telemetry columns (Model, Context, Tokens)."
   - "Cross-reference `Planning-Decomposition-Standard.md` as the SSOT for all templates."
 timeline_impact: "Immediate update to templates; no impact on product code."
 resource_impact: "Owned by LYRA; Drafted by THESEUS; Audited by ATHER."
 risk_impact: "MEDIUM (Impacts workflow, naming, audit path, and traceability contract)."
-what_moves_out: "Legacy 'Import P1 MVP' data from `PLAN_Template.md` moves to `docs/archive/legacy-p1-mvp-import-reference.md`."
+what_moves_out: "Legacy 'Import P1 MVP' data from Implementation-Plan-Template.md moves to `docs/archive/legacy-p1-mvp-import-reference.md`."
 approval_owner: "ARCHON"
 decision: "approve_with_conditions"
 ```
@@ -45,7 +45,7 @@ decision: "approve_with_conditions"
 |---|---|---|---|
 | `Roadmap-Template.md` | **Retain (Updated)** | H5-H4: Strategic Themes & Phases | High-level milestones |
 | `Backlog-Template.md` | **Retain (Updated)** | H3-H2: Feature Slicing & Sprint Backlog | Model, Context, Predicted Tokens |
-| `PLAN_Template.md` | **Rename to `Implementation-Plan-Template.md`** | H1-H0: Task Execution | Full Telemetry + Verification Link |
+| PLAN_Template.md | **Rename to Implementation-Plan-Template.md** | H1-H0: Task Execution | Full Telemetry + Verification Link |
 
 ### Mandatory Telemetry Columns (Implementation Plan)
 1.  **Verification Link** (Link to evidence/results)
@@ -56,9 +56,9 @@ decision: "approve_with_conditions"
 6.  **Total Token Usage**
 
 ## 3. Migration & Reference Update List
-- [x] Rename `.agents/pm/asset/PLAN_Template.md` -> `.agents/pm/asset/Implementation-Plan-Template.md`
-- [x] Move legacy content from `PLAN_Template.md` to `docs/archive/legacy-p1-mvp-import-reference.md`
-- [x] Update `Backlog-Template.md` to reference `Implementation-Plan-Template.md` for execution detail.
+- [x] Rename legacy PM template to Implementation-Plan-Template.md
+- [x] Move legacy content from PLAN_Template.md to `docs/archive/legacy-p1-mvp-import-reference.md`
+- [x] Update `Backlog-Template.md` to reference Implementation-Plan-Template.md for execution detail.
 - [x] Ensure all templates include a header referencing `Planning-Decomposition-Standard.md` as the SSOT.
 
 ## 4. Decision Log (H0-H6 Governance)
@@ -69,3 +69,4 @@ decision: "approve_with_conditions"
     3. Mandatory migration checklist/reference update.
     4. Exact telemetry column names as specified.
 - **ATHER (Auditor):** Approve with Conditions. (2026-06-14)
+

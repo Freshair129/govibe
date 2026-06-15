@@ -1,4 +1,4 @@
----
+﻿---
 title: "UI/UX Design: <Screen or System Name>"
 doc_id: "UI-UX-<slug>"
 status: "draft"
@@ -48,3 +48,9 @@ Describe the user experience and visual direction.
 
 ## 8. Acceptance Criteria
 -
+
+## Changelog
+| Version | Date | Summary |
+|---|---|---|
+| 0.1.0 | 2026-06-15 | Initial template scaffold aligned with document versioning governance. |
+
