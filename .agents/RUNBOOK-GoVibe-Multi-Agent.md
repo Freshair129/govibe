@@ -5,6 +5,7 @@ doc_id: GVDOC-3001
 created: "2026-06-02T19:40:00+07:00,Boss(CEO)"
 updated: "2026-06-02T19:40:00+07:00,Boss(CEO)"
 version: "1.0.0b"
+status: active
 state: active
 type: framework
 vault_id: default
