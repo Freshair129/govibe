@@ -42,7 +42,7 @@ docs/roadmap/imports/<source-name>.html
 
 If these paths change, update:
 
-- `.agents/pm/LYRA.md`
+- `.agents/pm/AGENT.md`
 - `.agents/pm/asset/Roadmap-Template.md`
 - `.agents/pm/asset/Backlog-Template.md`
 - `.agents/auditor/asset/Document-Driven-Roadmap-Audit.md`
