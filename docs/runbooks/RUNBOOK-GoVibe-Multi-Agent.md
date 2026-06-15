@@ -176,6 +176,8 @@ Before execution starts:
 
 GoVibe coordinates the work. It does not take ownership of third-party billing, subscription, quota, or provider runtime controls.
 
+Roadmap-board promotion is gated separately: planning docs must satisfy the roadmap promotion contract before A2 treats them as active board input.
+
 ### Step 6 - Execution and handoff
 
 Execution agents implement from approved docs and linked tasks.

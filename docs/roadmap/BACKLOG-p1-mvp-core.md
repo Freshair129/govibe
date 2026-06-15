@@ -1,3 +1,19 @@
+---
+title: "BACKLOG: P1 MVP Core Task Containers"
+doc_id: "BACKLOG-P1-MVP-CORE"
+status: "draft"
+version: "0.1.0+draft"
+updated: "2026-06-16"
+owner: "LYRA"
+source_of_truth: true
+prd_system: "SYSTEM-02::Project-Roadmap-Management-System"
+related_docs:
+  - "docs/PRD-GoVibe-Platform-Overview.md"
+  - "docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md"
+  - "docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md"
+  - "docs/design/DESIGN_SYSTEM.md"
+---
+
 # BACKLOG: P1 MVP Core Task Containers
 
 **ImpId:** IMP-GVMP01P05EP01  
@@ -224,3 +240,9 @@ ui_state:
 - [x] PIC is separate from Executor.
 - [x] `p1-mvp-core-.json` mapping can populate at least one complete task container.
 - [x] UI implementation remains blocked until docs/design and data contract are approved.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-16 | LYRA | Added canonical frontmatter and roadmap-promotion metadata so the backlog can be governed as a board-eligible roadmap source. |

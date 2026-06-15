@@ -494,6 +494,56 @@ function checkRoadmapTemporalIntegrity(markdownFiles) {
   }
 }
 
+function checkRoadmapPromotion(markdownFiles) {
+  const roadmapFiles = markdownFiles.filter((file) => /^docs\/roadmap\/(MASTERPLAN|ROADMAP|BACKLOG|SPRINT)-.+\.md$/i.test(file));
+  const registryPath = "docs/DOC-VERSION-REGISTRY.md";
+  const registryRows = existsSync(repoResolve(registryPath))
+    ? [...collectSectionTables(readRepoFile(registryPath)).values()].flat()
+    : [];
+
+  for (const file of roadmapFiles) {
+    const content = readRepoFile(file);
+    const frontmatter = parseFrontmatter(content);
+
+    if (!frontmatter) {
+      addError(file, "Roadmap promotion source is missing required frontmatter.");
+      continue;
+    }
+
+    for (const field of ["doc_id", "status", "version", "updated", "owner", "source_of_truth"]) {
+      if (!frontmatter[field]) {
+        addError(file, `Roadmap promotion source is missing frontmatter field: ${field}.`);
+      }
+    }
+
+    if (frontmatter.owner && frontmatter.owner !== "LYRA") {
+      addError(file, `Roadmap promotion owner must be LYRA in v1. Found: ${frontmatter.owner}.`);
+    }
+
+    if (frontmatter.status) {
+      const allowedStatuses = new Set(["draft", "candidate", "approved", "superseded", "deprecated"]);
+      if (!allowedStatuses.has(frontmatter.status)) {
+        addError(file, `Roadmap promotion status must be one of draft, candidate, approved, superseded, deprecated. Found: ${frontmatter.status}.`);
+      }
+    }
+
+    const registryEntry = registryRows.find((row) => {
+      const path = String(getColumn(row, ["Path"])).replace(/`/g, "").trim();
+      return path === file;
+    });
+
+    if (!registryEntry) {
+      addError(file, "Roadmap promotion source is missing from docs/DOC-VERSION-REGISTRY.md.");
+      continue;
+    }
+
+    const registryStatus = String(getColumn(registryEntry, ["Status"])).replace(/`/g, "").trim();
+    if (frontmatter.status === "approved" && registryStatus !== "approved") {
+      addError(file, "Approved roadmap promotion source must also be approved in docs/DOC-VERSION-REGISTRY.md.");
+    }
+  }
+}
+
 function main() {
   const markdownFiles = [
     ...walk("docs").filter((file) => file.endsWith(".md")),
@@ -514,6 +564,7 @@ function main() {
   checkPathReferences(referenceFiles);
   checkLegacyDocs(markdownFiles);
   checkRoadmapTemporalIntegrity(markdownFiles);
+  checkRoadmapPromotion(markdownFiles);
 
   printReport();
 

@@ -13,6 +13,8 @@ Make Development Roadmap data come from approved `.md` or `.html` documents prod
 
 This removes the current long-term problem where roadmap rows, progress, and task state can be hardcoded inside React.
 
+Promotion into active board state is governed by `docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md`.
+
 ## 2. Source Workflow
 
 ```text
