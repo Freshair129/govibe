@@ -2,7 +2,7 @@
 title: "STD: Document Versioning Governance"
 doc_id: "STD-DOCUMENT-VERSIONING-GOVERNANCE"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-06-15"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -183,6 +183,23 @@ The registry should warn or fail when:
 - canonical path is stale
 - two active files claim the same `doc_id`
 
+### Phase 4: Diff Gate Automation
+
+The repository should provide an automated diff check that validates change scope before commit or push.
+
+Required behavior:
+
+- detect whether changed files touch docs, code, or masterplan sources
+- fail when code changes appear without any accompanying docs or masterplan update
+- run `docs:validate` for any relevant change set before approval
+- provide a staged-only mode for release or pre-commit flows
+
+Canonical command:
+
+```bash
+npm run diff:check
+```
+
 ## 11. Acceptance Criteria
 
 - Every new in-scope Markdown document uses the required frontmatter.
@@ -201,4 +218,5 @@ The registry should warn or fail when:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-06-15 | ATHER / THESEUS | Added repository diff gate automation requirements for docs/code/masterplan scope validation and staged-only review support. |
 | 0.1.0+draft | 2026-06-15 | ATHER / THESEUS | Initial document versioning governance standard for metadata, canonical version format, changelog, and registry requirements. |
