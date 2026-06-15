@@ -1,7 +1,7 @@
 ---
 doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
 status: "draft"
-version: "0.2.0+draft"
+version: "0.3.0+draft"
 updated: "2026-06-16"
 owner: "Rwang (Senior Dev)"
 source_of_truth: true
@@ -17,7 +17,7 @@ block_manifest:
 **Status:** `DRAFT`
 **Author:** Rwang (Senior Dev)
 **Date:** 2026-06-06
-**Updated:** 2026-06-14
+**Updated:** 2026-06-16
 
 ## 1. Product Vision
 GoVibe is an AI-native visual CoDev and project management platform for coordinating human developers, their agent teams, project documents, roadmap progress, artifacts, and third-party AI coding tools through API and MCP integrations, leveraging MemoryOS V3 (Native Runtime / GenesisBlockDB).
@@ -129,11 +129,67 @@ PRD::GoVibe-Platform
 +-- SYSTEM-10::Execution-Governance-System
 ```
 
+### 5.1 System Module Map
+
+This map defines product-level modules only. Detailed implementation ownership, schemas, and runtime contracts belong in each system's FEAT, SRS, SDD, API, LLD, or RUNBOOK documents.
+
+| System | Product Modules | Primary Consumers |
+|---|---|---|
+| `SYSTEM-01::Mission-Control-Experience-System` | `A1 Dashboard Shell`, `A2 Development Roadmap Board`, `A5 Agent Management`, `Command Reactor`, `Status/Telemetry Surface`, `Template-Parity View Contracts` | human developer, product owner, agent operator |
+| `SYSTEM-02::Project-Roadmap-Management-System` | `Master Plan Source`, `Roadmap Source`, `Backlog Source`, `Sprint/Task Container`, `Roadmap Promotion Gate`, `Roadmap Snapshot`, `Progress Calculation`, `Bi-Temporal Roadmap History` | LYRA, A2, ATHER, GHOST |
+| `SYSTEM-03::Docs-to-Code-System` | `Human SWE Document Ingestion`, `Spec-to-Task Extraction`, `Symbol Link Extraction`, `Task Packet Generation`, `Context Packet Assembly`, `Doc/Code Drift Detection` | THESEUS, system parent agents, module workers |
+| `SYSTEM-04::Diagram-to-Doc-System` | `Architecture Diagram Intake`, `Flow/Sequence Intake`, `ERD/Site Map Intake`, `Diagram Normalization`, `Generated Doc Draft`, `Human Review Gate` | architect, doc writer, system parent agents |
+| `SYSTEM-05::Agent-Team-Management-System` | `Role Registry`, `System Parent Agent Routing`, `Module Worker Dispatch`, `Visual Agent Fleet Metadata`, `Handoff State`, `CoDev Mode`, `CoVibe Mode`, `Bounded Support Executor Contract` | LYRA, ARCHON, THESEUS, ATHER, GHOST, VIBE, KIN |
+| `SYSTEM-06::Integration-Bridge-System` | `MCP Server`, `GoVibe CLI`, `Webhook/File Bridge`, `External Agent Connector`, `Gemini CLI Bounded Executor`, `Ollama/Local Sidecar`, `Mission Event Gateway` | external tools, lead agent, system parent agents |
+| `SYSTEM-07::Governance-Access-Control-System` | `Human RBAC`, `Agent ABAC`, `Policy Decision Point`, `Policy Enforcement Point`, `Tenant/Vault Boundary`, `Approval Owner Rules`, `Permission Evidence` | human owner, auditor, integration bridge |
+| `SYSTEM-08::Genesis-Knowledge-HCS-System` | `GenesisBlockDB`, `Knowledge Atom Registry`, `Hector/H-Tier Compaction`, `HNSW/Vector Retrieval`, `Hybrid JIT Context Renderer`, `Symbol Graph`, `Knowledge Taxonomy`, `MemoryOS V3 Adapter` | docs-to-code, agents, Mission Control knowledge views |
+| `SYSTEM-09::Traceability-Audit-Verification-System` | `Document Version Registry`, `Change Request Ledger`, `RCA Ledger`, `Diff Check`, `Source-to-Code Trace`, `Verification Evidence`, `Audit Report`, `Promotion Certification` | ATHER, GHOST, release owner |
+| `SYSTEM-10::Execution-Governance-System` | `C-Level Complexity Classification`, `H0-H6 Context Tiering`, `W-Scale Fan-Out Control`, `Task/Packet State Machine`, `Review Gate`, `QA Gate`, `Closure Criteria`, `Runtime Guardrail Policy` | all system agents and reviewer agents |
+
+### 5.2 System-Based Execution And Role-Based Review
+
+GoVibe uses systems as the primary execution routing structure and roles as the review/governance layer.
+
+```text
+PRD change or approved request
+  -> impacted SYSTEM parent
+  -> module worker or bounded support executor
+  -> role reviewer gate
+  -> verification and audit evidence
+  -> approved board/runtime state
+```
+
+Execution ownership:
+
+- System parent agents own execution routing inside their system boundary.
+- Module workers own bounded implementation or analysis packets.
+- External support executors are bounded by context packets and never become final approvers.
+
+Review ownership:
+
+- `LYRA` reviews planning completeness, sequencing, and scope routing.
+- `ARCHON` reviews architecture and cross-system trade-offs.
+- `THESEUS` reviews documentation structure and source-of-truth hygiene.
+- `ATHER` reviews governance, auditability, and promotion readiness.
+- `GHOST` reviews QA evidence, UI behavior, and regression risk.
+
+### 5.3 Module Detail Rule
+
+The PRD module map is intentionally high level. A module becomes implementation-ready only when its owning system document defines:
+
+- source-of-truth document path
+- owner and reviewer roles
+- accepted inputs and outputs
+- state model or event contract
+- symbol links to docs, code, tests, and evidence
+- acceptance criteria, success criteria, and definition of done
+
 *(Remaining sections preserved...)*
 
 ## Changelog
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.3.0 | 2026-06-16 | Expanded the Platform System Map with product-level modules, system-based execution routing, and role-based review ownership. |
 | 0.2.0 | 2026-06-16 | Added the narrow CoDev and CoVibe terminology subsection under product positioning without changing the current system map. |
 | 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the PRD with the document versioning governance standard. |
