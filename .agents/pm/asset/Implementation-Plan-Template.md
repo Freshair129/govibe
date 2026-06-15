@@ -49,4 +49,23 @@ Target: task, sub-task, micro-task, atomic-task
 - [ ] Auditor gate passed (if required)
 
 ## Local LLM Packets (H0 Tier)
-[[Define micro/atomic packets here to keep the Backlog clean]]
+> These packets are for local LLM execution with 8k-16k context limits. Define them here to keep the Backlog clean.
+
+### Micro-task Packet: [[M-TSK-ID]]
+```text
+source excerpt: [[Reference code or doc snippet]]
+target path: [[File to modify]]
+instruction: [[Specific step-by-step for local LLM]]
+constraints: [[e.g., no external libs, preserve style]]
+acceptance check: [[Verifiable outcome]]
+max context: [[8k or 16k]]
+```
+
+### Atomic-task Packet: [[A-TSK-ID]]
+```text
+target: [[Specific line or function]]
+single action: [[One instruction]]
+acceptance check: [[Single check]]
+rollback note: [[How to revert if fail]]
+max context: 8k
+```
