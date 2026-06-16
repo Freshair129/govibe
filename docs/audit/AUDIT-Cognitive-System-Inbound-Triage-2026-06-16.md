@@ -2,7 +2,7 @@
 title: "Audit: Cognitive System Inbound Knowledge Triage"
 doc_id: "AUDIT-COGNITIVE-SYSTEM-INBOUND-TRIAGE-2026-06-16"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-06-16"
 owner: "ATHER / LYRA"
 source_of_truth: true
@@ -41,6 +41,7 @@ Reality-check findings:
 ## 3. Non-Negotiable Import Rules
 
 - Do not commit `.brain/cognitive-system-knowledge-block/` wholesale.
+- `.gitignore` blocks `.brain/cognitive-system-knowledge-block/` to reduce accidental wholesale import.
 - Do not treat MSP/GKS `status: stable` as GoVibe approval.
 - Do not treat `msp:validate` pass as GoVibe pass.
 - Do not promote files with `has_secret: true`, `leak_risk: high`, or `status: superseded` without explicit ATHER review.
@@ -147,6 +148,7 @@ govibe_decision:
 ## 10. Definition Of Done
 
 - This audit is registered in `docs/DOC-VERSION-REGISTRY.md`.
+- `.brain/cognitive-system-knowledge-block/` is ignored by Git so raw exports cannot be committed by a broad add.
 - `npm run docs:validate` passes.
 - No inbound source files are modified by this audit.
 
@@ -154,4 +156,5 @@ govibe_decision:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-06-16 | ATHER / LYRA | Added Git ignore enforcement for the raw cognitive-system knowledge-block export. |
 | 0.1.0+draft | 2026-06-16 | ATHER / LYRA | Added initial triage for cognitive-system inbound knowledge and blocked wholesale import. |
