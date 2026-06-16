@@ -1,7 +1,7 @@
 ---
 doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
 status: "draft"
-version: "0.3.0+draft"
+version: "0.4.0+draft"
 updated: "2026-06-16"
 owner: "Rwang (Senior Dev)"
 source_of_truth: true
@@ -133,20 +133,54 @@ PRD::GoVibe-Platform
 
 This map defines product-level modules only. Detailed implementation ownership, schemas, and runtime contracts belong in each system's FEAT, SRS, SDD, API, LLD, or RUNBOOK documents.
 
-| System | Product Modules | Primary Consumers |
-|---|---|---|
-| `SYSTEM-01::Mission-Control-Experience-System` | `A1 Dashboard Shell`, `A2 Development Roadmap Board`, `A5 Agent Management`, `Command Reactor`, `Status/Telemetry Surface`, `Template-Parity View Contracts` | human developer, product owner, agent operator |
-| `SYSTEM-02::Project-Roadmap-Management-System` | `Master Plan Source`, `Roadmap Source`, `Backlog Source`, `Sprint/Task Container`, `Roadmap Promotion Gate`, `Roadmap Snapshot`, `Progress Calculation`, `Bi-Temporal Roadmap History` | LYRA, A2, ATHER, GHOST |
-| `SYSTEM-03::Docs-to-Code-System` | `Human SWE Document Ingestion`, `Spec-to-Task Extraction`, `Symbol Link Extraction`, `Task Packet Generation`, `Context Packet Assembly`, `Doc/Code Drift Detection` | THESEUS, system parent agents, module workers |
-| `SYSTEM-04::Diagram-to-Doc-System` | `Architecture Diagram Intake`, `Flow/Sequence Intake`, `ERD/Site Map Intake`, `Diagram Normalization`, `Generated Doc Draft`, `Human Review Gate` | architect, doc writer, system parent agents |
-| `SYSTEM-05::Agent-Team-Management-System` | `Role Registry`, `System Parent Agent Routing`, `Module Worker Dispatch`, `Visual Agent Fleet Metadata`, `Handoff State`, `CoDev Mode`, `CoVibe Mode`, `Bounded Support Executor Contract` | LYRA, ARCHON, THESEUS, ATHER, GHOST, VIBE, KIN |
-| `SYSTEM-06::Integration-Bridge-System` | `MCP Server`, `GoVibe CLI`, `Webhook/File Bridge`, `External Agent Connector`, `Gemini CLI Bounded Executor`, `Ollama/Local Sidecar`, `Mission Event Gateway` | external tools, lead agent, system parent agents |
-| `SYSTEM-07::Governance-Access-Control-System` | `Human RBAC`, `Agent ABAC`, `Policy Decision Point`, `Policy Enforcement Point`, `Tenant/Vault Boundary`, `Approval Owner Rules`, `Permission Evidence` | human owner, auditor, integration bridge |
-| `SYSTEM-08::Genesis-Knowledge-HCS-System` | `GenesisBlockDB`, `Knowledge Atom Registry`, `Hector/H-Tier Compaction`, `HNSW/Vector Retrieval`, `Hybrid JIT Context Renderer`, `Symbol Graph`, `Knowledge Taxonomy`, `MemoryOS V3 Adapter` | docs-to-code, agents, Mission Control knowledge views |
-| `SYSTEM-09::Traceability-Audit-Verification-System` | `Document Version Registry`, `Change Request Ledger`, `RCA Ledger`, `Diff Check`, `Source-to-Code Trace`, `Verification Evidence`, `Audit Report`, `Promotion Certification` | ATHER, GHOST, release owner |
-| `SYSTEM-10::Execution-Governance-System` | `C-Level Complexity Classification`, `H0-H6 Context Tiering`, `W-Scale Fan-Out Control`, `Task/Packet State Machine`, `Review Gate`, `QA Gate`, `Closure Criteria`, `Runtime Guardrail Policy` | all system agents and reviewer agents |
+| System | Responsibility | Product Modules | Primary Inputs | Primary Outputs | Primary Consumers |
+|---|---|---|---|---|---|
+| `SYSTEM-01::Mission-Control-Experience-System` | Visual control plane for the human-facing GoVibe workspace. | `A1 Dashboard Shell`, `A2 Development Roadmap Board`, `A5 Agent Management`, `Command Reactor`, `Status/Telemetry Surface`, `Template-Parity View Contracts` | roadmap snapshots, agent registry, mission events, telemetry, verification evidence | rendered board state, command events, user decisions, UI evidence | human developer, product owner, agent operator |
+| `SYSTEM-02::Project-Roadmap-Management-System` | Source-governed planning and board promotion for phases, sprints, tasks, and implementation packets. | `Master Plan Source`, `Roadmap Source`, `Backlog Source`, `Sprint/Task Container`, `Roadmap Promotion Gate`, `Roadmap Snapshot`, `Progress Calculation`, `Bi-Temporal Roadmap History` | PRD changes, approved master plans, backlog docs, task containers, change requests | board-eligible roadmap snapshot, task state, progress metrics, promotion evidence | LYRA, A2, ATHER, GHOST |
+| `SYSTEM-03::Docs-to-Code-System` | Convert approved human SWE documents into bounded implementation context and symbol-linked tasks. | `Human SWE Document Ingestion`, `Spec-to-Task Extraction`, `Symbol Link Extraction`, `Task Packet Generation`, `Context Packet Assembly`, `Doc/Code Drift Detection` | PRD, FEAT, SRS, SDD, API, LLD, runbooks, protected source docs | task packets, context containers, symbol links, drift findings | THESEUS, system parent agents, module workers |
+| `SYSTEM-04::Diagram-to-Doc-System` | Convert diagrams and visual architecture references into reviewable system documentation. | `Architecture Diagram Intake`, `Flow/Sequence Intake`, `ERD/Site Map Intake`, `Diagram Normalization`, `Generated Doc Draft`, `Human Review Gate` | screenshots, Figma/HTML prototypes, ERDs, sequence diagrams, site maps | candidate docs, diagram-derived context, architecture review prompts | architect, doc writer, system parent agents |
+| `SYSTEM-05::Agent-Team-Management-System` | Coordinate agent identity, role metadata, team handoff, and CoDev/CoVibe collaboration modes. | `Role Registry`, `System Parent Agent Routing`, `Module Worker Dispatch`, `Visual Agent Fleet Metadata`, `Handoff State`, `CoDev Mode`, `CoVibe Mode`, `Bounded Support Executor Contract` | agent registry, role contracts, task packets, context containers, handoff events | assignments, handoff state, executor constraints, role visibility | LYRA, ARCHON, THESEUS, ATHER, GHOST, VIBE, KIN |
+| `SYSTEM-06::Integration-Bridge-System` | Bridge GoVibe with MCP, CLI, local sidecars, external agent CLIs, webhooks, and future service gateways. | `MCP Server`, `GoVibe CLI`, `Webhook/File Bridge`, `External Agent Connector`, `Gemini CLI Bounded Executor`, `Ollama/Local Sidecar`, `Mission Event Gateway` | governed tool calls, CLI commands, context packets, external executor output | mission events, tool results, execution logs, external feedback packets | external tools, lead agent, system parent agents |
+| `SYSTEM-07::Governance-Access-Control-System` | Enforce human and agent access rules before governed reads, writes, assignments, and tool calls. | `Human RBAC`, `Agent ABAC`, `Policy Decision Point`, `Policy Enforcement Point`, `Tenant/Vault Boundary`, `Approval Owner Rules`, `Permission Evidence` | subject, resource, action, context, tenant/vault metadata, approval rules | permit/deny decisions, obligations, approval routing, audit evidence | human owner, auditor, integration bridge |
+| `SYSTEM-08::Genesis-Knowledge-HCS-System` | Knowledge substrate for atoms, symbol graph, retrieval, compaction, and MemoryOS/GenesisBlock context delivery. | `GenesisBlockDB`, `Knowledge Atom Registry`, `Hector/H-Tier Compaction`, `HNSW/Vector Retrieval`, `Hybrid JIT Context Renderer`, `Symbol Graph`, `Knowledge Taxonomy`, `MemoryOS V3 Adapter` | approved docs, atoms, code symbols, embeddings, graph edges, context requests | retrieved context, atom graph, symbol communities, compressed context packets | docs-to-code, agents, Mission Control knowledge views |
+| `SYSTEM-09::Traceability-Audit-Verification-System` | Prove that requirements, docs, code, tasks, execution, and verification stay traceable. | `Document Version Registry`, `Change Request Ledger`, `RCA Ledger`, `Diff Check`, `Source-to-Code Trace`, `Verification Evidence`, `Audit Report`, `Promotion Certification` | doc registry, diffs, task state, test results, RCA/CR records, source refs | audit verdicts, drift reports, certification evidence, blocked-work reasons | ATHER, GHOST, release owner |
+| `SYSTEM-10::Execution-Governance-System` | Define complexity, context, fan-out, gates, and closure rules for governed execution. | `C-Level Complexity Classification`, `H0-H6 Context Tiering`, `W-Scale Fan-Out Control`, `Task/Packet State Machine`, `Review Gate`, `QA Gate`, `Closure Criteria`, `Runtime Guardrail Policy` | work request, complexity inputs, scope boundaries, agent capacity, approval state | execution policy, task lifecycle state, gate decisions, DoD closure state | all system agents and reviewer agents |
 
-### 5.2 System-Based Execution And Role-Based Review
+### 5.2 System Detail Registry
+
+Each system must eventually have a canonical document set. Missing documents are allowed during MVP discovery, but the missing document must be visible as a gap rather than inferred from UI or code.
+
+| System | Canonical Feature Folder | Required Detail Docs | Current MVP Detail Status |
+|---|---|---|---|
+| `SYSTEM-01` | `docs/features/mission-control/` | FEAT, SDD or design spec, UI verification plan | partial; UI migration and design docs exist, template parity still needs tighter contract |
+| `SYSTEM-02` | `docs/features/project-roadmap/` | FEAT, roadmap promotion contract, task-container contract, parser/export contract | active; document-driven source and promotion contract exist |
+| `SYSTEM-03` | `docs/features/docs-to-code/` | FEAT, extraction contract, context-container contract, drift-check plan | partial; extraction direction exists, context packet contract needs consolidation |
+| `SYSTEM-04` | `docs/features/diagram-to-doc/` | FEAT, diagram intake schema, review gate, generated-doc template | early; feature exists but implementation detail remains thin |
+| `SYSTEM-05` | `docs/features/agent-team/` | FEAT, role registry contract, handoff contract, Visual Agent Fleet context | active; multi-agent workflow and role taxonomy docs exist |
+| `SYSTEM-06` | `docs/features/integration-bridge/` | FEAT, MCP/API contract, CLI contract, external executor runbook | active; MCP bridge and bounded executor docs exist |
+| `SYSTEM-07` | `docs/features/governance-access/` | FEAT, policy model, RBAC/ABAC decision contract, denial evidence format | partial; governance feature exists, PDP/PEP detail should be derived from inbound UCF/ABAC sources |
+| `SYSTEM-08` | `docs/features/genesis-knowledge-system/` | FEAT, knowledge atom contract, retrieval contract, symbol graph contract, HCS/JIT design | partial; HCS/JIT docs exist, MSP v3/UCF source packets need derived GoVibe design |
+| `SYSTEM-09` | `docs/features/traceability-audit/` | FEAT, doc version registry, diff-check contract, RCA/CR ledger contract | active; document version governance and traceability docs exist |
+| `SYSTEM-10` | `docs/features/execution-governance/` | FEAT, C/H/W classification, task state machine, gate policy, closure criteria | active; standard exists, enforcement needs broader validator coverage |
+
+### 5.3 Cross-System Dependency Map
+
+System dependencies must be explicit so a change request can identify affected systems before implementation starts.
+
+| Source System | Depends On | Dependency Reason |
+|---|---|---|
+| `SYSTEM-01` | `SYSTEM-02`, `SYSTEM-05`, `SYSTEM-06`, `SYSTEM-09` | Mission Control renders roadmap state, agent state, command/tool events, and audit evidence. |
+| `SYSTEM-02` | `SYSTEM-03`, `SYSTEM-09`, `SYSTEM-10` | Roadmap promotion relies on parsed docs, traceability, and execution gate status. |
+| `SYSTEM-03` | `SYSTEM-08`, `SYSTEM-09`, `SYSTEM-10` | Docs-to-code needs knowledge retrieval, symbol links, traceability, and bounded task packets. |
+| `SYSTEM-04` | `SYSTEM-03`, `SYSTEM-08`, `SYSTEM-09` | Diagram-derived docs become docs-to-code inputs and need knowledge/audit provenance. |
+| `SYSTEM-05` | `SYSTEM-06`, `SYSTEM-07`, `SYSTEM-10` | Agent routing requires integration surfaces, access decisions, and execution governance. |
+| `SYSTEM-06` | `SYSTEM-05`, `SYSTEM-07`, `SYSTEM-09` | External tool calls need agent identity, authorization, and event/audit capture. |
+| `SYSTEM-07` | `SYSTEM-05`, `SYSTEM-08`, `SYSTEM-09` | Policy decisions need subject identity, resource metadata, and auditable evidence. |
+| `SYSTEM-08` | `SYSTEM-03`, `SYSTEM-07`, `SYSTEM-09` | Knowledge retrieval is populated by docs-to-code, filtered by policy, and audited by traceability. |
+| `SYSTEM-09` | all systems | Audit must trace source, decision, artifact, and verification across every governed system. |
+| `SYSTEM-10` | `SYSTEM-02`, `SYSTEM-05`, `SYSTEM-07`, `SYSTEM-09` | Execution gates depend on work scope, agent routing, access policy, and evidence state. |
+
+### 5.4 System-Based Execution And Role-Based Review
 
 GoVibe uses systems as the primary execution routing structure and roles as the review/governance layer.
 
@@ -173,7 +207,21 @@ Review ownership:
 - `ATHER` reviews governance, auditability, and promotion readiness.
 - `GHOST` reviews QA evidence, UI behavior, and regression risk.
 
-### 5.3 Module Detail Rule
+### 5.5 System Change Routing Rule
+
+Every non-trivial change request must name:
+
+- primary impacted system
+- supporting impacted systems
+- affected product modules
+- source-of-truth document path
+- execution owner or system parent
+- role reviewers and approval owner
+- verification evidence expected before close-out
+
+If a change affects more than one system and lacks this routing, `LYRA` must hold the work in planning state until the missing routing is supplied.
+
+### 5.6 Module Detail Rule
 
 The PRD module map is intentionally high level. A module becomes implementation-ready only when its owning system document defines:
 
@@ -190,6 +238,7 @@ The PRD module map is intentionally high level. A module becomes implementation-
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.4.0 | 2026-06-16 | Expanded the Platform System Map with system responsibilities, inputs, outputs, detail-doc registry, dependencies, and change-routing rules. |
 | 0.3.0 | 2026-06-16 | Expanded the Platform System Map with product-level modules, system-based execution routing, and role-based review ownership. |
 | 0.2.0 | 2026-06-16 | Added the narrow CoDev and CoVibe terminology subsection under product positioning without changing the current system map. |
 | 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the PRD with the document versioning governance standard. |

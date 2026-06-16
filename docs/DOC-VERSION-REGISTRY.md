@@ -35,7 +35,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
-| PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.3.0+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
+| PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.4.0+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
 | PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.1.0+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
 
 ## 4. Roadmap and Planning
