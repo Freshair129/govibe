@@ -2,7 +2,7 @@
 title: "FEAT: Qwen CLI Model Routing"
 doc_id: "FEAT-QWEN-CLI-MODEL-ROUTING"
 status: "draft"
-version: "0.1.1+draft"
+version: "0.1.2+draft"
 updated: "2026-06-17"
 owner: "KIN / LYRA / ATHER"
 source_of_truth: true
@@ -12,6 +12,9 @@ supporting_prd_systems:
   - "SYSTEM-09::Traceability-Audit-Verification-System"
 related_docs:
   - "docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md"
+  - "AGENT.md"
+  - ".agents/context/shared/CONTEXT-GoVibe-Shared-External-Agent.md"
+  - ".agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md"
   - ".agents/context/CONTEXT-Bounded-External-Executor.md"
   - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md"
@@ -59,7 +62,35 @@ previous_local_qwen_cli_issue:
 
 Important boundary: `qwen-cli` auto-loads `AGENT.md`, not `AGENTS.md`. GoVibe must not assume the universal `AGENTS.md` contract was loaded unless the run evidence shows a dedicated `AGENT.md` bridge, an explicit `--system` prompt, or a bounded context packet was passed.
 
-## 3. Routing Policy
+## 3. Shared Context Loading
+
+GoVibe routes qwen executor work through shared context instead of one-off prompt text.
+
+Minimum shared packet:
+
+```text
+AGENTS.md
+AGENT.md
+.agents/context/shared/CONTEXT-GoVibe-Shared-External-Agent.md
+.agents/context/CONTEXT-Bounded-External-Executor.md
+```
+
+Git hygiene packets must also load:
+
+```text
+.agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md
+```
+
+The supported wrapper is:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\run-qwen-agent-review.ps1" `
+  -Role "JANUS / ATHER" `
+  -Mode git `
+  -Task "Audit current git state and recommend safe cleanup"
+```
+
+## 4. Routing Policy
 
 | Work Type | Preferred Model | Route | Allowed Output | Approval |
 |---|---|---|---|---|
@@ -76,7 +107,7 @@ Fallback rule:
 - If `AGENT.md` or an explicit `--system` prompt was not supplied, treat the output as generic model output, not GoVibe-governed agent output.
 - If the task requires broad repo search, PRD authority, architecture approval, or cross-repo truth, do not route it to H0/local worker mode.
 
-## 4. Required Invocation Evidence
+## 5. Required Invocation Evidence
 
 Every `qwen-cli` run used by GoVibe must record:
 
@@ -102,7 +133,7 @@ recommended_decision: accept_reference | revise_packet | retry_with_different_mo
 confidence:
 ```
 
-## 5. Model Selection Rules
+## 6. Model Selection Rules
 
 - Use `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free` first for reasoning-heavy review packets.
 - Use `google/gemma-4-31b-it:free` for concise documentation synthesis when an OpenRouter key is configured.
@@ -112,31 +143,35 @@ confidence:
 - Do not use any free model as final approval evidence.
 - Do not retry endlessly across free models; after two failed executor attempts, escalate to the lead agent.
 
-## 6. Acceptance Criteria
+## 7. Acceptance Criteria
 
 - GoVibe has a documented model routing policy for `qwen-cli`.
 - The policy distinguishes OpenRouter models from local Ollama models.
 - Missing API key and executor runtime errors are explicit blockers, not silent fallback success.
 - Every route requires evidence fields before output can influence GoVibe decisions.
 - Free models can assist but cannot approve scope, architecture, release, or source truth.
+- Shared context is loaded from files, not recreated manually in an ad hoc prompt.
 
-## 7. Success Criteria
+## 8. Success Criteria
 
 - LYRA can assign a bounded review packet to a model class without guessing.
 - KIN can later implement a wrapper around `qwen-cli` without changing governance semantics.
 - ATHER can audit model choice, command evidence, and failure behavior.
 - Primary LLM quota is conserved for lead reasoning and final review.
 
-## 8. Definition Of Done
+## 9. Definition Of Done
 
 - This feature is registered in `docs/DOC-VERSION-REGISTRY.md`.
 - Quota-aware local LLM decomposition references this routing policy.
 - Bounded external executor context references this routing policy.
+- Shared external-agent context and git hygiene context are registered.
+- `scripts/agents/run-qwen-agent-review.ps1` can build a context-backed qwen packet.
 - `npm run docs:validate` passes.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-06-17 | KIN / LYRA / ATHER | Added shared context loading contract and qwen wrapper path. |
 | 0.1.1+draft | 2026-06-17 | KIN / LYRA / ATHER | Added README-derived configuration evidence, AGENT.md context boundary, and local qwen smoke result. |
 | 0.1.0+draft | 2026-06-17 | KIN / LYRA / ATHER | Added qwen-cli model routing policy for OpenRouter free models and local Ollama worker routes. |

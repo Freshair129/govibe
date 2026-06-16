@@ -28,6 +28,7 @@ scope + task
 - `run-theseus-local.ps1` - Ollama atomic wrapper for THESEUS
 - `run-lyra-local.ps1` - Ollama atomic wrapper for LYRA
 - `run-ather-local.ps1` - Ollama atomic wrapper for ATHER
+- `run-qwen-agent-review.ps1` - shared-context wrapper for bounded qwen-cli / OpenRouter review
 
 ## Generic Usage
 
@@ -139,6 +140,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\ru
 
 - `codex` - default lead-orchestrator executor
 - `ollama` - bounded local sidecar executor for atomic work only
+- `qwen-cli` - bounded external review executor using shared context packets
 
 Local sidecar defaults come from `.agents/agent-registry.yaml`:
 
@@ -156,3 +158,24 @@ Local sidecar defaults come from `.agents/agent-registry.yaml`:
 - Local sidecar output is expected to include task summary, assumptions or blockers, files inspected, and recommended next step.
 - Codex runtime warnings may still appear depending on the local Codex environment.
 - The launcher intentionally does not auto-stage or auto-commit repository changes.
+
+## Qwen Shared Context Review
+
+Use this when GoVibe needs an external model opinion without losing governance context:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\run-qwen-agent-review.ps1" `
+  -Role "JANUS / ATHER" `
+  -Mode git `
+  -Task "Audit current git state and recommend safe cleanup"
+```
+
+The wrapper loads:
+
+- `AGENTS.md`
+- `AGENT.md`
+- `.agents/context/shared/CONTEXT-GoVibe-Shared-External-Agent.md`
+- `.agents/context/CONTEXT-Bounded-External-Executor.md`
+- `.agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md` when the task is git-related
+
+Qwen output remains draft evidence. It cannot approve scope, release, architecture, or destructive cleanup.

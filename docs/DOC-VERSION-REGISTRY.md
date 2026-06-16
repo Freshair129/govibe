@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.11+draft"
+version: "0.1.12+draft"
 updated: "2026-06-17"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.11+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.12+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -54,7 +54,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Feature | `FEAT-DOCUMENT-VERSION-GOVERNANCE` | `0.1.0+draft` | draft | ATHER / THESEUS | `docs/features/traceability-audit/FEAT-Document-Version-Governance.md` |
 | Feature | `FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.0+draft` | draft | ATHER / KIN | `docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md` |
 | Feature | `FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION` | `0.1.0+draft` | draft | LYRA / ATHER | `docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md` |
-| Feature | `FEAT-QWEN-CLI-MODEL-ROUTING` | `0.1.1+draft` | draft | KIN / LYRA / ATHER | `docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md` |
+| Feature | `FEAT-QWEN-CLI-MODEL-ROUTING` | `0.1.2+draft` | draft | KIN / LYRA / ATHER | `docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md` |
 | Audit | `AUDIT-COGNITIVE-SYSTEM-INBOUND-TRIAGE-2026-06-16` | `0.1.1+draft` | draft | ATHER / LYRA | `docs/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md` |
 | Feature | `FEAT-ROADMAP-PROMOTION-CONTRACT` | `0.1.0+draft` | draft | LYRA | `docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md` |
 | Feature | `FEAT-visual-agent-fleet-system` | `0.1.0` | migration-needed | THESEUS | `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md` |
@@ -69,7 +69,10 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Runbook | `RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW` | `0.2.2` | draft | LYRA | `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` |
 | Runbook | `RUNBOOK-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.0+draft` | draft | JANUS / KIN | `docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md` |
+| Context | `AGENT-BRIDGE-QWEN-COMPAT` | `1.2.0+draft` | draft | ATHER / THESEUS | `AGENT.md` |
 | Context | `CONTEXT-BOUNDED-EXTERNAL-EXECUTOR` | `0.2.3` | draft | THESEUS | `.agents/context/CONTEXT-Bounded-External-Executor.md` |
+| Context | `CONTEXT-GOVIBE-SHARED-EXTERNAL-AGENT` | `0.1.0+draft` | draft | ATHER / THESEUS | `.agents/context/shared/CONTEXT-GoVibe-Shared-External-Agent.md` |
+| Context | `CONTEXT-GOVIBE-GIT-HYGIENE` | `0.1.0+draft` | draft | JANUS / ATHER | `.agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md` |
 
 ## 7. Migration Notes
 
@@ -82,6 +85,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.12+draft | 2026-06-17 | ATHER / THESEUS | Registered shared external-agent context, git hygiene context, and qwen-compatible AGENT bridge. |
 | 0.1.11+draft | 2026-06-17 | ATHER / THESEUS | Synced qwen-cli model routing after README inspection and local smoke verification. |
 | 0.1.10+draft | 2026-06-17 | ATHER / THESEUS | Registered qwen-cli model routing policy and updated bounded external executor context version. |
 | 0.1.9+draft | 2026-06-16 | ATHER / THESEUS | Registered symbol graph traceability boundary for doc-code drift and structural evidence. |
