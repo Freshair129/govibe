@@ -2,13 +2,14 @@
 title: "CONTEXT: Bounded External Executor"
 doc_id: "CONTEXT-BOUNDED-EXTERNAL-EXECUTOR"
 status: "draft"
-version: "0.2.2"
-updated: "2026-06-16"
+version: "0.2.3"
+updated: "2026-06-17"
 owner: "THESEUS"
 auditor: "ATHER"
 source_of_truth: false
 related_docs:
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
+  - "docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md"
   - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
@@ -24,7 +25,9 @@ This context container is the compact packet attached to a Gemini CLI run when G
 
 - Lead owner or lead agent remains accountable.
 - Gemini CLI is a bounded external executor.
+- Qwen CLI and OpenRouter-backed models may be bounded external executors when the packet names the route and records execution evidence.
 - Gemini CLI is not the product owner, not the final approver, and not the architecture authority by default.
+- Qwen CLI is not the product owner, not the final approver, and not the architecture authority by default.
 
 ## 3. Source Of Truth Order
 
@@ -118,6 +121,7 @@ If the lead packet defines another path, that packet wins.
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.2.3 | 2026-06-17 | Added qwen-cli model routing reference and executor boundary rule. |
 | 0.2.2 | 2026-06-16 | Added project reality check evidence fields and the minimal-code rule for bounded external executors. |
 | 0.2.1 | 2026-06-16 | Replaced freelance analogy wording with bounded support-executor terminology in the active context packet. |
 | 0.2.0 | 2026-06-16 | Renamed the canonical context artifact to the bounded external executor wording while preserving CoVibe as the collaboration mode. |

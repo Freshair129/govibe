@@ -9,6 +9,7 @@ source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
 related_docs:
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
+  - "docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md"
   - "docs/srs/SRS-Ollama-Sidecar-Execution.md"
   - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
   - ".agents/pm/asset/Planning-Decomposition-Standard.md"
@@ -35,6 +36,7 @@ Included:
 
 - task decomposition from `task` to `sub-task`, `micro-task`, and `atomic-task`
 - quota-aware executor routing hints
+- qwen-cli model routing when a bounded packet can be sent to a local or OpenRouter-backed support model
 - local packet limits for 8k-16k context windows
 - predicted and actual token telemetry expectations
 - escalation back to the lead agent when a task is too broad
@@ -94,6 +96,7 @@ escalation_rule: escalate_to_lead_when_more_than_one_action_is_required
 ## 6. Routing Rules
 
 - Route to local LLM only when the work is H0 and has a bounded packet.
+- Route through `qwen-cli` only when the model route is recorded by `FEAT-QWEN-CLI-MODEL-ROUTING`.
 - Prefer local LLM for extraction, classification, one-line edits, checklist verification, and repetitive formatting.
 - Do not route architecture, PRD interpretation, cross-repo integration decisions, or scope approval to local LLM.
 - If a packet needs the full PRD, SDD, C4, or broad repo search, keep it at task/sub-task level and assign it to the lead agent.
