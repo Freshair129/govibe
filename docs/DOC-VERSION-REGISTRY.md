@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.3+draft"
+version: "0.1.4+draft"
 updated: "2026-06-16"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.3+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.4+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -52,8 +52,10 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
 | Feature | `FEAT-DOCUMENT-VERSION-GOVERNANCE` | `0.1.0+draft` | draft | ATHER / THESEUS | `docs/features/traceability-audit/FEAT-Document-Version-Governance.md` |
+| Feature | `FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.0+draft` | draft | ATHER / KIN | `docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md` |
 | Feature | `FEAT-ROADMAP-PROMOTION-CONTRACT` | `0.1.0+draft` | draft | LYRA | `docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md` |
 | Feature | `FEAT-visual-agent-fleet-system` | `0.1.0` | migration-needed | THESEUS | `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md` |
+| Architecture | `MSP-GKS-TAXONOMY-MAPPING` | `0.1.0+draft` | draft | THESEUS / KIN | `docs/architecture/MSP-GKS-Taxonomy-Mapping.md` |
 | Architecture | `SDD-visual-agent-fleet` | `0.1.0` | migration-needed | THESEUS / ARCHON | `docs/architecture/SDD-Visual-Agent-Fleet.md` |
 
 ## 6. Runbooks And Context Packets
@@ -61,6 +63,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
 | Runbook | `RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW` | `0.2.2` | draft | LYRA | `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` |
+| Runbook | `RUNBOOK-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.0+draft` | draft | JANUS / KIN | `docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md` |
 | Context | `CONTEXT-BOUNDED-EXTERNAL-EXECUTOR` | `0.2.2` | draft | THESEUS | `.agents/context/CONTEXT-Bounded-External-Executor.md` |
 
 ## 7. Migration Notes
@@ -74,6 +77,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.4+draft | 2026-06-16 | ATHER / THESEUS | Registered the MSP validate evidence adapter feature, taxonomy mapping, and runbook. |
 | 0.1.3+draft | 2026-06-16 | ATHER / THESEUS | Synced bounded external executor context and runbook versions after evidence-first and minimal-code rule updates. |
 | 0.1.2+draft | 2026-06-16 | ATHER / THESEUS | Registered the roadmap promotion contract and normalized the active P1 MVP backlog source entry. |
 | 0.1.2+draft | 2026-06-16 | ATHER / THESEUS | Registered the MVP developer trial master plan and bounded external executor active docs. |

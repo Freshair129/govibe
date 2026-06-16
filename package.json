@@ -14,6 +14,7 @@
     "docs:validate": "node scripts/docs/validate-docs.mjs",
     "diff:check": "node scripts/docs/diff-check.mjs",
     "diff:check:staged": "node scripts/docs/diff-check.mjs --staged",
+    "msp:evidence": "node scripts/docs/msp-evidence.mjs",
     "gemini:doc-audit": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agents/run-gemini-doc-audit.ps1",
     "baseline:check": "npm run docs:validate && npm run lint && npm run build",
     "preview": "vite preview",
