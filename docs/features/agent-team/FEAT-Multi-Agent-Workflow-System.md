@@ -41,6 +41,7 @@ Included:
 - work intake and governance classification
 - doc-first gate for non-trivial work
 - PM decomposition from roadmap to atomic-task
+- quota-aware decomposition for local LLM micro-task and atomic-task execution
 - assignment routing to human or agent team
 - collaboration-mode support for both `CoDev` multi-party execution and `CoVibe` lead-plus-support execution
 - handoff workflow between PM, executor, QA, and auditor
@@ -99,6 +100,7 @@ Request
   - micro-task
   - atomic-task
 - Micro-task and atomic-task granularity must support local-model context limits when required.
+- Micro-task and atomic-task packets must be narrow enough to reduce primary LLM quota usage without requiring broad reasoning from the local model.
 
 ### 5.4 Document-driven roadmap source
 
@@ -190,6 +192,7 @@ Primary consumers:
 - `CoDev` and `CoVibe` do not change current system ownership; they clarify whether the workflow is coordinating multiple delivery parties or a lead side with bounded support execution.
 - Workflow state must be normalized into GoVibe-owned documents, snapshots, or events before it is considered canonical.
 - In v1, Ollama is a local sidecar executor for `atomic` work only and is not a replacement for Codex-led orchestration.
+- Local LLM sidecars must receive bounded packets and return draft output for lead review; they must not approve scope, architecture, or cross-repo truth.
 
 ## 9. Acceptance Criteria
 
@@ -213,6 +216,7 @@ Primary consumers:
 
 - `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 - `docs/srs/SRS-Ollama-Sidecar-Execution.md`
+- `docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md`
 - `docs/lld/LLD-Agent-Launcher-Execution-Router.md`
 - `docs/architecture/SEQ-Ollama-Sidecar-Flow.md`
 - `docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md`

@@ -1,6 +1,7 @@
 # GoVibe Implementation Plan Template
 
 **SSOT Reference:** [.agents/pm/asset/Planning-Decomposition-Standard.md](Planning-Decomposition-Standard.md)
+**Quota-Aware Local LLM Reference:** [docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md](../../../docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md)
 **Tier:** H1-H0 (Execution)
 
 ```yaml
@@ -50,6 +51,8 @@ Target: task, sub-task, micro-task, atomic-task
 
 ## Local LLM Packets (H0 Tier)
 > These packets are for local LLM execution with 8k-16k context limits. Define them here to keep the Backlog clean.
+> Use these packets to reduce primary Claude/Codex/Gemini quota only when the work is narrow enough for a local model on the current RTX 3060 12GB VRAM hardware class.
+> Local LLM output is draft until verified by the lead agent, QA, or auditor.
 
 ### Micro-task Packet: [[M-TSK-ID]]
 ```text
@@ -58,7 +61,12 @@ target path: [[File to modify]]
 instruction: [[Specific step-by-step for local LLM]]
 constraints: [[e.g., no external libs, preserve style]]
 acceptance check: [[Verifiable outcome]]
+model name: [[LOCAL MODEL]]
 max context: [[8k or 16k]]
+predicted token usage: [[ESTIMATE]]
+max output tokens: [[LIMIT]]
+rollback note: [[How to revert if fail]]
+escalation rule: escalate_to_lead_when_context_exceeds_packet
 ```
 
 ### Atomic-task Packet: [[A-TSK-ID]]
@@ -66,6 +74,10 @@ max context: [[8k or 16k]]
 target: [[Specific line or function]]
 single action: [[One instruction]]
 acceptance check: [[Single check]]
+model name: [[LOCAL MODEL]]
 rollback note: [[How to revert if fail]]
 max context: 8k
+predicted token usage: [[ESTIMATE]]
+max output tokens: [[LIMIT]]
+escalation rule: escalate_to_lead_when_more_than_one_action_is_required
 ```

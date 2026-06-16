@@ -2,6 +2,8 @@
 
 LYRA decomposes product intent into work that agents can execute safely.
 
+Quota-aware local execution is governed by `docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md`.
+
 ## Hierarchy
 ```text
 Master Plan
@@ -38,6 +40,10 @@ Master Plan
 - Escalate planning level when cross-system impact appears.
 - Use micro-tasks and atomic-tasks for local LLMs with 8k-16k context limits.
 - Atomic-tasks must contain one action, one target, and one verification check.
+- Use quota-aware decomposition when a narrow local LLM packet can save primary Claude/Codex/Gemini quota without increasing risk.
+- Treat RTX 3060 12GB VRAM as the current local hardware class for packet sizing, not as a hard product dependency.
+- Do not assign architecture, scope approval, cross-repo truth, or broad context synthesis to local LLM packets.
+- Escalate back to the lead agent when a micro-task exceeds 16k context or an atomic-task requires more than one action.
 
 ## Ready Criteria
 A backlog item is ready when it has:
@@ -61,7 +67,11 @@ target path:
 instruction:
 constraints:
 acceptance check:
+model name:
 max context: 8k or 16k
+predicted token usage:
+rollback note:
+escalation rule:
 ```
 
 Atomic-task packet:
@@ -70,8 +80,11 @@ Atomic-task packet:
 target:
 single action:
 acceptance check:
+model name:
 rollback note:
 max context: 8k
+predicted token usage:
+escalation rule:
 ```
 
 ## Done Criteria
