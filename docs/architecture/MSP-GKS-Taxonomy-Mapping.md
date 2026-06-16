@@ -9,6 +9,7 @@ source_of_truth: true
 prd_system: "SYSTEM-09::Traceability-Audit-Verification-System"
 related_docs:
   - "docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md"
+  - "docs/architecture/SDD-MSP-External-Evidence-Boundary.md"
   - "docs/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md"
 ---
 
@@ -37,6 +38,7 @@ Map GoVibe governance documents to the closest MSP/GKS atom or validation concep
 - GoVibe validates GoVibe governance consistency.
 - Mapping gaps must be reported, not inferred.
 - Direct GKS access by GoVibe agents is out of scope in v1.
+- MSP is the v1 external evidence boundary; GKS is mapped only as an internal subsystem behind MSP.
 
 ## 4. Adapter Output Rules
 

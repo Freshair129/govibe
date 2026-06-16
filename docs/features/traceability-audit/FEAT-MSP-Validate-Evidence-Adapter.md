@@ -11,6 +11,7 @@ related_docs:
   - "docs/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md"
   - "docs/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md"
   - "docs/architecture/MSP-GKS-Taxonomy-Mapping.md"
+  - "docs/architecture/SDD-MSP-External-Evidence-Boundary.md"
   - "docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md"
 ---
 
@@ -27,6 +28,7 @@ Define the minimum adapter that lets GoVibe collect `msp:validate` evidence from
 - MSP pass does not equal GoVibe pass.
 - GoVibe consumes MSP output through an evidence packet plus taxonomy mapping.
 - GKS remains internal behind MSP in v1; GoVibe agents must not call GKS directly.
+- MSP is treated as an external evidence boundary in v1; service splitting is deferred until adapter evidence is stable.
 
 ## 3. Evidence Packet Contract
 
