@@ -20,3 +20,4 @@ Thumbs.db
 # GoVibe inbound governance
 # Keep raw cognitive-system exports out of commits; derive approved packets through docs/audit first.
 .brain/cognitive-system-knowledge-block/
+.brain/inbound/
