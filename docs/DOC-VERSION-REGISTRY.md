@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.8+draft"
+version: "0.1.9+draft"
 updated: "2026-06-16"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.8+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.9+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -59,6 +59,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Feature | `FEAT-visual-agent-fleet-system` | `0.1.0` | migration-needed | THESEUS | `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md` |
 | Architecture | `MSP-GKS-TAXONOMY-MAPPING` | `0.1.0+draft` | draft | THESEUS / KIN | `docs/architecture/MSP-GKS-Taxonomy-Mapping.md` |
 | Architecture | `SDD-MSP-EXTERNAL-EVIDENCE-BOUNDARY` | `0.1.0+draft` | draft | ARCHON / KIN / ATHER | `docs/architecture/SDD-MSP-External-Evidence-Boundary.md` |
+| Architecture | `SDD-SYMBOL-GRAPH-TRACEABILITY-BOUNDARY` | `0.1.0+draft` | draft | ARCHON / THESEUS / ATHER | `docs/architecture/SDD-Symbol-Graph-Traceability-Boundary.md` |
 | Architecture | `SDD-visual-agent-fleet` | `0.1.0` | migration-needed | THESEUS / ARCHON | `docs/architecture/SDD-Visual-Agent-Fleet.md` |
 
 ## 6. Runbooks And Context Packets
@@ -80,6 +81,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.9+draft | 2026-06-16 | ATHER / THESEUS | Registered symbol graph traceability boundary for doc-code drift and structural evidence. |
 | 0.1.8+draft | 2026-06-16 | ATHER / THESEUS | Registered MSP external evidence boundary SDD derived from MSP architecture v2 source. |
 | 0.1.7+draft | 2026-06-16 | ATHER / THESEUS | Synced cognitive-system inbound triage audit version after adding Git ignore enforcement for raw exports. |
 | 0.1.6+draft | 2026-06-16 | ATHER / THESEUS | Registered cognitive-system inbound knowledge triage audit to control MSP/GKS derivation and block wholesale import. |
