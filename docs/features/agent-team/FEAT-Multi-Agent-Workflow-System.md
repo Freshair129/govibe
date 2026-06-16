@@ -183,6 +183,10 @@ Primary consumers:
 
 - GoVibe may orchestrate external tools through API, MCP, webhook, local bridge, or file-based exchange.
 - External tools are treated as execution providers, not as the source of truth for project state.
+- External and support agents are not trusted as the final source of project truth; real project state must be verified from repo evidence before their claims are accepted.
+- Agent output must be normalized into GoVibe-owned documents, snapshots, events, or evidence records before it becomes canonical.
+- Agent recommendations that lack project evidence, dirty-state reporting, or mismatch reporting must remain draft-only and can be rejected by ATHER.
+- Implementation recommendations must prefer no-code, config, docs, standard library, native platform behavior, existing dependency, or the smallest safe change before adding new code.
 - `CoDev` and `CoVibe` do not change current system ownership; they clarify whether the workflow is coordinating multiple delivery parties or a lead side with bounded support execution.
 - Workflow state must be normalized into GoVibe-owned documents, snapshots, or events before it is considered canonical.
 - In v1, Ollama is a local sidecar executor for `atomic` work only and is not a replacement for Codex-led orchestration.

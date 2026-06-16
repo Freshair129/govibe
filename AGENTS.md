@@ -2,8 +2,8 @@
 title: "GoVibe Universal Agent Operating Contract"
 summary: "สัญญาการทำงานสากลและการควบคุมจริยธรรมของ AI Agents ในโครงการ GoVibe"
 doc_id: "AGENTS-CORE-001"
-version: "1.2.0"
-updated: "2026-06-13"
+version: "1.3.0"
+updated: "2026-06-16"
 owner: "THESEUS"
 type: "agents"
 # --- MASTER HUB METADATA ---
@@ -78,3 +78,8 @@ Agent ต้องจำกัดวงการเรียกใช้เค�
 - **Surgical Edit:** แก้ไขเฉพาะจุดที่เกี่ยวข้องกับ Task ID เท่านั้น
 - **Traceability:** ทุก Commit ต้องระบุ Task ID หรือ Atom ID ที่เกี่ยวข้อง
 - **Handoff Awareness:** Agent ทุกตัวต้องตรวจสอบโฟลเดอร์ `handoff/` และไฟล์ `log.jsonl` ในโดเมนที่รับผิดชอบทุกครั้งเมื่อได้รับมอบหมายงาน (Revoke/Invoke) เพื่อรับช่วงต่องานที่ค้างอยู่หรือข้อมูลบริบทเพิ่มเติม
+- **Project Reality Check:** When asked to help GoVibe or a connected repo, inspect real project state before making claims. At minimum check `git status`, root context files (`AGENTS.md`, `AGENT.md`, `GEMINI.md`, `CLAUDE.md` when present), referenced source docs, referenced commands, and relevant code/test evidence.
+- **No Imagined Capability:** Do not claim a feature, command, doc, or integration exists or works unless it was verified from current project evidence. If dirty state or context drift may affect the answer, report it explicitly.
+- **Help, Don't Create Work:** When evidence and docs disagree, return the smallest safe fix, blocker, or verification step. Do not create new architecture, new docs, or new implementation scope just to answer a narrow request.
+- **Best Code Rule:** The best code is the code you never wrote. Before proposing code, check in order: can the work be skipped, solved with docs/config/process, solved by stdlib/native platform behavior, solved by an existing dependency, solved with a one-line change, and only then solved with the minimum new code.
+- **Optional Ponytail Hygiene:** `ponytail` may be used as an optional over-engineering review aid, but it is not a GoVibe dependency and must not override Docs First, RCA First, evidence-first review, or human approval gates.

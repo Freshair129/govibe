@@ -2,7 +2,7 @@
 title: "CONTEXT: Bounded External Executor"
 doc_id: "CONTEXT-BOUNDED-EXTERNAL-EXECUTOR"
 status: "draft"
-version: "0.2.1"
+version: "0.2.2"
 updated: "2026-06-16"
 owner: "THESEUS"
 auditor: "ATHER"
@@ -63,7 +63,39 @@ Do not:
 - widen the task beyond the provided packet
 - invent missing system authority
 
-## 7. Expected Return Shape
+## 7. Project Reality Check
+
+Before making reuse, implementation, or project-state claims, the executor must inspect current evidence rather than relying only on prompt memory or `GEMINI.md` context.
+
+Required evidence fields:
+
+```yaml
+repo_root_checked:
+git_status_summary:
+context_files_read:
+doc_claims_checked:
+code_evidence_checked:
+mismatches_or_unknowns:
+confidence:
+```
+
+If the executor cannot inspect the required evidence, return `blocked_by_missing_evidence` and list what is missing. Do not guess.
+
+## 8. Minimal-Code Rule
+
+The best code is the code you never wrote. Before proposing implementation, check whether the task can be solved by:
+
+1. doing nothing because the current behavior already satisfies the requirement
+2. updating docs, config, process, or an existing contract
+3. using standard library or native platform behavior
+4. using an already-installed dependency
+5. making a one-line or smallest safe change
+
+Only propose new code after those options fail.
+
+`ponytail` may be used as an optional review aid, but it is not required and cannot override GoVibe governance.
+
+## 9. Expected Return Shape
 
 The lead agent should specify one of:
 
@@ -74,7 +106,7 @@ The lead agent should specify one of:
 
 If the required schema is missing, return a blocker note instead of free-form scope expansion.
 
-## 8. Return Path
+## 10. Return Path
 
 Default return path for review or doc-support work:
 
@@ -82,9 +114,10 @@ Default return path for review or doc-support work:
 
 If the lead packet defines another path, that packet wins.
 
-## 9. Changelog
+## 11. Changelog
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.2.2 | 2026-06-16 | Added project reality check evidence fields and the minimal-code rule for bounded external executors. |
 | 0.2.1 | 2026-06-16 | Replaced freelance analogy wording with bounded support-executor terminology in the active context packet. |
 | 0.2.0 | 2026-06-16 | Renamed the canonical context artifact to the bounded external executor wording while preserving CoVibe as the collaboration mode. |

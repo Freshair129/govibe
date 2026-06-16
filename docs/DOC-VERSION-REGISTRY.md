@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.2+draft"
+version: "0.1.3+draft"
 updated: "2026-06-16"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.3+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -60,8 +60,8 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
-| Runbook | `RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW` | `0.2.1` | draft | LYRA | `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` |
-| Context | `CONTEXT-BOUNDED-EXTERNAL-EXECUTOR` | `0.2.1` | draft | THESEUS | `.agents/context/CONTEXT-Bounded-External-Executor.md` |
+| Runbook | `RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW` | `0.2.2` | draft | LYRA | `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` |
+| Context | `CONTEXT-BOUNDED-EXTERNAL-EXECUTOR` | `0.2.2` | draft | THESEUS | `.agents/context/CONTEXT-Bounded-External-Executor.md` |
 
 ## 7. Migration Notes
 
@@ -74,6 +74,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.3+draft | 2026-06-16 | ATHER / THESEUS | Synced bounded external executor context and runbook versions after evidence-first and minimal-code rule updates. |
 | 0.1.2+draft | 2026-06-16 | ATHER / THESEUS | Registered the roadmap promotion contract and normalized the active P1 MVP backlog source entry. |
 | 0.1.2+draft | 2026-06-16 | ATHER / THESEUS | Registered the MVP developer trial master plan and bounded external executor active docs. |
 | 0.1.1+draft | 2026-06-15 | ATHER / THESEUS | Synced registry entries with the updated document versioning governance standard and the diff gate automation note. |

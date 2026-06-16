@@ -2,7 +2,7 @@
 title: "RUNBOOK: Bounded External Executor Workflow"
 doc_id: "RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW"
 status: "draft"
-version: "0.2.1"
+version: "0.2.2"
 updated: "2026-06-16"
 owner: "LYRA"
 auditor: "ATHER"
@@ -140,11 +140,24 @@ Rules:
 - Do not redefine product architecture unless the packet explicitly asks for analysis only.
 - Do not edit unrelated files.
 - If information is missing, say what is missing instead of inventing it.
+- Do not rely only on `GEMINI.md`, prompt context, or prior-session memory.
+- Verify real project state before making project-state, reuse, feature, or implementation claims.
+- Report dirty state, missing evidence, and context drift.
+- Prefer no-code, config, docs, standard library, native platform, existing dependency, or one-line fixes before proposing new code.
 - Return structured output only in the requested schema.
 - Treat all output as draft support work pending lead review.
 
 Expected output:
 <replace with exact schema or artifact shape>
+
+Required evidence fields:
+- repo_root_checked
+- git_status_summary
+- context_files_read
+- doc_claims_checked
+- code_evidence_checked
+- mismatches_or_unknowns
+- confidence
 
 Out of scope:
 - <item>
@@ -174,6 +187,16 @@ Minimum packet to send:
 - exact review or execution schema
 - allowed files
 - return artifact path
+- factual evidence packet when the lead agent has already inspected local state
+
+### 7.4 Evidence-backed review mode
+
+For cross-repo reuse, doc/code alignment, or project capability claims, prefer a two-step flow:
+
+1. The lead agent or local shell gathers a factual packet: `git status`, root context files found, referenced docs found, commands found, and code/test evidence.
+2. Gemini CLI analyzes that packet and must not claim it independently verified facts that are absent from the packet.
+
+This mode is required when previous agent output disagrees with local project state.
 
 ## 8. Context Container Contract
 
@@ -185,6 +208,8 @@ Every CoVibe bounded external-executor run should have one compact context conta
 - forbidden expansions
 - expected output shape
 - approval and return path
+- required project reality check fields
+- minimal-code rule or optional ponytail hygiene note
 
 The context container should be compact, derived, and source-cited.
 
@@ -193,6 +218,7 @@ The context container should be compact, derived, and source-cited.
 - A lead owner and lead agent are identified.
 - Gemini CLI is framed as a bounded support executor, not a system owner.
 - The packet includes a context container path and explicit out-of-scope rules.
+- The packet requires evidence fields before accepting project-state claims.
 - The workflow defines how results come back for lead review.
 - The runbook does not imply automatic final approval by the external executor.
 
@@ -208,11 +234,13 @@ The context container should be compact, derived, and source-cited.
 - Prompt template exists.
 - Context container contract exists.
 - A concrete context container is linked for Gemini CLI packet usage.
+- External executor feedback without project-state evidence is rejected or treated as draft-only.
 - The workflow is ready for review before further automation is added.
 
 ## Changelog
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.2.2 | 2026-06-16 | Added project reality check, evidence-backed review mode, and minimal-code guidance for external executors. |
 | 0.2.1 | 2026-06-16 | Replaced remaining freelance analogy wording in active guidance with bounded support-executor terminology. |
 | 0.2.0 | 2026-06-16 | Renamed the workflow to the SWE-friendly bounded external executor wording and updated the canonical context link. |
