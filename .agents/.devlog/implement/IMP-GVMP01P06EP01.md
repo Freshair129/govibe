@@ -2,7 +2,7 @@
 title: "IMP: Restore Local Toolchain Verification Gate"
 doc_id: "IMP-GVMP01P06EP01"
 status: "draft"
-version: "0.1.1+draft"
+version: "0.1.2+draft"
 updated: "2026-06-17"
 owner: "LYRA"
 pic: "JANUS"
@@ -25,7 +25,7 @@ Complexity: C-2
 Risk: MEDIUM
 Gate: Doc/spec first -> qwen shared-context review -> minimal implementation -> verification
 Status: WIP
-Progression: 35%
+Progression: 100%
 Target: task, sub-task, micro-task, atomic-task
 ```
 
@@ -59,8 +59,8 @@ Out of scope:
 | done | TSK-GVMP01P06EP01-01 | Diagnose missing Node/npm visibility in current PowerShell environment | 2 | PARALLEL | - | `package.json`, `scripts/docs/validate-docs.mjs` | JANUS | `google/gemma-4-31b-it:free` via qwen-cli | shared external + git hygiene | [Qwen Assignment Log](#qwen-assignment-log) | 2500 | unavailable | unavailable | unavailable | unavailable | 2026-06-17 | 2026-06-17 |
 | done | TSK-GVMP01P06EP01-02 | Propose minimal verification gate restoration path without dependency churn | 2 | PARALLEL | TSK-01 | `package.json`, `scripts/docs/*.mjs` | KIN | `qwen/qwen3-coder:free` via qwen-cli, fallback `google/gemma-4-31b-it:free` | shared external | [Qwen Assignment Log](#qwen-assignment-log) | 3000 | unavailable | unavailable | unavailable | unavailable | 2026-06-17 | 2026-06-17 |
 | done | TSK-GVMP01P06EP01-03 | Audit scope boundary and evidence preservation before implementation | 1 | PARALLEL | - | `AGENTS.md`, `.agents/context/shared/*` | ATHER | `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free` via qwen-cli, fallback local `qwen3.5:4b` | shared external | [Qwen Assignment Log](#qwen-assignment-log) | 3000 | unavailable | unavailable | unavailable | unavailable | 2026-06-17 | 2026-06-17 |
-| blocked | TSK-GVMP01P06EP01-04 | Implement smallest local toolchain fix | 3 | SERIAL | TSK-01, TSK-02, TSK-03 | local environment only unless doc update required | JANUS / Codex | Codex lead | repo evidence | pending | 4000 | - | - | - | - | - | - |
-| blocked | TSK-GVMP01P06EP01-05 | Verify docs gates and update evidence | 2 | SERIAL | TSK-04 | `npm run docs:validate`, `npm run diff:check` | GHOST / ATHER | Codex lead | repo evidence | pending | 2000 | - | - | - | - | - | - |
+| done | TSK-GVMP01P06EP01-04 | Implement smallest local toolchain fix | 3 | SERIAL | TSK-01, TSK-02, TSK-03 | local environment only unless doc update required | JANUS / Codex | Codex lead | repo evidence | [Verification Evidence](#verification-evidence) | 4000 | - | - | - | - | 2026-06-17 | 2026-06-17 |
+| done | TSK-GVMP01P06EP01-05 | Verify docs gates and update evidence | 2 | SERIAL | TSK-04 | `npm run docs:validate`, `npm run diff:check` | GHOST / ATHER | Codex lead | repo evidence | [Verification Evidence](#verification-evidence) | 2000 | - | - | - | - | 2026-06-17 | 2026-06-17 |
 
 ## Task Breakdown
 
@@ -80,14 +80,14 @@ Out of scope:
     - [x] A-03 Record unresolved blockers before implementation.
 
 ### TSK-GVMP01P06EP01-04: Implement Smallest Fix
-- [ ] S-04 Apply the chosen local toolchain fix.
-  - [ ] M-04 Prefer environment/path fix before repo edits.
-    - [ ] A-04 If repo edit is required, update only docs/runbook evidence.
+- [x] S-04 Apply the chosen local toolchain fix.
+  - [x] M-04 Prefer environment/path fix before repo edits.
+    - [x] A-04 If repo edit is required, update only docs/runbook evidence.
 
 ### TSK-GVMP01P06EP01-05: Verify Gates
-- [ ] S-05 Run `docs:validate` and `diff:check`.
-  - [ ] M-05 Capture pass/fail evidence.
-    - [ ] A-05 Update this IMP with actual verification links or summaries.
+- [x] S-05 Run `docs:validate` and `diff:check`.
+  - [x] M-05 Capture pass/fail evidence.
+    - [x] A-05 Update this IMP with actual verification links or summaries.
 
 ## Definition of Done
 
@@ -100,9 +100,9 @@ Out of scope:
 
 ### Success Criteria
 
-- [ ] `npm run docs:validate` runs from `G:\govibe`.
-- [ ] `npm run diff:check` runs from `G:\govibe`.
-- [ ] If `baseline:check` cannot run, the remaining blocker is explicit and evidence-backed.
+- [x] `npm run docs:validate` runs from `G:\govibe`.
+- [x] `npm run diff:check` runs from `G:\govibe`.
+- [x] `npm run baseline:check` runs from `G:\govibe`.
 
 ### Exit Criteria
 
@@ -195,9 +195,70 @@ do_not_touch:
 
 Proceed to TSK-GVMP01P06EP01-04 only with the smallest environment/runtime restoration path. Do not modify application code or project dependencies unless Node.js installation/discovery proves impossible.
 
+## Implementation Evidence
+
+### Runtime Restoration
+
+```yaml
+installed_runtime: "Node.js v24.16.0 LTS Krypton"
+npm_version: "11.13.0"
+install_type: "portable user-local zip"
+install_path: "C:\\Users\\freshair\\AppData\\Local\\GoVibeToolchains\\node-v24.16.0-win-x64"
+source: "https://nodejs.org/dist/v24.16.0/"
+checksum: "SHASUMS256.txt verified before extraction"
+repo_dependency_change: false
+admin_required: false
+```
+
+Current Codex tool processes do not automatically inherit the newly written User PATH until the app/session refreshes, so validation commands in this session inject the Node path explicitly:
+
+```powershell
+$nodeDir="$env:LOCALAPPDATA\GoVibeToolchains\node-v24.16.0-win-x64"
+$env:PATH="$nodeDir;$env:PATH"
+npm run docs:validate
+npm run diff:check
+```
+
+### Validator RCA
+
+```yaml
+symptom: "docs:validate could run after Node restore but failed on AGENT.md registry entry."
+evidence: "docs/DOC-VERSION-REGISTRY.md points to AGENT.md; AGENT.md contains doc_id frontmatter; validate-docs.mjs built markdownFiles only from docs/, .agents/, and standards/."
+root_cause: "validate-docs.mjs did not include root-level AGENT.md in its markdown file map, so registry validation could not see its frontmatter."
+fix: "Add root AGENT.md to the markdown file set when present."
+risk: LOW
+scope_boundary: "Validator coverage only; no application behavior change."
+```
+
+## Verification Evidence
+
+```yaml
+docs_validate:
+  command: "$nodeDir injected into PATH; npm run docs:validate"
+  result: "PASS"
+  notes: "Existing legacy warnings remain; no validation errors."
+diff_check_initial:
+  command: "$nodeDir injected into PATH; npm run diff:check"
+  result: "FAIL"
+  reason: "scripts/docs/validate-docs.mjs changed without accompanying docs/masterplan change."
+  response: "This IMP was updated as the accompanying docs evidence for the validator hotfix."
+diff_check_final:
+  command: "$nodeDir injected into PATH; npm run diff:check"
+  result: "PASS"
+  notes: "Detected one docs file and one code file, then reran docs:validate successfully."
+baseline_check:
+  command: "$nodeDir injected into PATH; npm run baseline:check"
+  result: "PASS"
+  checks:
+    - "docs:validate PASS with existing warnings"
+    - "lint PASS via tsc --noEmit"
+    - "build PASS via tsc && vite build"
+```
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-06-17 | JANUS / ATHER | Recorded portable Node runtime restoration, validator RCA, and verification evidence. |
 | 0.1.1+draft | 2026-06-17 | LYRA / JANUS / ATHER | Added qwen-cli parallel assignment feedback from JANUS, KIN, and ATHER. |
 | 0.1.0+draft | 2026-06-17 | LYRA / JANUS / ATHER | Created implementation plan for restoring local toolchain verification gate. |

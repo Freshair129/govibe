@@ -545,7 +545,9 @@ function checkRoadmapPromotion(markdownFiles) {
 }
 
 function main() {
+  const rootMarkdownFiles = ["AGENT.md"].filter((file) => existsSync(repoResolve(file)));
   const markdownFiles = [
+    ...rootMarkdownFiles,
     ...walk("docs").filter((file) => file.endsWith(".md")),
     ...walk(".agents").filter((file) => file.endsWith(".md")),
     ...walk("standards").filter((file) => file.endsWith(".md")),
