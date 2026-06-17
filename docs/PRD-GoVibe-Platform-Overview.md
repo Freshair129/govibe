@@ -1,8 +1,8 @@
 ---
 doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
 status: "draft"
-version: "0.4.0+draft"
-updated: "2026-06-16"
+version: "0.4.1+draft"
+updated: "2026-06-17"
 owner: "Rwang (Senior Dev)"
 source_of_truth: true
 block_manifest:
@@ -54,6 +54,10 @@ GoVibe is a coordination layer, not a replacement for external coding agents.
 
 ### 2.3 Collaboration Terminology
 `CoDev` and `CoVibe` are narrow GoVibe collaboration terms that sit on top of the current platform system map.
+Detailed module behavior is captured in:
+
+- `docs/features/agent-team/FEAT-CoDev-Module.md`
+- `docs/features/agent-team/FEAT-CoVibe-Module.md`
 
 - `CoDev` means the inter-owner or inter-team coordination mode where multiple human-owned delivery parties and their agent teams collaborate through GoVibe.
 - `CoVibe` means the intra-owner orchestration mode where one primary owner or lead agent coordinates bounded support agents or bounded external executors.
@@ -139,7 +143,7 @@ This map defines product-level modules only. Detailed implementation ownership, 
 | `SYSTEM-02::Project-Roadmap-Management-System` | Source-governed planning and board promotion for phases, sprints, tasks, and implementation packets. | `Master Plan Source`, `Roadmap Source`, `Backlog Source`, `Sprint/Task Container`, `Roadmap Promotion Gate`, `Roadmap Snapshot`, `Progress Calculation`, `Bi-Temporal Roadmap History` | PRD changes, approved master plans, backlog docs, task containers, change requests | board-eligible roadmap snapshot, task state, progress metrics, promotion evidence | LYRA, A2, ATHER, GHOST |
 | `SYSTEM-03::Docs-to-Code-System` | Convert approved human SWE documents into bounded implementation context and symbol-linked tasks. | `Human SWE Document Ingestion`, `Spec-to-Task Extraction`, `Symbol Link Extraction`, `Task Packet Generation`, `Context Packet Assembly`, `Doc/Code Drift Detection` | PRD, FEAT, SRS, SDD, API, LLD, runbooks, protected source docs | task packets, context containers, symbol links, drift findings | THESEUS, system parent agents, module workers |
 | `SYSTEM-04::Diagram-to-Doc-System` | Convert diagrams and visual architecture references into reviewable system documentation. | `Architecture Diagram Intake`, `Flow/Sequence Intake`, `ERD/Site Map Intake`, `Diagram Normalization`, `Generated Doc Draft`, `Human Review Gate` | screenshots, Figma/HTML prototypes, ERDs, sequence diagrams, site maps | candidate docs, diagram-derived context, architecture review prompts | architect, doc writer, system parent agents |
-| `SYSTEM-05::Agent-Team-Management-System` | Coordinate agent identity, role metadata, team handoff, and CoDev/CoVibe collaboration modes. | `Role Registry`, `System Parent Agent Routing`, `Module Worker Dispatch`, `Visual Agent Fleet Metadata`, `Handoff State`, `CoDev Mode`, `CoVibe Mode`, `Bounded Support Executor Contract` | agent registry, role contracts, task packets, context containers, handoff events | assignments, handoff state, executor constraints, role visibility | LYRA, ARCHON, THESEUS, ATHER, GHOST, VIBE, KIN |
+| `SYSTEM-05::Agent-Team-Management-System` | Coordinate agent identity, role metadata, team handoff, and CoDev/CoVibe collaboration modes. | `Role Registry`, `System Parent Agent Routing`, `Module Worker Dispatch`, `Visual Agent Fleet Metadata`, `Handoff State`, `CoDev Mode`, `CoVibe Mode`, `CoDev Module`, `CoVibe Module`, `Bounded Support Executor Contract` | agent registry, role contracts, task packets, context containers, handoff events | assignments, handoff state, executor constraints, role visibility | LYRA, ARCHON, THESEUS, ATHER, GHOST, VIBE, KIN |
 | `SYSTEM-06::Integration-Bridge-System` | Bridge GoVibe with MCP, CLI, local sidecars, external agent CLIs, webhooks, and future service gateways. | `MCP Server`, `GoVibe CLI`, `Webhook/File Bridge`, `External Agent Connector`, `Gemini CLI Bounded Executor`, `Ollama/Local Sidecar`, `Mission Event Gateway` | governed tool calls, CLI commands, context packets, external executor output | mission events, tool results, execution logs, external feedback packets | external tools, lead agent, system parent agents |
 | `SYSTEM-07::Governance-Access-Control-System` | Enforce human and agent access rules before governed reads, writes, assignments, and tool calls. | `Human RBAC`, `Agent ABAC`, `Policy Decision Point`, `Policy Enforcement Point`, `Tenant/Vault Boundary`, `Approval Owner Rules`, `Permission Evidence` | subject, resource, action, context, tenant/vault metadata, approval rules | permit/deny decisions, obligations, approval routing, audit evidence | human owner, auditor, integration bridge |
 | `SYSTEM-08::Genesis-Knowledge-HCS-System` | Knowledge substrate for atoms, symbol graph, retrieval, compaction, and MemoryOS/GenesisBlock context delivery. | `GenesisBlockDB`, `Knowledge Atom Registry`, `Hector/H-Tier Compaction`, `HNSW/Vector Retrieval`, `Hybrid JIT Context Renderer`, `Symbol Graph`, `Knowledge Taxonomy`, `MemoryOS V3 Adapter` | approved docs, atoms, code symbols, embeddings, graph edges, context requests | retrieved context, atom graph, symbol communities, compressed context packets | docs-to-code, agents, Mission Control knowledge views |
@@ -240,5 +244,6 @@ The PRD module map is intentionally high level. A module becomes implementation-
 |---|---|---|
 | 0.4.0 | 2026-06-16 | Expanded the Platform System Map with system responsibilities, inputs, outputs, detail-doc registry, dependencies, and change-routing rules. |
 | 0.3.0 | 2026-06-16 | Expanded the Platform System Map with product-level modules, system-based execution routing, and role-based review ownership. |
+| 0.2.1 | 2026-06-17 | Added module-level CoDev and CoVibe references under the existing Agent-Team Management system without changing the top-level system map. |
 | 0.2.0 | 2026-06-16 | Added the narrow CoDev and CoVibe terminology subsection under product positioning without changing the current system map. |
 | 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the PRD with the document versioning governance standard. |

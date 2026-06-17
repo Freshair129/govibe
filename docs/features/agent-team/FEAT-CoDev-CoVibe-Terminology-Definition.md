@@ -2,8 +2,8 @@
 title: "FEAT: CoDev and CoVibe Terminology Definition"
 doc_id: "FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION"
 status: "draft"
-version: "0.1.0"
-updated: "2026-06-15"
+version: "0.1.1+draft"
+updated: "2026-06-17"
 owner: "THESEUS"
 auditor: "ATHER"
 source_of_truth: true
@@ -16,6 +16,8 @@ related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/architecture/C4-GoVibe-Platform.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
+  - "docs/features/agent-team/FEAT-CoDev-Module.md"
+  - "docs/features/agent-team/FEAT-CoVibe-Module.md"
   - "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md"
   - "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md"
   - "docs/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md"
@@ -28,6 +30,7 @@ related_docs:
 Define `CoDev` and `CoVibe` as narrow GoVibe collaboration terms so future planning, feature placement, and product language stay consistent without forcing premature PRD or C4 restructuring.
 
 This document is a terminology-definition note only. It does not introduce a new top-level PRD system, new runtime container, or new protocol posture.
+The detailed module-level behavior lives in `FEAT: CoDev Module` and `FEAT: CoVibe Module`.
 
 ## 2. Why This Exists
 
@@ -206,3 +209,10 @@ Reviewers should confirm:
 - whether the `CoVibe` definition is clear without implying a separate platform
 - whether the placement guidance is sufficient for the next PRD/C4 refinement step
 - whether ADR is still unnecessary as long as this remains a terminology-only layer
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.1+draft | 2026-06-17 | THESEUS | Added module-level feature references for CoDev and CoVibe. |
+| 0.1.0 | 2026-06-15 | THESEUS | Defined the CoDev and CoVibe terminology note. |

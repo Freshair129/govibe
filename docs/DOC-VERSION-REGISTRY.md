@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.12+draft"
+version: "0.1.13+draft"
 updated: "2026-06-17"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,13 +29,13 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.12+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.13+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
-| PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.4.0+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
+| PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.4.1+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
 | PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.1.0+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
 
 ## 4. Roadmap and Planning
@@ -54,6 +54,9 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Feature | `FEAT-DOCUMENT-VERSION-GOVERNANCE` | `0.1.0+draft` | draft | ATHER / THESEUS | `docs/features/traceability-audit/FEAT-Document-Version-Governance.md` |
 | Feature | `FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.0+draft` | draft | ATHER / KIN | `docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md` |
 | Feature | `FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION` | `0.1.0+draft` | draft | LYRA / ATHER | `docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md` |
+| Feature | `FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION` | `0.1.1+draft` | draft | THESEUS | `docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md` |
+| Feature | `FEAT-CODEV-MODULE` | `0.1.0+draft` | draft | THESEUS | `docs/features/agent-team/FEAT-CoDev-Module.md` |
+| Feature | `FEAT-COVIBE-MODULE` | `0.1.0+draft` | draft | THESEUS | `docs/features/agent-team/FEAT-CoVibe-Module.md` |
 | Feature | `FEAT-QWEN-CLI-MODEL-ROUTING` | `0.1.2+draft` | draft | KIN / LYRA / ATHER | `docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md` |
 | Audit | `AUDIT-COGNITIVE-SYSTEM-INBOUND-TRIAGE-2026-06-16` | `0.1.1+draft` | draft | ATHER / LYRA | `docs/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md` |
 | Feature | `FEAT-ROADMAP-PROMOTION-CONTRACT` | `0.1.0+draft` | draft | LYRA | `docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md` |
@@ -85,6 +88,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.13+draft | 2026-06-17 | ATHER / THESEUS | Registered separate CoDev and CoVibe module docs and linked them into the PRD and terminology note. |
 | 0.1.12+draft | 2026-06-17 | ATHER / THESEUS | Registered shared external-agent context, git hygiene context, and qwen-compatible AGENT bridge. |
 | 0.1.11+draft | 2026-06-17 | ATHER / THESEUS | Synced qwen-cli model routing after README inspection and local smoke verification. |
 | 0.1.10+draft | 2026-06-17 | ATHER / THESEUS | Registered qwen-cli model routing policy and updated bounded external executor context version. |
