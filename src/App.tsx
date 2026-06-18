@@ -316,6 +316,9 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
     { title: "Success Criteria", items: ["Code completion unavailable", "Lint proof unavailable"] },
     { title: "Exit Criteria", items: ["Tests unavailable", "Regression status unavailable"] },
   ];
+  const taskStateTone = node.state === "done" ? "is-complete" : "is-active";
+  const renderDetailCardClass = (value: string) => value === "unavailable" ? "task-detail-card unavailable" : "task-detail-card";
+
   return (
     <article className={expanded ? "roadmap-task-row expanded" : "roadmap-task-row"}>
       <div className="roadmap-task-main">
@@ -325,7 +328,7 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
             <strong>{node.title}</strong>
           </div>
           <div className="task-badges">
-            <em>{formatRoadmapState(node.state)}</em>
+            <em className={taskStateTone}>{formatRoadmapState(node.state)}</em>
             {badges.map((badge) => <em key={`${node.id}-${badge}`}>{badge}</em>)}
           </div>
         </div>
@@ -365,18 +368,24 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
       {expanded ? (
         <div className="task-detail-panel">
           <section className="task-detail-section">
-            <strong>SYMBOL LINKS</strong>
+            <div className="task-detail-section-head">
+              <strong>SYMBOL LINKS</strong>
+              <span>Only approved source references render here. Missing task-container links stay unavailable.</span>
+            </div>
             <div className="task-detail-grid compact">
-              <article><span>Code link</span><code>unavailable</code></article>
-              <article><span>Doc link</span><code>{sourceMeta?.sourcePath ?? "unavailable"}</code></article>
-              <article><span>Test link</span><code>unavailable</code></article>
+              <article className="task-detail-card unavailable"><span>Code link</span><code>unavailable</code></article>
+              <article className={renderDetailCardClass(sourceMeta?.sourcePath ?? "unavailable")}><span>Doc link</span><code>{sourceMeta?.sourcePath ?? "unavailable"}</code></article>
+              <article className="task-detail-card unavailable"><span>Test link</span><code>unavailable</code></article>
             </div>
           </section>
           <section className="task-detail-section">
-            <strong>Metadata</strong>
+            <div className="task-detail-section-head">
+              <strong>Metadata</strong>
+              <span>Snapshot-backed fields appear directly. Template-only telemetry remains unavailable.</span>
+            </div>
             <div className="task-detail-grid">
               {metadataItems.map((item) => (
-                <article key={`${node.id}-${item.label}`}>
+                <article className={renderDetailCardClass(item.value)} key={`${node.id}-${item.label}`}>
                   <span>{item.label}</span>
                   <strong>{item.value}</strong>
                 </article>
@@ -384,10 +393,13 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
             </div>
           </section>
           <section className="task-detail-section">
-            <strong>Responsibility</strong>
+            <div className="task-detail-section-head">
+              <strong>Responsibility</strong>
+              <span>Assignment stays separate from approval and audit placeholders until runtime publishes them.</span>
+            </div>
             <div className="task-detail-grid">
               {responsibilityItems.map((item) => (
-                <article key={`${node.id}-${item.label}`}>
+                <article className={renderDetailCardClass(item.value)} key={`${node.id}-${item.label}`}>
                   <span>{item.label}</span>
                   <strong>{item.value}</strong>
                 </article>
@@ -395,7 +407,10 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
             </div>
           </section>
           <section className="task-detail-section">
-            <strong>DEFINITION OF DONE (DOD)</strong>
+            <div className="task-detail-section-head">
+              <strong>DEFINITION OF DONE (DOD)</strong>
+              <span>Checklist structure matches the template while unresolved task-container proof stays explicit.</span>
+            </div>
             <div className="task-dod-columns">
               {dodColumns.map((column) => (
                 <div key={`${node.id}-${column.title}`}>
@@ -408,7 +423,10 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
             </div>
           </section>
           <section className="task-detail-section">
-            <strong>CHANGELOG</strong>
+            <div className="task-detail-section-head">
+              <strong>CHANGELOG</strong>
+              <span>Derived from the approved roadmap node and current mission snapshot timestamp.</span>
+            </div>
             <div className="task-changelog">
               <code>{node.version ? `[${node.version}]` : "[unavailable]"} Detail snapshot generated from approved roadmap node.</code>
               <small>Task ID: {node.id}</small>
@@ -421,6 +439,7 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
               <small>Task ID: {node.id}</small>
             </div>
             <div className="task-export-actions">
+              <span>EXPORT TASK</span>
               <button type="button" disabled>JSON</button>
               <button type="button" disabled>YAML</button>
               <button type="button" disabled>Markdown</button>
@@ -559,7 +578,9 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
               <article><span>Speed</span><strong>{activeAgent.speed}</strong></article>
             </div>
             <div className="ability-tags large">
-              {activeAgent.abilities.map((ability) => <span key={ability}>{ability}</span>)}
+              {activeAgent.abilities.length > 0
+                ? activeAgent.abilities.map((ability) => <span key={ability}>{ability}</span>)
+                : <span>Responsibility metadata unavailable</span>}
             </div>
             <div className="carousel-section">
               <div className="carousel-title">
@@ -636,29 +657,35 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
 
 function AgentFleetMetadataPanel({ agent }: { agent: AgentRecord }) {
   const fleet = agent.fleet;
-  if (!fleet) return null;
-
-  const scopeStatus = fleet.scopeStatus?.replace(/_/g, " ") ?? "metadata only";
-  const authorityCan = fleet.authority?.can ?? [];
-  const authorityCannot = fleet.authority?.cannot ?? [];
+  const scopeStatus = fleet?.scopeStatus?.replace(/_/g, " ") ?? "metadata only";
+  const authorityCan = fleet?.authority?.can ?? [];
+  const authorityCannot = fleet?.authority?.cannot ?? [];
+  const responsibilities = fleet?.responsibility ?? [];
+  const outOfScope = fleet?.outOfScope ?? [];
+  const sourceRefs = fleet?.sourceRefs ?? [];
 
   return (
     <section className="agent-fleet-panel" aria-label="Visual Agent Fleet role metadata">
       <header>
-        <span>Role / provenance metadata</span>
+        <span>Role / provenance metadata only</span>
         <strong>{scopeStatus}</strong>
       </header>
-      <div className="fleet-meta-grid">
-        <article><span>Fleet Role</span><strong>{fleet.fleetRole ?? agent.role}</strong></article>
-        <article><span>Job Title</span><strong>{fleet.jobTitleEquivalent ?? "Unspecified"}</strong></article>
-        <article><span>Domain</span><strong>{fleet.domain ?? "Unspecified"}</strong></article>
-        <article><span>Cluster</span><strong>{fleet.cluster ?? "Unspecified"}</strong></article>
-      </div>
-      {fleet.responsibility?.length ? (
-        <div className="fleet-chip-row">
-          {fleet.responsibility.map((item) => <span key={item}>{item}</span>)}
-        </div>
+      {!fleet ? (
+        <p className="fleet-unavailable">
+          Visual Agent Fleet metadata is unavailable for this live agent record. This panel does not imply assignment, execution, or approval state.
+        </p>
       ) : null}
+      <div className="fleet-meta-grid">
+        <article><span>Fleet Role</span><strong>{fleet?.fleetRole ?? agent.role ?? "unavailable"}</strong></article>
+        <article><span>Job Title</span><strong>{fleet?.jobTitleEquivalent ?? "unavailable"}</strong></article>
+        <article><span>Domain</span><strong>{fleet?.domain ?? "unavailable"}</strong></article>
+        <article><span>Cluster</span><strong>{fleet?.cluster ?? "unavailable"}</strong></article>
+      </div>
+      {responsibilities.length ? (
+        <div className="fleet-chip-row">
+          {responsibilities.map((item) => <span key={item}>{item}</span>)}
+        </div>
+      ) : <p className="fleet-unavailable">Responsibility badges unavailable.</p>}
       <div className="fleet-authority-grid">
         <div>
           <strong>Can</strong>
@@ -669,9 +696,19 @@ function AgentFleetMetadataPanel({ agent }: { agent: AgentRecord }) {
           {authorityCannot.length ? authorityCannot.map((item) => <span key={item}>{item}</span>) : <span>Not specified</span>}
         </div>
       </div>
+      <div className="fleet-scope-grid">
+        <article>
+          <span>Scope Boundary</span>
+          <strong>{fleet?.scopeBoundary ?? "unavailable"}</strong>
+        </article>
+        <article>
+          <span>Out of Scope</span>
+          {outOfScope.length ? outOfScope.map((item) => <strong key={item}>{item}</strong>) : <strong>unavailable</strong>}
+        </article>
+      </div>
       <footer>
-        <span>{fleet.approvalGate ?? "Approval gate not specified"}</span>
-        <small>{fleet.sourceRefs?.slice(0, 2).join(" | ") ?? "No source refs"}</small>
+        <span>{fleet?.approvalGate ?? "Approval gate not specified"}</span>
+        <small>{sourceRefs.length ? sourceRefs.slice(0, 2).join(" | ") : "No source refs"}</small>
       </footer>
     </section>
   );

@@ -1023,14 +1023,16 @@ footer {
 }
 
 .fleet-meta-grid,
-.fleet-authority-grid {
+.fleet-authority-grid,
+.fleet-scope-grid {
   display: grid;
   gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .fleet-meta-grid article,
-.fleet-authority-grid > div {
+.fleet-authority-grid > div,
+.fleet-scope-grid article {
   background: rgba(255, 255, 255, 0.04);
   border-radius: 8px;
   display: grid;
@@ -1039,8 +1041,24 @@ footer {
 }
 
 .fleet-meta-grid strong,
-.fleet-authority-grid strong {
+.fleet-authority-grid strong,
+.fleet-scope-grid strong {
   font-size: 0.9rem;
+}
+
+.fleet-scope-grid span,
+.fleet-unavailable {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.fleet-scope-grid strong {
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.fleet-unavailable {
+  margin: 0;
 }
 
 .fleet-chip-row {
@@ -1216,6 +1234,8 @@ footer {
   background: rgba(255, 255, 255, 0.03);
   color: var(--text);
   font-size: 11px;
+  min-width: 0;
+  overflow-wrap: anywhere;
   padding: 6px 10px;
 }
 
@@ -2203,6 +2223,18 @@ footer {
   background: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
+.task-badges em.is-complete {
+  color: #34d399;
+  border-color: rgba(52, 211, 153, 0.28);
+  background: rgba(52, 211, 153, 0.12);
+}
+
+.task-badges em.is-active {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.28);
+  background: rgba(245, 158, 11, 0.12);
+}
+
 .task-availability-row {
   display: flex;
   flex-wrap: wrap;
@@ -2328,13 +2360,28 @@ footer {
   gap: 10px;
 }
 
+.task-detail-section-head {
+  display: grid;
+  gap: 4px;
+}
+
 .task-detail-section > strong,
+.task-detail-section-head > strong,
 .task-detail-section > span,
+.task-detail-section-head > span,
 .task-dod-columns span {
   color: var(--accent);
   font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
+}
+
+.task-detail-section-head > span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.45;
+  text-transform: none;
 }
 
 .task-detail-grid {
@@ -2354,6 +2401,11 @@ footer {
   padding: 10px;
 }
 
+.task-detail-card.unavailable {
+  background: rgba(255,255,255,0.015);
+  border-style: dashed;
+}
+
 .task-detail-grid article span,
 .task-detail-footer small,
 .task-changelog small {
@@ -2367,6 +2419,11 @@ footer {
   font-family: "JetBrains Mono", monospace;
   font-size: 11px;
   overflow-wrap: anywhere;
+}
+
+.task-detail-card.unavailable strong,
+.task-detail-card.unavailable code {
+  color: var(--muted);
 }
 
 .task-dod-columns {
@@ -2404,6 +2461,14 @@ footer {
 
 .task-export-actions {
   grid-auto-flow: column;
+}
+
+.task-export-actions span {
+  align-self: center;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
 }
 
 .task-export-actions button:disabled {
@@ -2592,6 +2657,7 @@ footer {
   }
 
   .task-export-actions {
+    gap: 8px;
     grid-auto-flow: row;
   }
 }
@@ -2646,7 +2712,23 @@ footer {
 
   .roadmap-source-meta,
   .roadmap-action-group {
+    align-items: stretch;
+    gap: 8px;
     width: 100%;
+  }
+
+  .roadmap-source-meta .status-pill,
+  .roadmap-source-meta code,
+  .roadmap-action-group > button,
+  .export-menu,
+  .export-menu > button {
+    width: 100%;
+  }
+
+  .export-menu > div {
+    left: 0;
+    right: auto;
+    width: min(100%, 220px);
   }
 
   .roadmap-source-meta code,
@@ -2667,8 +2749,19 @@ footer {
   }
 
   .sprint-shell-header,
-  .roadmap-task-head {
+  .roadmap-task-head,
+  .phase-header {
     align-items: stretch;
+  }
+
+  .phase-header {
+    display: grid;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+
+  .phase-header strong {
+    order: 2;
   }
 
   .sprint-shell-meta,
@@ -2677,9 +2770,18 @@ footer {
     justify-content: flex-start;
   }
 
+  .task-source-meta {
+    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
   .task-detail-grid,
   .task-detail-grid.compact,
-  .task-dod-columns {
+  .task-dod-columns,
+  .fleet-meta-grid,
+  .fleet-authority-grid,
+  .fleet-scope-grid {
     grid-template-columns: 1fr;
   }
 
