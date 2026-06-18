@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.13+draft"
-updated: "2026-06-17"
+version: "0.1.19+draft"
+updated: "2026-06-18"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.13+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.19+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -42,7 +42,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
-| Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.1.0+draft` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
+| Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.1` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
 | Backlog | `BACKLOG-P1-MVP-CORE` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-p1-mvp-core.md` |
 | Backlog | `IMP-GVMP01P05EP01` | `tracked-outside-registry` | pending-classification | LYRA | `.agents/.devlog/implement/IMP-GVMP01P05EP01.md` |
@@ -88,6 +88,12 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.17+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.3.1 after A5 verification. |
+| 0.1.19+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.4.1 after A3/D3 browser verification. |
+| 0.1.18+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.4.0 after A3/D3 real-state migration updates. |
+| 0.1.16+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.3.0 for A5 registered-agent migration. |
+| 0.1.15+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.2.1 after A2 real-state migration verification. |
+| 0.1.14+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.2.0 for the UI real-state migration and bounded Qwen assignments. |
 | 0.1.13+draft | 2026-06-17 | ATHER / THESEUS | Registered separate CoDev and CoVibe module docs and linked them into the PRD and terminology note. |
 | 0.1.12+draft | 2026-06-17 | ATHER / THESEUS | Registered shared external-agent context, git hygiene context, and qwen-compatible AGENT bridge. |
 | 0.1.11+draft | 2026-06-17 | ATHER / THESEUS | Synced qwen-cli model routing after README inspection and local smoke verification. |

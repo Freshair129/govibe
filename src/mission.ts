@@ -20,7 +20,7 @@ export type AgentRecord = {
   name: string;
   role: string;
   model: string;
-  status: "online" | "idle" | "offline" | "error";
+  status: "registered" | "online" | "idle" | "offline" | "error";
   tasks: string;
   accuracy: string;
   speed: string;
@@ -56,6 +56,14 @@ export type MetricCard = {
   label: string;
   value: string;
   icon?: string;
+};
+
+export type CapabilityRecord = {
+  id: string;
+  title: string;
+  description: string;
+  status: "registered";
+  sourcePath: string;
 };
 
 export type ChartSeries = {
@@ -164,6 +172,7 @@ export type MissionSnapshot = {
   };
   reactor: Array<{ label: string; value: string; tone?: "good" | "warn" | "bad" }>;
   agents: AgentRecord[];
+  capabilities: CapabilityRecord[];
   terminal: TerminalLine[];
   graph: {
     nodes: Array<{ id: string; label: string }>;
@@ -277,6 +286,7 @@ const emptySnapshot: MissionSnapshot = {
   chart: { labels: [], series: [] },
   reactor: [],
   agents: [],
+  capabilities: [],
   terminal: [],
   graph: { nodes: [], edges: [] },
   specs: [],
@@ -292,6 +302,7 @@ function mergeSnapshot(current: MissionSnapshot, patch: Partial<MissionSnapshot>
     chart: patch.chart ?? current.chart,
     reactor: patch.reactor ?? current.reactor,
     agents: patch.agents ?? current.agents,
+    capabilities: patch.capabilities ?? current.capabilities,
     terminal: patch.terminal ?? current.terminal,
     graph: patch.graph ?? current.graph,
     specs: patch.specs ?? current.specs,

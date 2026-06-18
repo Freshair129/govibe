@@ -18,135 +18,6 @@ const moduleLookup = Object.fromEntries(
   domainOrder.flatMap((domain) => domain.subModules.map((subModule) => [subModule.id, subModule])),
 ) as Record<ViewId, (typeof domainOrder)[number]["subModules"][number]>;
 
-type TemplateAgent = {
-  name: string;
-  role: string;
-  model: string;
-  status: "Online" | "Ready" | "Idle" | "Offline";
-  tasks: string;
-  accuracy: string;
-  speed: string;
-  accent: string;
-  package: string;
-  sessionLimit: number;
-  weeklyLimit: number;
-  abilities: string[];
-  videos?: string[];
-  portrait?: string;
-};
-
-const templateAgents: TemplateAgent[] = [
-  {
-    name: "EVA",
-    role: "Senior Developer",
-    model: "Gemini 3.1 Pro",
-    status: "Online",
-    tasks: "12.4k",
-    accuracy: "99.8%",
-    speed: "1.2s",
-    accent: "#ff6363",
-    package: "Google AI Pro",
-    sessionLimit: 85,
-    weeklyLimit: 62,
-    abilities: ["Web Search", "Vision", "Code", "Reasoning", "Persistent memory", "Multi-Agent", "Multi-Modal"],
-    videos: ["/agents/eva/eva-vdo-01.mp4", "/agents/eva/eva-vdo-02.mp4", "/agents/eva/eva-vdo-03.mp4"],
-    portrait: "/agents/eva/eva-pic-01.jpeg",
-  },
-  {
-    name: "QWEN",
-    role: "Research Analyst",
-    model: "Qwen 3 235B-A22B",
-    status: "Online",
-    tasks: "8.7k",
-    accuracy: "98.2%",
-    speed: "0.8s",
-    accent: "#6366f1",
-    package: "Research Tier",
-    sessionLimit: 42,
-    weeklyLimit: 38,
-    abilities: ["Deep Search", "Reasoning", "Multilingual", "Analytics"],
-  },
-  {
-    name: "ATLAS",
-    role: "Infrastructure Lead",
-    model: "Claude 4 Opus",
-    status: "Online",
-    tasks: "15.1k",
-    accuracy: "99.5%",
-    speed: "2.1s",
-    accent: "#22d3ee",
-    package: "Developer Plus",
-    sessionLimit: 90,
-    weeklyLimit: 75,
-    abilities: ["Cloud Ops", "Database", "Security", "CI/CD"],
-  },
-  {
-    name: "NOVA",
-    role: "UI/UX Designer",
-    model: "GPT-4o Vision",
-    status: "Idle",
-    tasks: "6.3k",
-    accuracy: "97.1%",
-    speed: "1.8s",
-    accent: "#f472b6",
-    package: "Creative Plan",
-    sessionLimit: 55,
-    weeklyLimit: 48,
-    abilities: ["Design", "Figma", "Responsive", "Theming"],
-  },
-  {
-    name: "SENTINEL",
-    role: "Security Auditor",
-    model: "Llama 4 Maverick",
-    status: "Online",
-    tasks: "22.9k",
-    accuracy: "99.9%",
-    speed: "0.4s",
-    accent: "#f59e0b",
-    package: "Ollama Local",
-    sessionLimit: 85,
-    weeklyLimit: 72,
-    abilities: ["Encryption", "Vuln Scan", "Auth", "Firewall"],
-  },
-  {
-    name: "OMEGA",
-    role: "Data Scientist",
-    model: "DeepSeek R2",
-    status: "Idle",
-    tasks: "9.8k",
-    accuracy: "98.7%",
-    speed: "3.5s",
-    accent: "#10b981",
-    package: "LM Studio",
-    sessionLimit: 89,
-    weeklyLimit: 64,
-    abilities: ["ML Pipeline", "Data Wrangling", "Visualization", "GPU Compute"],
-  },
-  {
-    name: "PHANTOM",
-    role: "Stealth Operator",
-    model: "Mistral Large 3",
-    status: "Offline",
-    tasks: "4.2k",
-    accuracy: "96.3%",
-    speed: "0.9s",
-    accent: "#a78bfa",
-    package: "Ollama",
-    sessionLimit: 35,
-    weeklyLimit: 28,
-    abilities: ["Shell", "Network", "OSINT", "Crypto"],
-  },
-];
-
-const roadmapRows = [
-  { scope: "Phase 0", title: "Feasibility Spike — พิสูจน์ความเสถียร", state: "Blueprint", assignee: "Unassigned" },
-  { scope: "Sprint 0", title: "Prototype YouTube IFrame Player UI 2 clients พร้อมกัน", state: "Blueprint", assignee: "Unassigned" },
-  { scope: "FR", title: "WebSocket room ขั้นต่ำ: สร้างห้อง / join / broadcast event", state: "Blueprint", assignee: "Unassigned" },
-  { scope: "FR", title: "Play / Pause / Seek sync เบื้องต้น", state: "Blueprint", assignee: "Unassigned" },
-  { scope: "NFR", title: "วัด drift จริงระหว่าง 2 เครื่อง", state: "Blueprint", assignee: "Unassigned" },
-  { scope: "NFR", title: "ทดสอบบน iOS Safari + Android Chrome", state: "Blueprint", assignee: "Unassigned" },
-];
-
 const actionableRoadmapTypes = new Set(["task", "sub-task", "micro-task", "atomic-task"]);
 
 function formatRoadmapState(state: string) {
@@ -181,11 +52,11 @@ function getRoadmapSourceMeta(snapshot: RoadmapSnapshot, node: WorkflowTaskNode)
 function getRoadmapStats(snapshot?: RoadmapSnapshot) {
   if (!snapshot) {
     return {
-      total: 36,
-      done: 19,
-      active: 17,
-      progress: 53,
-      label: "Blueprint",
+      total: 0,
+      done: 0,
+      active: 0,
+      progress: 0,
+      label: "No approved source",
     };
   }
 
@@ -227,13 +98,6 @@ function getPrimaryRoadmapPhase(snapshot?: RoadmapSnapshot) {
     tasks: snapshot.nodes.filter((node) => node.id !== rootRoadmap.id),
   };
 }
-
-const capabilityBlueprints = [
-  { title: "Transport Plugin", body: "WebSocket, HTTP command endpoint, browser event, and postMessage adapters.", status: "Ready for wiring" },
-  { title: "Export Plugin", body: "Roadmap JSON, YAML, and Markdown export actions from the template surface.", status: "UI blueprint" },
-  { title: "Knowledge Plugin", body: "Genesis file add, vector indexing, and auto-sync controls from agent configuration.", status: "Pending event shape" },
-  { title: "Benchmark Plugin", body: "Safety campaign run, heatmap, and campaign log transport hooks.", status: "Command wired" },
-];
 
 const brainConfigSections = [
   { title: "Model Source", detail: "Cloud API / Local Server pill selector with backend-safe empty credentials." },
@@ -416,58 +280,6 @@ function EmptyState({ title, body }: { title: string; body: string }) {
   );
 }
 
-function TemplateAgentCard({ agent, compact = false }: { agent: typeof templateAgents[number]; compact?: boolean }) {
-  return (
-    <article className={compact ? "template-agent-card compact" : "template-agent-card"} style={{ "--agent-accent": agent.accent } as CSSProperties}>
-      <div className="template-agent-head">
-        <div className="template-agent-avatar">{agent.name.slice(0, 2).toUpperCase()}</div>
-        <div>
-          <strong>{agent.name}</strong>
-          <span>{agent.role}</span>
-          <small>{agent.model}</small>
-        </div>
-        <em>{agent.status}</em>
-      </div>
-      <div className="template-agent-stats">
-        <div><span>Tasks</span><strong>{agent.tasks}</strong></div>
-        <div><span>Accuracy</span><strong>{agent.accuracy}</strong></div>
-      </div>
-      <div className="quota-line">
-        <span>Session Quota</span>
-        <i style={{ width: `${agent.sessionLimit}%` }} />
-      </div>
-      <div className="ability-tags">
-        {agent.abilities.slice(0, 3).map((ability) => <span key={ability}>{ability}</span>)}
-      </div>
-      <button type="button">Configure</button>
-    </article>
-  );
-}
-
-function TemplateTaskRow({ row }: { row: typeof roadmapRows[number] }) {
-  return (
-    <article className="template-task-row">
-      <div>
-        <span>{row.scope}</span>
-        <strong>{row.title}</strong>
-        <div className="task-badges">
-          <em>{row.state}</em>
-          <em>Docs</em>
-          <em>Code</em>
-          <em>Test</em>
-        </div>
-      </div>
-      <label>
-        Assign to
-        <select defaultValue={row.assignee}>
-          <option>{row.assignee}</option>
-          {templateAgents.map((agent) => <option key={agent.name}>{agent.name}</option>)}
-        </select>
-      </label>
-    </article>
-  );
-}
-
 function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: WorkflowTaskNode }) {
   const assignee = getRoadmapAssignee(snapshot, node);
   const badges = getRoadmapVerificationBadges(snapshot, node);
@@ -494,9 +306,29 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
         Assign to
         <select value={assignee} disabled aria-label={`Assignment for ${node.title}`}>
           <option>{assignee}</option>
-          {templateAgents.map((agent) => <option key={agent.name}>{agent.name}</option>)}
         </select>
       </label>
+    </article>
+  );
+}
+
+function RoadmapAgentCard({ agent }: { agent: AgentRecord }) {
+  return (
+    <article className="template-agent-card compact">
+      <div className="template-agent-head">
+        <div className="agent-orb" style={{ "--agent-accent": agent.accent ?? "#10b981" } as CSSProperties}>
+          {agent.avatarUrl ? <img src={agent.avatarUrl} alt="" /> : agent.name.slice(0, 2).toUpperCase()}
+        </div>
+        <div>
+          <strong>{agent.name}</strong>
+          <span>{agent.role}</span>
+        </div>
+        <em>{agent.status}</em>
+      </div>
+      <div className="template-agent-stats">
+        <div><span>Tasks</span><strong>{agent.tasks}</strong></div>
+        <div><span>Model</span><strong>{agent.model}</strong></div>
+      </div>
     </article>
   );
 }
@@ -544,14 +376,15 @@ function RealTimeDashboard({ snapshot, theme }: { snapshot: MissionSnapshot; the
 }
 
 function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: (command: MissionCommand) => void }) {
-  const [activeId, setActiveId] = useState<string | undefined>();
   const [configOpen, setConfigOpen] = useState(false);
   const [templateIndex, setTemplateIndex] = useState(0);
-  const [mediaIndex, setMediaIndex] = useState(0);
-  const active = snapshot.agents.find((agent) => agent.id === activeId) ?? snapshot.agents[0];
+  const templateAgents = snapshot.agents.map((agent) => ({
+    ...agent,
+    package: agent.fleet?.domain ?? "Registry metadata",
+    abilities: agent.fleet?.responsibility ?? [],
+  }));
   const activeBlueprint = templateAgents[templateIndex];
-  const activeMedia = activeBlueprint.videos?.[mediaIndex] ?? activeBlueprint.portrait;
-  const hasVideo = Boolean(activeMedia?.endsWith(".mp4"));
+  const activeMedia = activeBlueprint?.avatarUrl;
   const deckAgents = templateAgents.map((agent, index) => {
     const rawOffset = index - templateIndex;
     const half = templateAgents.length / 2;
@@ -581,28 +414,19 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
   };
 
   const selectTemplateAgent = (index: number) => {
-    setTemplateIndex((index + templateAgents.length) % templateAgents.length);
-    setMediaIndex(0);
+    const nextIndex = (index + templateAgents.length) % templateAgents.length;
+    setTemplateIndex(nextIndex);
     setConfigOpen(false);
-  };
-
-  const playNextTemplateVideo = () => {
-    if (!activeBlueprint.videos?.length) return;
-    setMediaIndex((index) => (index + 1) % activeBlueprint.videos!.length);
-  };
-
-  const selectAgent = (agent: AgentRecord) => {
-    setActiveId(agent.id);
-    void send({ type: "agent.select", agentId: agent.id });
+    void send({ type: "agent.select", agentId: templateAgents[nextIndex].id });
   };
 
   return (
     <div className="view-stack">
       <div className="view-title-row">
         <ViewHeader eyebrow="Covibe Overview" title="Agent Management" desc="Manage, configure and monitor the AI agent fleet." />
-        <span className="fleet-count">{snapshot.agents.length || templateAgents.length} Agents</span>
+        <span className="fleet-count">{snapshot.agents.length} Registered Agents</span>
       </div>
-      {snapshot.agents.length === 0 ? (
+      {snapshot.agents.length > 0 ? (
         <div className="agent-select-screen" style={{ "--agent-accent": activeBlueprint.accent } as CSSProperties} onPointerMove={updateCursorGlow}>
           <section className="selection-sector agent-deck-panel">
             <div className="top-bar">
@@ -649,8 +473,8 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
             </div>
             <div className="bottom-bar">
               <span><kbd>Up</kbd><kbd>Down</kbd> Navigate</span>
-              <button type="button" onClick={() => setConfigOpen((value) => !value)}>{configOpen ? "Close Config" : "Configure"}</button>
-              <button type="button">Deploy Agent</button>
+              <button type="button" onClick={() => setConfigOpen((value) => !value)}>{configOpen ? "Close Metadata" : "Role Metadata"}</button>
+              <button type="button" disabled title="Deployment requires an approved assignment event.">Deploy unavailable</button>
             </div>
           </section>
           <section className="character-sector">
@@ -658,24 +482,9 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
               <span className="corner one" />
               <span className="corner two" />
               <div className="console-lights"><i /><i /><i /></div>
-              <div className="vdo-switcher">
-                {(activeBlueprint.videos ?? []).map((video, index) => (
-                  <button
-                    key={video}
-                    type="button"
-                    className={index === mediaIndex ? "active" : ""}
-                    aria-label={`Show EVA video ${index + 1}`}
-                    onClick={() => setMediaIndex(index)}
-                  />
-                ))}
-              </div>
               <div className="char-media">
                 {activeMedia ? (
-                  hasVideo ? (
-                    <video key={activeMedia} src={activeMedia} autoPlay muted playsInline preload="metadata" onEnded={playNextTemplateVideo} />
-                  ) : (
-                    <img src={activeMedia} alt={`${activeBlueprint.name} portrait`} />
-                  )
+                  <img src={activeMedia} alt={`${activeBlueprint.name} portrait`} />
                 ) : (
                   <div className="char-media-fallback">{activeBlueprint.name}</div>
                 )}
@@ -687,92 +496,19 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
               </div>
               <div className="character-config-face">
                 <header>
-                  <span>Agent Settings</span>
+                  <span>Registry Metadata</span>
                   <button type="button" onClick={() => setConfigOpen(false)}>Close</button>
                 </header>
-                <label>
-                  System Prompt
-                  <textarea defaultValue={`You are ${activeBlueprint.name}, an expert ${activeBlueprint.role} operating in autonomous loop mode.`} />
-                </label>
-                <label>
-                  Model Source
-                  <select defaultValue={activeBlueprint.package}>
-                    <option>{activeBlueprint.package}</option>
-                    <option>Local Server</option>
-                  </select>
-                </label>
-                <div className="config-meter">
-                  <span>Session Limit</span>
-                  <i style={{ "--meter": `${activeBlueprint.sessionLimit}%` } as CSSProperties} />
-                  <strong>{activeBlueprint.sessionLimit}%</strong>
-                </div>
-                <div className="config-meter">
-                  <span>Weekly Limit</span>
-                  <i style={{ "--meter": `${activeBlueprint.weeklyLimit}%` } as CSSProperties} />
-                  <strong>{activeBlueprint.weeklyLimit}%</strong>
-                </div>
+                <AgentFleetMetadataPanel agent={snapshot.agents[templateIndex]} />
               </div>
             </div>
           </section>
         </div>
       ) : (
-        <div className="agent-layout">
-          <section className="panel agent-list">
-            {snapshot.agents.map((agent) => (
-              <button key={agent.id} className={active?.id === agent.id ? "active" : ""} onClick={() => selectAgent(agent)}>
-                <span className={`status ${agent.status}`} />
-                <strong>{agent.name}</strong>
-                <small>{agent.role}</small>
-              </button>
-            ))}
-          </section>
-          {active ? (
-            <section className={configOpen ? "panel agent-detail config-open" : "panel agent-detail"}>
-              <div className="agent-card-front">
-                <div className="agent-avatar">{active.name.slice(0, 2).toUpperCase()}</div>
-                <div>
-                  <h2>{active.name}</h2>
-                  <p>{active.role}</p>
-                  <span className={`status-pill ${active.status}`}>{active.status}</span>
-                </div>
-                <button onClick={() => setConfigOpen((value) => !value)}>{configOpen ? "Close Config" : "Configure"}</button>
-              </div>
-              {!configOpen ? (
-                <>
-                  <div className="metric-grid compact">
-                    <article><span>Model</span><strong>{active.model}</strong></article>
-                    <article><span>Tasks</span><strong>{active.tasks}</strong></article>
-                    <article><span>Accuracy</span><strong>{active.accuracy}</strong></article>
-                    <article><span>Speed</span><strong>{active.speed}</strong></article>
-                  </div>
-                  <AgentFleetMetadataPanel agent={active} />
-                </>
-              ) : (
-                <div className="agent-config-grid">
-                  <label>
-                    <span>System Prompt</span>
-                    <textarea placeholder="Connect agent config events to edit prompt." />
-                  </label>
-                  <label>
-                    <span>Model Source</span>
-                    <select defaultValue="cloud">
-                      <option value="cloud">Cloud API</option>
-                      <option value="local">Local Server</option>
-                    </select>
-                  </label>
-                  <label>
-                    <span>Context Window</span>
-                    <input type="range" min="8" max="200" defaultValue="64" />
-                  </label>
-                  <label>
-                    <span>Temperature</span>
-                    <input type="range" min="0" max="2" step="0.1" defaultValue="0.7" />
-                  </label>
-                </div>
-              )}
-            </section>
-          ) : null}
-        </div>
+        <EmptyState
+          title="No registered agents available"
+          body="The mission runtime did not return agent registry metadata. Template agents are not used as live state."
+        />
       )}
     </div>
   );
@@ -907,17 +643,15 @@ function BusinessSpecificationsView({ snapshot }: { snapshot: MissionSnapshot })
 }
 
 function CampaignLogsView({ snapshot }: { snapshot: MissionSnapshot }) {
-  const logs = snapshot.campaignLogs.length ? snapshot.campaignLogs : [
-    "[blueprint] INITIALIZING AI LEVEL 1 COMPLIANCE CHECKS...",
-    "[blueprint] AST FILE STRUCTURE CHECK => waiting for campaign feed",
-    "[blueprint] TELEMETRY UNDERCLOCK SAFETY HOOK => waiting for reactor.run",
-    "[blueprint] CAMPAIGN STATUS => pending live logs",
-  ];
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="AI Benchmark" title="EABS-01 Campaign Logs" desc="Campaign stream uses live logs when available and template blueprint rows otherwise." />
+      <ViewHeader eyebrow="AI Benchmark" title="EABS-01 Campaign Logs" desc="Campaign stream renders only logs received through the mission snapshot." />
       <section className="panel campaign-log-panel">
-        {logs.map((line) => <pre key={line}>{line}</pre>)}
+        {snapshot.campaignLogs.length > 0 ? snapshot.campaignLogs.map((line, index) => (
+          <pre key={`${index}-${line}`}>{line}</pre>
+        )) : (
+          <EmptyState title="No campaign logs connected" body="Start a governed campaign or publish campaign log events through the mission runtime." />
+        )}
       </section>
     </div>
   );
@@ -994,71 +728,17 @@ function Heatmap({ snapshot }: { snapshot: MissionSnapshot }) {
   );
 }
 
-function LegacyRoadmapBoard() {
-  const [exportOpen, setExportOpen] = useState(false);
-  const [openPhase, setOpenPhase] = useState(true);
-  return (
-    <div className="view-stack">
-      <section className="panel roadmap-header">
-        <div>
-          <ViewHeader eyebrow="Planning" title="CoVibe Development Roadmap" desc="แผนการพัฒนาและติดตามผลความคืบหน้าของฟีเจอร์" />
-        </div>
-        <div className="roadmap-progress">
-          <span>ความคืบหน้ารวมโครงการ</span>
-          <strong>Blueprint</strong>
-          <div><i style={{ width: "53%" }} /></div>
-        </div>
-        <div className="roadmap-stats">
-          <article><strong>36</strong><span>งานทั้งหมด</span></article>
-          <article><strong>19</strong><span>ทำเสร็จแล้ว</span></article>
-          <article><strong>17</strong><span>รอดำเนินการ</span></article>
-        </div>
-        <div className="roadmap-actions">
-          <div className="export-menu">
-            <button onClick={() => setExportOpen((value) => !value)}>Export</button>
-            {exportOpen ? (
-              <div>
-                <button>JSON</button>
-                <button>YAML</button>
-                <button>Markdown</button>
-              </div>
-            ) : null}
-          </div>
-          <button>Reset Board</button>
-        </div>
-      </section>
-      <div className="roadmap-layout">
-        <section className="panel assist-roster">
-          <h2>AI Assist Roster</h2>
-          <p>Drag a card to assign an agent to a task when roadmap events are connected.</p>
-          {templateAgents.map((agent) => <TemplateAgentCard key={agent.name} agent={agent} compact />)}
-        </section>
-        <section className="panel roadmap-accordion">
-          <button className="phase-header" type="button" onClick={() => setOpenPhase((value) => !value)}>
-            <span>Phase 0</span>
-            <strong>Feasibility Spike — พิสูจน์ความเสถียร</strong>
-            <em>Blueprint</em>
-          </button>
-          {openPhase ? (
-            <div className="task-list">
-              <p>ก่อนเริ่ม Sprint จริง ต้องพิสูจน์ให้ได้ว่าระบบ YouTube IFrame API ทำงานร่วมกับ WebSocket sync ในการจัดพิกัดเวลาของเพลงได้เสถียรบนมือถือ 2 เครื่อง และหาข้อจำกัดระบบ</p>
-              {roadmapRows.slice(1).map((row) => <TemplateTaskRow key={row.title} row={row} />)}
-            </div>
-          ) : null}
-        </section>
-      </div>
-    </div>
-  );
-}
-
-void LegacyRoadmapBoard;
-
 function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
-  const [exportOpen, setExportOpen] = useState(false);
   const [openPhase, setOpenPhase] = useState(true);
-  const roadmap = snapshot.roadmap;
+  const receivedRoadmap = snapshot.roadmap;
+  const roadmap = receivedRoadmap?.approvalStatus?.toLowerCase() === "approved" ? receivedRoadmap : undefined;
   const stats = getRoadmapStats(roadmap);
   const livePhase = getPrimaryRoadmapPhase(roadmap);
+  const sourceState = roadmap
+    ? `${roadmap.approvalStatus} · ${roadmap.sourceType}`
+    : receivedRoadmap
+      ? `blocked · ${receivedRoadmap.approvalStatus ?? "missing approval status"}`
+      : snapshot.connectionState;
 
   return (
     <div className="view-stack">
@@ -1077,30 +757,25 @@ function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
           <article><strong>{stats.active}</strong><span>Active</span></article>
         </div>
         <div className="roadmap-actions">
-          <div className="export-menu">
-            <button onClick={() => setExportOpen((value) => !value)}>Export</button>
-            {exportOpen ? (
-              <div>
-                <button>JSON</button>
-                <button>YAML</button>
-                <button>Markdown</button>
-              </div>
-            ) : null}
-          </div>
-          <button>Reset Board</button>
+          <span className={`status-pill ${roadmap ? "online" : "idle"}`}>{sourceState}</span>
+          {roadmap ? <code>{roadmap.sourcePath}</code> : null}
         </div>
       </section>
       <div className="roadmap-layout">
         <section className="panel assist-roster">
           <h2>AI Assist Roster</h2>
-          <p>{roadmap ? "Assignment state is connected to the live roadmap snapshot." : "Drag a card to assign an agent to a task when roadmap events are connected."}</p>
-          {templateAgents.map((agent) => <TemplateAgentCard key={agent.name} agent={agent} compact />)}
+          <p>Agents shown here come from the current mission snapshot.</p>
+          {snapshot.agents.length > 0 ? snapshot.agents.map((agent) => (
+            <RoadmapAgentCard key={agent.id} agent={agent} />
+          )) : (
+            <EmptyState title="No live agent roster" body="Connect the mission runtime or publish an agents.update event." />
+          )}
         </section>
         <section className="panel roadmap-accordion">
           <button className="phase-header" type="button" onClick={() => setOpenPhase((value) => !value)}>
-            <span>{livePhase?.phase.type === "roadmap" ? "Roadmap" : livePhase ? getRoadmapScope(livePhase.phase) : "Phase 0"}</span>
-            <strong>{livePhase?.phase.title ?? "Feasibility Spike"}</strong>
-            <em>{livePhase ? formatRoadmapState(livePhase.phase.state) : "Blueprint"}</em>
+            <span>{livePhase?.phase.type === "roadmap" ? "Roadmap" : livePhase ? getRoadmapScope(livePhase.phase) : "No source"}</span>
+            <strong>{livePhase?.phase.title ?? "No approved roadmap connected"}</strong>
+            <em>{livePhase ? formatRoadmapState(livePhase.phase.state) : sourceState}</em>
           </button>
           {openPhase ? (
             <div className="task-list">
@@ -1114,10 +789,12 @@ function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
                   )}
                 </>
               ) : (
-                <>
-                  <p>Waiting for an approved roadmap document or roadmap mission event. Blueprint rows remain visible as fallback only.</p>
-                  {roadmapRows.slice(1).map((row) => <TemplateTaskRow key={row.title} row={row} />)}
-                </>
+                <EmptyState
+                  title={receivedRoadmap ? "Roadmap source is not approved" : "No approved roadmap connected"}
+                  body={receivedRoadmap
+                    ? `${receivedRoadmap.sourcePath} reports approval status '${receivedRoadmap.approvalStatus ?? "missing"}' and cannot drive live UI state.`
+                    : "Start the GoVibe mission runtime with an approved roadmap source. Hardcoded blueprint tasks are no longer used."}
+                />
               )}
             </div>
           ) : null}
@@ -1127,21 +804,20 @@ function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
   );
 }
 
-function CapabilityPlugins() {
+function CapabilityPlugins({ snapshot }: { snapshot: MissionSnapshot }) {
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Capabilities" title="Capability Plugins" desc="Template-aligned plugin console for operational extension points." />
+      <ViewHeader eyebrow="Capabilities" title="Capability Plugins" desc="Read-only capability records declared by the current MCP registry." />
       <section className="plugin-grid">
-        {capabilityBlueprints.map((plugin) => (
-          <article className="panel plugin-card" key={plugin.title}>
-            <div><span>{plugin.status}</span><strong>{plugin.title}</strong></div>
-            <p>{plugin.body}</p>
-            <div className="plugin-actions">
-              <button type="button">Inspect</button>
-              <button type="button">Wire Event</button>
-            </div>
+        {snapshot.capabilities.length > 0 ? snapshot.capabilities.map((capability) => (
+          <article className="panel plugin-card" key={capability.id}>
+            <div><span>{capability.status}</span><strong>{capability.title}</strong></div>
+            <p>{capability.description}</p>
+            <small>{capability.sourcePath}</small>
           </article>
-        ))}
+        )) : (
+          <EmptyState title="No capability registry connected" body="The mission runtime has not published MCP capability metadata." />
+        )}
       </section>
     </div>
   );
@@ -1376,7 +1052,7 @@ function RenderView({
   if (activeView === "D3") return <CampaignLogsView snapshot={snapshot} />;
   if (activeView === "D1") return <ReactorRunTrigger send={send} />;
   if (activeView === "A2") return <RoadmapBoard snapshot={snapshot} />;
-  if (activeView === "A3") return <CapabilityPlugins />;
+  if (activeView === "A3") return <CapabilityPlugins snapshot={snapshot} />;
   if (activeView === "A4") return <BrainConfig />;
   if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;
   if (activeView === "C2") return <IntelligenceZoo />;
