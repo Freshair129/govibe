@@ -29,6 +29,78 @@ This runbook uses the current GoVibe launcher scripts as the source of truth for
 powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\measure-codex-hybrid-savings.ps1"
 ```
 
+## Short wrapper: 4 numbers per round
+
+If you do not want to enter all 8 before/after values at once, use the round recorder.
+
+Round 1:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\record-codex-hybrid-round.ps1" `
+  -SessionId "a2-test-01" `
+  -MicrotaskId "MT-A2-04" `
+  -Flow "codex-only" `
+  -DailyBefore 52 `
+  -DailyAfter 49 `
+  -WeeklyBefore 64 `
+  -WeeklyAfter 61
+```
+
+Round 2:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\record-codex-hybrid-round.ps1" `
+  -SessionId "a2-test-01" `
+  -MicrotaskId "MT-A2-04" `
+  -Flow "hybrid" `
+  -DailyBefore 52 `
+  -DailyAfter 50 `
+  -WeeklyBefore 64 `
+  -WeeklyAfter 62
+```
+
+Rules:
+
+- Use the same `SessionId` for both rounds.
+- Each run only needs 4 numbers: daily before/after and weekly before/after.
+- The wrapper stores local state in your temp folder, not in the repo.
+- Add `-Reset` on a run if you want to throw away the previous stored round for that session.
+
+## Interactive one-script flow
+
+If you want a single script that:
+
+1. asks for `before` values,
+2. runs the selected flow automatically,
+3. asks for `after` values,
+4. asks for `model`, `mode`, and `context window tokens used`,
+5. records the round and prints the comparison when both flows exist,
+
+use:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\run-codex-savings-round.ps1"
+```
+
+What it runs:
+
+- `codex-only`
+  - Codex plan via `run-lyra.ps1`
+  - Codex coding via `invoke-agent.ps1`
+
+- `hybrid`
+  - Codex plan via `run-lyra.ps1`
+  - local coding via `run-vibe-microtask-local.ps1`
+  - Codex review via `invoke-agent.ps1`
+  - Codex hotfix via `invoke-agent.ps1`
+
+Notes:
+
+- The script records one flow per run.
+- Use the same `SessionId` for the `codex-only` run and the `hybrid` run.
+- `Context window tokens used` is stored as manual evidence from the Codex UI.
+- For fast experiments, you can skip some hybrid steps with optional switches such as `-SkipReview` or `-SkipHotfix`.
+
 ## Optional manual quota comparison
 
 If you want to compare the Codex UI `Usage remaining` values directly, record:

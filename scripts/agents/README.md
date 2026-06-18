@@ -31,6 +31,9 @@ scope + task
 - `run-vibe-microtask-local.ps1` - strict Ollama microtask wrapper for VIBE A2 parity work
 - `run-qwen-agent-review.ps1` - shared-context wrapper for bounded qwen-cli / OpenRouter review
 - `measure-codex-hybrid-savings.ps1` - compare Codex-only vs hybrid prompt footprint and optional observed usage deltas
+- `record-codex-hybrid-round.ps1` - save one 4-number usage round at a time and auto-summarize once both flows are present
+- `run-codex-savings-round.ps1` - interactive one-script round runner that prompts before/after values, auto-runs the selected flow, and records model/mode/context usage
+- `run-codex-savings-round.cmd` - double-click launcher that keeps the window open after finish or error
 
 ## Generic Usage
 
@@ -227,3 +230,40 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\me
 See:
 
 - `docs/runbooks/RUNBOOK--CODEX-HYBRID-SAVINGS-TEST.md`
+
+If you want the shortest manual flow, record one round at a time with only 4 numbers:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\record-codex-hybrid-round.ps1" `
+  -SessionId "a2-test-01" `
+  -MicrotaskId "MT-A2-04" `
+  -Flow "codex-only" `
+  -DailyBefore 52 `
+  -DailyAfter 49 `
+  -WeeklyBefore 64 `
+  -WeeklyAfter 61
+```
+
+Then run again for `hybrid` with the same `SessionId`. The wrapper stores state in your local temp folder and prints the comparison as soon as both rounds exist.
+
+If you want one interactive script that asks for `before`, runs the work, then asks for `after`, use:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\run-codex-savings-round.ps1"
+```
+
+Or double-click:
+
+- `G:\govibe\scripts\agents\run-codex-savings-round.cmd`
+
+It prompts for:
+
+- flow: `codex-only` or `hybrid`
+- session id
+- before daily / weekly remaining
+- after daily / weekly remaining
+- model name
+- mode / reasoning level
+- context window tokens used
+
+Then it stores the round automatically through `record-codex-hybrid-round.ps1`.

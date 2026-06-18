@@ -262,6 +262,23 @@ function Get-LocalRetryModel {
     return [string]$retryModel
 }
 
+function Resolve-CodexCommand {
+    $codexCommand = Get-Command codex -ErrorAction SilentlyContinue
+    if ($null -eq $codexCommand) {
+        $codexCommand = Get-Command codex.exe -ErrorAction SilentlyContinue
+    }
+
+    if ($null -eq $codexCommand) {
+        throw "Codex CLI was not found in PATH for this PowerShell session."
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($codexCommand.Source)) {
+        return [string]$codexCommand.Source
+    }
+
+    return [string]$codexCommand.Definition
+}
+
 function Format-OllamaPrompt {
     param(
         [Parameter(Mandatory = $true)][string]$PromptText,
@@ -449,6 +466,7 @@ if (-not $shouldExecute) {
 }
 
 if ($selectedExecutor -eq "codex") {
+    $codexExecutable = Resolve-CodexCommand
     $effectiveCodexOutputPath = $CodexOutputPath
     if (-not $effectiveCodexOutputPath) {
         $effectiveCodexOutputPath = Join-Path $env:TEMP ("codex-agent-output-" + [guid]::NewGuid().ToString() + ".txt")
@@ -475,7 +493,7 @@ if ($selectedExecutor -eq "codex") {
         $codexArgs += "--ephemeral"
     }
 
-    $codexLog = $promptText | & codex @codexArgs 2>&1
+    $codexLog = $promptText | & $codexExecutable @codexArgs 2>&1
     if ($LASTEXITCODE -ne 0) {
         $logText = ($codexLog | Out-String).Trim()
         throw "Codex exec failed.`n$logText"
