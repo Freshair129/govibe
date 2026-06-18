@@ -21,3 +21,6 @@ Thumbs.db
 # Keep raw cognitive-system exports out of commits; derive approved packets through docs/audit first.
 .brain/cognitive-system-knowledge-block/
 .brain/inbound/
+
+# Reference/sample trees used for comparison only; not live GoVibe source truth.
+ref/

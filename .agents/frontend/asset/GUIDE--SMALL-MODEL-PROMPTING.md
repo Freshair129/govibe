@@ -1,5 +1,7 @@
 # GoVibe: Guidelines for Prompting Small AI Models (e.g., 9B)
 
+> Asset classification: active worker guidance. This is the default small-model discipline for local GoVibe frontend delegation through Ollama.
+
 **Status:** APPROVED
 **Scope:** AI-Assisted Code Generation / Task Delegation
 
