@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.24+draft"
+version: "0.1.25+draft"
 updated: "2026-06-18"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.24+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.25+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -42,7 +42,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
-| Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.7` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
+| Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
 | Backlog | `BACKLOG-P1-MVP-CORE` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-p1-mvp-core.md` |
 | Backlog | `IMP-GVMP01P05EP01` | `tracked-outside-registry` | pending-classification | LYRA | `.agents/.devlog/implement/IMP-GVMP01P05EP01.md` |
@@ -88,6 +88,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.25+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.4.8 after residual semantic cleanup. |
 | 0.1.17+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.3.1 after A5 verification. |
 | 0.1.24+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.4.7 after final residual fake-state closure. |
 | 0.1.23+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.4.6 for final residual fake-state tasks. |

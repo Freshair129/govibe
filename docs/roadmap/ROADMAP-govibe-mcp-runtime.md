@@ -1,7 +1,7 @@
 ---
 doc_id: "ROADMAP-GOVIBE-MCP-RUNTIME"
 id: RM-govibe-mcp-runtime
-version: "0.4.7"
+version: "0.4.8"
 updated: "2026-06-18"
 status: approved
 owner: "LYRA"
@@ -213,6 +213,7 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.4.8 | 2026-06-18 | Closed residual semantic cleanup by replacing template/blueprint UI naming with roadmap/registry terminology and deleting orphan blueprint styles. |
 | 0.4.7 | 2026-06-18 | Closed final residual fake-state migration with browser verification for B2, C3, C5, D1, and D2. |
 | 0.4.6 | 2026-06-18 | Added final residual fake-state migration tasks for B2, C3, C5, D1, and D2. |
 | 0.4.5 | 2026-06-18 | Closed A4, B1, B3, B4, and C2 follow-on migrations with build, smoke, docs, and browser verification. |

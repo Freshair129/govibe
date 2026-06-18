@@ -332,8 +332,7 @@ main {
 .metric-grid,
 .dashboard-grid,
 .agent-layout,
-.record-grid,
-.blueprint-grid {
+.record-grid {
   display: grid;
   gap: 16px;
 }
@@ -481,15 +480,6 @@ main {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
-.blueprint-grid {
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-}
-
-.blueprint-card {
-  min-height: 150px;
-}
-
-.blueprint-card span,
 .run-panel span,
 .erd-panel span {
   color: var(--accent);
@@ -1401,8 +1391,8 @@ footer {
 .top-bar,
 .carousel-title,
 .bottom-bar,
-.template-agent-head,
-.template-agent-stats,
+.registry-agent-head,
+.registry-agent-stats,
 .plugin-card > div,
 .zoo-card > div {
   align-items: center;
@@ -1436,7 +1426,7 @@ footer {
 }
 
 .stats-panel span,
-.template-agent-stats span,
+.registry-agent-stats span,
 .quota-line span {
   color: var(--muted);
   display: block;
@@ -1603,7 +1593,7 @@ footer {
   text-transform: uppercase;
 }
 
-.template-agent-card {
+.registry-agent-card {
   border: 1px solid var(--border);
   border-radius: 14px;
   background: rgba(0, 0, 0, 0.28);
@@ -1612,45 +1602,33 @@ footer {
   padding: 16px;
 }
 
-.template-agent-card.compact {
+.registry-agent-card.compact {
   gap: 12px;
 }
 
-.template-agent-avatar {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
-  display: grid;
-  place-items: center;
-  color: var(--accent);
-  font-family: "JetBrains Mono", monospace;
-  font-weight: 900;
-}
-
-.template-agent-card {
+.registry-agent-card {
   --accent: var(--agent-accent, #10b981);
 }
 
-.template-agent-head > div:nth-child(2) {
+.registry-agent-head > div:nth-child(2) {
   flex: 1;
   min-width: 0;
 }
 
-.template-agent-head strong,
-.template-agent-head span,
-.template-agent-head small {
+.registry-agent-head strong,
+.registry-agent-head span,
+.registry-agent-head small {
   display: block;
 }
 
-.template-agent-head span,
-.template-agent-head small {
+.registry-agent-head span,
+.registry-agent-head small {
   color: var(--muted);
   font-size: 10px;
   text-transform: uppercase;
 }
 
-.template-agent-head em {
+.registry-agent-head em {
   border-radius: 999px;
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   color: var(--accent);
@@ -1660,11 +1638,11 @@ footer {
   padding: 4px 8px;
 }
 
-.template-agent-stats {
+.registry-agent-stats {
   gap: 8px;
 }
 
-.template-agent-stats div {
+.registry-agent-stats div {
   flex: 1;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -1684,7 +1662,7 @@ footer {
   background: var(--accent);
 }
 
-.template-agent-card button,
+.registry-agent-card button,
 .bottom-bar button,
 .plugin-actions button {
   min-height: 34px;
@@ -2073,7 +2051,7 @@ footer {
   padding: 18px 24px 24px;
 }
 
-.template-task-row {
+.roadmap-task-row {
   align-items: center;
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -2084,7 +2062,7 @@ footer {
   padding: 14px 16px;
 }
 
-.template-task-row span {
+.roadmap-task-row span {
   color: var(--accent);
   display: block;
   font-size: 11px;
@@ -2135,7 +2113,7 @@ footer {
   color: var(--text);
 }
 
-.template-task-row label {
+.roadmap-task-row label {
   color: var(--muted);
   display: grid;
   gap: 6px;
@@ -2144,7 +2122,7 @@ footer {
   text-transform: uppercase;
 }
 
-.template-task-row select {
+.roadmap-task-row select {
   min-height: 36px;
   border-radius: 8px;
   border: 1px solid var(--border);
@@ -2292,10 +2270,6 @@ footer {
   gap: 12px;
 }
 
-.heatmap-grid span.blueprint-cell {
-  background: rgba(245, 158, 11, 0.08) !important;
-}
-
 .campaign-log-panel {
   max-height: 420px;
   overflow: auto;
@@ -2320,7 +2294,7 @@ footer {
   .roadmap-header,
   .query-row,
   .agent-select-screen,
-  .template-task-row,
+  .roadmap-task-row,
   .ast-layout {
     grid-template-columns: 1fr;
   }

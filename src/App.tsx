@@ -271,7 +271,7 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
   const badges = getRoadmapVerificationBadges(snapshot, node);
   const sourceMeta = getRoadmapSourceMeta(snapshot, node);
   return (
-    <article className="template-task-row">
+    <article className="roadmap-task-row">
       <div>
         <span>{getRoadmapScope(node)}</span>
         <strong>{node.title}</strong>
@@ -300,8 +300,8 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
 
 function RoadmapAgentCard({ agent }: { agent: AgentRecord }) {
   return (
-    <article className="template-agent-card compact">
-      <div className="template-agent-head">
+    <article className="registry-agent-card compact">
+      <div className="registry-agent-head">
         <div className="agent-orb" style={{ "--agent-accent": agent.accent ?? "#10b981" } as CSSProperties}>
           {agent.avatarUrl ? <img src={agent.avatarUrl} alt="" /> : agent.name.slice(0, 2).toUpperCase()}
         </div>
@@ -311,7 +311,7 @@ function RoadmapAgentCard({ agent }: { agent: AgentRecord }) {
         </div>
         <em>{agent.status}</em>
       </div>
-      <div className="template-agent-stats">
+      <div className="registry-agent-stats">
         <div><span>Tasks</span><strong>{agent.tasks}</strong></div>
         <div><span>Model</span><strong>{agent.model}</strong></div>
       </div>
@@ -363,18 +363,18 @@ function RealTimeDashboard({ snapshot, theme }: { snapshot: MissionSnapshot; the
 
 function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: (command: MissionCommand) => void }) {
   const [configOpen, setConfigOpen] = useState(false);
-  const [templateIndex, setTemplateIndex] = useState(0);
-  const templateAgents = snapshot.agents.map((agent) => ({
+  const [selectedAgentIndex, setSelectedAgentIndex] = useState(0);
+  const registryAgents = snapshot.agents.map((agent) => ({
     ...agent,
     package: agent.fleet?.domain ?? "Registry metadata",
     abilities: agent.fleet?.responsibility ?? [],
   }));
-  const activeBlueprint = templateAgents[templateIndex];
-  const activeMedia = activeBlueprint?.avatarUrl;
-  const deckAgents = templateAgents.map((agent, index) => {
-    const rawOffset = index - templateIndex;
-    const half = templateAgents.length / 2;
-    const offset = rawOffset > half ? rawOffset - templateAgents.length : rawOffset < -half ? rawOffset + templateAgents.length : rawOffset;
+  const activeAgent = registryAgents[selectedAgentIndex];
+  const activeMedia = activeAgent?.avatarUrl;
+  const deckAgents = registryAgents.map((agent, index) => {
+    const rawOffset = index - selectedAgentIndex;
+    const half = registryAgents.length / 2;
+    const offset = rawOffset > half ? rawOffset - registryAgents.length : rawOffset < -half ? rawOffset + registryAgents.length : rawOffset;
     return { agent, index, offset };
   });
 
@@ -399,11 +399,11 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
     event.currentTarget.style.setProperty("--tilt-y", "0deg");
   };
 
-  const selectTemplateAgent = (index: number) => {
-    const nextIndex = (index + templateAgents.length) % templateAgents.length;
-    setTemplateIndex(nextIndex);
+  const selectRegistryAgent = (index: number) => {
+    const nextIndex = (index + registryAgents.length) % registryAgents.length;
+    setSelectedAgentIndex(nextIndex);
     setConfigOpen(false);
-    void send({ type: "agent.select", agentId: templateAgents[nextIndex].id });
+    void send({ type: "agent.select", agentId: registryAgents[nextIndex].id });
   };
 
   return (
@@ -413,26 +413,26 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
         <span className="fleet-count">{snapshot.agents.length} Registered Agents</span>
       </div>
       {snapshot.agents.length > 0 ? (
-        <div className="agent-select-screen" style={{ "--agent-accent": activeBlueprint.accent } as CSSProperties} onPointerMove={updateCursorGlow}>
+        <div className="agent-select-screen" style={{ "--agent-accent": activeAgent.accent } as CSSProperties} onPointerMove={updateCursorGlow}>
           <section className="selection-sector agent-deck-panel">
             <div className="top-bar">
               <span>Agent Select</span>
-              <strong>{templateIndex + 1} / {templateAgents.length}</strong>
+              <strong>{selectedAgentIndex + 1} / {registryAgents.length}</strong>
             </div>
             <div className="stats-panel">
-              <article><span>Tasks</span><strong>{activeBlueprint.tasks}</strong></article>
-              <article><span>Accuracy</span><strong>{activeBlueprint.accuracy}</strong></article>
-              <article><span>Speed</span><strong>{activeBlueprint.speed}</strong></article>
+              <article><span>Tasks</span><strong>{activeAgent.tasks}</strong></article>
+              <article><span>Accuracy</span><strong>{activeAgent.accuracy}</strong></article>
+              <article><span>Speed</span><strong>{activeAgent.speed}</strong></article>
             </div>
             <div className="ability-tags large">
-              {activeBlueprint.abilities.map((ability) => <span key={ability}>{ability}</span>)}
+              {activeAgent.abilities.map((ability) => <span key={ability}>{ability}</span>)}
             </div>
             <div className="carousel-section">
               <div className="carousel-title">
                 <span>Roster</span>
                 <div>
-                  <button type="button" aria-label="Previous agent" onClick={() => selectTemplateAgent(templateIndex - 1)}>Up</button>
-                  <button type="button" aria-label="Next agent" onClick={() => selectTemplateAgent(templateIndex + 1)}>Down</button>
+                  <button type="button" aria-label="Previous agent" onClick={() => selectRegistryAgent(selectedAgentIndex - 1)}>Up</button>
+                  <button type="button" aria-label="Next agent" onClick={() => selectRegistryAgent(selectedAgentIndex + 1)}>Down</button>
                 </div>
               </div>
               <div className="agent-carousel-viewport" aria-label="Agent carousel">
@@ -440,10 +440,10 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
                   <button
                     key={agent.name}
                     type="button"
-                    className={index === templateIndex ? "agent-deck-card active" : "agent-deck-card"}
+                    className={index === selectedAgentIndex ? "agent-deck-card active" : "agent-deck-card"}
                     data-offset={offset}
-                    aria-current={index === templateIndex ? "true" : undefined}
-                    onClick={() => selectTemplateAgent(index)}
+                    aria-current={index === selectedAgentIndex ? "true" : undefined}
+                    onClick={() => selectRegistryAgent(index)}
                     style={{ "--agent-accent": agent.accent, "--deck-offset": offset } as CSSProperties}
                   >
                     <span className="deck-avatar">{agent.name.slice(0, 2)}</span>
@@ -470,22 +470,22 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
               <div className="console-lights"><i /><i /><i /></div>
               <div className="char-media">
                 {activeMedia ? (
-                  <img src={activeMedia} alt={`${activeBlueprint.name} portrait`} />
+                  <img src={activeMedia} alt={`${activeAgent.name} portrait`} />
                 ) : (
-                  <div className="char-media-fallback">{activeBlueprint.name}</div>
+                  <div className="char-media-fallback">{activeAgent.name}</div>
                 )}
               </div>
               <div className="char-identity">
-                <strong>{activeBlueprint.name}</strong>
-                <span>{activeBlueprint.role}</span>
-                <em>{activeBlueprint.model}</em>
+                <strong>{activeAgent.name}</strong>
+                <span>{activeAgent.role}</span>
+                <em>{activeAgent.model}</em>
               </div>
               <div className="character-config-face">
                 <header>
                   <span>Registry Metadata</span>
                   <button type="button" onClick={() => setConfigOpen(false)}>Close</button>
                 </header>
-                <AgentFleetMetadataPanel agent={snapshot.agents[templateIndex]} />
+                <AgentFleetMetadataPanel agent={snapshot.agents[selectedAgentIndex]} />
               </div>
             </div>
           </section>
@@ -493,7 +493,7 @@ function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: 
       ) : (
         <EmptyState
           title="No registered agents available"
-          body="The mission runtime did not return agent registry metadata. Template agents are not used as live state."
+          body="The mission runtime did not return agent registry metadata. Registry agents are not inferred from UI placeholders."
         />
       )}
     </div>
@@ -766,7 +766,7 @@ function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
                   title={receivedRoadmap ? "Roadmap source is not approved" : "No approved roadmap connected"}
                   body={receivedRoadmap
                     ? `${receivedRoadmap.sourcePath} reports approval status '${receivedRoadmap.approvalStatus ?? "missing"}' and cannot drive live UI state.`
-                    : "Start the GoVibe mission runtime with an approved roadmap source. Hardcoded blueprint tasks are no longer used."}
+                    : "Start the GoVibe mission runtime with an approved roadmap source to view executable tasks."}
                 />
               )}
             </div>

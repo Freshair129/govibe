@@ -2,7 +2,7 @@
 title: "IMP: Mission Control UI Real-State Migration"
 doc_id: "IMP-GVMP01P07EP01"
 status: "approved"
-version: "0.5.1"
+version: "0.5.2"
 updated: "2026-06-18"
 owner: "LYRA"
 approved_by: "Boss"
@@ -369,6 +369,7 @@ remaining_scope:
 | 0.4.2 | approved | Closed A4, B1, B3, B4, and C2 follow-on migrations with verification evidence. |
 | 0.5.0 | approved | Added final residual fake-state tasks for B2, C3, C5, D1, and D2. |
 | 0.5.1 | approved | Closed final residual fake-state tasks for B2, C3, C5, D1, and D2 with browser evidence. |
+| 0.5.2 | approved | Closed residual semantic cleanup by renaming template/blueprint UI identifiers to roadmap/registry terms and removing orphan blueprint CSS. |
 
 ## Changelog
 
@@ -381,6 +382,7 @@ remaining_scope:
 | 0.4.2 | 2026-06-18 | VIBE / KIN / ATHER | Closed A4, B1, B3, B4, and C2 follow-on migrations with verification evidence. |
 | 0.5.0 | 2026-06-18 | VIBE / KIN / ATHER | Added final residual fake-state tasks for B2, C3, C5, D1, and D2. |
 | 0.5.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed final residual fake-state tasks for B2, C3, C5, D1, and D2 with browser evidence. |
+| 0.5.2 | 2026-06-18 | VIBE / KIN / ATHER | Closed residual semantic cleanup by renaming template/blueprint UI identifiers to roadmap/registry terms and removing orphan blueprint CSS. |
 | 0.2.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed A5 registered-agent migration with smoke and browser verification. |
 | 0.2.0 | 2026-06-18 | VIBE / KIN / ATHER | Added A5 registered-agent migration and removed template-agent execution state. |
 | 0.1.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed the A2 real-state slice with automated approval-gate tests, Qwen inventory evidence, and browser QA. |
