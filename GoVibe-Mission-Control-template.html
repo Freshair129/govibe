@@ -2014,12 +2014,12 @@
 
                 <!-- [A2] Roadmap Tracker View (Detailed accordion checklist) -->
                 <div id="view-A2" class="space-y-6 hidden view-block">
-                    <!-- CoVibe Development Roadmap Header Card -->
+                    <!-- GoVibe Development Roadmap Header Card -->
                     <div class="relative glass-panel rounded-2xl p-6 border-l-4 border-l-cyan-500"
                         id="roadmap-header-card">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <h2 class="text-2xl font-extrabold text-white tracking-tight">CoVibe Development Roadmap
+                                <h2 class="text-2xl font-extrabold text-white tracking-tight">GoVibe Development Roadmap
                                 </h2>
                                 <p class="text-xs text-cyber-muted mt-1">แผนการพัฒนาและติดตามผลความคืบหน้าของฟีเจอร์</p>
                             </div>
@@ -2027,13 +2027,13 @@
                                 <span
                                     class="text-[10px] text-cyber-muted font-bold uppercase tracking-wider block">ความคืบหน้ารวมโครงการ</span>
                                 <span class="text-3xl font-black text-emerald-400 leading-none"
-                                    id="global-percent-text">53%</span>
+                                    id="global-percent-text">81%</span>
                             </div>
                         </div>
 
                         <!-- Progress bar container -->
                         <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden mt-4">
-                            <div class="bg-gradient-to-r from-cyan-500 via-emerald-500 to-indigo-500 h-full w-[53%]"
+                            <div class="bg-gradient-to-r from-cyan-500 via-emerald-500 to-indigo-500 h-full w-[81%]"
                                 id="global-progress-fill"></div>
                         </div>
 
@@ -2043,16 +2043,16 @@
                         <div class="flex flex-wrap items-center justify-between gap-4">
                             <div class="flex items-center gap-8 font-mono">
                                 <div>
-                                    <div class="text-xl font-bold text-cyber-muted" id="stats-total-tasks">36</div>
-                                    <div class="text-[10px] text-cyber-muted font-sans font-semibold">งานทั้งหมด</div>
+                                    <div class="text-xl font-bold text-cyber-muted" id="stats-total-tasks">27</div>
+                                    <div class="text-[10px] text-cyber-muted font-sans font-semibold">Feature ทั้งหมด</div>
                                 </div>
                                 <div>
-                                    <div class="text-xl font-bold text-emerald-400" id="stats-completed-tasks">19</div>
-                                    <div class="text-[10px] text-cyber-muted font-sans font-semibold">ทำเสร็จแล้ว</div>
+                                    <div class="text-xl font-bold text-emerald-400" id="stats-completed-tasks">22</div>
+                                    <div class="text-[10px] text-cyber-muted font-sans font-semibold">พร้อมใช้งาน / IMP แล้ว</div>
                                 </div>
                                 <div>
-                                    <div class="text-xl font-bold text-amber-500" id="stats-pending-tasks">17</div>
-                                    <div class="text-[10px] text-cyber-muted font-sans font-semibold">รอดำเนินการ</div>
+                                    <div class="text-xl font-bold text-amber-500" id="stats-pending-tasks">4</div>
+                                    <div class="text-[10px] text-cyber-muted font-sans font-semibold">Task ใน Backlog</div>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
@@ -5336,6 +5336,7 @@ ${formatTaskDoD(task)}
                     const taskItem = document.createElement('div');
                     taskItem.className = "task-item p-3.5 bg-white/5 border border-white/5 hover:border-white/10 rounded-xl flex flex-col gap-1.5 transition-all duration-300 cursor-pointer";
                     taskItem.setAttribute('data-task-id', task.id);
+                    taskItem.setAttribute('data-task-type', task.type || '');
 
                     const complexityColors = {
                         extream: 'bg-red-500/10 text-red-400 border border-red-500/20',
@@ -5617,25 +5618,30 @@ ${formatTaskDoD(task)}
         }
 
         function calculateRoadmapProgress() {
-            const allTasks = document.querySelectorAll('#roadmap-view .task-item');
-            let total = allTasks.length, done = 0;
-            allTasks.forEach(t => {
-                if (t.getAttribute('data-state') === 'done') done++;
+            const featureTasks = document.querySelectorAll('#roadmap-view .task-item[data-task-type="FR"]');
+            let totalFeatures = featureTasks.length, readyFeatures = 0;
+            featureTasks.forEach(t => {
+                if (t.getAttribute('data-state') === 'done') readyFeatures++;
             });
-            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+            const backlogTasks = document.querySelectorAll('#p4 .task-item');
+            let backlogPending = 0;
+            backlogTasks.forEach(t => {
+                if (t.getAttribute('data-state') !== 'done') backlogPending++;
+            });
+            const pct = totalFeatures > 0 ? Math.round((readyFeatures / totalFeatures) * 100) : 0;
 
             const pctText = document.getElementById('global-percent-text');
             const pctFill = document.getElementById('global-progress-fill');
             if (pctText) pctText.innerText = pct + '%';
             if (pctFill) pctFill.style.width = pct + '%';
 
-            // Update stats indicators
+            // Update roadmap feature stats
             const statsTotal = document.getElementById('stats-total-tasks');
             const statsCompleted = document.getElementById('stats-completed-tasks');
             const statsPending = document.getElementById('stats-pending-tasks');
-            if (statsTotal) statsTotal.innerText = total;
-            if (statsCompleted) statsCompleted.innerText = done;
-            if (statsPending) statsPending.innerText = (total - done);
+            if (statsTotal) statsTotal.innerText = totalFeatures;
+            if (statsCompleted) statsCompleted.innerText = readyFeatures;
+            if (statsPending) statsPending.innerText = backlogPending;
 
             // Phase percentages
             ['p0', 'p1', 'p2', 'p3', 'p4'].forEach(id => {
