@@ -45,11 +45,41 @@ function Test-CodexAvailable {
         $cmd = Get-Command codex.exe -ErrorAction SilentlyContinue
     }
 
-    if ($null -eq $cmd) {
-        throw "Codex CLI was not found in PATH for this PowerShell session."
+    if ($null -ne $cmd -and -not [string]::IsNullOrWhiteSpace($cmd.Source)) {
+        return $cmd.Source
     }
 
-    return if (-not [string]::IsNullOrWhiteSpace($cmd.Source)) { $cmd.Source } else { $cmd.Definition }
+    if ($null -ne $cmd -and -not [string]::IsNullOrWhiteSpace($cmd.Definition)) {
+        return $cmd.Definition
+    }
+
+    try {
+        $whereHits = @(where.exe codex 2>$null) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+        foreach ($hit in $whereHits) {
+            if (Test-Path -LiteralPath $hit) {
+                return $hit
+            }
+            if (Test-Path -LiteralPath ($hit + ".exe")) {
+                return ($hit + ".exe")
+            }
+        }
+    }
+    catch {
+    }
+
+    $windowsAppsRoot = "C:\Program Files\WindowsApps"
+    if (Test-Path -LiteralPath $windowsAppsRoot) {
+        $fallback = Get-ChildItem -Path $windowsAppsRoot -Filter "codex.exe" -Recurse -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match "OpenAI\.Codex_.*\\app\\resources\\codex\.exe$" } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+
+        if ($fallback) {
+            return $fallback.FullName
+        }
+    }
+
+    throw "Codex CLI was not found. Checked Get-Command, where.exe, and WindowsApps OpenAI.Codex install paths."
 }
 
 function Read-RequiredValue {
