@@ -304,3 +304,130 @@ Deliver:
 4. Verification checklist.
 5. Follow the Worker output contract exactly. If you drift from scope, output BLOCKED.
 ```
+
+## Task packet: MT-A2-04
+
+### Scope
+
+Refine A2-only mobile density and wrapping behavior so the shipped parity work remains readable on narrower widths without changing semantics or inventing missing runtime data.
+
+### Allowed evidence
+
+- `src/styles.css`
+- `src/App.tsx`
+- `docs/design/TEMPLATE_REFERENCE.md`
+- `docs/design/DOMAIN_DETAILS.md`
+- `GoVibe-Mission-Control-template.html`
+
+### Rules
+
+- Touch `src/styles.css` only unless a tiny A2-specific markup hook is truly required.
+- Keep the current A2 header actions, sprint shell, task row side panel, and detail skeleton behavior intact.
+- Prefer spacing, wrapping, stacking, and overflow fixes over structural redesign.
+- Do not reopen completed header/stat wording work.
+- Do not add new runtime schema or fake mobile-only data.
+
+### Acceptance
+
+- A2 header, stat row, source/action row, sprint shell, task row, and detail panel stay readable on narrow widths.
+- Long source metadata, badges, and disabled action rows wrap safely without horizontal overflow.
+- No desktop-only regression is introduced by the mobile polish.
+- `npm run lint`
+- `npm run build`
+- `npm run diff:check`
+
+### Prompt for SushiRL / Ollama
+
+```text
+You are VIBE, the GoVibe frontend worker.
+
+Task ID: MT-A2-04
+Scope: A2 mobile density polish
+Complexity: C-1
+Risk: LOW
+
+Read:
+- G:\govibe\.agents\frontend\AGENT.md
+- G:\govibe\.agents\frontend\context\VIBE-A2-Roadmap-Template-Parity-Context.md
+- G:\govibe\.agents\frontend\context\VIBE-A2-Visual-Parity-Microtasks.md
+- G:\govibe\docs\design\TEMPLATE_REFERENCE.md
+- G:\govibe\docs\design\DOMAIN_DETAILS.md
+- G:\govibe\src\App.tsx
+- G:\govibe\src\styles.css
+
+Implement only MT-A2-04.
+
+Rules:
+- Touch src/styles.css only unless a tiny A2-specific markup hook is unavoidable.
+- Do not add new runtime schema.
+- Do not reopen A2 header/stat wording work.
+- Prefer wrapping, spacing, and stacking fixes over structural redesign.
+
+Deliver:
+1. Exact responsive issues to address.
+2. Minimal CSS edit locations.
+3. Risks or blockers.
+4. Verification checklist.
+5. Follow the Worker output contract exactly. If you drift from scope, output BLOCKED.
+```
+
+## Task packet: MT-A2-05
+
+### Scope
+
+Extract roadmap export serialization and download helpers out of the main A2 React surface so the component stays focused on view state and event wiring.
+
+### Allowed evidence
+
+- `src/App.tsx`
+- one new helper under `src/`
+- `docs/design/TEMPLATE_REFERENCE.md` only if diff guard needs companionship
+
+### Rules
+
+- Keep this a small code-quality extraction, not a broad refactor.
+- Do not change roadmap transport, snapshot types, or runtime schema.
+- Preserve current export behavior and button wiring.
+- Do not expand scope into unrelated cleanup.
+
+### Acceptance
+
+- Export serialization/download logic is moved out of the main app component into a small helper.
+- The React component keeps only the minimum view-state and event-wiring logic needed for export.
+- No visible A2 behavior changes.
+- `npm run lint`
+- `npm run build`
+- `npm run diff:check`
+
+### Prompt for SushiRL / Ollama
+
+```text
+You are VIBE, the GoVibe frontend worker.
+
+Task ID: MT-A2-05
+Scope: A2 export helper extraction
+Complexity: C-1
+Risk: LOW
+
+Read:
+- G:\govibe\.agents\frontend\AGENT.md
+- G:\govibe\.agents\frontend\context\VIBE-A2-Roadmap-Template-Parity-Context.md
+- G:\govibe\.agents\frontend\context\VIBE-A2-Visual-Parity-Microtasks.md
+- G:\govibe\src\App.tsx
+- G:\govibe\src\roadmapExport.ts
+
+Implement only MT-A2-05.
+
+Rules:
+- Keep this to a small helper extraction only.
+- Do not change runtime schema, transport, or approved roadmap gating.
+- Preserve current export behavior.
+- Do not refactor unrelated app code.
+
+Deliver:
+1. Exact helper boundary to extract.
+2. Minimal files to touch.
+3. Risks or blockers.
+4. Verification checklist.
+5. Follow the Worker output contract exactly. If you drift from scope, output BLOCKED.
+```
