@@ -1,7 +1,7 @@
 ---
 title: "RUNBOOK — Codex Hybrid Savings Test"
 doc_id: "RUNBOOK-CODEX-HYBRID-SAVINGS-TEST"
-version: "0.1.0"
+version: "0.1.1"
 updated: "2026-06-19"
 status: "active"
 owner: "JANUS"
@@ -100,6 +100,15 @@ Notes:
 - Use the same `SessionId` for the `codex-only` run and the `hybrid` run.
 - `Context window tokens used` is stored as manual evidence from the Codex UI.
 - For fast experiments, you can skip some hybrid steps with optional switches such as `-SkipReview` or `-SkipHotfix`.
+- The launcher resolves Codex Desktop from `%LOCALAPPDATA%\OpenAI\Codex\bin` when the double-click shell does not inherit the Codex PATH entry.
+- The resolved executable is propagated through `CODEX_EXE` so LYRA, VIBE, and ATHER subprocesses use the same CLI binary.
+
+## Changelog
+
+| Version | Date | Status | Summary | Commit Hash | Agent |
+|---|---|---|---|---|---|
+| 0.1.1 | 2026-06-19 | active | Documented Codex Desktop fallback discovery and subprocess propagation. | pending | ATHER |
+| 0.1.0 | 2026-06-19 | active | Added the initial Codex-only versus hybrid savings test workflow. | aad75cd | JANUS |
 
 ## Optional manual quota comparison
 
