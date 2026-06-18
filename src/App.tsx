@@ -99,13 +99,6 @@ function getPrimaryRoadmapPhase(snapshot?: RoadmapSnapshot) {
   };
 }
 
-const intelligenceBlueprints = [
-  { title: "EVA Agent (eva-cli)", body: "Primary code architect assisting custom WebSocket connections.", status: "Active" },
-  { title: "Qwen Coder", body: "Sub-agent analyzing code quality and generating tests.", status: "Standby" },
-  { title: "UAT Agent", body: "Validation operator for browser, mobile, and acceptance checks.", status: "Ready" },
-  { title: "Local Runner", body: "Local model worker for sandboxed inference and offline checks.", status: "Offline" },
-];
-
 function useMissionSnapshot() {
   const [snapshot, setSnapshot] = useState<MissionSnapshot>(() => missionGateway.getSnapshot());
 
@@ -551,21 +544,12 @@ function AgentFleetMetadataPanel({ agent }: { agent: AgentRecord }) {
 }
 
 function GraphView({ snapshot, title }: { snapshot: MissionSnapshot; title: string }) {
-  const [depth, setDepth] = useState("all");
   const selected = snapshot.graph.nodes[0];
   const liveCallGraph = title === "Live Call Graph";
   return (
     <div className="view-stack">
       <div className="view-title-row">
         <ViewHeader eyebrow="Graph" title={title} desc="Graph nodes and edges are driven by gateway data." />
-        {liveCallGraph ? (
-          <div className="graph-controls">
-            {["1", "2", "all"].map((value) => (
-              <button key={value} className={depth === value ? "active" : ""} onClick={() => setDepth(value)}>Depth {value}</button>
-            ))}
-            <button>Sync Graph</button>
-          </div>
-        ) : null}
       </div>
       <div className={liveCallGraph ? "graph-layout" : ""}>
         <section className="panel graph-panel">
@@ -581,7 +565,6 @@ function GraphView({ snapshot, title }: { snapshot: MissionSnapshot; title: stri
         {liveCallGraph ? (
           <section className="panel graph-info">
             <h2>{selected?.label ?? "Select a node"}</h2>
-            <div className="kv-row"><span>Depth</span><strong>{depth}</strong></div>
             <div className="kv-row"><span>Nodes</span><strong>{snapshot.graph.nodes.length}</strong></div>
             <div className="kv-row"><span>Edges</span><strong>{snapshot.graph.edges.length}</strong></div>
           </section>
@@ -596,7 +579,6 @@ function GraphStudioView({ snapshot }: { snapshot: MissionSnapshot }) {
     <div className="view-stack">
       <div className="view-title-row">
         <ViewHeader eyebrow="Genesis Knowledge" title="Interactive Graph Studio" desc="2D graph workspace for relationship mapping." />
-        <button className="panel-action">Add New Node</button>
       </div>
       {snapshot.graph.nodes.length > 0 ? (
         <>
@@ -835,47 +817,60 @@ function BrainConfig() {
 function AstTreeView({ snapshot }: { snapshot: MissionSnapshot }) {
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Genesis Knowledge" title="AST Tree & Preview" desc="Tree explorer and canvas preview aligned to the template AST Explorer." />
-      <div className="ast-layout">
-        <section className="panel ast-code-panel">
-          <strong>calculateDrift.js</strong>
-          {["const latency = report.latencyMs;", "if (latency > 250) {", "  triggerCalibration(latency);", "}"].map((line, index) => (
-            <button type="button" key={line}><span>{index + 1}:</span>{line}</button>
-          ))}
-        </section>
+      <ViewHeader eyebrow="Genesis Knowledge" title="AST Tree & Preview" desc="Tree explorer renders only graph nodes received through the mission snapshot." />
+      {snapshot.graph.nodes.length > 0 ? (
         <section className="panel ast-canvas">
-          {(snapshot.graph.nodes.length ? snapshot.graph.nodes : [
-            { id: "program", label: "Program" },
-            { id: "function", label: "FunctionDecl" },
-            { id: "binary", label: "BinaryExpr" },
-            { id: "trigger", label: "TriggerCalibration" },
-          ]).map((node, index) => (
+          {snapshot.graph.nodes.map((node, index) => (
             <div className="ast-node" key={node.id} style={{ left: `${12 + (index % 2) * 34}%`, top: `${24 + index * 12}%` }}>
               <strong>{node.label}</strong>
-              <span>{snapshot.graph.nodes.length ? "Live node" : "Blueprint node"}</span>
+              <span>Live node</span>
             </div>
           ))}
         </section>
-      </div>
+      ) : (
+        <EmptyState
+          title="No AST graph connected"
+          body="Publish graph.update events before rendering AST hierarchy data. Template source snippets are not used as live state."
+        />
+      )}
     </div>
   );
 }
 
-function IntelligenceZoo() {
+function IntelligenceZoo({ snapshot }: { snapshot: MissionSnapshot }) {
+  const entries = [
+    ...snapshot.agents.map((agent) => ({
+      id: `agent-${agent.id}`,
+      title: agent.name,
+      body: agent.role,
+      status: agent.status,
+    })),
+    ...snapshot.capabilities.map((capability) => ({
+      id: `capability-${capability.id}`,
+      title: capability.title,
+      body: capability.description,
+      status: capability.status,
+    })),
+  ];
+
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Block DB" title="Intelligence Zoo" desc="Agent and model roster surface from the template." />
-      <section className="zoo-grid">
-        {intelligenceBlueprints.map((item) => (
-          <article className="panel zoo-card" key={item.title}>
-            <div>
-              <strong>{item.title}</strong>
-              <span>{item.status}</span>
-            </div>
-            <p>{item.body}</p>
-          </article>
-        ))}
-      </section>
+      <ViewHeader eyebrow="Block DB" title="Intelligence Zoo" desc="Registered agents and MCP capabilities from the mission snapshot." />
+      {entries.length > 0 ? (
+        <section className="zoo-grid">
+          {entries.map((item) => (
+            <article className="panel zoo-card" key={item.id}>
+              <div>
+                <strong>{item.title}</strong>
+                <span>{item.status}</span>
+              </div>
+              <p>{item.body}</p>
+            </article>
+          ))}
+        </section>
+      ) : (
+        <EmptyState title="No intelligence records connected" body="Publish registered agents or MCP capability metadata before rendering the zoo." />
+      )}
     </div>
   );
 }
@@ -1044,7 +1039,7 @@ function RenderView({
   if (activeView === "A3") return <CapabilityPlugins snapshot={snapshot} />;
   if (activeView === "A4") return <BrainConfig />;
   if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;
-  if (activeView === "C2") return <IntelligenceZoo />;
+  if (activeView === "C2") return <IntelligenceZoo snapshot={snapshot} />;
   if (activeView === "C3") return <DataIngestView ingest={ingest} />;
   if (activeView === "C4") return <DatabaseErdView snapshot={snapshot} />;
   return <HnswVectorView snapshot={snapshot} />;

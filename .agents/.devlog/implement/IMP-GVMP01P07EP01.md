@@ -2,7 +2,7 @@
 title: "IMP: Mission Control UI Real-State Migration"
 doc_id: "IMP-GVMP01P07EP01"
 status: "approved"
-version: "0.4.0"
+version: "0.4.2"
 updated: "2026-06-18"
 owner: "LYRA"
 approved_by: "Boss"
@@ -46,6 +46,9 @@ In scope:
 - Replace D3 blueprint campaign logs with honest empty state plus real campaign log data when present.
 - Replace A4 template config controls with an honest empty-state runtime config panel.
 - Replace B3 placeholder graph nodes with an honest empty-state graph studio.
+- Replace B1 template AST/source sample with graph-driven state or an honest empty state.
+- Remove B4 inert graph controls that do not affect runtime state.
+- Replace C2 static intelligence roster with MissionSnapshot agents and capabilities.
 
 Out of scope:
 
@@ -76,8 +79,11 @@ Out of scope:
 | done | TSK-GVMP01P07EP01SPR03-03 | Render A3 capability records and honest D3 empty state | SERIAL | TSK-GVMP01P07EP01SPR03-02 | `src/App.tsx` | Codex lead | A3/D3 show runtime truth only |
 | done | TSK-GVMP01P07EP01SPR03-04 | Extend smoke coverage for capability records and D3 empty state | SERIAL | TSK-GVMP01P07EP01SPR03-02 | `scripts/mcp/smoke-test.mjs` | Codex fallback | MCP smoke passes |
 | in_progress | TSK-GVMP01P07EP01SPR03-05 | Browser QA and A3/D3 slice closure | SERIAL | TSK-GVMP01P07EP01SPR03-03, TSK-GVMP01P07EP01SPR03-04 | no implementation writes | GHOST / ATHER / Codex | Capability records and empty campaign state verified |
-| in_progress | TSK-GVMP01P07EP01SPR04-01 | Replace A4 template config controls with honest empty-state runtime config | SERIAL | TSK-GVMP01P07EP01SPR03-05 | `src/App.tsx` | Codex lead | A4 does not present fake config sliders or template model toggles |
-| in_progress | TSK-GVMP01P07EP01SPR04-02 | Replace B3 placeholder graph nodes with honest empty-state graph studio | SERIAL | TSK-GVMP01P07EP01SPR04-01 | `src/App.tsx` | Codex lead | B3 does not invent graph nodes when the snapshot is empty |
+| done | TSK-GVMP01P07EP01SPR04-01 | Replace A4 template config controls with honest empty-state runtime config | SERIAL | TSK-GVMP01P07EP01SPR03-05 | `src/App.tsx` | Codex lead | A4 does not present fake config sliders or template model toggles |
+| done | TSK-GVMP01P07EP01SPR04-02 | Replace B3 placeholder graph nodes with honest empty-state graph studio | SERIAL | TSK-GVMP01P07EP01SPR04-01 | `src/App.tsx` | Codex lead | B3 does not invent graph nodes when the snapshot is empty |
+| done | TSK-GVMP01P07EP01SPR04-03 | Replace B1 template AST/source sample with graph-driven state | SERIAL | TSK-GVMP01P07EP01SPR04-02 | `src/App.tsx` | Codex lead | B1 does not render calculateDrift or blueprint AST nodes without graph data |
+| done | TSK-GVMP01P07EP01SPR04-04 | Remove B4 inert graph controls | SERIAL | TSK-GVMP01P07EP01SPR04-03 | `src/App.tsx` | Codex lead | B4 no longer presents Sync Graph or fake depth controls |
+| done | TSK-GVMP01P07EP01SPR04-05 | Replace C2 static intelligence roster with snapshot records | SERIAL | TSK-GVMP01P07EP01SPR04-04 | `src/App.tsx` | Codex lead | C2 renders registered agents and MCP capabilities |
 
 ## Local Agent Packets
 
@@ -303,8 +309,23 @@ a3_d3_browser_qa:
     - "A3 includes govibe.agent.run and the other MCP registry entries sourced from scripts/mcp/registry.mjs."
     - "D3 shows the honest No campaign logs connected empty state when no campaign feed exists."
     - "D3 does not render blueprint campaign rows."
+a4_b1_b3_b4_c2_browser_qa:
+  url: http://127.0.0.1:1420/
+  views:
+    - "A4 Brain & Config"
+    - "B1 AST Hierarchy Tree"
+    - "B3 Interactive Graph"
+    - "B4 Live Call Graph"
+    - "C2 Intelligence Zoo"
+  result: passed
+  evidence:
+    - "A4 shows No runtime config connected and no template config sliders."
+    - "B1 shows No AST graph connected and no calculateDrift or blueprint AST nodes."
+    - "B3 shows No graph nodes connected and no Room Sync/IFrame Player/Drift Monitor placeholders."
+    - "B4 no longer presents Sync Graph or fake depth controls."
+    - "C2 renders registry agents and MCP capability records, with the static EVA/Qwen/UAT/Local Runner roster absent."
 remaining_scope:
-  - "A4 and B3 verification are pending for the follow-on slice."
+  - "Remaining candidates are lower-priority surfaces such as B2, C5, D1, and D2; C4 remains untouched by scope guard."
 ```
 
 ## Version Diff
@@ -319,6 +340,8 @@ remaining_scope:
 | 0.3.0 | approved | Added the A3 capability-record migration, D3 honest campaign-log empty state, and verification hooks. |
 | 0.3.1 | approved | Closed A3/D3 with browser verification after runtime restart and registry-backed capability rendering. |
 | 0.4.0 | approved | Added the A4 empty-state config slice and B3 empty-state graph studio follow-on tasks. |
+| 0.4.1 | approved | Added B1, B4, and C2 residual fake-state follow-on tasks. |
+| 0.4.2 | approved | Closed A4, B1, B3, B4, and C2 follow-on migrations with verification evidence. |
 
 ## Changelog
 
@@ -327,6 +350,8 @@ remaining_scope:
 | 0.3.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed A3/D3 with browser verification after runtime restart and registry-backed capability rendering. |
 | 0.3.0 | 2026-06-18 | VIBE / KIN / ATHER | Added A3 capability records, D3 honest empty state, smoke assertions, and pending browser QA. |
 | 0.4.0 | 2026-06-18 | VIBE / KIN / ATHER | Added A4 empty-state config and B3 empty-state graph studio follow-on tasks. |
+| 0.4.1 | 2026-06-18 | VIBE / KIN / ATHER | Added B1, B4, and C2 residual fake-state follow-on tasks. |
+| 0.4.2 | 2026-06-18 | VIBE / KIN / ATHER | Closed A4, B1, B3, B4, and C2 follow-on migrations with verification evidence. |
 | 0.2.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed A5 registered-agent migration with smoke and browser verification. |
 | 0.2.0 | 2026-06-18 | VIBE / KIN / ATHER | Added A5 registered-agent migration and removed template-agent execution state. |
 | 0.1.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed the A2 real-state slice with automated approval-gate tests, Qwen inventory evidence, and browser QA. |

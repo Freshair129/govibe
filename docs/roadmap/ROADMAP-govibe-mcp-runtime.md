@@ -1,7 +1,7 @@
 ---
 doc_id: "ROADMAP-GOVIBE-MCP-RUNTIME"
 id: RM-govibe-mcp-runtime
-version: "0.4.3"
+version: "0.4.5"
 updated: "2026-06-18"
 status: approved
 owner: "LYRA"
@@ -25,7 +25,7 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | PHASE-01 | Bind MCP runtime and roadmap document ingestion | SYSTEM-02, SYSTEM-05, SYSTEM-06 | PRD, SRS, LLD, API | Mission Control A2 renders from docs/roadmap sources | done | 100 |
 | PHASE-02 | Export live roadmap snapshots back to Markdown artifacts | SYSTEM-02, SYSTEM-06 | PRD, SRS, LLD, API | Runtime can export a task-level roadmap markdown artifact and load it back | done | 100 |
 | PHASE-03 | Add bi-temporal roadmap versioning | SYSTEM-02, SYSTEM-06, SYSTEM-09 | FEAT, API, ERD | Runtime can query current and historical roadmap state | done | 100 |
-| PHASE-04 | Migrate Mission Control UI from hardcoded operational state to approved runtime truth | SYSTEM-02, SYSTEM-03, SYSTEM-09 | FEAT, IMP, Test Plan | A2, A3, A4, A5, B3, and D3 render approved runtime truth or honest empty states without fake execution | in_progress | 98 |
+| PHASE-04 | Migrate Mission Control UI from hardcoded operational state to approved runtime truth | SYSTEM-02, SYSTEM-03, SYSTEM-09 | FEAT, IMP, Test Plan | A2, A3, A4, A5, B1, B3, B4, C2, and D3 render approved runtime truth or honest empty states without fake execution | in_progress | 99 |
 
 ## Sprints
 | Sprint | Parent ID | Goal | Task Count | Exit Criteria | Status | Progress |
@@ -36,8 +36,9 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | SPRINT-04 | PHASE-04 | Remove A2 fake state and prepare bounded migrations for remaining views | 5 | Approved source gating, honest empty state, tests, hardcode inventory, and QA evidence are complete | done | 100 |
 | SPRINT-05 | PHASE-04 | Replace A5 template agents with registry-derived MissionSnapshot agents | 5 | Registered agents and provenance render without fake runtime/config state | done | 100 |
 | SPRINT-06 | PHASE-04 | Replace A3 capability blueprints and D3 campaign-log blueprint rows with runtime truth | 5 | Capability records come from MissionSnapshot and empty campaign logs show no fake rows | done | 100 |
-| SPRINT-07 | PHASE-04 | Replace A4 template config controls with honest empty-state runtime config | 1 | Brain & Config no longer presents fake sliders or template config controls | in_progress | 50 |
-| SPRINT-08 | PHASE-04 | Replace B3 placeholder graph nodes with honest empty-state graph studio | 1 | Graph Studio no longer invents graph nodes when the snapshot is empty | in_progress | 50 |
+| SPRINT-07 | PHASE-04 | Replace A4 template config controls with honest empty-state runtime config | 1 | Brain & Config no longer presents fake sliders or template config controls | done | 100 |
+| SPRINT-08 | PHASE-04 | Replace B3 placeholder graph nodes with honest empty-state graph studio | 1 | Graph Studio no longer invents graph nodes when the snapshot is empty | done | 100 |
+| SPRINT-09 | PHASE-04 | Replace B1, B4, and C2 residual fake operational surfaces | 3 | B1 has no template AST/source sample, B4 has no inert graph controls, and C2 renders snapshot records | done | 100 |
 
 ## Backlog Items
 | ID | Parent ID | Type | Title | PRD System | Priority | Owner | Source Section | Dependencies | Acceptance | Status | Progress |
@@ -62,8 +63,11 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | TASK-018-a3-real-capability-ui | SPRINT-06 | task | Render A3 capability records and honest D3 empty state | SYSTEM-02 | P0 | codex | A3 Capability and D3 Campaign Logs | TASK-017-capability-snapshot | A3/D3 show runtime truth only | done | 100 |
 | TASK-019-a3-d3-focused-tests | SPRINT-06 | task | Extend smoke coverage for capability records and D3 empty state | SYSTEM-09 | P0 | codex | Lead fallback | TASK-017-capability-snapshot | Existing smoke workflow verifies capability records and empty campaign state | done | 100 |
 | TASK-020-a3-d3-browser-qa | SPRINT-06 | task | Verify A3 capability records and D3 empty campaign state | SYSTEM-09 | P0 | ghost | Browser QA | TASK-018-a3-real-capability-ui; TASK-019-a3-d3-focused-tests | No blueprint controls or fake log rows appear | done | 100 |
-| TASK-021-a4-empty-config-state | SPRINT-07 | task | Replace Brain & Config template controls with honest empty state | SYSTEM-02 | P0 | codex | Runtime Config Empty State | TASK-020-a3-d3-browser-qa | A4 does not present fake config sliders or template model toggles | in_progress | 60 |
-| TASK-022-b3-empty-graph-studio | SPRINT-08 | task | Replace Graph Studio placeholder nodes with honest empty state | SYSTEM-02 | P0 | codex | Graph Studio Empty State | TASK-021-a4-empty-config-state | B3 no longer invents graph nodes when the snapshot is empty | in_progress | 60 |
+| TASK-021-a4-empty-config-state | SPRINT-07 | task | Replace Brain & Config template controls with honest empty state | SYSTEM-02 | P0 | codex | Runtime Config Empty State | TASK-020-a3-d3-browser-qa | A4 does not present fake config sliders or template model toggles | done | 100 |
+| TASK-022-b3-empty-graph-studio | SPRINT-08 | task | Replace Graph Studio placeholder nodes with honest empty state | SYSTEM-02 | P0 | codex | Graph Studio Empty State | TASK-021-a4-empty-config-state | B3 no longer invents graph nodes when the snapshot is empty | done | 100 |
+| TASK-023-b1-empty-ast-state | SPRINT-09 | task | Replace AST source sample and fallback nodes with honest graph empty state | SYSTEM-02 | P0 | codex | AST Empty State | TASK-022-b3-empty-graph-studio | B1 does not render calculateDrift or blueprint AST nodes without graph data | done | 100 |
+| TASK-024-b4-remove-inert-graph-controls | SPRINT-09 | task | Remove inert Live Call Graph controls that do not affect runtime state | SYSTEM-02 | P0 | codex | Live Graph Controls | TASK-023-b1-empty-ast-state | B4 no longer presents Sync Graph or fake depth controls | done | 100 |
+| TASK-025-c2-registry-intelligence-zoo | SPRINT-09 | task | Replace Intelligence Zoo template roster with snapshot agents and capabilities | SYSTEM-02 | P0 | codex | Intelligence Zoo Snapshot | TASK-024-b4-remove-inert-graph-controls | C2 renders registry-derived agents and MCP capability records | done | 100 |
 
 ## Task Breakdown
 ### TASK-003-gateway-bootstrap: Bootstrap Mission Control from sidecar snapshot and ws events
@@ -109,6 +113,21 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
   - [x] MICRO-022.1.1 Render empty-state messaging when the snapshot has no graph nodes
     - [x] ATOMIC-022.1.1.1 Replace placeholder graph nodes with honest empty-state messaging
 
+### TASK-023-b1-empty-ast-state: Replace AST source sample and fallback nodes
+- [x] SUBTASK-023.1 Remove hardcoded source preview and blueprint AST nodes
+  - [x] MICRO-023.1.1 Render graph nodes only when present
+    - [x] ATOMIC-023.1.1.1 Replace calculateDrift and fallback AST nodes with honest empty-state messaging
+
+### TASK-024-b4-remove-inert-graph-controls: Remove inert Live Call Graph controls
+- [x] SUBTASK-024.1 Remove controls that do not emit mission commands or filter graph data
+  - [x] MICRO-024.1.1 Keep graph info read-only
+    - [x] ATOMIC-024.1.1.1 Remove Sync Graph and depth selector controls
+
+### TASK-025-c2-registry-intelligence-zoo: Replace Intelligence Zoo template roster
+- [x] SUBTASK-025.1 Render agents and MCP capabilities from MissionSnapshot
+  - [x] MICRO-025.1.1 Remove static intelligence roster
+    - [x] ATOMIC-025.1.1.1 Use registered agents and capability records as C2 entries
+
 ## Assignments
 | Task ID | Subject ID | Subject Type | Policy Model | Assigned At | Assigned By |
 |---|---|---|---|---|---|
@@ -134,6 +153,9 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | TASK-020-a3-d3-browser-qa | ghost | agent | ABAC | 2026-06-18T14:12:00+07:00 | lyra |
 | TASK-021-a4-empty-config-state | codex | agent | ABAC | 2026-06-18T15:00:00+07:00 | lyra |
 | TASK-022-b3-empty-graph-studio | codex | agent | ABAC | 2026-06-18T15:05:00+07:00 | lyra |
+| TASK-023-b1-empty-ast-state | codex | agent | ABAC | 2026-06-18T15:20:00+07:00 | lyra |
+| TASK-024-b4-remove-inert-graph-controls | codex | agent | ABAC | 2026-06-18T15:20:00+07:00 | lyra |
+| TASK-025-c2-registry-intelligence-zoo | codex | agent | ABAC | 2026-06-18T15:20:00+07:00 | lyra |
 
 ## Verification
 | Task ID | QA Status | Audit Status | Deployment Status | Updated At |
@@ -158,13 +180,18 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | TASK-018-a3-real-capability-ui | passed | passed | n/a | 2026-06-18T14:12:00+07:00 |
 | TASK-019-a3-d3-focused-tests | passed | passed | n/a | 2026-06-18T14:12:00+07:00 |
 | TASK-020-a3-d3-browser-qa | passed | passed | n/a | 2026-06-18T14:12:00+07:00 |
-| TASK-021-a4-empty-config-state | in_progress | pending | n/a | 2026-06-18T15:00:00+07:00 |
-| TASK-022-b3-empty-graph-studio | in_progress | pending | n/a | 2026-06-18T15:05:00+07:00 |
+| TASK-021-a4-empty-config-state | passed | passed | n/a | 2026-06-18T15:25:00+07:00 |
+| TASK-022-b3-empty-graph-studio | passed | passed | n/a | 2026-06-18T15:25:00+07:00 |
+| TASK-023-b1-empty-ast-state | passed | passed | n/a | 2026-06-18T15:25:00+07:00 |
+| TASK-024-b4-remove-inert-graph-controls | passed | passed | n/a | 2026-06-18T15:25:00+07:00 |
+| TASK-025-c2-registry-intelligence-zoo | passed | passed | n/a | 2026-06-18T15:25:00+07:00 |
 
 ## Changelog
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.4.5 | 2026-06-18 | Closed A4, B1, B3, B4, and C2 follow-on migrations with build, smoke, docs, and browser verification. |
+| 0.4.4 | 2026-06-18 | Added B1, B4, and C2 follow-on migration tasks for residual fake operational surfaces. |
 | 0.4.3 | 2026-06-18 | Added B3 empty-state migration for Graph Studio and opened Sprint 08. |
 | 0.4.2 | 2026-06-18 | Added A4 empty-state migration for Brain & Config and opened Sprint 07. |
 | 0.4.1 | 2026-06-18 | Closed Sprint 06 with registry-backed capabilities, honest D3 empty state, and browser QA verification. |
