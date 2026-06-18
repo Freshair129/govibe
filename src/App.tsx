@@ -99,13 +99,6 @@ function getPrimaryRoadmapPhase(snapshot?: RoadmapSnapshot) {
   };
 }
 
-const brainConfigSections = [
-  { title: "Model Source", detail: "Cloud API / Local Server pill selector with backend-safe empty credentials." },
-  { title: "Genesis Knowledge", detail: "Knowledge add surface, indexed vector counter, and auto-sync state." },
-  { title: "Agent Behaviors", detail: "Plan Mode, Auto-Execute, file access, and shell runner toggles." },
-  { title: "Runtime Limits", detail: "Temperature, context window, and latency budget sliders." },
-];
-
 const intelligenceBlueprints = [
   { title: "EVA Agent (eva-cli)", body: "Primary code architect assisting custom WebSocket connections.", status: "Active" },
   { title: "Qwen Coder", body: "Sub-agent analyzing code quality and generating tests.", status: "Standby" },
@@ -599,23 +592,27 @@ function GraphView({ snapshot, title }: { snapshot: MissionSnapshot; title: stri
 }
 
 function GraphStudioView({ snapshot }: { snapshot: MissionSnapshot }) {
-  const nodes = snapshot.graph.nodes.length ? snapshot.graph.nodes : [
-    { id: "room", label: "Room Sync" },
-    { id: "player", label: "IFrame Player" },
-    { id: "drift", label: "Drift Monitor" },
-  ];
   return (
     <div className="view-stack">
       <div className="view-title-row">
         <ViewHeader eyebrow="Genesis Knowledge" title="Interactive Graph Studio" desc="2D graph workspace for relationship mapping." />
         <button className="panel-action">Add New Node</button>
       </div>
-      <section className="panel graph-studio-canvas">
-        {nodes.map((node, index) => (
-          <span key={node.id} style={{ left: `${16 + index * 24}%`, top: `${32 + (index % 2) * 22}%` }}>{node.label}</span>
-        ))}
-      </section>
-      <p className="view-note">Click and drag behavior is a follow-up once node position events are defined.</p>
+      {snapshot.graph.nodes.length > 0 ? (
+        <>
+          <section className="panel graph-studio-canvas">
+            {snapshot.graph.nodes.map((node, index) => (
+              <span key={node.id} style={{ left: `${16 + index * 24}%`, top: `${32 + (index % 2) * 22}%` }}>{node.label}</span>
+            ))}
+          </section>
+          <p className="view-note">Click and drag behavior is a follow-up once node position events are defined.</p>
+        </>
+      ) : (
+        <EmptyState
+          title="No graph nodes connected"
+          body="Publish graph.update events before opening Graph Studio. Placeholder nodes are not used as live state."
+        />
+      )}
     </div>
   );
 }
@@ -826,19 +823,11 @@ function CapabilityPlugins({ snapshot }: { snapshot: MissionSnapshot }) {
 function BrainConfig() {
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Runtime Config" title="Brain & Config" desc="Model, knowledge, behavior, and runtime controls from the template configuration panel." />
-      <section className="brain-config-grid">
-        {brainConfigSections.map((section) => (
-          <article className="panel config-surface" key={section.title}>
-            <span>{section.title}</span>
-            <p>{section.detail}</p>
-            <label>
-              <strong>Blueprint Control</strong>
-              <input type="range" min="0" max="100" defaultValue="50" />
-            </label>
-          </article>
-        ))}
-      </section>
+      <ViewHeader eyebrow="Runtime Config" title="Brain & Config" desc="Runtime controls only appear when the mission snapshot publishes them." />
+      <EmptyState
+        title="No runtime config connected"
+        body="The mission snapshot does not yet publish live model, behavior, or limit controls. This view stays read-only until a governed config source exists."
+      />
     </div>
   );
 }

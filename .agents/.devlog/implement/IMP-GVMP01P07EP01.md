@@ -2,7 +2,7 @@
 title: "IMP: Mission Control UI Real-State Migration"
 doc_id: "IMP-GVMP01P07EP01"
 status: "approved"
-version: "0.3.1"
+version: "0.4.0"
 updated: "2026-06-18"
 owner: "LYRA"
 approved_by: "Boss"
@@ -44,6 +44,8 @@ In scope:
 - Represent registry agents as `registered`, never `online`, until a runtime event says otherwise.
 - Replace A3 capability blueprint cards with runtime-registered capability records.
 - Replace D3 blueprint campaign logs with honest empty state plus real campaign log data when present.
+- Replace A4 template config controls with an honest empty-state runtime config panel.
+- Replace B3 placeholder graph nodes with an honest empty-state graph studio.
 
 Out of scope:
 
@@ -74,6 +76,8 @@ Out of scope:
 | done | TSK-GVMP01P07EP01SPR03-03 | Render A3 capability records and honest D3 empty state | SERIAL | TSK-GVMP01P07EP01SPR03-02 | `src/App.tsx` | Codex lead | A3/D3 show runtime truth only |
 | done | TSK-GVMP01P07EP01SPR03-04 | Extend smoke coverage for capability records and D3 empty state | SERIAL | TSK-GVMP01P07EP01SPR03-02 | `scripts/mcp/smoke-test.mjs` | Codex fallback | MCP smoke passes |
 | in_progress | TSK-GVMP01P07EP01SPR03-05 | Browser QA and A3/D3 slice closure | SERIAL | TSK-GVMP01P07EP01SPR03-03, TSK-GVMP01P07EP01SPR03-04 | no implementation writes | GHOST / ATHER / Codex | Capability records and empty campaign state verified |
+| in_progress | TSK-GVMP01P07EP01SPR04-01 | Replace A4 template config controls with honest empty-state runtime config | SERIAL | TSK-GVMP01P07EP01SPR03-05 | `src/App.tsx` | Codex lead | A4 does not present fake config sliders or template model toggles |
+| in_progress | TSK-GVMP01P07EP01SPR04-02 | Replace B3 placeholder graph nodes with honest empty-state graph studio | SERIAL | TSK-GVMP01P07EP01SPR04-01 | `src/App.tsx` | Codex lead | B3 does not invent graph nodes when the snapshot is empty |
 
 ## Local Agent Packets
 
@@ -300,7 +304,7 @@ a3_d3_browser_qa:
     - "D3 shows the honest No campaign logs connected empty state when no campaign feed exists."
     - "D3 does not render blueprint campaign rows."
 remaining_scope:
-  - "No remaining scope in this IMP."
+  - "A4 and B3 verification are pending for the follow-on slice."
 ```
 
 ## Version Diff
@@ -314,6 +318,7 @@ remaining_scope:
 | 0.2.1 | approved | Closed A5 with registry smoke assertions and browser interaction evidence. |
 | 0.3.0 | approved | Added the A3 capability-record migration, D3 honest campaign-log empty state, and verification hooks. |
 | 0.3.1 | approved | Closed A3/D3 with browser verification after runtime restart and registry-backed capability rendering. |
+| 0.4.0 | approved | Added the A4 empty-state config slice and B3 empty-state graph studio follow-on tasks. |
 
 ## Changelog
 
@@ -321,6 +326,7 @@ remaining_scope:
 |---|---|---|---|
 | 0.3.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed A3/D3 with browser verification after runtime restart and registry-backed capability rendering. |
 | 0.3.0 | 2026-06-18 | VIBE / KIN / ATHER | Added A3 capability records, D3 honest empty state, smoke assertions, and pending browser QA. |
+| 0.4.0 | 2026-06-18 | VIBE / KIN / ATHER | Added A4 empty-state config and B3 empty-state graph studio follow-on tasks. |
 | 0.2.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed A5 registered-agent migration with smoke and browser verification. |
 | 0.2.0 | 2026-06-18 | VIBE / KIN / ATHER | Added A5 registered-agent migration and removed template-agent execution state. |
 | 0.1.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed the A2 real-state slice with automated approval-gate tests, Qwen inventory evidence, and browser QA. |
