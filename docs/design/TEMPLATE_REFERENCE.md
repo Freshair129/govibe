@@ -48,7 +48,7 @@ The template `siteMap` contains the same 17 modules as the React implementation:
 | View | Template behavior to preserve in React |
 | --- | --- |
 | A1 | Command Control Center header, telemetry metric cards, chart panel, Reactor Telemetry panel. Template uses mock values; React must use live `MissionSnapshot` data or honest empty states. |
-| A2 | Roadmap header card, global progress, stats, export menu, reset board, AI assist roster, phase accordion, sprint block, and detailed task dropdown cards backed by Task Container records. |
+| A2 | Roadmap header card, global progress, stats, export menu, reset board, AI assist roster, phase accordion, sprint block, and detailed task dropdown cards backed by Task Container records. The header contract now uses `GoVibe Development Roadmap` with stat labels `Feature ทั้งหมด`, `พร้อมใช้งาน / IMP แล้ว`, and `Task ใน Backlog`. |
 | A3 | Capability plugin management surface. Preserve plugin-slot density and operational controls when data events exist. |
 | A4 | Brain/config panels with model/runtime controls. Preserve config feel without storing secrets in markup. |
 | A5 | Agent Management Carousel: Agent Select stats, ability tags, infinity card-deck roster navigation without scrollbars, `interactive-card` mouse glare, Raycast 3D Agent Card style, Agent drag follow-cursor assignment style, video switcher, character media console with sequential EVA video playback, cursor glow, 3D tilt, configure/flip behavior, model source controls, sliders/meters, local/cloud endpoint settings, and a mobile single-column adaptation. React must avoid hardcoded secret values. |
@@ -74,6 +74,27 @@ The template `siteMap` contains the same 17 modules as the React implementation:
 - Replace template secrets and sample credentials with empty inputs, redacted placeholders, or real configuration events.
 
 ## A2 Task Detail Reference
+
+## A2 Header Contract
+
+The A2 React header should preserve the current approved wording and semantics from the legacy template adaptation:
+
+- Title: `GoVibe Development Roadmap`
+- Description: Thai roadmap summary copy is allowed, but the title must stay `GoVibe`.
+- Progress surface: derived from approved roadmap runtime state, never hardcoded from the legacy static template.
+- Stat labels:
+  - `Feature ทั้งหมด`
+  - `พร้อมใช้งาน / IMP แล้ว`
+  - `Task ใน Backlog`
+- Count semantics:
+  - `Feature ทั้งหมด` = actionable roadmap nodes of type `task`, `sub-task`, `micro-task`, or `atomic-task`
+  - `พร้อมใช้งาน / IMP แล้ว` = actionable nodes in `done`
+  - `Task ใน Backlog` = actionable nodes not in `done`
+- Header actions from the template remain part of the visual contract:
+  - `Export`
+  - `Reset Board`
+
+If React temporarily omits the action controls, that is a parity gap and must be tracked explicitly rather than silently reworded away.
 
 The template task dropdown card is the visual reference for A2 `Task Container` rendering. React must reproduce the information architecture without copying the legacy imperative script as runtime.
 
@@ -118,6 +139,7 @@ The React migration must preserve these template-level interaction contracts fro
 
 - Sidebar now starts collapsed, expands on hover, supports lock/collapse, and shows collapsed tooltips.
 - A2 now includes the roadmap header, progress area, export menu, reset action, assist roster cards, accordion phase header, task rows, badges, and assignment selects. It still needs Task Container-backed task detail dropdowns before it reaches template parity.
+- A2 semantic parity for the title and stat labels is approved, but full visual and interaction parity is still incomplete until the React surface matches the template header actions, denser task containers, and dropdown detail structure.
 - A5 now includes the template-style Agent Select infinity carousel with active stats, ability tags, deck navigation, bottom controls, EVA video switcher/media console sourced from `public/agents/eva`, sequential 01 -> 02 -> 03 playback, cursor glow, 3D character tilt, config overlay, no nested card wrappers, and a mobile single-column adaptation when no live agents are connected. It still needs backend-backed config persistence before save/dirty-state controls are meaningful.
 - A3 now has plugin cards and action controls rather than a generic live shell.
 - A4 now has runtime configuration control surfaces rather than a generic live shell.
