@@ -14,6 +14,9 @@ param(
     [string]$LocalProfile = "balanced",
 
     [Parameter(Mandatory = $false)]
+    [string]$CodexExecutable,
+
+    [Parameter(Mandatory = $false)]
     [switch]$Reset,
 
     [Parameter(Mandatory = $false)]
@@ -40,6 +43,14 @@ $defaultReviewTask = "Audit the current implementation diff for drift, regressio
 $defaultHotfixTask = "Apply a small hot fix inside the current approved frontend scope only."
 
 function Test-CodexAvailable {
+    if (-not [string]::IsNullOrWhiteSpace($CodexExecutable) -and (Test-Path -LiteralPath $CodexExecutable)) {
+        return $CodexExecutable
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($env:CODEX_EXE) -and (Test-Path -LiteralPath $env:CODEX_EXE)) {
+        return $env:CODEX_EXE
+    }
+
     $cmd = Get-Command codex -ErrorAction SilentlyContinue
     if ($null -eq $cmd) {
         $cmd = Get-Command codex.exe -ErrorAction SilentlyContinue
