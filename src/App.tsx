@@ -52,28 +52,28 @@ function getRoadmapSourceMeta(snapshot: RoadmapSnapshot, node: WorkflowTaskNode)
 function getRoadmapStats(snapshot?: RoadmapSnapshot) {
   if (!snapshot) {
     return {
-      total: 0,
-      done: 0,
-      active: 0,
+      totalFeatures: 0,
+      readyFeatures: 0,
+      backlogTasks: 0,
       progress: 0,
       label: "No approved source",
     };
   }
 
   const actionableNodes = snapshot.nodes.filter((node) => actionableRoadmapTypes.has(node.type));
-  const total = actionableNodes.length;
-  const done = actionableNodes.filter((node) => node.state === "done").length;
-  const active = actionableNodes.filter((node) => node.state !== "done").length;
-  const progress = total > 0
-    ? Math.round(actionableNodes.reduce((sum, node) => sum + (node.progress ?? (node.state === "done" ? 100 : 0)), 0) / total)
+  const totalFeatures = actionableNodes.length;
+  const readyFeatures = actionableNodes.filter((node) => node.state === "done").length;
+  const backlogTasks = actionableNodes.filter((node) => node.state !== "done").length;
+  const progress = totalFeatures > 0
+    ? Math.round(actionableNodes.reduce((sum, node) => sum + (node.progress ?? (node.state === "done" ? 100 : 0)), 0) / totalFeatures)
     : 0;
 
   return {
-    total,
-    done,
-    active,
+    totalFeatures,
+    readyFeatures,
+    backlogTasks,
     progress,
-    label: total > 0 ? `${progress}% Live` : "Waiting for source",
+    label: totalFeatures > 0 ? `${progress}% Live` : "Waiting for source",
   };
 }
 
@@ -717,7 +717,7 @@ function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
     <div className="view-stack">
       <section className="panel roadmap-header">
         <div>
-          <ViewHeader eyebrow="Planning" title="CoVibe Development Roadmap" desc="Roadmap state should come from approved docs and live mission events." />
+          <ViewHeader eyebrow="Planning" title="GoVibe Development Roadmap" desc="Roadmap state should come from approved docs and live mission events." />
         </div>
         <div className="roadmap-progress">
           <span>Project progress</span>
@@ -725,9 +725,9 @@ function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
           <div><i style={{ width: `${stats.progress}%` }} /></div>
         </div>
         <div className="roadmap-stats">
-          <article><strong>{stats.total}</strong><span>Total items</span></article>
-          <article><strong>{stats.done}</strong><span>Completed</span></article>
-          <article><strong>{stats.active}</strong><span>Active</span></article>
+          <article><strong>{stats.totalFeatures}</strong><span>Feature ทั้งหมด</span></article>
+          <article><strong>{stats.readyFeatures}</strong><span>พร้อมใช้งาน / IMP แล้ว</span></article>
+          <article><strong>{stats.backlogTasks}</strong><span>Task ใน Backlog</span></article>
         </div>
         <div className="roadmap-actions">
           <span className={`status-pill ${roadmap ? "online" : "idle"}`}>{sourceState}</span>
