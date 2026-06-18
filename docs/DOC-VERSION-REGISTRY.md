@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.25+draft"
-updated: "2026-06-18"
+version: "0.1.27+draft"
+updated: "2026-06-19"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.25+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.27+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -74,8 +74,9 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Runbook | `RUNBOOK-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.0+draft` | draft | JANUS / KIN | `docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md` |
 | Context | `AGENT-BRIDGE-QWEN-COMPAT` | `1.2.0+draft` | draft | ATHER / THESEUS | `AGENT.md` |
 | Context | `CONTEXT-BOUNDED-EXTERNAL-EXECUTOR` | `0.2.3` | draft | THESEUS | `.agents/context/CONTEXT-Bounded-External-Executor.md` |
-| Context | `CONTEXT-GOVIBE-SHARED-EXTERNAL-AGENT` | `0.1.0+draft` | draft | ATHER / THESEUS | `.agents/context/shared/CONTEXT-GoVibe-Shared-External-Agent.md` |
+| Context | `CONTEXT-GOVIBE-SHARED-EXTERNAL-AGENT` | `0.1.1+draft` | draft | ATHER / THESEUS | `.agents/context/shared/CONTEXT-GoVibe-Shared-External-Agent.md` |
 | Context | `CONTEXT-GOVIBE-GIT-HYGIENE` | `0.1.0+draft` | draft | JANUS / ATHER | `.agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md` |
+| Context | `CONTEXT-MISSION-CONTROL-FRONTEND-STRUCTURE-REFACTOR` | `0.1.1+draft` | draft | LYRA / ARCHON / ATHER | `.agents/context/shared/CONTEXT-Mission-Control-Frontend-Structure-Refactor.md` |
 
 ## 7. Migration Notes
 
@@ -88,6 +89,8 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.27+draft | 2026-06-19 | ATHER / THESEUS | Synced the frontend structure refactor shared context to version 0.1.1 and kept registry alignment current. |
+| 0.1.26+draft | 2026-06-19 | ATHER / THESEUS | Registered the Mission Control frontend structure refactor shared context and synced the shared external-agent context version. |
 | 0.1.25+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.4.8 after residual semantic cleanup. |
 | 0.1.17+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.3.1 after A5 verification. |
 | 0.1.24+draft | 2026-06-18 | ATHER / THESEUS | Synced the approved MCP runtime roadmap to version 0.4.7 after final residual fake-state closure. |
