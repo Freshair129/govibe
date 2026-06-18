@@ -2,7 +2,7 @@
 title: "VIBE Context: A2 Roadmap Template Parity"
 doc_id: "CTX-VIBE-A2-ROADMAP-TEMPLATE-PARITY"
 status: "active"
-version: "0.1.0"
+version: "0.2.0"
 updated: "2026-06-18"
 owner: "VIBE"
 source_of_truth: false
@@ -14,7 +14,7 @@ source_of_truth: false
 
 Bring the React Mission Control A2 Roadmap Board closer to the approved legacy template header contract while preserving runtime-backed state.
 
-## Trigger
+## Trigger history
 
 The approved legacy reference at `GoVibe-Mission-Control-template.html` was updated so the A2 header says:
 
@@ -23,12 +23,18 @@ The approved legacy reference at `GoVibe-Mission-Control-template.html` was upda
 - `พร้อมใช้งาน / IMP แล้ว`
 - `Task ใน Backlog`
 
-The current React implementation in `src/App.tsx` still renders:
+The historical React drift in `src/App.tsx` originally rendered:
 
 - `CoVibe Development Roadmap`
 - `Total items`
 - `Completed`
 - `Active`
+
+That drift has already been corrected in the shipped A2 React surface.
+
+## Current use of this packet
+
+This document now serves as the parent context for follow-up parity work and local frontend delegation.
 
 ## Required behavior
 
@@ -41,6 +47,7 @@ The current React implementation in `src/App.tsx` still renders:
 4. Derive React counts from the approved `RoadmapSnapshot` already used by `RoadmapBoard`.
 5. Preserve approved-source gating: unapproved roadmap sources must not drive live UI state.
 6. Keep C4 untouched.
+7. For local small-model delegation, keep this packet read-only background context and move active implementation slicing into `VIBE-A2-Visual-Parity-Microtasks.md`.
 
 ## Counting guidance
 
@@ -67,6 +74,7 @@ Out of scope:
 - C4 / Database ERD
 - new runtime schemas unless absolutely required
 - unrelated visual refactors
+- rewriting this packet into a large historical changelog
 
 ## Verification
 
@@ -94,3 +102,9 @@ Summary:
 - [template contract honored]
 - [verification run]
 ```
+
+## Notes for local worker delegation
+
+- Treat header title and stat wording as already solved unless a human explicitly reopens them.
+- If a worker proposes redoing the old CoVibe-to-GoVibe rename or stat-label rename, reject that plan as stale.
+- Use this packet to preserve the rationale for runtime-derived counts and approved-source gating, not to reopen completed A2 header work.

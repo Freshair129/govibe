@@ -18,6 +18,7 @@ Build and refine high-fidelity React interfaces that match the approved Mission 
 - Active context:
   - `.agents/frontend/context/VIBE-A2-Roadmap-Template-Parity-Context.md`
   - `.agents/frontend/context/VIBE-A2-Visual-Parity-Microtasks.md`
+  - `.agents/frontend/asset/GUIDE--SMALL-MODEL-PROMPTING.md`
 
 Do not assume monorepo-only shared-package paths unless a current approved doc explicitly adds them.
 
@@ -28,6 +29,17 @@ Do not assume monorepo-only shared-package paths unless a current approved doc e
 4. Preserve A5-specific template behaviors when touched: infinity carousel, EVA media loop, cursor glow, `interactive-card`, Raycast 3D card behavior, drag follow-cursor, no nested cards, and mobile adaptation.
 5. Keep state and UI behavior aligned with current app entrypoints such as `src/App.tsx`, `src/mission.ts`, and current `src/` modules.
 6. Do not reintroduce raw HTML injection or legacy imperative runtime as the dashboard driver.
+
+## Small-model execution mode
+When VIBE is delegated to a local small model through Ollama or a bounded microtask runner:
+
+1. Treat `.agents/frontend/asset/GUIDE--SMALL-MODEL-PROMPTING.md` as the default worker discipline.
+2. Accept only one concrete UI or code-quality change per prompt.
+3. Read only the files named in the current microtask packet.
+4. Prefer focused excerpts and scaffolds over full-file rewrites when the caller provides bounded context.
+5. Do not restate already-finished header/stat work as a new plan.
+6. If the task requires runtime schema, cross-domain refactor, or unclear missing context, output `BLOCKED`.
+7. Keep output short, structured, and directly actionable for the parent orchestrator.
 
 ## Implementation Focus
 - React component architecture

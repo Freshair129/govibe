@@ -6,6 +6,10 @@ param(
     [string]$Model = "sushirl:latest",
 
     [Parameter(Mandatory = $false)]
+    [ValidateSet("fast", "balanced", "ui-heavy")]
+    [string]$Profile = "balanced",
+
+    [Parameter(Mandatory = $false)]
     [int]$MaxCharsPerFile = 12000,
 
     [Parameter(Mandatory = $false)]
@@ -16,6 +20,32 @@ param(
 
     [switch]$PrintPrompt
 )
+
+$profileConfig = @{
+    "fast" = @{
+        model = "qwen3.5:4b"
+        maxCharsPerFile = 8000
+        intent = "Quick bounded checks and cheap microtask planning"
+    }
+    "balanced" = @{
+        model = "sushirl:latest"
+        maxCharsPerFile = 12000
+        intent = "Default frontend microtask work with stronger UI reasoning"
+    }
+    "ui-heavy" = @{
+        model = "qwen3:latest"
+        maxCharsPerFile = 16000
+        intent = "Heavier layout and UI structure reasoning when more context helps"
+    }
+}
+
+$selectedProfile = $profileConfig[$Profile]
+if (-not $PSBoundParameters.ContainsKey("Model")) {
+    $Model = [string]$selectedProfile.model
+}
+if (-not $PSBoundParameters.ContainsKey("MaxCharsPerFile")) {
+    $MaxCharsPerFile = [int]$selectedProfile.maxCharsPerFile
+}
 
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..")).Path
 $microtaskDoc = Join-Path $repoRoot ".agents\frontend\context\VIBE-A2-Visual-Parity-Microtasks.md"
@@ -65,11 +95,13 @@ function Get-TaskPacket {
 
 function Remove-ThinkBlock {
     param([Parameter(Mandatory = $true)][string]$Text)
-    return ([regex]::Replace($Text, "(?is)<think>.*?</think>", "")).Trim()
+    $withoutTaggedThink = [regex]::Replace($Text, "(?is)<think>.*?</think>", "")
+    $withoutPlainThink = [regex]::Replace($withoutTaggedThink, "(?is)^Thinking\.\.\..*?(?=^### VIBE Frontend Output|\z)", "")
+    return $withoutPlainThink.Trim()
 }
 
 function Remove-AnsiNoise {
-    param([Parameter(Mandatory = $true)][string]$Text)
+    param([Parameter(Mandatory = $false)][AllowEmptyString()][string]$Text)
     $withoutAnsi = [regex]::Replace($Text, "\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])", "")
     $withoutControl = [regex]::Replace($withoutAnsi, "[\u0000-\u0008\u000B\u000C\u000E-\u001F]", "")
     return $withoutControl.Trim()
@@ -77,9 +109,13 @@ function Remove-AnsiNoise {
 
 function Test-OutputContract {
     param(
-        [Parameter(Mandatory = $true)][string]$Text,
+        [Parameter(Mandatory = $false)][AllowEmptyString()][string]$Text,
         [Parameter(Mandatory = $true)][string]$RequestedTaskId
     )
+
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return $false
+    }
 
     if ($Text.Trim() -eq "BLOCKED") {
         return $true
@@ -107,7 +143,11 @@ function Test-OutputContract {
 }
 
 function Test-StalePlan {
-    param([Parameter(Mandatory = $true)][string]$Text)
+    param([Parameter(Mandatory = $false)][AllowEmptyString()][string]$Text)
+
+    if ([string]::IsNullOrWhiteSpace($Text)) {
+        return $false
+    }
 
     $rejectPatterns = @(
         "CoVibe Development Roadmap",
@@ -151,6 +191,9 @@ $($entry.Value)
 $prompt = @"
 You are VIBE, the GoVibe frontend worker.
 You are running under a strict controller wrapper for a single microtask.
+Execution profile: $Profile
+Profile intent: $($selectedProfile.intent)
+Selected local model: $Model
 
 Non-negotiable rules:
 - Return only the final answer. Never include chain-of-thought.

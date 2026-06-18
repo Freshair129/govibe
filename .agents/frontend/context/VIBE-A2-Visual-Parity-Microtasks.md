@@ -2,7 +2,7 @@
 title: "VIBE Context: A2 Visual Parity Microtasks"
 doc_id: "CTX-VIBE-A2-VISUAL-PARITY-MICROTASKS"
 status: "active"
-version: "0.1.0"
+version: "0.2.0"
 updated: "2026-06-18"
 owner: "VIBE"
 source_of_truth: false
@@ -15,6 +15,8 @@ source_of_truth: false
 This packet adapts the codegen microtask runner idea to the GoVibe A2 Roadmap Board so a local 9B-class frontend agent can work safely on small, verifiable slices.
 
 The 9B agent is a worker, not the decider.
+
+The default local execution path is the bounded Ollama wrapper under `scripts/agents/run-vibe-microtask-local.ps1`.
 
 ## Worker policy
 
@@ -31,6 +33,29 @@ The local frontend agent must follow these constraints:
    - new backend transport fields
    - cross-domain refactor
    - changes outside A2 scope
+8. Treat completed A2 header/stat work as immutable unless a human explicitly reopens it.
+9. Prefer focused file excerpts and scaffolded edits over broad file rewrites.
+10. If the parent provides a bounded prompt contract, follow it exactly instead of expanding the task.
+
+## Small-model prompting defaults
+
+Apply these defaults from `GUIDE--SMALL-MODEL-PROMPTING.md` every time:
+
+1. One prompt = one specific change.
+2. Keep active edit scope near the smallest useful block, not the whole app.
+3. Avoid exhaustive mocks, giant placeholder objects, or speculative abstractions.
+4. Output only the structured worker response the parent expects.
+5. If reasoning starts to drift or repeat completed work, return `BLOCKED`.
+
+## Local wrapper profiles
+
+Use the wrapper profiles as the default execution ladder:
+
+- `fast` → quick bounded checks or cheap microtask planning
+- `balanced` → default A2/frontend implementation profile
+- `ui-heavy` → denser layout reasoning when more context is justified
+
+If the parent explicitly pins a model, obey the parent. Otherwise prefer `balanced`.
 
 ## Verification gate
 
@@ -81,6 +106,7 @@ If the worker cannot stay within scope, it must output `BLOCKED` instead of inve
 - A2 header now includes live `Export` and `Reset Board` behavior from approved roadmap snapshot data.
 - A2 now includes the sprint shell fallback, denser task rows, and an expandable task detail skeleton with explicit unavailable placeholders.
 - The remaining parity gap is mainly richer runtime-backed task-container data, mobile polish, and small code-quality cleanup, not new roadmap math.
+- Any plan that reopens the completed title/stat rename should be treated as stale and rejected by the parent wrapper.
 
 ## Microtask backlog
 
@@ -103,6 +129,15 @@ Run in this order:
 5. `MT-A2-05`
 
 Do not skip ahead unless a human explicitly reprioritizes.
+
+## Parent-orchestrator guardrails
+
+The parent wrapper should reject a response as stale if it mainly proposes:
+
+- renaming `CoVibe Development Roadmap` to `GoVibe Development Roadmap`
+- changing the three header stat labels
+- introducing hardcoded template counts
+- reopening already-finished header action work instead of the assigned microtask
 
 ## Task packet: MT-A2-01
 

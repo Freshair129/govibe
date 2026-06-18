@@ -135,7 +135,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\ru
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\run-vibe-microtask-local.ps1" `
   -TaskId "MT-A2-01" `
-  -Model "sushirl:latest"
+  -Profile "balanced"
 ```
 
 This wrapper is stricter than the generic Ollama launcher:
@@ -144,6 +144,20 @@ This wrapper is stricter than the generic Ollama launcher:
 - strips `<think>` blocks and terminal ANSI noise
 - validates the VIBE output contract
 - returns `BLOCKED` if the local model drifts outside the required microtask shape
+
+Profiles:
+
+- `fast` -> `qwen3.5:4b` for cheap bounded checks
+- `balanced` -> `sushirl:latest` as the default UI microtask profile
+- `ui-heavy` -> `qwen3:latest` for heavier layout/context reasoning
+
+You can still override the exact model directly:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\run-vibe-microtask-local.ps1" `
+  -TaskId "MT-A2-03" `
+  -Model "sushirl:latest"
+```
 
 ## Modes
 
