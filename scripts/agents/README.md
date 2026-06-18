@@ -30,6 +30,7 @@ scope + task
 - `run-ather-local.ps1` - Ollama atomic wrapper for ATHER
 - `run-vibe-microtask-local.ps1` - strict Ollama microtask wrapper for VIBE A2 parity work
 - `run-qwen-agent-review.ps1` - shared-context wrapper for bounded qwen-cli / OpenRouter review
+- `measure-codex-hybrid-savings.ps1` - compare Codex-only vs hybrid prompt footprint and optional observed usage deltas
 
 ## Generic Usage
 
@@ -209,3 +210,20 @@ The wrapper loads:
 - `.agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md` when the task is git-related
 
 Qwen output remains draft evidence. It cannot approve scope, release, architecture, or destructive cleanup.
+
+## Codex Hybrid Savings Test
+
+Use this when you want a repeatable estimate of whether:
+
+- Codex-only: plan + coding + output
+- Hybrid: Codex plan + local coding + Codex review + hotfix
+
+is cheaper or lighter for the current launcher system.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\measure-codex-hybrid-savings.ps1"
+```
+
+See:
+
+- `docs/runbooks/RUNBOOK--CODEX-HYBRID-SAVINGS-TEST.md`
