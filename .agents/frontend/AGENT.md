@@ -18,6 +18,7 @@ Build and refine high-fidelity React interfaces that match the approved Mission 
 - Active context:
   - `.agents/frontend/context/VIBE-A2-Roadmap-Template-Parity-Context.md`
   - `.agents/frontend/context/VIBE-A2-Visual-Parity-Microtasks.md`
+  - `.agents/frontend/asset/README.md`
   - `.agents/frontend/asset/GUIDE--SMALL-MODEL-PROMPTING.md`
 
 Do not assume monorepo-only shared-package paths unless a current approved doc explicitly adds them.
