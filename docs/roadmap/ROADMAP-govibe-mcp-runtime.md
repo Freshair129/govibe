@@ -1,7 +1,7 @@
 ---
 doc_id: "ROADMAP-GOVIBE-MCP-RUNTIME"
 id: RM-govibe-mcp-runtime
-version: "0.4.5"
+version: "0.4.7"
 updated: "2026-06-18"
 status: approved
 owner: "LYRA"
@@ -25,7 +25,7 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | PHASE-01 | Bind MCP runtime and roadmap document ingestion | SYSTEM-02, SYSTEM-05, SYSTEM-06 | PRD, SRS, LLD, API | Mission Control A2 renders from docs/roadmap sources | done | 100 |
 | PHASE-02 | Export live roadmap snapshots back to Markdown artifacts | SYSTEM-02, SYSTEM-06 | PRD, SRS, LLD, API | Runtime can export a task-level roadmap markdown artifact and load it back | done | 100 |
 | PHASE-03 | Add bi-temporal roadmap versioning | SYSTEM-02, SYSTEM-06, SYSTEM-09 | FEAT, API, ERD | Runtime can query current and historical roadmap state | done | 100 |
-| PHASE-04 | Migrate Mission Control UI from hardcoded operational state to approved runtime truth | SYSTEM-02, SYSTEM-03, SYSTEM-09 | FEAT, IMP, Test Plan | A2, A3, A4, A5, B1, B3, B4, C2, and D3 render approved runtime truth or honest empty states without fake execution | in_progress | 99 |
+| PHASE-04 | Migrate Mission Control UI from hardcoded operational state to approved runtime truth | SYSTEM-02, SYSTEM-03, SYSTEM-09 | FEAT, IMP, Test Plan | A, B, C, and D surfaces render approved runtime truth or honest empty states without fake operational controls, except C4 remains untouched by scope guard | done | 100 |
 
 ## Sprints
 | Sprint | Parent ID | Goal | Task Count | Exit Criteria | Status | Progress |
@@ -39,6 +39,7 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | SPRINT-07 | PHASE-04 | Replace A4 template config controls with honest empty-state runtime config | 1 | Brain & Config no longer presents fake sliders or template config controls | done | 100 |
 | SPRINT-08 | PHASE-04 | Replace B3 placeholder graph nodes with honest empty-state graph studio | 1 | Graph Studio no longer invents graph nodes when the snapshot is empty | done | 100 |
 | SPRINT-09 | PHASE-04 | Replace B1, B4, and C2 residual fake operational surfaces | 3 | B1 has no template AST/source sample, B4 has no inert graph controls, and C2 renders snapshot records | done | 100 |
+| SPRINT-10 | PHASE-04 | Replace B2, C3, C5, D1, and D2 residual fake operational surfaces | 5 | Specs, debugger, vector, reactor, and heatmap views expose only snapshot data or real commands | done | 100 |
 
 ## Backlog Items
 | ID | Parent ID | Type | Title | PRD System | Priority | Owner | Source Section | Dependencies | Acceptance | Status | Progress |
@@ -68,6 +69,11 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | TASK-023-b1-empty-ast-state | SPRINT-09 | task | Replace AST source sample and fallback nodes with honest graph empty state | SYSTEM-02 | P0 | codex | AST Empty State | TASK-022-b3-empty-graph-studio | B1 does not render calculateDrift or blueprint AST nodes without graph data | done | 100 |
 | TASK-024-b4-remove-inert-graph-controls | SPRINT-09 | task | Remove inert Live Call Graph controls that do not affect runtime state | SYSTEM-02 | P0 | codex | Live Graph Controls | TASK-023-b1-empty-ast-state | B4 no longer presents Sync Graph or fake depth controls | done | 100 |
 | TASK-025-c2-registry-intelligence-zoo | SPRINT-09 | task | Replace Intelligence Zoo template roster with snapshot agents and capabilities | SYSTEM-02 | P0 | codex | Intelligence Zoo Snapshot | TASK-024-b4-remove-inert-graph-controls | C2 renders registry-derived agents and MCP capability records | done | 100 |
+| TASK-026-b2-empty-spec-state | SPRINT-10 | task | Replace Business Specifications fallback content with honest empty state | SYSTEM-02 | P0 | codex | Specs Empty State | TASK-025-c2-registry-intelligence-zoo | B2 does not render static business protocol rows when specs are absent | done | 100 |
+| TASK-027-c3-real-ingest-only | SPRINT-10 | task | Remove unwired debugger query controls and keep MissionEvent ingest | SYSTEM-02 | P0 | codex | Debugger Ingest | TASK-026-b2-empty-spec-state | C3 exposes only the real JSON ingest path | done | 100 |
+| TASK-028-c5-empty-vector-state | SPRINT-10 | task | Remove HNSW simulation controls without vector layer data | SYSTEM-02 | P0 | codex | Vector Empty State | TASK-027-c3-real-ingest-only | C5 does not render fake layer controls or simulation labels | done | 100 |
+| TASK-029-d1-real-command-only | SPRINT-10 | task | Remove inert reactor/audio controls and keep the real reactor command | SYSTEM-02 | P0 | codex | Reactor Command | TASK-028-c5-empty-vector-state | D1 keeps the reactor command and removes fake local controls | done | 100 |
+| TASK-030-d2-empty-heatmap-state | SPRINT-10 | task | Remove heatmap fallback cells and render honest empty state | SYSTEM-02 | P0 | codex | Heatmap Empty State | TASK-029-d1-real-command-only | D2 does not render fake heatmap cells when heatmap data is absent | done | 100 |
 
 ## Task Breakdown
 ### TASK-003-gateway-bootstrap: Bootstrap Mission Control from sidecar snapshot and ws events
@@ -128,6 +134,13 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
   - [x] MICRO-025.1.1 Remove static intelligence roster
     - [x] ATOMIC-025.1.1.1 Use registered agents and capability records as C2 entries
 
+### TASK-026-through-030: Replace final residual fake operational surfaces
+- [x] SUBTASK-026.1 Replace B2 static spec fallback with empty-state messaging
+- [x] SUBTASK-027.1 Remove C3 unwired query controls and keep JSON ingest
+- [x] SUBTASK-028.1 Remove C5 simulation layer controls without vector layer data
+- [x] SUBTASK-029.1 Remove D1 inert regulator and audio stream controls
+- [x] SUBTASK-030.1 Remove D2 fallback heatmap cells and render empty-state messaging
+
 ## Assignments
 | Task ID | Subject ID | Subject Type | Policy Model | Assigned At | Assigned By |
 |---|---|---|---|---|---|
@@ -156,6 +169,11 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | TASK-023-b1-empty-ast-state | codex | agent | ABAC | 2026-06-18T15:20:00+07:00 | lyra |
 | TASK-024-b4-remove-inert-graph-controls | codex | agent | ABAC | 2026-06-18T15:20:00+07:00 | lyra |
 | TASK-025-c2-registry-intelligence-zoo | codex | agent | ABAC | 2026-06-18T15:20:00+07:00 | lyra |
+| TASK-026-b2-empty-spec-state | codex | agent | ABAC | 2026-06-18T15:35:00+07:00 | lyra |
+| TASK-027-c3-real-ingest-only | codex | agent | ABAC | 2026-06-18T15:35:00+07:00 | lyra |
+| TASK-028-c5-empty-vector-state | codex | agent | ABAC | 2026-06-18T15:35:00+07:00 | lyra |
+| TASK-029-d1-real-command-only | codex | agent | ABAC | 2026-06-18T15:35:00+07:00 | lyra |
+| TASK-030-d2-empty-heatmap-state | codex | agent | ABAC | 2026-06-18T15:35:00+07:00 | lyra |
 
 ## Verification
 | Task ID | QA Status | Audit Status | Deployment Status | Updated At |
@@ -185,11 +203,18 @@ Bind the shared MCP/runtime layer to Mission Control and replace roadmap bluepri
 | TASK-023-b1-empty-ast-state | passed | passed | n/a | 2026-06-18T15:25:00+07:00 |
 | TASK-024-b4-remove-inert-graph-controls | passed | passed | n/a | 2026-06-18T15:25:00+07:00 |
 | TASK-025-c2-registry-intelligence-zoo | passed | passed | n/a | 2026-06-18T15:25:00+07:00 |
+| TASK-026-b2-empty-spec-state | passed | passed | n/a | 2026-06-18T15:45:00+07:00 |
+| TASK-027-c3-real-ingest-only | passed | passed | n/a | 2026-06-18T15:45:00+07:00 |
+| TASK-028-c5-empty-vector-state | passed | passed | n/a | 2026-06-18T15:45:00+07:00 |
+| TASK-029-d1-real-command-only | passed | passed | n/a | 2026-06-18T15:45:00+07:00 |
+| TASK-030-d2-empty-heatmap-state | passed | passed | n/a | 2026-06-18T15:45:00+07:00 |
 
 ## Changelog
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.4.7 | 2026-06-18 | Closed final residual fake-state migration with browser verification for B2, C3, C5, D1, and D2. |
+| 0.4.6 | 2026-06-18 | Added final residual fake-state migration tasks for B2, C3, C5, D1, and D2. |
 | 0.4.5 | 2026-06-18 | Closed A4, B1, B3, B4, and C2 follow-on migrations with build, smoke, docs, and browser verification. |
 | 0.4.4 | 2026-06-18 | Added B1, B4, and C2 follow-on migration tasks for residual fake operational surfaces. |
 | 0.4.3 | 2026-06-18 | Added B3 empty-state migration for Graph Studio and opened Sprint 08. |

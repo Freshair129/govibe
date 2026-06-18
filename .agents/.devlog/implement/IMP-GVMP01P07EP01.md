@@ -2,7 +2,7 @@
 title: "IMP: Mission Control UI Real-State Migration"
 doc_id: "IMP-GVMP01P07EP01"
 status: "approved"
-version: "0.4.2"
+version: "0.5.1"
 updated: "2026-06-18"
 owner: "LYRA"
 approved_by: "Boss"
@@ -49,6 +49,11 @@ In scope:
 - Replace B1 template AST/source sample with graph-driven state or an honest empty state.
 - Remove B4 inert graph controls that do not affect runtime state.
 - Replace C2 static intelligence roster with MissionSnapshot agents and capabilities.
+- Replace B2 static business specification fallback with an honest empty state.
+- Remove C3 unwired query controls and keep only the real MissionEvent ingest path.
+- Remove C5 simulation layer controls without vector layer data.
+- Remove D1 inert regulator/audio controls while preserving the real reactor command.
+- Replace D2 fake heatmap fallback cells with an honest empty state.
 
 Out of scope:
 
@@ -84,6 +89,11 @@ Out of scope:
 | done | TSK-GVMP01P07EP01SPR04-03 | Replace B1 template AST/source sample with graph-driven state | SERIAL | TSK-GVMP01P07EP01SPR04-02 | `src/App.tsx` | Codex lead | B1 does not render calculateDrift or blueprint AST nodes without graph data |
 | done | TSK-GVMP01P07EP01SPR04-04 | Remove B4 inert graph controls | SERIAL | TSK-GVMP01P07EP01SPR04-03 | `src/App.tsx` | Codex lead | B4 no longer presents Sync Graph or fake depth controls |
 | done | TSK-GVMP01P07EP01SPR04-05 | Replace C2 static intelligence roster with snapshot records | SERIAL | TSK-GVMP01P07EP01SPR04-04 | `src/App.tsx` | Codex lead | C2 renders registered agents and MCP capabilities |
+| done | TSK-GVMP01P07EP01SPR05-01 | Replace B2 static spec fallback with honest empty state | SERIAL | TSK-GVMP01P07EP01SPR04-05 | `src/App.tsx` | Codex lead | B2 renders snapshot specs or an empty state only |
+| done | TSK-GVMP01P07EP01SPR05-02 | Remove C3 unwired query controls | SERIAL | TSK-GVMP01P07EP01SPR05-01 | `src/App.tsx` | Codex lead | C3 exposes only the real MissionEvent ingest path |
+| done | TSK-GVMP01P07EP01SPR05-03 | Remove C5 simulation layer controls | SERIAL | TSK-GVMP01P07EP01SPR05-02 | `src/App.tsx` | Codex lead | C5 renders graph nodes or an empty state only |
+| done | TSK-GVMP01P07EP01SPR05-04 | Remove D1 inert regulator and audio controls | SERIAL | TSK-GVMP01P07EP01SPR05-03 | `src/App.tsx` | Codex lead | D1 preserves the real reactor command only |
+| done | TSK-GVMP01P07EP01SPR05-05 | Replace D2 heatmap fallback cells with honest empty state | SERIAL | TSK-GVMP01P07EP01SPR05-04 | `src/App.tsx` | Codex lead | D2 renders heatmap data or an empty state only |
 
 ## Local Agent Packets
 
@@ -324,8 +334,23 @@ a4_b1_b3_b4_c2_browser_qa:
     - "B3 shows No graph nodes connected and no Room Sync/IFrame Player/Drift Monitor placeholders."
     - "B4 no longer presents Sync Graph or fake depth controls."
     - "C2 renders registry agents and MCP capability records, with the static EVA/Qwen/UAT/Local Runner roster absent."
+final_residual_browser_qa:
+  url: http://127.0.0.1:1420/
+  views:
+    - "B2 Business Specifications"
+    - "C3 SRS-G Debugger"
+    - "C5 HNSW Vector Space Map"
+    - "D1 Reactor Run Trigger"
+    - "D2 Cyber Reactor Heatmap"
+  result: passed
+  evidence:
+    - "B2 shows No functional specs connected and no static business protocol rows."
+    - "C3 keeps MissionEvent JSON ingest and removes unwired query/RAG controls."
+    - "C5 shows No vector map and no simulation layer controls."
+    - "D1 keeps Start Safety Campaign Run and removes inert regulator/audio controls."
+    - "D2 shows No heatmap feed connected and no fake heatmap grid."
 remaining_scope:
-  - "Remaining candidates are lower-priority surfaces such as B2, C5, D1, and D2; C4 remains untouched by scope guard."
+  - "No remaining in-scope UI fake-state migration items found by residual scan. C4 remains untouched by scope guard."
 ```
 
 ## Version Diff
@@ -342,6 +367,8 @@ remaining_scope:
 | 0.4.0 | approved | Added the A4 empty-state config slice and B3 empty-state graph studio follow-on tasks. |
 | 0.4.1 | approved | Added B1, B4, and C2 residual fake-state follow-on tasks. |
 | 0.4.2 | approved | Closed A4, B1, B3, B4, and C2 follow-on migrations with verification evidence. |
+| 0.5.0 | approved | Added final residual fake-state tasks for B2, C3, C5, D1, and D2. |
+| 0.5.1 | approved | Closed final residual fake-state tasks for B2, C3, C5, D1, and D2 with browser evidence. |
 
 ## Changelog
 
@@ -352,6 +379,8 @@ remaining_scope:
 | 0.4.0 | 2026-06-18 | VIBE / KIN / ATHER | Added A4 empty-state config and B3 empty-state graph studio follow-on tasks. |
 | 0.4.1 | 2026-06-18 | VIBE / KIN / ATHER | Added B1, B4, and C2 residual fake-state follow-on tasks. |
 | 0.4.2 | 2026-06-18 | VIBE / KIN / ATHER | Closed A4, B1, B3, B4, and C2 follow-on migrations with verification evidence. |
+| 0.5.0 | 2026-06-18 | VIBE / KIN / ATHER | Added final residual fake-state tasks for B2, C3, C5, D1, and D2. |
+| 0.5.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed final residual fake-state tasks for B2, C3, C5, D1, and D2 with browser evidence. |
 | 0.2.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed A5 registered-agent migration with smoke and browser verification. |
 | 0.2.0 | 2026-06-18 | VIBE / KIN / ATHER | Added A5 registered-agent migration and removed template-agent execution state. |
 | 0.1.1 | 2026-06-18 | VIBE / KIN / ATHER | Closed the A2 real-state slice with automated approval-gate tests, Qwen inventory evidence, and browser QA. |

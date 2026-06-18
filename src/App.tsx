@@ -608,14 +608,7 @@ function BusinessSpecificationsView({ snapshot }: { snapshot: MissionSnapshot })
           {snapshot.specs.map((spec) => <article className="panel" key={spec.title}><h2>{spec.title}</h2><p>{spec.body}</p></article>)}
         </section>
       ) : (
-        <section className="panel spec-panel">
-          <h2>Business Protocol Specification</h2>
-          <p>ตารางต่อไปนี้จัดวางระเบียบข้อบังคับและเวิร์กโฟลว์ของ Genesis Block DB:</p>
-          <ul>
-            <li><strong>GKS-BLOCK-SYNC:</strong> ระบบตรวจสอบความสอดคล้องของโค้ดจริงกับ Document โดยอัตโนมัติ</li>
-            <li><strong>SRS-COMPLIANCE:</strong> ระบบคำนวณสถิติ ROI ของโมเดลและรายงานผลแบบเรียลไทม์ไปยัง AI Benchmark</li>
-          </ul>
-        </section>
+        <EmptyState title="No functional specs connected" body="Publish snapshot.specs before rendering business protocol records." />
       )}
     </div>
   );
@@ -683,26 +676,27 @@ function SymbolExplorerView({ snapshot }: { snapshot: MissionSnapshot }) {
 }
 
 function Heatmap({ snapshot }: { snapshot: MissionSnapshot }) {
-  const cells = snapshot.heatmap?.cells ?? Array.from({ length: 64 }, (_, index) => (index % 8) * 8 + 18);
   return (
     <div className="view-stack">
       <ViewHeader eyebrow="AI Benchmark" title="Cyber Reactor Real-time Heatmap" />
-      <div className="dashboard-grid">
+      {snapshot.heatmap ? (
+        <div className="dashboard-grid">
         <section className="panel reactor-overview">
           <h2>Reactor Overview Status</h2>
-          <div className="kv-row"><span>Core Temp</span><strong>{snapshot.heatmap ? `${snapshot.heatmap.coreTemp}C` : "Awaiting feed"}</strong></div>
-          <div className="kv-row"><span>GFLOPS Power</span><strong>Awaiting feed</strong></div>
-          <div className="kv-row"><span>Coolant Flow Rate</span><strong>Awaiting feed</strong></div>
+          <div className="kv-row"><span>Core Temp</span><strong>{`${snapshot.heatmap.coreTemp}C`}</strong></div>
         </section>
         <section className="panel">
           <h2>Core Thermal Grid (8x8 CPU/GPU Mapping)</h2>
           <div className="heatmap-grid">
-            {cells.map((value, index) => (
-              <span key={`${index}-${value}`} className={!snapshot.heatmap ? "blueprint-cell" : ""} style={{ background: `rgba(${value > 70 ? "244,63,94" : "16,185,129"},${Math.min(0.85, value / 100)})` }}>{snapshot.heatmap ? value : ""}</span>
+            {snapshot.heatmap.cells.map((value, index) => (
+              <span key={`${index}-${value}`} style={{ background: `rgba(${value > 70 ? "244,63,94" : "16,185,129"},${Math.min(0.85, value / 100)})` }}>{value}</span>
             ))}
           </div>
         </section>
       </div>
+      ) : (
+        <EmptyState title="No heatmap feed connected" body="Publish heatmap.update before rendering reactor grid telemetry." />
+      )}
     </div>
   );
 }
@@ -900,71 +894,47 @@ function DatabaseErdView({ snapshot }: { snapshot: MissionSnapshot }) {
 }
 
 function HnswVectorView({ snapshot }: { snapshot: MissionSnapshot }) {
-  const [layer, setLayer] = useState(6);
   return (
     <div className="view-stack">
       <ViewHeader eyebrow="Vector Index" title="HNSW Vector Space Map" desc="C5 is separated from ERD so vector topology can evolve independently." />
-      <div className="hnsw-layout">
-        <section className="panel hnsw-controls">
-          <h2>Filter HNSW Layer View</h2>
-          {[6, 4, 2, 0].map((value) => (
-            <button key={value} className={layer === value ? "active" : ""} onClick={() => setLayer(value)}>Layer {value}</button>
-          ))}
-        </section>
-        <section className="panel vector-panel">
-          <div className="vector-title-row">
-            <h2>Active: Layer {layer}</h2>
-            <span>Simulation Space</span>
-          </div>
-          {snapshot.graph.nodes.length === 0 ? (
-            <EmptyState title="No vector map" body="Publish vector nodes through graph.update or a future vector event to render this map." />
-          ) : (
+      {snapshot.graph.nodes.length === 0 ? (
+        <EmptyState title="No vector map" body="Publish vector nodes through graph.update or a future vector event to render this map." />
+      ) : (
+        <div className="hnsw-layout">
+          <section className="panel vector-panel">
+            <div className="vector-title-row">
+              <h2>Vector Nodes</h2>
+              <span>Live graph data</span>
+            </div>
             <div className="node-cloud">
               {snapshot.graph.nodes.map((node) => <span key={node.id}>{node.label}</span>)}
             </div>
-          )}
-        </section>
-      </div>
+          </section>
+        </div>
+      )}
     </div>
   );
 }
 
 function ReactorRunTrigger({ send }: { send: (command: MissionCommand) => void }) {
-  const [powerLimit, setPowerLimit] = useState(85);
   const [armed, setArmed] = useState(false);
   return (
     <div className="view-stack">
       <ViewHeader eyebrow="Benchmark" title="System Execution Safety and Triggers" desc="D1 sends benchmark run commands through the configured mission transport." />
-      <div className="reactor-grid">
-        <section className="panel regulator-panel">
-          <h2>Underclocking Power Regulator</h2>
-          <p>Adjust local safety preference before sending the reactor command.</p>
-          <input type="range" min="40" max="100" value={powerLimit} onChange={(event) => setPowerLimit(Number(event.target.value))} />
-          <div className="kv-row"><span>Power Limit</span><strong>{powerLimit}%</strong></div>
-        </section>
-        <section className="panel safety-run-panel">
+      <section className="panel safety-run-panel">
           <div>
             <h2>Reactor Execution Safety Run</h2>
-            <span className={armed ? "status-pill online" : "status-pill idle"}>{armed ? "armed" : "ready"}</span>
+          <span className={armed ? "status-pill online" : "status-pill idle"}>{armed ? "command sent" : "ready"}</span>
           </div>
           <div className="safety-progress"><i style={{ width: armed ? "100%" : "0%" }} /></div>
           <button onClick={() => { setArmed(true); void send({ type: "reactor.run", profile: "default" }); }}>Start Safety Campaign Run</button>
         </section>
-      </div>
-      <section className="panel oscilloscope-panel">
-        <div>
-          <h2>Oscilloscope Sound Sandbox</h2>
-          <button type="button">Play Stream</button>
-        </div>
-        <div className="oscilloscope-screen">Standby. Connect audio stream to render waveform.</div>
-      </section>
     </div>
   );
 }
 
 function DataIngestView({ ingest }: { ingest: (json: string) => void }) {
   const [payload, setPayload] = useState("");
-  const [query, setQuery] = useState("");
   const [message, setMessage] = useState("Paste a MissionEvent JSON payload and ingest it into the live gateway.");
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
@@ -980,22 +950,6 @@ function DataIngestView({ ingest }: { ingest: (json: string) => void }) {
   return (
     <div className="view-stack">
       <ViewHeader eyebrow="Debugger" title="SRS-G Debugger" desc="Manual JSON ingress for real MissionEvent payloads." />
-      <section className="panel query-debugger">
-        <div className="query-row">
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Enter query text here..." />
-          <button type="button">Submit Query</button>
-        </div>
-        <div className="debug-output-grid">
-          <article>
-            <span>Standard RAG output</span>
-            <p>{query ? "Connect debugger transport to run this query." : "Waiting for query..."}</p>
-          </article>
-          <article>
-            <span>Multi-Hop Graph Retrieve</span>
-            <p>{query ? "Connect graph retrieval events to compare results." : "Waiting for query..."}</p>
-          </article>
-        </div>
-      </section>
       <form className="panel ingest-panel" onSubmit={submit}>
         <label htmlFor="mission-event-json">MissionEvent JSON</label>
         <textarea
