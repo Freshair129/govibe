@@ -17,6 +17,7 @@ Build and refine high-fidelity React interfaces that match the approved Mission 
   - `GoVibe-Mission-Control-template.html`
 - Active context:
   - `.agents/frontend/context/VIBE-A2-Roadmap-Template-Parity-Context.md`
+  - `.agents/frontend/context/VIBE-A2-Visual-Parity-Microtasks.md`
 
 Do not assume monorepo-only shared-package paths unless a current approved doc explicitly adds them.
 

@@ -93,6 +93,9 @@ The A2 React header should preserve the current approved wording and semantics f
 - Header actions from the template remain part of the visual contract:
   - `Export`
   - `Reset Board`
+- Current React behavior for the approved A2 slice:
+  - `Export` downloads the approved roadmap snapshot as `JSON`, `YAML`, or `Markdown`
+  - `Reset Board` resets local A2 UI state such as the open phase and export menu
 
 If React temporarily omits the action controls, that is a parity gap and must be tracked explicitly rather than silently reworded away.
 
@@ -138,8 +141,9 @@ The React migration must preserve these template-level interaction contracts fro
 ## Current React Alignment Against Template
 
 - Sidebar now starts collapsed, expands on hover, supports lock/collapse, and shows collapsed tooltips.
-- A2 now includes the roadmap header, progress area, export menu, reset action, assist roster cards, accordion phase header, task rows, badges, and assignment selects. It still needs Task Container-backed task detail dropdowns before it reaches template parity.
-- A2 semantic parity for the title and stat labels is approved, but full visual and interaction parity is still incomplete until the React surface matches the template header actions, denser task containers, and dropdown detail structure.
+- A2 now includes the roadmap header, progress area, live export menu, reset action, assist roster cards, accordion phase header, sprint shell, denser task rows, assignment side panel, and expandable task detail skeleton.
+- A2 keeps runtime truth first: if task-container fields such as code/test links, token telemetry, DoD specifics, or per-task export payloads are not present in the approved snapshot, React renders `unavailable` or disabled controls instead of inventing data.
+- A2 semantic parity for the title and stat labels is approved, and the current React surface is structurally aligned with the template within current runtime limits. Full task-container parity still depends on richer runtime-backed task-container fields.
 - A5 now includes the template-style Agent Select infinity carousel with active stats, ability tags, deck navigation, bottom controls, EVA video switcher/media console sourced from `public/agents/eva`, sequential 01 -> 02 -> 03 playback, cursor glow, 3D character tilt, config overlay, no nested card wrappers, and a mobile single-column adaptation when no live agents are connected. It still needs backend-backed config persistence before save/dirty-state controls are meaningful.
 - A3 now has plugin cards and action controls rather than a generic live shell.
 - A4 now has runtime configuration control surfaces rather than a generic live shell.

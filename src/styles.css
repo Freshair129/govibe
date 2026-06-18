@@ -1149,6 +1149,12 @@ footer {
 
 .roadmap-header {
   grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+  align-items: start;
+}
+
+.roadmap-header-top {
+  display: grid;
+  gap: 6px;
 }
 
 .roadmap-progress {
@@ -1190,8 +1196,27 @@ footer {
 .roadmap-actions {
   grid-column: 1 / -1;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.roadmap-source-meta,
+.roadmap-action-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.roadmap-source-meta code {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font-size: 11px;
+  padding: 6px 10px;
 }
 
 .export-menu {
@@ -2008,6 +2033,7 @@ footer {
 .roadmap-stats span {
   color: var(--muted);
   font-size: 10px;
+  font-weight: 700;
 }
 
 .roadmap-accordion {
@@ -2051,6 +2077,61 @@ footer {
   padding: 18px 24px 24px;
 }
 
+.sprint-shell {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.025);
+  display: grid;
+  gap: 14px;
+  padding: 14px;
+}
+
+.sprint-shell > p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.sprint-shell-header,
+.sprint-shell-title,
+.sprint-shell-meta {
+  display: flex;
+  gap: 10px;
+}
+
+.sprint-shell-header {
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.sprint-shell-title {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.sprint-shell-title span,
+.sprint-shell-meta em {
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 900;
+  padding: 4px 9px;
+  text-transform: uppercase;
+}
+
+.sprint-shell-title strong {
+  color: var(--text);
+  font-size: 15px;
+}
+
+.sprint-shell-meta {
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
 .roadmap-task-row {
   align-items: center;
   border: 1px solid var(--border);
@@ -2062,6 +2143,27 @@ footer {
   padding: 14px 16px;
 }
 
+.roadmap-task-row.expanded {
+  align-items: start;
+}
+
+.roadmap-task-main,
+.roadmap-task-side,
+.roadmap-task-head,
+.roadmap-task-title-group,
+.task-side-note {
+  display: grid;
+  gap: 8px;
+}
+
+.roadmap-task-head {
+  gap: 10px;
+}
+
+.roadmap-task-title-group {
+  gap: 6px;
+}
+
 .roadmap-task-row span {
   color: var(--accent);
   display: block;
@@ -2071,11 +2173,48 @@ footer {
   text-transform: uppercase;
 }
 
+.roadmap-task-title-group strong {
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.25;
+}
+
 .task-badges {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-top: 8px;
+}
+
+.task-badges em,
+.task-availability-row em {
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.05);
+  color: var(--muted);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 800;
+  padding: 4px 8px;
+}
+
+.task-badges em:first-child {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 24%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.task-availability-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.task-availability-row em:first-child {
+  color: #10b981;
+}
+
+.task-availability-row em:not(:first-child) {
+  color: #f59e0b;
 }
 
 .task-source-meta {
@@ -2122,6 +2261,28 @@ footer {
   text-transform: uppercase;
 }
 
+.roadmap-task-side {
+  align-self: stretch;
+  border-left: 1px solid var(--border);
+  padding-left: 16px;
+}
+
+.task-detail-toggle,
+.task-export-actions button {
+  min-height: 34px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 0 12px;
+}
+
+.task-detail-toggle {
+  width: 100%;
+}
+
 .roadmap-task-row select {
   min-height: 36px;
   border-radius: 8px;
@@ -2129,6 +2290,126 @@ footer {
   background: rgba(0,0,0,0.34);
   color: var(--text);
   padding: 0 10px;
+}
+
+.task-side-note {
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  padding: 10px;
+}
+
+.task-side-note span,
+.task-side-note small {
+  color: var(--muted);
+  margin: 0;
+}
+
+.task-side-note strong {
+  color: var(--text);
+  font-size: 12px;
+}
+
+.task-detail-panel {
+  grid-column: 1 / -1;
+  border-top: 1px solid var(--border);
+  display: grid;
+  gap: 12px;
+  padding-top: 14px;
+}
+
+.task-detail-section,
+.task-detail-footer,
+.task-detail-grid,
+.task-dod-columns,
+.task-detail-meta,
+.task-export-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.task-detail-section > strong,
+.task-detail-section > span,
+.task-dod-columns span {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.task-detail-grid {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+}
+
+.task-detail-grid.compact {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.task-detail-grid article,
+.task-dod-columns > div,
+.task-detail-footer {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(255,255,255,0.02);
+  padding: 10px;
+}
+
+.task-detail-grid article span,
+.task-detail-footer small,
+.task-changelog small {
+  color: var(--muted);
+  margin: 0;
+}
+
+.task-detail-grid article strong,
+.task-detail-grid article code {
+  color: var(--text);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.task-dod-columns {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.task-dod-columns ul {
+  color: var(--text);
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.task-changelog {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(0,0,0,0.28);
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+}
+
+.task-changelog code {
+  color: #34d399;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.task-detail-footer {
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.task-export-actions {
+  grid-auto-flow: column;
+}
+
+.task-export-actions button:disabled {
+  color: var(--muted);
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .plugin-grid,
@@ -2298,6 +2579,21 @@ footer {
   .ast-layout {
     grid-template-columns: 1fr;
   }
+
+  .roadmap-task-side {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    padding-left: 0;
+    padding-top: 16px;
+  }
+
+  .task-detail-footer {
+    grid-template-columns: 1fr;
+  }
+
+  .task-export-actions {
+    grid-auto-flow: row;
+  }
 }
 
 @media (max-width: 760px) {
@@ -2342,6 +2638,49 @@ footer {
     height: auto;
     padding: 8px 10px;
     width: 100%;
+  }
+
+  .roadmap-actions {
+    align-items: flex-start;
+  }
+
+  .roadmap-source-meta,
+  .roadmap-action-group {
+    width: 100%;
+  }
+
+  .roadmap-source-meta code,
+  .task-source-meta small,
+  .task-detail-grid article code,
+  .task-changelog code {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .roadmap-stats {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .roadmap-stats article {
+    gap: 5px;
+  }
+
+  .sprint-shell-header,
+  .roadmap-task-head {
+    align-items: stretch;
+  }
+
+  .sprint-shell-meta,
+  .task-badges,
+  .task-availability-row {
+    justify-content: flex-start;
+  }
+
+  .task-detail-grid,
+  .task-detail-grid.compact,
+  .task-dod-columns {
+    grid-template-columns: 1fr;
   }
 
   .sidebar-context,

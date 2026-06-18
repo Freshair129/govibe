@@ -12,6 +12,7 @@ import {
   type ViewId,
   type WorkflowTaskNode,
 } from "./mission";
+import { downloadRoadmapExport as triggerRoadmapExport } from "./roadmapExport";
 
 const domainOrder = Object.values(missionDomains);
 const moduleLookup = Object.fromEntries(
@@ -19,6 +20,7 @@ const moduleLookup = Object.fromEntries(
 ) as Record<ViewId, (typeof domainOrder)[number]["subModules"][number]>;
 
 const actionableRoadmapTypes = new Set(["task", "sub-task", "micro-task", "atomic-task"]);
+type RoadmapExportFormat = "json" | "yaml" | "md";
 
 function formatRoadmapState(state: string) {
   return state.replace(/_/g, " ");
@@ -80,23 +82,163 @@ function getRoadmapStats(snapshot?: RoadmapSnapshot) {
 function getPrimaryRoadmapPhase(snapshot?: RoadmapSnapshot) {
   if (!snapshot) return null;
 
-  const phaseNode = snapshot.nodes.find((node) => node.type === "phase");
-  if (phaseNode) {
-    const phaseChildren = snapshot.nodes.filter((node) => node.parentId === phaseNode.id);
-    const fallbackChildren = snapshot.nodes.filter((node) => node.id !== phaseNode.id && node.type !== "roadmap");
+  const rootRoadmap = snapshot.nodes.find((node) => node.type === "roadmap");
+  const phaseNode = snapshot.nodes.find((node) => node.type === "phase") ?? rootRoadmap;
+  if (!phaseNode) return null;
+
+  const phaseChildren = snapshot.nodes.filter((node) => node.parentId === phaseNode.id);
+  const fallbackChildren = snapshot.nodes.filter((node) => node.id !== phaseNode.id && node.type !== "roadmap" && node.type !== "phase");
+  const sprintNodes = phaseChildren.filter((node) => node.type === "sprint");
+
+  if (sprintNodes.length > 0) {
     return {
       phase: phaseNode,
-      tasks: (phaseChildren.length > 0 ? phaseChildren : fallbackChildren).filter((node) => node.type !== "phase"),
+      sprintShells: sprintNodes.map((sprintNode) => ({
+        sprint: sprintNode,
+        isDerived: false,
+        tasks: snapshot.nodes.filter((node) => node.parentId === sprintNode.id && actionableRoadmapTypes.has(node.type)),
+      })),
     };
   }
 
-  const rootRoadmap = snapshot.nodes.find((node) => node.type === "roadmap");
-  if (!rootRoadmap) return null;
-
   return {
-    phase: rootRoadmap,
-    tasks: snapshot.nodes.filter((node) => node.id !== rootRoadmap.id),
+    phase: phaseNode,
+    sprintShells: [
+      {
+        sprint: {
+          ...phaseNode,
+          id: `${phaseNode.id}-derived-sprint-shell`,
+          type: "sprint" as const,
+          title: "Sprint shell",
+          summary: phaseNode.summary ?? "Derived from the current phase because no sprint node is available in the approved roadmap snapshot.",
+          progress: undefined,
+        },
+        isDerived: true,
+        tasks: (phaseChildren.length > 0 ? phaseChildren : fallbackChildren).filter((node) => actionableRoadmapTypes.has(node.type)),
+      },
+    ],
   };
+}
+
+export function buildRoadmapExportPayload(snapshot: RoadmapSnapshot, stats: ReturnType<typeof getRoadmapStats>) {
+  return {
+    title: "GoVibe Development Roadmap",
+    exportedAt: new Date().toISOString(),
+    sourcePath: snapshot.sourcePath,
+    sourceType: snapshot.sourceType,
+    sourceVersion: snapshot.sourceVersion ?? "unavailable",
+    approvalStatus: snapshot.approvalStatus ?? "unavailable",
+    updatedAt: snapshot.updatedAt,
+    stats: {
+      totalFeatures: stats.totalFeatures,
+      readyFeatures: stats.readyFeatures,
+      backlogTasks: stats.backlogTasks,
+      progress: stats.progress,
+      label: stats.label,
+    },
+    nodes: snapshot.nodes.map((node) => ({
+      id: node.id,
+      parentId: node.parentId ?? null,
+      type: node.type,
+      title: node.title,
+      summary: node.summary ?? null,
+      state: node.state,
+      progress: node.progress ?? null,
+      sourcePath: node.sourcePath ?? null,
+      sourceSection: node.sourceSection ?? null,
+    })),
+  };
+}
+
+export function toRoadmapYaml(value: unknown, depth = 0): string {
+  const indent = "  ".repeat(depth);
+
+  if (value === null || value === undefined) return "null";
+  if (typeof value === "string") return JSON.stringify(value);
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (Array.isArray(value)) {
+    if (value.length === 0) return "[]";
+    return value.map((item) => {
+      const serialized = toRoadmapYaml(item, depth + 1);
+      return serialized.includes("\n")
+        ? `${indent}-\n${serialized}`
+        : `${indent}- ${serialized}`;
+    }).join("\n");
+  }
+  if (typeof value === "object") {
+    const entries = Object.entries(value);
+    if (entries.length === 0) return "{}";
+    return entries.map(([key, item]) => {
+      const serialized = toRoadmapYaml(item, depth + 1);
+      return serialized.includes("\n")
+        ? `${indent}${key}:\n${serialized}`
+        : `${indent}${key}: ${serialized}`;
+    }).join("\n");
+  }
+
+  return JSON.stringify(String(value));
+}
+
+export function serializeRoadmapExport(snapshot: RoadmapSnapshot, stats: ReturnType<typeof getRoadmapStats>, format: RoadmapExportFormat) {
+  const payload = buildRoadmapExportPayload(snapshot, stats);
+
+  if (format === "json") {
+    return JSON.stringify(payload, null, 2);
+  }
+
+  if (format === "yaml") {
+    return toRoadmapYaml(payload);
+  }
+
+  const lines = [
+    "# GoVibe Development Roadmap",
+    "",
+    `- Exported At: ${payload.exportedAt}`,
+    `- Source: ${payload.sourcePath}`,
+    `- Approval Status: ${payload.approvalStatus}`,
+    `- Progress: ${payload.stats.label}`,
+    "",
+    "## Summary",
+    "",
+    `- Feature ทั้งหมด: ${payload.stats.totalFeatures}`,
+    `- พร้อมใช้งาน / IMP แล้ว: ${payload.stats.readyFeatures}`,
+    `- Task ใน Backlog: ${payload.stats.backlogTasks}`,
+    "",
+    "## Nodes",
+    "",
+    ...payload.nodes.map((node) => [
+      `### ${node.title}`,
+      "",
+      `- ID: ${node.id}`,
+      `- Type: ${node.type}`,
+      `- State: ${node.state}`,
+      `- Progress: ${node.progress ?? "unavailable"}`,
+      `- Parent ID: ${node.parentId ?? "root"}`,
+      `- Source Section: ${node.sourceSection ?? "unavailable"}`,
+      `- Source Path: ${node.sourcePath ?? payload.sourcePath}`,
+      node.summary ? `- Summary: ${node.summary}` : "- Summary: unavailable",
+      "",
+    ].join("\n")),
+  ];
+
+  return lines.join("\n");
+}
+
+export function downloadRoadmapExport(snapshot: RoadmapSnapshot, stats: ReturnType<typeof getRoadmapStats>, format: RoadmapExportFormat) {
+  const extension = format === "md" ? "md" : format;
+  const mimeType = format === "json"
+    ? "application/json"
+    : format === "yaml"
+      ? "text/yaml"
+      : "text/markdown";
+  const content = serializeRoadmapExport(snapshot, stats, format);
+  const blob = new Blob([content], { type: `${mimeType};charset=utf-8` });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `govibe-roadmap-export.${extension}`;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 function useMissionSnapshot() {
@@ -267,15 +409,52 @@ function EmptyState({ title, body }: { title: string; body: string }) {
 }
 
 function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: WorkflowTaskNode }) {
+  const [expanded, setExpanded] = useState(false);
   const assignee = getRoadmapAssignee(snapshot, node);
   const badges = getRoadmapVerificationBadges(snapshot, node);
   const sourceMeta = getRoadmapSourceMeta(snapshot, node);
+  const verification = snapshot.verifications.find((item) => item.taskId === node.id);
+  const availabilityBadges = [
+    sourceMeta?.sourcePath ? "Doc linked" : "Doc unavailable",
+    "Code unavailable",
+    "Test unavailable",
+    `Progress ${typeof node.progress === "number" ? `${node.progress}%` : "unavailable"}`,
+  ];
+  const metadataItems = [
+    { label: "Version", value: node.version ?? "unavailable" },
+    { label: "Complexity", value: "unavailable" },
+    { label: "Type", value: getRoadmapScope(node) },
+    { label: "Status", value: formatRoadmapState(node.state) },
+    { label: "Tokens used", value: "unavailable" },
+  ];
+  const responsibilityItems = [
+    { label: "PIC", value: "unavailable" },
+    { label: "Executor", value: assignee },
+    { label: "Approver", value: "unavailable" },
+    { label: "Auditor", value: verification?.auditStatus ? `Audit ${verification.auditStatus}` : "unavailable" },
+  ];
+  const dodColumns = [
+    { title: "Acceptance Criteria", items: ["Spec approval unavailable", "Docs update unavailable"] },
+    { title: "Success Criteria", items: ["Code completion unavailable", "Lint proof unavailable"] },
+    { title: "Exit Criteria", items: ["Tests unavailable", "Regression status unavailable"] },
+  ];
   return (
-    <article className="roadmap-task-row">
-      <div>
-        <span>{getRoadmapScope(node)}</span>
-        <strong>{node.title}</strong>
+    <article className={expanded ? "roadmap-task-row expanded" : "roadmap-task-row"}>
+      <div className="roadmap-task-main">
+        <div className="roadmap-task-head">
+          <div className="roadmap-task-title-group">
+            <span>{getRoadmapScope(node)}</span>
+            <strong>{node.title}</strong>
+          </div>
+          <div className="task-badges">
+            <em>{formatRoadmapState(node.state)}</em>
+            {badges.map((badge) => <em key={`${node.id}-${badge}`}>{badge}</em>)}
+          </div>
+        </div>
         {node.summary ? <p>{node.summary}</p> : null}
+        <div className="task-availability-row">
+          {availabilityBadges.map((badge) => <em key={`${node.id}-${badge}`}>{badge}</em>)}
+        </div>
         {sourceMeta ? (
           <div className="task-source-meta" aria-label={`Source for ${node.title}`}>
             <span>Source</span>
@@ -283,17 +462,94 @@ function WorkflowTaskRow({ snapshot, node }: { snapshot: RoadmapSnapshot; node: 
             {sourceMeta.sourcePath ? <small>{sourceMeta.sourcePath}</small> : null}
           </div>
         ) : null}
-        <div className="task-badges">
-          <em>{formatRoadmapState(node.state)}</em>
-          {badges.map((badge) => <em key={`${node.id}-${badge}`}>{badge}</em>)}
+      </div>
+      <div className="roadmap-task-side">
+        <button
+          type="button"
+          className="task-detail-toggle"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((value) => !value)}
+        >
+          {expanded ? "Hide detail" : "Show detail"}
+        </button>
+        <label>
+          Assign to
+          <select value={assignee} disabled aria-label={`Assignment for ${node.title}`}>
+            <option>{assignee}</option>
+          </select>
+        </label>
+        <div className="task-side-note">
+          <span>Detail view</span>
+          <strong>{expanded ? "Active" : "MT-A2-03"}</strong>
+          <small>{expanded ? "Runtime-backed skeleton with unavailable placeholders" : "Task dropdown available"}</small>
         </div>
       </div>
-      <label>
-        Assign to
-        <select value={assignee} disabled aria-label={`Assignment for ${node.title}`}>
-          <option>{assignee}</option>
-        </select>
-      </label>
+      {expanded ? (
+        <div className="task-detail-panel">
+          <section className="task-detail-section">
+            <strong>SYMBOL LINKS</strong>
+            <div className="task-detail-grid compact">
+              <article><span>Code link</span><code>unavailable</code></article>
+              <article><span>Doc link</span><code>{sourceMeta?.sourcePath ?? "unavailable"}</code></article>
+              <article><span>Test link</span><code>unavailable</code></article>
+            </div>
+          </section>
+          <section className="task-detail-section">
+            <strong>Metadata</strong>
+            <div className="task-detail-grid">
+              {metadataItems.map((item) => (
+                <article key={`${node.id}-${item.label}`}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </article>
+              ))}
+            </div>
+          </section>
+          <section className="task-detail-section">
+            <strong>Responsibility</strong>
+            <div className="task-detail-grid">
+              {responsibilityItems.map((item) => (
+                <article key={`${node.id}-${item.label}`}>
+                  <span>{item.label}</span>
+                  <strong>{item.value}</strong>
+                </article>
+              ))}
+            </div>
+          </section>
+          <section className="task-detail-section">
+            <strong>DEFINITION OF DONE (DOD)</strong>
+            <div className="task-dod-columns">
+              {dodColumns.map((column) => (
+                <div key={`${node.id}-${column.title}`}>
+                  <span>{column.title}</span>
+                  <ul>
+                    {column.items.map((item) => <li key={`${node.id}-${column.title}-${item}`}>{item}</li>)}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+          <section className="task-detail-section">
+            <strong>CHANGELOG</strong>
+            <div className="task-changelog">
+              <code>{node.version ? `[${node.version}]` : "[unavailable]"} Detail snapshot generated from approved roadmap node.</code>
+              <small>Task ID: {node.id}</small>
+              <small>Updated: {snapshot.updatedAt ?? "unavailable"}</small>
+            </div>
+          </section>
+          <section className="task-detail-footer">
+            <div className="task-detail-meta">
+              <small>Created: unavailable</small>
+              <small>Task ID: {node.id}</small>
+            </div>
+            <div className="task-export-actions">
+              <button type="button" disabled>JSON</button>
+              <button type="button" disabled>YAML</button>
+              <button type="button" disabled>Markdown</button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </article>
   );
 }
@@ -703,6 +959,7 @@ function Heatmap({ snapshot }: { snapshot: MissionSnapshot }) {
 
 function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
   const [openPhase, setOpenPhase] = useState(true);
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const receivedRoadmap = snapshot.roadmap;
   const roadmap = receivedRoadmap?.approvalStatus?.toLowerCase() === "approved" ? receivedRoadmap : undefined;
   const stats = getRoadmapStats(roadmap);
@@ -716,7 +973,7 @@ function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
   return (
     <div className="view-stack">
       <section className="panel roadmap-header">
-        <div>
+        <div className="roadmap-header-top">
           <ViewHeader eyebrow="Planning" title="GoVibe Development Roadmap" desc="Roadmap state should come from approved docs and live mission events." />
         </div>
         <div className="roadmap-progress">
@@ -730,8 +987,39 @@ function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
           <article><strong>{stats.backlogTasks}</strong><span>Task ใน Backlog</span></article>
         </div>
         <div className="roadmap-actions">
-          <span className={`status-pill ${roadmap ? "online" : "idle"}`}>{sourceState}</span>
-          {roadmap ? <code>{roadmap.sourcePath}</code> : null}
+          <div className="roadmap-source-meta">
+            <span className={`status-pill ${roadmap ? "online" : "idle"}`}>{sourceState}</span>
+            {roadmap ? <code>{roadmap.sourcePath}</code> : null}
+          </div>
+          <div className="roadmap-action-group">
+            <div className="export-menu">
+              <button
+                type="button"
+                onClick={() => setExportMenuOpen((value) => !value)}
+                disabled={!roadmap}
+                title={roadmap ? "Export approved roadmap snapshot" : "Export requires an approved roadmap source"}
+                aria-expanded={exportMenuOpen}
+              >
+                Export
+              </button>
+              {exportMenuOpen && roadmap ? (
+                <div>
+                  <button type="button" onClick={() => { triggerRoadmapExport(roadmap, stats, "json"); setExportMenuOpen(false); }}>JSON</button>
+                  <button type="button" onClick={() => { triggerRoadmapExport(roadmap, stats, "yaml"); setExportMenuOpen(false); }}>YAML</button>
+                  <button type="button" onClick={() => { triggerRoadmapExport(roadmap, stats, "md"); setExportMenuOpen(false); }}>Markdown</button>
+                </div>
+              ) : null}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setOpenPhase(true);
+                setExportMenuOpen(false);
+              }}
+            >
+              Reset Board
+            </button>
+          </div>
         </div>
       </section>
       <div className="roadmap-layout">
@@ -755,10 +1043,28 @@ function RoadmapBoard({ snapshot }: { snapshot: MissionSnapshot }) {
               {livePhase ? (
                 <>
                   <p>{livePhase.phase.summary ?? `Live roadmap source: ${roadmap?.sourcePath ?? "connected event source"}`}</p>
-                  {livePhase.tasks.length > 0 ? livePhase.tasks.map((node) => (
-                    <WorkflowTaskRow key={node.id} snapshot={roadmap!} node={node} />
+                  {livePhase.sprintShells.length > 0 ? livePhase.sprintShells.map(({ sprint, isDerived, tasks }) => (
+                    <section className="sprint-shell" key={sprint.id}>
+                      <div className="sprint-shell-header">
+                        <div className="sprint-shell-title">
+                          <span>{isDerived ? "Sprint shell" : getRoadmapScope(sprint)}</span>
+                          <strong>{sprint.title}</strong>
+                        </div>
+                        <div className="sprint-shell-meta">
+                          <em>{isDerived ? "derived" : formatRoadmapState(sprint.state)}</em>
+                          <em>Duration: unavailable</em>
+                          <em>Progress: {typeof sprint.progress === "number" ? `${sprint.progress}%` : "unavailable"}</em>
+                        </div>
+                      </div>
+                      <p>{sprint.summary ?? "Sprint summary unavailable."}</p>
+                      {tasks.length > 0 ? tasks.map((node) => (
+                        <WorkflowTaskRow key={node.id} snapshot={roadmap!} node={node} />
+                      )) : (
+                        <EmptyState title="No tasks in sprint shell" body="The roadmap snapshot is connected, but this sprint shell does not include actionable task nodes yet." />
+                      )}
+                    </section>
                   )) : (
-                    <EmptyState title="No tasks in live phase" body="The roadmap snapshot is connected, but this phase does not include child task nodes yet." />
+                    <EmptyState title="No sprint shell available" body="The approved roadmap phase is connected, but no sprint shell or actionable task nodes are available yet." />
                   )}
                 </>
               ) : (

@@ -28,6 +28,7 @@ scope + task
 - `run-theseus-local.ps1` - Ollama atomic wrapper for THESEUS
 - `run-lyra-local.ps1` - Ollama atomic wrapper for LYRA
 - `run-ather-local.ps1` - Ollama atomic wrapper for ATHER
+- `run-vibe-microtask-local.ps1` - strict Ollama microtask wrapper for VIBE A2 parity work
 - `run-qwen-agent-review.ps1` - shared-context wrapper for bounded qwen-cli / OpenRouter review
 
 ## Generic Usage
@@ -128,6 +129,21 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\ru
   -Task "Audit this single workflow spec for drift" `
   -RetryLargerLocalModel
 ```
+
+### VIBE Local Microtask
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\run-vibe-microtask-local.ps1" `
+  -TaskId "MT-A2-01" `
+  -Model "sushirl:latest"
+```
+
+This wrapper is stricter than the generic Ollama launcher:
+
+- injects real file contents for the assigned A2 microtask
+- strips `<think>` blocks and terminal ANSI noise
+- validates the VIBE output contract
+- returns `BLOCKED` if the local model drifts outside the required microtask shape
 
 ## Modes
 
