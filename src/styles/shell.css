@@ -263,6 +263,36 @@ footer {
   width: 280px;
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .sidebar:hover {
+    flex-basis: 280px;
+    width: 280px;
+  }
+
+  .sidebar:hover .sidebar-context {
+    justify-content: flex-start;
+    padding-inline: 4px;
+  }
+
+  .sidebar:hover .sidebar-context-copy,
+  .sidebar:hover .side-nav-copy,
+  .sidebar:hover .sidebar-toggle strong {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .sidebar:hover .side-nav button {
+    justify-content: flex-start;
+    gap: 12px;
+    padding-inline: 12px;
+  }
+
+  .sidebar:hover .sidebar-toggle {
+    justify-content: flex-start;
+    padding-inline: 12px;
+  }
+}
+
 .sidebar-main {
   display: grid;
   gap: 16px;
