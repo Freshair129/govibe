@@ -391,37 +391,34 @@ footer {
   align-items: center;
   justify-content: center;
   gap: 0;
-  padding: 10px;
+  padding: 10px 12px;
   text-align: left;
   overflow: hidden;
   min-height: 54px;
   border-radius: 12px;
+  border: 0;
+  background: transparent;
   transition:
     background-color var(--shell-motion-duration) var(--shell-motion-ease),
-    border-color var(--shell-motion-duration) var(--shell-motion-ease),
     transform var(--shell-motion-duration) var(--shell-motion-ease),
-    box-shadow var(--shell-motion-duration) var(--shell-motion-ease);
+    color var(--shell-motion-duration) var(--shell-motion-ease);
 }
 
 .sidebar.expanded .side-nav button {
   justify-content: flex-start;
   gap: 12px;
-  padding-inline: 12px;
+  padding-inline: 14px;
 }
 
 .side-nav button.active {
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
-  background: color-mix(in srgb, var(--accent) 16%, rgba(255, 255, 255, 0.02));
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent),
-    0 10px 24px rgba(0, 0, 0, 0.14);
+  background: color-mix(in srgb, rgba(255, 255, 255, 0.08) 70%, var(--accent) 30%);
   transform: translateY(-1px);
 }
 
 .side-nav button:hover,
 .side-nav button:focus-visible {
   transform: translateY(-1px);
-  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .side-nav-icon {
@@ -472,8 +469,7 @@ footer {
   height: 32px;
   flex-basis: 32px;
   color: color-mix(in srgb, var(--accent) 84%, var(--text));
-  background: color-mix(in srgb, var(--accent) 10%, rgba(255, 255, 255, 0.02));
-  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  background: color-mix(in srgb, var(--accent) 16%, rgba(255, 255, 255, 0.02));
   border-radius: 10px;
 }
 
