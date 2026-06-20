@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GoVibe — AI-Native CoDev Platform (Landing Mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0a0a0b; --bg-soft:#101012; --panel:#141417; --panel-2:#1a1a1e;
+    --line:rgba(255,255,255,.08); --line-2:rgba(255,255,255,.14);
+    --ink:#f4f4f5; --ink-soft:#a1a1aa; --ink-dim:#6b6b73;
+    --accent:#e8ff5a; --accent-ink:#0a0a0b;
+    --radius:18px; --radius-sm:12px;
+    --max:1200px;
+    --disp:"Space Grotesk","Noto Sans Thai",sans-serif;
+    --body:"Inter","Noto Sans Thai",sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  /* edge-to-edge fluid: hero card has 12px margin, so add it here to align section text with hero text */
+  .wrap{width:100%;margin:0;padding:0 calc(12px + clamp(26px,6.5vw,210px))}
+  section{position:relative}
+  .eyebrow{font-family:var(--disp);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-dim);display:inline-flex;align-items:center;gap:8px}
+  .eyebrow::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent)}
+  .ph{color:var(--accent);font-size:.82em;opacity:.85;border:1px dashed rgba(232,255,90,.4);border-radius:6px;padding:1px 6px}
+  h1,h2,h3{font-family:var(--disp);font-weight:600;letter-spacing:-.02em;line-height:1.05}
+  .display{font-size:clamp(64px,13vw,180px);font-weight:700;letter-spacing:-.04em;line-height:.92}
+  .sec-title{font-size:clamp(30px,4vw,52px)}
+  .muted{color:var(--ink-soft)}
+  .dim{color:var(--ink-dim)}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);font-family:var(--disp);font-weight:600;font-size:15px;padding:14px 22px;border-radius:100px;transition:transform .2s ease, filter .2s}
+  .btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+  .btn-ghost{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line-2);color:var(--ink);font-family:var(--disp);font-weight:500;font-size:15px;padding:13px 22px;border-radius:100px;transition:background .2s,border-color .2s}
+  .btn-ghost:hover{background:var(--panel);border-color:var(--ink-soft)}
+  .divider{height:1px;background:var(--line);width:100%}
+  .pad{padding:96px 0}
+  .pad-sm{padding:64px 0}
+
+  /* ===== HERO (reference-exact, full-bleed cinematic) ===== */
+  /* hero = rounded card sitting on the black page bg; the black gutter IS the body bg */
+  .hero2{position:relative;min-height:calc(100vh - 24px);min-height:calc(100svh - 24px);margin:12px;border-radius:30px;display:flex;flex-direction:column;overflow:hidden;color:#fff}
+  @media(max-width:600px){.hero2{margin:8px;border-radius:22px;min-height:calc(100svh - 16px)}}
+  /* background = placeholder for hero video/photo (teal cinematic) */
+  .hero-media{position:absolute;inset:0;z-index:0;
+    background:
+      radial-gradient(55% 48% at 57% 36%, rgba(224,168,128,.5), rgba(224,168,128,0) 60%),
+      radial-gradient(85% 80% at 70% 54%, rgba(110,164,172,.5), rgba(20,52,60,0) 66%),
+      linear-gradient(155deg,#2b6976 0%,#175059 42%,#0b2d34 72%,#06171c 100%)}
+  .hero-media::after{content:"";position:absolute;inset:0;
+    background:radial-gradient(125% 100% at 50% 28%, transparent 38%, rgba(0,0,0,.62) 100%)}
+  /* WebGL depth-scan canvas (covers the gradient fallback) */
+  .hero-fx{position:absolute;inset:0;z-index:1;width:100%;height:100%;display:block}
+  /* legibility scrim so white text stays readable over the scan */
+  .hero-scrim{position:absolute;inset:0;z-index:3;pointer-events:none;
+    background:
+      linear-gradient(90deg, rgba(6,18,22,.62), rgba(6,18,22,0) 56%),
+      linear-gradient(0deg, rgba(6,18,22,.55), rgba(6,18,22,0) 42%)}
+  .hero-lines{position:absolute;inset:0;z-index:2;pointer-events:none;
+    background-image:linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px);
+    background-size:16.666% 100%}
+  /* cursor-follow glow (driven by --mx / --my from JS) */
+  .hero-glow{position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .35s ease;
+    background:radial-gradient(380px circle at var(--mx,50%) var(--my,50%), rgba(57,217,138,.22), rgba(57,217,138,0) 60%)}
+  .hero2:hover .hero-glow{opacity:1}
+  /* banner tab with angled shoulders (trapezoid dipping down) */
+  .hero-notch{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:40;
+    width:clamp(170px,15vw,230px);height:50px;display:flex;align-items:center;justify-content:center;
+    background:#0a0a0b;padding-bottom:9px;
+    clip-path:polygon(0 0,100% 0,83% 100%,17% 100%)}
+  .hero-notch .lg{font-family:var(--disp);font-weight:700;font-size:17px;letter-spacing:-.01em;color:#fff;
+    border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.05);border-radius:8px;padding:4px 13px}
+  .hero-notch .lg b{color:#39d98a}
+  /* full-width fluid: content hugs left/right with ~6.5vw side gutter (≈13% total), scales with screen */
+  .hero2-inner{position:relative;z-index:4;display:flex;flex-direction:column;flex:1;min-height:calc(100vh - 24px);min-height:calc(100svh - 24px);width:100%;margin:0;padding:30px clamp(26px,6.5vw,210px) 48px}
+  /* top bar */
+  .hero-bar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+  .hero-bar-left{display:flex;align-items:center;gap:18px}
+  .menu-btn{display:inline-flex;align-items:center;gap:11px;background:rgba(10,10,11,.5);border:1px solid rgba(255,255,255,.16);
+    color:#fff;font-family:var(--disp);font-weight:500;font-size:15px;padding:12px 20px;border-radius:100px;backdrop-filter:blur(8px);cursor:pointer}
+  .menu-btn .burger{display:inline-flex;flex-direction:column;gap:3px}
+  .menu-btn .burger i{width:16px;height:2px;background:#fff;display:block;border-radius:2px}
+  .bar-divider{width:1px;height:28px;background:rgba(255,255,255,.28)}
+  .bar-loc{font-family:var(--disp);font-size:14px;color:rgba(255,255,255,.82)}
+  .pill-arr{display:inline-flex;align-items:center;gap:12px;background:rgba(10,10,11,.5);border:1px solid rgba(255,255,255,.16);
+    color:#fff;font-family:var(--disp);font-weight:500;font-size:15px;padding:7px 7px 7px 22px;border-radius:100px;backdrop-filter:blur(8px);cursor:pointer}
+  .pill-arr .arr{width:32px;height:32px;border-radius:50%;background:#fff;color:#0a0a0b;display:inline-flex;align-items:center;justify-content:center;font-size:16px;font-weight:700}
+  /* middle: wordmark + subheadline */
+  .hero-mid{flex:1;display:flex;flex-direction:column;justify-content:center;margin-top:-8px}
+  .hero-word{font-size:clamp(90px,18.5vw,360px);font-weight:700;letter-spacing:-.045em;line-height:.82;color:#fff;margin-bottom:26px}
+  .hero-headline{font-size:clamp(26px,3vw,42px);font-weight:700;line-height:1.04;letter-spacing:-.01em;color:#fff}
+  /* bottom row */
+  .hero-bottom{display:flex;align-items:flex-end;justify-content:space-between;gap:30px}
+  .hero-info{max-width:330px;display:flex;flex-direction:column;gap:22px}
+  .proof{display:flex;align-items:center;gap:16px}
+  .avatars{display:flex}
+  .avatars span{width:42px;height:42px;border-radius:50%;border:2px solid #0e3a42;margin-left:-13px}
+  .avatars span:first-child{margin-left:0;background:linear-gradient(135deg,#caa,#744)}
+  .avatars span:nth-child(2){background:linear-gradient(135deg,#9bb,#356)}
+  .avatars span:nth-child(3){background:linear-gradient(135deg,#cb9,#642)}
+  .proof .stat{font-family:var(--disp);font-weight:700;font-size:30px;line-height:1}
+  .proof .stat small{display:block;font-weight:400;font-size:14px;color:rgba(255,255,255,.7);margin-top:5px}
+  .hero-desc{font-size:15px;color:rgba(255,255,255,.85);line-height:1.5}
+  .hero-social{display:flex;gap:12px;margin-bottom:6px}
+  .hero-social a{width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.24);display:inline-flex;align-items:center;justify-content:center;color:#fff;backdrop-filter:blur(6px)}
+  .hero-social svg{width:17px;height:17px;fill:#fff}
+  /* award / badge card */
+  .award{width:300px;background:#0a0a0b;border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:22px 24px}
+  .award .stars{text-align:center;color:#fff;letter-spacing:5px;font-size:13px}
+  .award .mid{display:flex;align-items:center;justify-content:center;gap:12px;margin:12px 0 6px}
+  .award .laurel{font-size:30px;line-height:1}
+  .award .laurel.r{transform:scaleX(-1)}
+  .award .ttl{text-align:center}
+  .award .ttl .s{font-family:var(--disp);font-size:12px;letter-spacing:.2em;color:rgba(255,255,255,.65)}
+  .award .ttl .b{font-family:var(--disp);font-weight:700;font-size:25px;letter-spacing:.02em;margin-top:2px}
+  .award .ln{height:1px;background:rgba(255,255,255,.12);margin:16px 0}
+  .award .sub{font-family:var(--disp);font-size:14px;color:rgba(255,255,255,.7)}
+  /* crosshairs */
+  .plus{position:absolute;color:rgba(255,255,255,.55);font-size:22px;font-weight:300;z-index:3;pointer-events:none}
+  @media(max-width:900px){
+    .hero-bottom{flex-direction:column;align-items:flex-start;gap:28px}
+    .award{width:100%;max-width:340px}
+    .bar-loc,.plus{display:none}
+    .hero-word{margin-bottom:18px}
+  }
+
+
+  /* ===== MOTION ===== */
+  @keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes kenburns{0%{transform:scale(1.06) translate(0,0)}50%{transform:scale(1.1) translate(-1.2%,-1%)}100%{transform:scale(1.06) translate(0,0)}}
+  .hero-media{transform-origin:60% 40%;animation:kenburns 22s ease-in-out infinite}
+  .hero-bar{animation:fadeIn .8s .05s both}
+  .hero-notch{animation:fadeIn 1s .25s both}
+  .hero-word{animation:fadeUp 1s cubic-bezier(.2,.7,.2,1) both}
+  .hero-headline{animation:fadeUp 1s .15s cubic-bezier(.2,.7,.2,1) both}
+  .hero-info{animation:fadeUp 1s .32s cubic-bezier(.2,.7,.2,1) both}
+  .hero-social{animation:fadeUp 1s .42s cubic-bezier(.2,.7,.2,1) both}
+  .award{animation:fadeUp 1s .5s cubic-bezier(.2,.7,.2,1) both}
+  .menu-btn,.pill-arr,.hero-social a{transition:transform .2s ease,background .2s ease,border-color .2s ease}
+  .menu-btn:hover,.pill-arr:hover{transform:translateY(-2px);border-color:rgba(255,255,255,.34)}
+  .hero-social a:hover{transform:translateY(-2px);background:rgba(255,255,255,.1)}
+  .pill-arr .arr{transition:transform .25s ease}
+  .pill-arr:hover .arr{transform:translateX(3px)}
+  /* ===== SECTION POLISH (cinematic hover depth + accent, focus states) ===== */
+  .card,.uc,.step{position:relative;overflow:hidden;transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+  .card::after,.uc::after,.step::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+    background:radial-gradient(120% 80% at 50% -10%, rgba(232,255,90,.08), transparent 60%);opacity:0;transition:opacity .3s}
+  .card:hover::after,.uc:hover::after,.step:hover::after{opacity:1}
+  .card:hover,.uc:hover,.step:hover{transform:translateY(-4px);border-color:rgba(232,255,90,.35);
+    box-shadow:0 20px 50px -22px rgba(0,0,0,.65),0 0 0 1px rgba(232,255,90,.12)}
+  .card:hover .tag{border-color:var(--accent);color:var(--accent)}
+  .plan{transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease}
+  .plan:hover{transform:translateY(-4px);border-color:rgba(232,255,90,.4);box-shadow:0 24px 60px -24px rgba(0,0,0,.7)}
+  .int,.metric{transition:background .25s ease,color .2s ease}
+  .int:hover,.metric:hover{background:var(--panel)}
+  .int:hover .nm,.metric:hover .num{color:var(--accent)}
+  .cap .nm{transition:transform .25s ease}
+  .cap:hover .nm{transform:translateX(8px)}
+  .cap:hover .ix{color:var(--accent)}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+
+  /* scroll progress bar */
+  .scroll-prog{position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:120;transition:width .08s linear;box-shadow:0 0 12px rgba(232,255,90,.5)}
+  /* sticky mini-header: slides in after the hero scrolls away */
+  .site-header{position:fixed;top:0;left:0;right:0;z-index:110;display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:13px clamp(20px,5vw,72px);background:rgba(10,10,11,.72);backdrop-filter:blur(16px);
+    border-bottom:1px solid var(--line);transform:translateY(-100%);transition:transform .4s cubic-bezier(.2,.7,.2,1)}
+  .site-header.show{transform:none}
+  .site-header .brand{font-family:var(--disp);font-weight:700;font-size:19px;letter-spacing:-.02em}
+  .site-header .brand b{color:#39d98a}
+  .site-header .hnav{display:flex;gap:26px;font-size:14px;color:var(--ink-soft)}
+  .site-header .hnav a{transition:color .2s}
+  .site-header .hnav a:hover{color:var(--ink)}
+  .site-header .hbtn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--accent-ink);font-family:var(--disp);font-weight:600;font-size:14px;padding:9px 18px;border-radius:100px;transition:transform .2s,filter .2s}
+  .site-header .hbtn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+  @media(max-width:820px){.site-header .hnav{display:none}}
+
+  /* scroll-reveal for sections below the hero */
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    .reveal{opacity:1!important;transform:none!important}
+  }
+
+  /* MARQUEE / trust */
+  .trust{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:26px 0;background:var(--bg-soft)}
+  .badges{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+  .badge{font-family:var(--disp);font-size:12px;letter-spacing:.14em;color:var(--ink-soft);border:1px solid var(--line-2);border-radius:100px;padding:8px 16px;white-space:nowrap}
+  /* full-bleed scrolling marquee (breaks out of .wrap padding) */
+  .marquee{position:relative;overflow:hidden;margin-inline:calc(-12px - clamp(26px,6.5vw,210px));
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+  .marquee-track{display:flex;gap:14px;width:max-content;padding-block:3px;animation:marquee 30s linear infinite}
+  .marquee:hover .marquee-track{animation-play-state:paused}
+  @keyframes marquee{to{transform:translateX(-50%)}}
+  .trust-msg{text-align:center;max-width:680px;margin:22px auto 0;color:var(--ink-soft);font-size:15px}
+
+  /* METRICS */
+  .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .metric{background:var(--bg);padding:40px 32px}
+  .metric .num{font-family:var(--disp);font-size:clamp(40px,5vw,64px);font-weight:700;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .metric .lab{color:var(--ink-soft);font-size:15px;margin-top:10px}
+  @media(max-width:820px){.metrics{grid-template-columns:1fr}}
+
+  /* APPROACH */
+  .head-row{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:48px;flex-wrap:wrap}
+  .head-row p{max-width:420px;color:var(--ink-soft);font-size:16px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px;display:flex;flex-direction:column;gap:16px;min-height:280px}
+  .step .k{font-family:var(--disp);font-size:13px;letter-spacing:.14em;color:var(--accent)}
+  .step h3{font-size:24px}
+  .step p{color:var(--ink-soft);font-size:15px;flex:1}
+  .bar{height:6px;background:var(--panel-2);border-radius:100px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--accent)}
+  .step .pct{display:flex;justify-content:space-between;font-family:var(--disp);font-size:12px;color:var(--ink-dim);letter-spacing:.08em}
+  @media(max-width:820px){.steps{grid-template-columns:1fr}}
+
+  /* CAPABILITIES list */
+  .caps{border-top:1px solid var(--line)}
+  .cap{display:grid;grid-template-columns:60px 1.2fr 2fr;gap:24px;align-items:center;padding:26px 8px;border-bottom:1px solid var(--line);transition:background .2s}
+  .cap:hover{background:var(--panel)}
+  .cap .ix{font-family:var(--disp);color:var(--ink-dim);font-size:14px}
+  .cap .nm{font-family:var(--disp);font-size:22px;font-weight:600}
+  .cap .ds{color:var(--ink-soft);font-size:15px}
+  @media(max-width:820px){.cap{grid-template-columns:1fr;gap:6px}.cap .ix{display:none}}
+
+  /* FEATURE CARDS */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:26px;display:flex;flex-direction:column;gap:14px;min-height:240px;transition:transform .2s,border-color .2s}
+  .card:hover{transform:translateY(-4px);border-color:var(--line-2)}
+  .card .tag{align-self:flex-start;font-family:var(--disp);font-size:11px;letter-spacing:.14em;border:1px solid var(--line-2);border-radius:100px;padding:5px 12px;color:var(--ink-soft)}
+  .card h3{font-size:21px}
+  .card ul{list-style:none;display:flex;flex-direction:column;gap:8px;margin-top:auto}
+  .card li{color:var(--ink-soft);font-size:14px;display:flex;gap:9px;align-items:center}
+  .card li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--accent);flex:none}
+  @media(max-width:980px){.cards{grid-template-columns:1fr 1fr}}
+  @media(max-width:680px){.cards{grid-template-columns:1fr}}
+
+  /* USE CASES */
+  .uc-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .uc{background:linear-gradient(160deg,var(--panel),var(--bg-soft));border:1px solid var(--line);border-radius:var(--radius);padding:30px;min-height:220px;display:flex;flex-direction:column;gap:14px}
+  .uc .tags{display:flex;gap:8px;flex-wrap:wrap}
+  .uc .tags span{font-size:12px;color:var(--ink-dim);border:1px solid var(--line);border-radius:100px;padding:4px 11px}
+  .uc h3{font-size:26px;margin-top:auto}
+  .uc p{color:var(--ink-soft);font-size:15px}
+  @media(max-width:820px){.uc-grid{grid-template-columns:1fr}}
+
+  /* GOVERNANCE */
+  .gov{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start}
+  .gov-list{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+  .gov-list .row{display:flex;justify-content:space-between;padding:18px 4px;border-bottom:1px solid var(--line);font-family:var(--disp)}
+  .gov-list .row span:first-child{font-size:17px}
+  .gov-list .row span:last-child{color:var(--ink-dim);font-size:14px}
+  @media(max-width:820px){.gov{grid-template-columns:1fr}}
+
+  /* TESTIMONIAL */
+  .quote{font-family:var(--disp);font-size:clamp(28px,4vw,46px);font-weight:500;letter-spacing:-.02em;line-height:1.15;max-width:900px}
+  .attrib{margin-top:30px;display:flex;align-items:center;gap:14px;color:var(--ink-soft)}
+  .avatar{width:46px;height:46px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line-2)}
+
+  /* PRICING */
+  .price-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .plan{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:30px;display:flex;flex-direction:column;gap:18px}
+  .plan.feat{border-color:var(--accent);background:linear-gradient(180deg,rgba(232,255,90,.06),var(--panel))}
+  .plan h3{font-size:22px}
+  .plan .price{font-family:var(--disp);font-size:34px;font-weight:700}
+  .plan ul{list-style:none;display:flex;flex-direction:column;gap:10px;color:var(--ink-soft);font-size:14px}
+  .plan li{display:flex;gap:9px}.plan li::before{content:"✓";color:var(--accent)}
+  .plan .btn,.plan .btn-ghost{justify-content:center;margin-top:auto}
+  @media(max-width:980px){.price-grid{grid-template-columns:1fr}}
+
+  /* FAQ */
+  .faq-grid{display:grid;grid-template-columns:.8fr 1.4fr;gap:40px;align-items:start}
+  details{border-bottom:1px solid var(--line);padding:20px 0}
+  summary{font-family:var(--disp);font-size:19px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:16px;align-items:center}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"+";color:var(--accent);font-size:24px;transition:transform .2s}
+  details[open] summary::after{transform:rotate(45deg)}
+  details p{color:var(--ink-soft);font-size:15px;margin-top:14px;max-width:640px}
+  @media(max-width:820px){.faq-grid{grid-template-columns:1fr}}
+
+  /* INTEGRATIONS */
+  .int-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .int{background:var(--bg);padding:28px;display:flex;flex-direction:column;gap:6px}
+  .int .nm{font-family:var(--disp);font-size:19px;font-weight:600}
+  .int .ds{color:var(--ink-soft);font-size:13px}
+  @media(max-width:820px){.int-grid{grid-template-columns:1fr 1fr}}
+
+  /* CTA */
+  .cta{background:var(--accent);color:var(--accent-ink);border-radius:28px;padding:72px 48px;text-align:center}
+  .cta h2{font-size:clamp(40px,7vw,88px);font-weight:700;letter-spacing:-.03em}
+  .cta .row{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-top:28px;font-family:var(--disp);font-size:15px}
+  .cta .btn-dark{background:var(--accent-ink);color:var(--accent);display:inline-flex;padding:15px 28px;border-radius:100px;font-family:var(--disp);font-weight:600;margin-top:30px}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line);padding:64px 0 40px;background:var(--bg-soft)}
+  .foot-grid{display:grid;grid-template-columns:2fr 1fr 1fr;gap:40px;margin-bottom:48px}
+  .foot-msg{font-family:var(--disp);font-size:24px;max-width:380px;letter-spacing:-.01em}
+  .foot-col h4{font-family:var(--disp);font-size:12px;letter-spacing:.14em;color:var(--ink-dim);text-transform:uppercase;margin-bottom:16px}
+  .foot-col a{display:block;color:var(--ink-soft);font-size:15px;padding:5px 0}
+  .foot-col a:hover{color:var(--ink)}
+  .foot-bottom{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:24px;color:var(--ink-dim);font-size:13px;flex-wrap:wrap;gap:12px}
+  @media(max-width:820px){.foot-grid{grid-template-columns:1fr;gap:32px}}
+</style>
+</head>
+<body>
+
+<!-- scroll progress + sticky header (appear after the hero) -->
+<div class="scroll-prog" id="prog"></div>
+<header class="site-header" id="siteHeader">
+  <a class="brand" href="#top">Go<b>V</b>ibe</a>
+  <nav class="hnav">
+    <a href="#approach">แนวทาง</a>
+    <a href="#capabilities">ความสามารถ</a>
+    <a href="#usecases">Use Cases</a>
+    <a href="#pricing">ราคา</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <a href="#cta" class="hbtn">Start Project</a>
+</header>
+
+<!-- HERO (reference-exact) -->
+<!-- notch is a sibling (NOT inside the clipped card) so it can overlap the card's top edge -->
+<div class="hero-notch"><span class="lg">Go<b>V</b>ibe</span></div>
+<section class="hero2" id="top">
+  <div class="hero-media"></div>
+  <canvas id="heroFx" class="hero-fx"></canvas>
+  <div class="hero-scrim"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-glow" id="heroGlow"></div>
+
+  <!-- decorative crosshairs -->
+  <span class="plus" style="left:20%;top:54%">+</span>
+  <span class="plus" style="left:49%;top:54%">+</span>
+  <span class="plus" style="left:54%;top:54%">+</span>
+
+  <div class="hero2-inner">
+    <!-- top bar -->
+    <div class="hero-bar">
+      <div class="hero-bar-left">
+        <button class="menu-btn"><span class="burger"><i></i><i></i></span>Menu</button>
+        <span class="bar-divider"></span>
+        <span class="bar-loc">Local-first · 127.0.0.1:4310</span>
+      </div>
+      <a href="#cta" class="pill-arr">Start Project <span class="arr">›</span></a>
+    </div>
+
+    <!-- wordmark + subheadline -->
+    <div class="hero-mid">
+      <h1 class="hero-word">GoVibe</h1>
+      <h2 class="hero-headline">AI-Native<br>CoDev Platform</h2>
+    </div>
+
+    <!-- bottom row: info · social · award -->
+    <div class="hero-bottom">
+      <div class="hero-info">
+        <div class="proof">
+          <div class="avatars"><span></span><span></span><span></span></div>
+          <div class="stat"><span class="ph">[N]</span>+<small>Developers</small></div>
+        </div>
+        <p class="hero-desc">แพลตฟอร์ม CoDev แบบ visual ที่ประสานนักพัฒนา ทีม AI agent และเครื่องมือ coding ภายนอกผ่าน MCP — เปลี่ยนเอกสารที่อนุมัติแล้วให้เป็นงานที่มองเห็นได้จริง</p>
+        <a href="#approach" class="pill-arr" style="align-self:flex-start">Our Story <span class="arr">›</span></a>
+      </div>
+
+      <div class="hero-social">
+        <a href="#" aria-label="X"><svg viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+        <a href="#" aria-label="GitHub"><svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.91 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.371.823 1.102.823 2.222 0 1.606-.014 2.898-.014 3.293 0 .322.216.694.825.576C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+        <a href="#" aria-label="Discord"><svg viewBox="0 0 24 24"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25-1.845-.276-3.68-.276-5.487 0-.164-.394-.406-.875-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 0 0-.041-.106 13.1 13.1 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.099.246.198.373.292a.077.077 0 0 1-.006.127 12.3 12.3 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.84 19.84 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.418 2.157-2.418 1.21 0 2.176 1.095 2.157 2.418 0 1.334-.956 2.42-2.157 2.42zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.418 2.157-2.418 1.21 0 2.176 1.095 2.157 2.418 0 1.334-.946 2.42-2.157 2.42z"/></svg></a>
+      </div>
+
+      <div class="award">
+        <div class="stars">★ ★ ★ ★ ★</div>
+        <div class="mid">
+          <span class="laurel">🌿</span>
+          <div class="ttl"><div class="s">GOVERNED</div><div class="b">DOCS-FIRST</div></div>
+          <span class="laurel r">🌿</span>
+        </div>
+        <div class="ln"></div>
+        <div class="sub">MCP-Native Runtime · 2026</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust">
+  <div class="wrap">
+    <div class="badges marquee">
+      <div class="marquee-track">
+        <span class="badge">DOCS-FIRST</span>
+        <span class="badge">MCP-NATIVE</span>
+        <span class="badge">BI-TEMPORAL AUDIT</span>
+        <span class="badge">LIVE-DATA-ONLY</span>
+        <span class="badge">RBAC + ABAC</span>
+        <span class="badge">SYMBOL-GRAPH TRACE</span>
+        <span class="badge">DOCS-FIRST</span>
+        <span class="badge">MCP-NATIVE</span>
+        <span class="badge">BI-TEMPORAL AUDIT</span>
+        <span class="badge">LIVE-DATA-ONLY</span>
+        <span class="badge">RBAC + ABAC</span>
+        <span class="badge">SYMBOL-GRAPH TRACE</span>
+      </div>
+    </div>
+    <p class="trust-msg">ออกแบบบนมาตรฐาน governance ที่ตรวจสอบย้อนกลับได้ — ทุก task สืบย้อนถึงเอกสารต้นทาง การมอบหมาย agent หลักฐานรีวิว และการ verify กำหนดมาตรฐานใหม่ของการส่งมอบด้วย AI agent ที่ “ควบคุมได้” ไม่ใช่ “ปล่อยอิสระ”</p>
+  </div>
+</section>
+
+<!-- METRICS -->
+<section class="pad-sm">
+  <div class="wrap">
+    <div class="metrics">
+      <div class="metric"><div class="num">10</div><div class="lab">ระบบผลิตภัณฑ์ (SYSTEM-01 → 10) ที่ประสานงานกัน</div></div>
+      <div class="metric"><div class="num">4</div><div class="lab">โดเมน · A1–A5 / B1–B4 / C1–C5 / D1–D3 ในที่เดียว</div></div>
+      <div class="metric"><div class="num">2</div><div class="lab">ลูปหลัก — Docs to Code และ Diagram to Doc</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- APPROACH -->
+<section class="pad" id="approach">
+  <div class="wrap">
+    <div class="head-row">
+      <div>
+        <div class="eyebrow">แนวทางของเรา</div>
+        <h2 class="sec-title" style="margin-top:16px">Our Approach</h2>
+      </div>
+      <p>เอกสารที่อ่านได้สำหรับมนุษย์คือแหล่งความจริง — เราเปลี่ยนมันเป็นงาน บริบท agent และเกณฑ์ตรวจสอบ</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="k">FOUNDATION</div>
+        <h3>01 · Docs First</h3>
+        <p>เริ่มจาก PRD, SRD, SDD, LLD, API contract และ test plan ที่อนุมัติแล้ว เป็นแหล่งความจริงเดียว</p>
+        <div class="pct"><span>FOUNDATION</span><span>30%</span></div>
+        <div class="bar"><i style="width:30%"></i></div>
+      </div>
+      <div class="step">
+        <div class="k">EXECUTION</div>
+        <h3>02 · Docs to Code</h3>
+        <p>เอกสารกลายเป็น task การมอบหมาย agent บริบท implementation และ symbol link โดยอัตโนมัติ</p>
+        <div class="pct"><span>EXECUTION</span><span>70%</span></div>
+        <div class="bar"><i style="width:70%"></i></div>
+      </div>
+      <div class="step">
+        <div class="k">GOVERNANCE</div>
+        <h3>03 · Verify & Audit</h3>
+        <p>ทุกงานผ่าน review gate, QA gate และหลักฐาน verify ก่อนขึ้นบอร์ด พร้อม audit trail แบบ bi-temporal</p>
+        <div class="pct"><span>DELIVERY</span><span>100%</span></div>
+        <div class="bar"><i style="width:100%"></i></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CAPABILITIES -->
+<section class="pad" id="capabilities" style="background:var(--bg-soft)">
+  <div class="wrap">
+    <div class="head-row">
+      <div>
+        <div class="eyebrow">Governed by design</div>
+        <h2 class="sec-title" style="margin-top:16px">Core Capabilities</h2>
+      </div>
+      <p>GoVibe เป็น “ชั้นประสานงาน” ไม่ใช่ตัวแทน coding agent ภายนอก — คุมทีม agent หลายทีมได้โดยไม่ต้องยุ่งกับ billing หรือ quota ของ provider</p>
+    </div>
+    <div class="caps">
+      <div class="cap"><div class="ix">01</div><div class="nm">Mission Control</div><div class="ds">ศูนย์บัญชาการ visual แบบ real-time พร้อม floating terminal</div></div>
+      <div class="cap"><div class="ix">02</div><div class="nm">Docs to Code</div><div class="ds">เอกสารขับเคลื่อน task, context และ symbol link</div></div>
+      <div class="cap"><div class="ix">03</div><div class="nm">Diagram to Doc</div><div class="ds">ไดอะแกรมกลายเป็นเอกสารที่รีวิวได้ก่อน implement</div></div>
+      <div class="cap"><div class="ix">04</div><div class="nm">Agent Team Mgmt</div><div class="ds">จัดการ identity, role, authority และ handoff state</div></div>
+      <div class="cap"><div class="ix">05</div><div class="nm">RBAC + ABAC</div><div class="ds">คุม access ของคน (RBAC) และ agent (ABAC) แยกชั้น</div></div>
+      <div class="cap"><div class="ix">06</div><div class="nm">Genesis Knowledge</div><div class="ds">atom, symbol graph และ JIT context บน MemoryOS V3</div></div>
+      <div class="cap"><div class="ix">07</div><div class="nm">Execution Governance</div><div class="ds">จัด complexity (C0–C3) และ context tier (H0–H5)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE CARDS -->
+<section class="pad">
+  <div class="wrap">
+    <div class="head-row">
+      <div>
+        <div class="eyebrow">Integration</div>
+        <h2 class="sec-title" style="margin-top:16px">ทำงานร่วมกับเครื่องมือที่คุณมีอยู่แล้ว</h2>
+      </div>
+      <p>GoVibe ไม่แทนที่ AI coding tool — มันประสานพวกมันเข้าด้วยกันผ่าน 3 surface: MCP, Mission Control UI และ CLI</p>
+    </div>
+    <div class="cards">
+      <div class="card"><span class="tag">PRIMARY</span><h3>MCP Orchestration</h3><ul><li>Governed tools</li><li>State mutation</li><li>Resource catalog</li></ul></div>
+      <div class="card"><span class="tag">VISUAL</span><h3>Mission Control UI</h3><ul><li>Visual control plane</li><li>Command reactor</li><li>Live telemetry</li></ul></div>
+      <div class="card"><span class="tag">OPERATOR</span><h3>GoVibe CLI</h3><ul><li>Thin operator surface</li><li>Automation hooks</li><li>Same governance rules</li></ul></div>
+      <div class="card"><span class="tag">SUPPORT</span><h3>Bounded Executor</h3><ul><li>Gemini CLI packet</li><li>Token telemetry</li><li>Lead review required</li></ul></div>
+      <div class="card"><span class="tag">LOCAL-FIRST</span><h3>Local Sidecar</h3><ul><li>HTTP/WS bridge</li><li>Ollama runtime</li><li>No cloud lock-in</li></ul></div>
+      <div class="card" style="background:var(--bg-soft);border-style:dashed"><span class="tag">2 LOOPS</span><h3>Docs ⇄ Diagram</h3><ul><li>Docs to Code</li><li>Diagram to Doc</li><li>Human review gate</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- USE CASES -->
+<section class="pad" id="usecases" style="background:var(--bg-soft)">
+  <div class="wrap">
+    <div class="head-row">
+      <div>
+        <div class="eyebrow">Latest Works</div>
+        <h2 class="sec-title" style="margin-top:16px">Use Cases</h2>
+      </div>
+      <a href="#cta" class="btn-ghost">ดู use case ทั้งหมด</a>
+    </div>
+    <div class="uc-grid">
+      <div class="uc"><div class="tags"><span>Roadmap</span><span>Docs</span><span>Governance</span></div><h3>Document-Driven Roadmap</h3><p>บอร์ดโรดแมปที่ render จากไฟล์ Markdown/HTML จริง — แก้เอกสารคือแก้บอร์ด ไม่มีข้อมูลปลอม</p></div>
+      <div class="uc"><div class="tags"><span>Agents</span><span>Handoff</span></div><h3>Multi-Agent Delivery</h3><p>มอบหมายงานข้ามทีม agent พร้อม file locking, PR handoff และ conflict resolution</p></div>
+      <div class="uc"><div class="tags"><span>MCP</span><span>Executor</span></div><h3>Bounded Executor Trial</h3><p>ให้ Gemini CLI ช่วยงานแบบมีขอบเขต ส่ง feedback ที่มี telemetry กลับมาให้ lead รีวิว</p></div>
+      <div class="uc"><div class="tags"><span>Diagram</span><span>Docs</span></div><h3>Diagram to Documentation</h3><p>เปลี่ยน architecture / sequence / ERD / site map ให้เป็นเอกสารที่รีวิวได้ก่อน implement</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- GOVERNANCE HIGHLIGHT -->
+<section class="pad">
+  <div class="wrap gov">
+    <div>
+      <div class="eyebrow">ตรวจสอบย้อนกลับได้ทุกขั้น</div>
+      <h2 class="sec-title" style="margin:16px 0 20px">Traceability</h2>
+      <p class="muted" style="max-width:440px;font-size:16px">สืบย้อนจาก PRD → master plan → roadmap/backlog → runbook/context → feedback artifact ได้ครบทุกจุด พร้อม Bi-Temporal Versioning ที่ query roadmap ย้อนเวลาได้ด้วย <code style="color:var(--accent)">asOfValidAt</code> / <code style="color:var(--accent)">asOfRecordedAt</code></p>
+      <a href="#cta" class="btn" style="margin-top:28px">เริ่มทดลองใช้ →</a>
+    </div>
+    <div class="gov-list">
+      <div class="row"><span>Document Version Registry</span><span>01</span></div>
+      <div class="row"><span>Change Request Ledger</span><span>02</span></div>
+      <div class="row"><span>RCA Ledger</span><span>03</span></div>
+      <div class="row"><span>Source-to-Code Trace</span><span>04</span></div>
+      <div class="row"><span>Verification Evidence</span><span>05</span></div>
+      <div class="row"><span>Promotion Certification</span><span>06</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="pad" style="background:var(--bg-soft)">
+  <div class="wrap">
+    <div class="eyebrow">Testimonial</div>
+    <p class="quote" style="margin-top:24px">“<span class="ph">[ใส่คำรับรองจาก developer ที่ทดลองใช้จริง — ห้ามแต่ง]</span> GoVibe ทำให้เราเห็นสถานะงานจริงจากเอกสาร ไม่ใช่จากการเดา”</p>
+    <div class="attrib">
+      <div class="avatar"></div>
+      <div><div style="color:var(--ink);font-family:var(--disp);font-weight:600"><span class="ph">[ชื่อ]</span></div><div style="font-size:14px"><span class="ph">[ตำแหน่ง, บริษัท]</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pad" id="pricing">
+  <div class="wrap">
+    <div class="head-row">
+      <div>
+        <div class="eyebrow">Our Package</div>
+        <h2 class="sec-title" style="margin-top:16px">Pricing</h2>
+      </div>
+      <p>ราคายังเป็นดราฟต์ — ยังไม่มีในเอกสารผลิตภัณฑ์ <span class="ph">[รอยืนยัน]</span></p>
+    </div>
+    <div class="price-grid">
+      <div class="plan">
+        <h3>Solo / Trial</h3>
+        <div class="price"><span class="ph">[ราคา]</span></div>
+        <p class="dim" style="font-size:14px">สำหรับ solo dev + bounded support executor</p>
+        <ul><li>Local-first setup</li><li>Document-driven roadmap</li><li>1 bounded executor packet</li></ul>
+        <a href="#cta" class="btn-ghost">เริ่มทดลองฟรี</a>
+      </div>
+      <div class="plan feat">
+        <span class="tag" style="align-self:flex-start;font-family:var(--disp);font-size:11px;letter-spacing:.12em;border:1px solid var(--accent);color:var(--accent);border-radius:100px;padding:5px 12px">แนะนำ</span>
+        <h3>Team</h3>
+        <div class="price"><span class="ph">[ราคา]</span></div>
+        <p class="dim" style="font-size:14px">ทีมเล็กที่แต่ละคนมี agent workflow ของตัวเอง</p>
+        <ul><li>ทุกอย่างใน Solo</li><li>CoDev multi-team</li><li>RBAC / ABAC</li></ul>
+        <a href="#cta" class="btn">เริ่มใช้งาน</a>
+      </div>
+      <div class="plan">
+        <h3>Enterprise</h3>
+        <div class="price">ติดต่อทีม</div>
+        <p class="dim" style="font-size:14px">ปรับตามองค์กร</p>
+        <ul><li>ทุกอย่างใน Team</li><li>Tenant / vault boundary</li><li>Dedicated governance review</li></ul>
+        <a href="#cta" class="btn-ghost">ติดต่อทีม</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="pad" id="faq" style="background:var(--bg-soft)">
+  <div class="wrap faq-grid">
+    <div>
+      <div class="eyebrow">Common Asked</div>
+      <h2 class="sec-title" style="margin:16px 0 18px">FAQs</h2>
+      <p class="muted" style="font-size:15px">หาสิ่งที่ต้องการไม่เจอใช่ไหม? ทีมเราพร้อมตอบคำถามเฉพาะโปรเจกต์ของคุณ</p>
+      <p class="dim" style="margin-top:18px;font-family:var(--disp)">ตอบกลับภายใน <span class="ph">[เวลา]</span></p>
+    </div>
+    <div>
+      <details open><summary>GoVibe แทนที่ Claude Code / Gemini CLI ของผมไหม?</summary><p>ไม่ — GoVibe เป็นชั้นประสานงาน ไม่จัดการ billing หรือแทนที่เครื่องมือ coding ภายนอก คุณใช้ของเดิมต่อได้</p></details>
+      <details><summary>ข้อมูลบนบอร์ดมาจากไหน?</summary><p>มาจากไฟล์เอกสาร Markdown/HTML ที่อนุมัติแล้วใน docs/roadmap/ — ไม่มี mock data ตามกฎ live-data-only</p></details>
+      <details><summary>ต้องเขียน Genesis atom เองไหม?</summary><p>ไม่ต้อง — atom ถูกสกัดจากเอกสาร SWE ที่อ่านได้สำหรับมนุษย์โดยอัตโนมัติหลังเขียนเสร็จ</p></details>
+      <details><summary>external executor อนุมัติงานเองได้ไหม?</summary><p>ไม่ได้ — output ของ executor ภายนอกเป็นงานร่างเสมอ ต้องผ่าน lead review, QA และ audit ก่อนปิดงาน</p></details>
+      <details><summary>รันแบบ local ได้ไหม?</summary><p>ได้ — มี HTTP/WS sidecar ที่ 127.0.0.1:4310 รองรับ Ollama local runtime ไม่ผูกกับ cloud</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- INTEGRATIONS -->
+<section class="pad">
+  <div class="wrap">
+    <div class="head-row">
+      <div>
+        <div class="eyebrow">Global Partners</div>
+        <h2 class="sec-title" style="margin-top:16px">Integrations</h2>
+      </div>
+    </div>
+    <div class="int-grid">
+      <div class="int"><div class="nm">MCP</div><div class="ds">Primary orchestration interface</div></div>
+      <div class="int"><div class="nm">Claude Code</div><div class="ds">External AI coding agent connector</div></div>
+      <div class="int"><div class="nm">Gemini CLI</div><div class="ds">Bounded external executor</div></div>
+      <div class="int"><div class="nm">Ollama</div><div class="ds">Local LLM runtime / sidecar</div></div>
+      <div class="int"><div class="nm">Webhook / File</div><div class="ds">File-based และ event workflow</div></div>
+      <div class="int"><div class="nm">Vercel</div><div class="ds">Deploy surface (deploy.vercel)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="pad" id="cta">
+  <div class="wrap">
+    <div class="cta">
+      <div style="font-family:var(--disp);letter-spacing:.16em;font-size:13px;opacity:.7">ติดต่อเรา</div>
+      <h2>มาทดลองใช้กัน!</h2>
+      <a href="#" class="btn-dark">เริ่มทดลองใช้ →</a>
+      <div class="row">
+        <span>✉ <span class="ph">[hello@govibe.dev]</span></span>
+        <span>⎇ <span class="ph">[repo / docs link]</span></span>
+        <span>⌁ Local-first · MCP Runtime</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="brand" style="margin-bottom:18px">GoVibe<span style="color:var(--accent)">.</span></div>
+        <p class="foot-msg">เปลี่ยนเอกสารที่อนุมัติแล้วให้เป็นงานที่มองเห็นได้ — โดยไม่สูญเสีย governance</p>
+      </div>
+      <div class="foot-col">
+        <h4>Links</h4>
+        <a href="#">Overview</a><a href="#approach">Roadmap</a><a href="#capabilities">Docs</a><a href="#">Governance</a><a href="#cta">Contact</a>
+      </div>
+      <div class="foot-col">
+        <h4>Resources</h4>
+        <a href="#">PRD</a><a href="#">Master Plan</a><a href="#">Runbooks</a><a href="#">CLI</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 GoVibe. All Rights Reserved</span>
+      <span>Local-first · MCP Runtime · Live-data-only</span>
+    </div>
+  </div>
+</footer>
+
+<!-- WebGL Depth-Scan (self-contained, no external assets; gradient fallback if unsupported) -->
+<script>
+(function(){
+  var c=document.getElementById('heroFx'); if(!c) return;
+  var gl=c.getContext('webgl')||c.getContext('experimental-webgl');
+  if(!gl){ c.style.display='none'; return; } // gradient fallback shows through
+
+  var VS='attribute vec2 p;void main(){gl_Position=vec4(p,0.0,1.0);}';
+  var FS=[
+  'precision highp float;',
+  'uniform vec2 u_res; uniform float u_time; uniform vec2 u_mouse;',
+  'float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}',
+  'float noise(vec2 p){vec2 i=floor(p),f=fract(p);float a=hash(i),b=hash(i+vec2(1.,0.)),c=hash(i+vec2(0.,1.)),d=hash(i+vec2(1.,1.));vec2 u=f*f*(3.-2.*f);return mix(mix(a,b,u.x),mix(c,d,u.x),u.y);}',
+  'float fbm(vec2 p){float v=0.,a=.5;for(int i=0;i<5;i++){v+=a*noise(p);p*=2.0;a*=.5;}return v;}',
+  // depth field mimicking a subject (near = 1.0)
+  'float depth(vec2 uv){vec2 c=uv-vec2(0.5,0.54);c.x*=1.1;float head=exp(-dot(c,c)*5.0);float body=exp(-pow(uv.y-0.08,2.0)*4.0)*0.45;float n=fbm(uv*3.0+vec2(0.0,u_time*0.02))*0.28;return clamp(head*0.9+body+n,0.0,1.0);}',
+  'void main(){',
+  '  vec2 uv=gl_FragCoord.xy/u_res.xy; uv.y=1.0-uv.y;',
+  '  vec2 par=(u_mouse-0.5)*0.04;',
+  '  float d=depth(uv+par);',
+  '  vec3 base=mix(vec3(0.045,0.16,0.19),vec3(0.02,0.06,0.08),uv.y);',
+  '  base+=vec3(0.11,0.075,0.05)*smoothstep(0.4,1.0,d);',          // warm where near
+  '  float lines=abs(fract(d*18.0-u_time*0.15)-0.5)*2.0;',         // topographic contours
+  '  float contour=smoothstep(0.86,1.0,1.0-lines);',
+  '  float sweep=fract(u_time*0.07);',                              // scan beam L->R
+  '  float beam=smoothstep(0.05,0.0,abs(uv.x-sweep));',
+  '  float glow=smoothstep(0.26,0.0,abs(uv.x-sweep))*0.4;',
+  '  vec3 scan=vec3(0.22,0.86,0.55);',                              // green-cyan scan
+  '  vec3 col=base;',
+  '  col+=scan*contour*(0.10+beam*0.95);',
+  '  col+=scan*glow*(0.3+d*0.55);',
+  '  col+=(hash(uv*u_res.xy*0.5+u_time)-0.5)*0.03;',               // grain
+  '  col*=1.0-dot(uv-0.5,uv-0.5)*0.85;',                           // vignette
+  '  gl_FragColor=vec4(col,1.0);',
+  '}'].join('\n');
+
+  function sh(t,s){var o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);
+    if(!gl.getShaderParameter(o,gl.COMPILE_STATUS)){console.warn(gl.getShaderInfoLog(o));} return o;}
+  var prog=gl.createProgram();
+  gl.attachShader(prog,sh(gl.VERTEX_SHADER,VS));
+  gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,FS));
+  gl.linkProgram(prog); gl.useProgram(prog);
+  var buf=gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1, 3,-1, -1,3]),gl.STATIC_DRAW);
+  var loc=gl.getAttribLocation(prog,'p'); gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  var uRes=gl.getUniformLocation(prog,'u_res'),uTime=gl.getUniformLocation(prog,'u_time'),uMouse=gl.getUniformLocation(prog,'u_mouse');
+
+  var mouse=[0.5,0.45];
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function resize(){var dpr=Math.min(window.devicePixelRatio||1,2);c.width=Math.max(1,c.clientWidth*dpr);c.height=Math.max(1,c.clientHeight*dpr);gl.viewport(0,0,c.width,c.height);}
+  window.addEventListener('resize',resize); resize();
+  var host=c.parentElement;
+  host.addEventListener('mousemove',function(e){var r=c.getBoundingClientRect();mouse[0]=(e.clientX-r.left)/r.width;mouse[1]=(e.clientY-r.top)/r.height;});
+
+  var now=function(){return (window.performance&&performance.now)?performance.now():0;};
+  var start=now()-9000, running=true; // seed so the first frame is already mid-animation
+  function frame(t){ if(!running)return; var time=reduce?9.0:(t-start)/1000;
+    gl.uniform2f(uRes,c.width,c.height); gl.uniform1f(uTime,time); gl.uniform2f(uMouse,mouse[0],mouse[1]);
+    gl.drawArrays(gl.TRIANGLES,0,3);
+    if(!reduce) requestAnimationFrame(frame);
+  }
+  frame(now()); // paint immediately (works even if rAF is throttled); loop self-continues when foregrounded
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){running=false;} else if(!reduce){running=true;requestAnimationFrame(frame);}
+  });
+})();
+</script>
+
+<!-- cursor-follow glow in hero (rAF-throttled, ignores touch) -->
+<script>
+(function(){
+  var hero=document.querySelector('.hero2'), glow=document.getElementById('heroGlow');
+  if(!hero||!glow) return;
+  if(matchMedia('(hover: none)').matches) return; // skip on touch devices
+  var x=50,y=50,raf=0;
+  hero.addEventListener('pointermove',function(e){
+    if(e.pointerType==='touch') return;
+    var r=hero.getBoundingClientRect();
+    x=((e.clientX-r.left)/r.width)*100;
+    y=((e.clientY-r.top)/r.height)*100;
+    if(!raf) raf=requestAnimationFrame(function(){
+      glow.style.setProperty('--mx',x+'%');
+      glow.style.setProperty('--my',y+'%');
+      raf=0;
+    });
+  });
+})();
+</script>
+
+<!-- sticky header + scroll progress -->
+<script>
+(function(){
+  var h=document.getElementById('siteHeader'), p=document.getElementById('prog'), hero=document.querySelector('.hero2');
+  if(!h||!p) return;
+  function onScroll(){
+    var y=window.scrollY||window.pageYOffset||0;
+    var threshold=(hero?hero.offsetHeight:600)*0.78;
+    if(y>threshold){ h.classList.add('show'); } else { h.classList.remove('show'); }
+    var docH=document.documentElement.scrollHeight-window.innerHeight;
+    p.style.width=(docH>0?Math.min(y/docH*100,100):0)+'%';
+  }
+  onScroll();
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',onScroll);
+})();
+</script>
+
+<!-- scroll-reveal (sections below hero) -->
+<script>
+(function(){
+  var blocks=[];
+  var secs=document.querySelectorAll('body > section:not(.hero2), body > footer');
+  Array.prototype.forEach.call(secs,function(sec){
+    var wrap=sec.querySelector('.wrap')||sec;
+    Array.prototype.forEach.call(wrap.children,function(el,i){
+      el.classList.add('reveal');
+      el.style.transitionDelay=(i*0.06)+'s';
+      blocks.push(el);
+    });
+  });
+  function reveal(el){ el.classList.add('in'); }
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){ blocks.forEach(reveal); return; }
+  // primary: IntersectionObserver for staggered reveal
+  if('IntersectionObserver' in window){
+    var io=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ reveal(e.target); io.unobserve(e.target); } });
+    },{threshold:0.12, rootMargin:'0px 0px -7% 0px'});
+    blocks.forEach(function(el){ io.observe(el); });
+  }
+  // fallback that does NOT depend on IO callback timing (covers throttled/edge cases)
+  function checkAll(){ var h=window.innerHeight; blocks.forEach(function(el){
+    if(el.classList.contains('in')) return;
+    var r=el.getBoundingClientRect(); if(r.top < h*0.92 && r.bottom > 0) reveal(el);
+  }); }
+  checkAll();
+  window.addEventListener('scroll',checkAll,{passive:true});
+  window.addEventListener('load',checkAll);
+  setTimeout(function(){ blocks.forEach(reveal); },4000); // ultimate safety: never leave content hidden
+})();
+</script>
+
+<!-- count-up for metrics -->
+<script>
+(function(){
+  var nums=document.querySelectorAll('.metric .num');
+  if(!nums.length) return;
+  var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  Array.prototype.forEach.call(nums,function(el){ el.setAttribute('data-target', el.textContent.trim()); });
+  function finalize(el){ el.textContent=el.getAttribute('data-target'); }
+  function run(el){
+    if(el.dataset.done) return; el.dataset.done='1';
+    var target=parseFloat(el.getAttribute('data-target'))||0;
+    if(reduce || !window.requestAnimationFrame){ finalize(el); return; }
+    var dur=1100, t0=null;
+    function step(t){ if(t0===null)t0=t; var p=Math.min((t-t0)/dur,1); var e=1-Math.pow(1-p,3);
+      el.textContent=String(Math.round(target*e));
+      if(p<1) requestAnimationFrame(step); else finalize(el);
+    }
+    requestAnimationFrame(step);
+  }
+  function check(){ var h=window.innerHeight; Array.prototype.forEach.call(nums,function(el){ var r=el.getBoundingClientRect(); if(r.top<h*0.9 && r.bottom>0) run(el); }); }
+  check();
+  window.addEventListener('scroll',check,{passive:true});
+  setTimeout(function(){ Array.prototype.forEach.call(nums,function(el){ if(!el.dataset.done){el.dataset.done='1';} finalize(el); }); },4500); // safety: show real values
+})();
+</script>
+
+</body>
+</html>

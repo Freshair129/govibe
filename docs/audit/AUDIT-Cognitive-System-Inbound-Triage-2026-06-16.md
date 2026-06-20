@@ -1,8 +1,8 @@
 ---
 title: "Audit: Cognitive System Inbound Knowledge Triage"
 doc_id: "AUDIT-COGNITIVE-SYSTEM-INBOUND-TRIAGE-2026-06-16"
-status: "draft"
-version: "0.1.1+draft"
+status: "approved"
+version: "0.1.1"
 updated: "2026-06-16"
 owner: "ATHER / LYRA"
 source_of_truth: true
@@ -156,5 +156,6 @@ govibe_decision:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1 | 2026-06-21 | ATHER / LYRA | Signed off; promoted draft -> approved (MSP/GKS gate decision recorded in ADR-014). |
 | 0.1.1+draft | 2026-06-16 | ATHER / LYRA | Added Git ignore enforcement for the raw cognitive-system knowledge-block export. |
 | 0.1.0+draft | 2026-06-16 | ATHER / LYRA | Added initial triage for cognitive-system inbound knowledge and blocked wholesale import. |

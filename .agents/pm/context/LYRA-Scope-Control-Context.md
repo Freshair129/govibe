@@ -1,6 +1,6 @@
 ---
 title: "CONTEXT: LYRA Scope Control"
-doc_id: "CONTEXT-lyra-scope-control"
+doc_id: "CONTEXT-LYRA-SCOPE-CONTROL"
 status: "draft"
 version: "0.1.0"
 updated: "2026-06-14"
@@ -57,3 +57,9 @@ decision:
 - `.agents/Visual-Agent-Fleet-Scope/backlog.md`
 - `.agents/Visual-Agent-Fleet-Scope/refinement.md`
 - `.agents/Visual-Agent-Fleet-Scope/Prioritization.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0 | 2026-06-20 | LYRA | Added changelog footer and normalized doc_id casing per versioning standard. |

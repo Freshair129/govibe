@@ -1,9 +1,9 @@
 ---
 title: "FEAT: Qwen CLI Model Routing"
 doc_id: "FEAT-QWEN-CLI-MODEL-ROUTING"
-status: "draft"
-version: "0.1.2+draft"
-updated: "2026-06-17"
+status: "approved"
+version: "0.1.3"
+updated: "2026-06-20"
 owner: "KIN / LYRA / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-06::Integration-Bridge-System"
@@ -18,6 +18,7 @@ related_docs:
   - ".agents/context/CONTEXT-Bounded-External-Executor.md"
   - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md"
+  - "docs/STD-Execution-Governance.md"
 ---
 
 # FEAT: Qwen CLI Model Routing
@@ -138,7 +139,7 @@ confidence:
 - Use `nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free` first for reasoning-heavy review packets.
 - Use `google/gemma-4-31b-it:free` for concise documentation synthesis when an OpenRouter key is configured.
 - Use `qwen/qwen3-coder:free` only for code-facing review or bounded implementation advice.
-- Use local models only for H0/H1 packets with narrow file scope and explicit acceptance checks.
+- Use local models only for H0/H1 packets with narrow file scope and explicit acceptance checks. Context tiers (`H0` = subtask/PR, `H1` = task/component) follow the canonical Context Scaling Tier scale in `docs/STD-Execution-Governance.md` §3; see also `FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION`.
 - `qwen-cli` mode may rely on `AGENT.md`, `--system`, or a bounded packet, but the evidence must name which context source was used.
 - Do not use any free model as final approval evidence.
 - Do not retry endlessly across free models; after two failed executor attempts, escalate to the lead agent.
@@ -172,6 +173,8 @@ confidence:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.3 | 2026-06-20 | KIN / LYRA / ATHER | Signed off; promoted draft -> approved. |
+| 0.1.3+draft | 2026-06-20 | KIN / LYRA / ATHER | Linked H0/H1 context tiers to the canonical Context Scaling Tier scale in STD-Execution-Governance §3 and added it to related_docs. |
 | 0.1.2+draft | 2026-06-17 | KIN / LYRA / ATHER | Added shared context loading contract and qwen wrapper path. |
 | 0.1.1+draft | 2026-06-17 | KIN / LYRA / ATHER | Added README-derived configuration evidence, AGENT.md context boundary, and local qwen smoke result. |
 | 0.1.0+draft | 2026-06-17 | KIN / LYRA / ATHER | Added qwen-cli model routing policy for OpenRouter free models and local Ollama worker routes. |

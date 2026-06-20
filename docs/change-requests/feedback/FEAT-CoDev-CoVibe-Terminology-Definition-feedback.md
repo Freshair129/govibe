@@ -4,7 +4,7 @@ doc_id: "FEEDBACK-FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION"
 status: "draft"
 version: "0.1.0"
 updated: "2026-06-15"
-owner: "CODEx"
+owner: "CODEX"
 auditor: "ATHER"
 source_of_truth: true
 related_docs:

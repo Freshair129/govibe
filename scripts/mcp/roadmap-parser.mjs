@@ -4,7 +4,16 @@ import { parse as parseHtml } from "node-html-parser";
 
 import { createTemporalVersion, readTemporalColumns } from "./temporal-versioning.mjs";
 
-const roadmapFilePattern = /^(ROADMAP|BACKLOG|SPRINT)-.+\.(md|html)$/i;
+const roadmapFilePattern = /^(MASTERPLAN|ROADMAP|BACKLOG|SPRINT)-.+\.(md|html)$/i;
+
+function getPlanningTypeFromPath(sourcePath) {
+  const basename = path.basename(sourcePath);
+  if (/^MASTERPLAN-/i.test(basename)) return "masterplan";
+  if (/^ROADMAP-/i.test(basename)) return "roadmap";
+  if (/^BACKLOG-/i.test(basename)) return "backlog";
+  if (/^SPRINT-/i.test(basename)) return "sprint";
+  return "roadmap";
+}
 
 function parseFrontmatter(text) {
   if (!text.startsWith("---")) {
@@ -175,6 +184,10 @@ function parseChecklistNodes(body, sourcePath, parsedAt) {
     const id = checklistMatch[3].trim();
     const title = checklistMatch[4].trim();
 
+    // Only real breakdown ids are task nodes; this skips prose checklist bullets
+    // (e.g. acceptance-criteria lines) that the regex would otherwise capture as tasks.
+    if (!/^(SUBTASK|MICRO|ATOMIC|S|M|A)-/i.test(id)) continue;
+
     while (stack.length > 0 && stack.at(-1).indent >= indent) {
       stack.pop();
     }
@@ -202,11 +215,128 @@ function parseChecklistNodes(body, sourcePath, parsedAt) {
   return nodes;
 }
 
+function stripScalar(value) {
+  const trimmed = String(value ?? "").trim();
+  if ((trimmed.startsWith('"') && trimmed.endsWith('"')) || (trimmed.startsWith("'") && trimmed.endsWith("'"))) {
+    return trimmed.slice(1, -1);
+  }
+  return trimmed;
+}
+
+// Minimal YAML-subset parser for the authored Task Container blocks
+// (maps, nested maps, and lists of {criterion, checked}). Not a general YAML engine.
+function parseYamlBlock(text) {
+  const lines = text.split(/\r?\n/).filter((line) => line.trim() !== "" && !line.trim().startsWith("#"));
+  let pos = 0;
+  const indentOf = (line) => line.match(/^ */)[0].length;
+
+  function parseBlock(minIndent) {
+    const isList = lines[pos] && lines[pos].trim().startsWith("- ");
+    const result = isList ? [] : {};
+
+    while (pos < lines.length) {
+      const line = lines[pos];
+      const indent = indentOf(line);
+      if (indent < minIndent) break;
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith("- ")) {
+        const itemContent = trimmed.slice(2);
+        const colon = itemContent.indexOf(":");
+        if (colon !== -1) {
+          const obj = {};
+          obj[itemContent.slice(0, colon).trim()] = stripScalar(itemContent.slice(colon + 1));
+          pos += 1;
+          const itemIndent = indent + 2;
+          while (pos < lines.length && indentOf(lines[pos]) >= itemIndent && !lines[pos].trim().startsWith("- ")) {
+            const sub = lines[pos].trim();
+            const subColon = sub.indexOf(":");
+            obj[sub.slice(0, subColon).trim()] = stripScalar(sub.slice(subColon + 1));
+            pos += 1;
+          }
+          result.push(obj);
+        } else {
+          result.push(stripScalar(itemContent));
+          pos += 1;
+        }
+        continue;
+      }
+
+      const colon = trimmed.indexOf(":");
+      const key = trimmed.slice(0, colon).trim();
+      const value = trimmed.slice(colon + 1).trim();
+      if (value === "") {
+        pos += 1;
+        if (pos < lines.length && indentOf(lines[pos]) > indent) {
+          result[key] = parseBlock(indentOf(lines[pos]));
+        } else {
+          result[key] = null;
+        }
+      } else {
+        result[key] = stripScalar(value);
+        pos += 1;
+      }
+    }
+    return result;
+  }
+
+  return parseBlock(0);
+}
+
+const REQUIRED_CONTAINER_FIELDS = [
+  "task_container_id", "task_id", "title", "requirement_type", "complexity", "status",
+  "version", "pic", "executor", "approver", "auditor", "symbol_links",
+  "definition_of_done", "changelog", "created_at", "token_telemetry", "ui_state",
+];
+
+function isPresent(value) {
+  if (value === undefined || value === null) return false;
+  if (typeof value === "object") return Object.keys(value).length > 0;
+  return String(value).trim() !== "";
+}
+
+// Contract enforcement: a container that is structurally incomplete is rejected,
+// never rendered with fabricated values. Authored "unavailable" scalars count as present.
+function validateTaskContainer(container) {
+  const missingFields = [];
+  for (const field of REQUIRED_CONTAINER_FIELDS) {
+    if (!isPresent(container[field])) missingFields.push(field);
+  }
+  const symbolLinks = container.symbol_links ?? {};
+  for (const key of ["code", "doc", "test"]) {
+    if (!isPresent(symbolLinks[key])) missingFields.push(`symbol_links.${key}`);
+  }
+  const dod = container.definition_of_done ?? {};
+  for (const key of ["acceptance_criteria", "success_criteria", "exit_criteria"]) {
+    if (!Array.isArray(dod[key]) || dod[key].length === 0) missingFields.push(`definition_of_done.${key}`);
+  }
+  if (!isPresent((container.token_telemetry ?? {}).total_token_usage)) {
+    missingFields.push("token_telemetry.total_token_usage");
+  }
+  return { complete: missingFields.length === 0, missingFields };
+}
+
+function extractTaskContainers(body) {
+  const headingIndex = body.search(/^##\s+Task Containers\s*$/m);
+  if (headingIndex === -1) return [];
+  const rest = body.slice(headingIndex + 1);
+  const nextHeading = rest.search(/^##\s+/m);
+  const section = nextHeading === -1 ? rest : rest.slice(0, nextHeading);
+  const blocks = [...section.matchAll(/```ya?ml\s*\n([\s\S]*?)```/g)].map((match) => match[1]);
+
+  return blocks.map((block) => {
+    const parsed = parseYamlBlock(block);
+    const { complete, missingFields } = validateTaskContainer(parsed);
+    return { ...parsed, complete, missingFields };
+  });
+}
+
 function buildMarkdownSnapshot(text, sourcePath) {
   const parsedAt = new Date().toISOString();
   const { data, body } = parseFrontmatter(text);
   const titleMatch = body.match(/^#\s+(.+)$/m);
   const title = titleMatch?.[1]?.trim() ?? path.basename(sourcePath);
+  const planningType = getPlanningTypeFromPath(sourcePath);
   const roadmapId = data.id ?? `RM-${slugify(title)}`;
   const sections = collectSectionTables(body);
 
@@ -227,7 +357,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
     }, parsedAt),
   }];
 
-  for (const row of sections.get("Phases") ?? []) {
+  for (const row of [...(sections.get("Phases") ?? []), ...(sections.get("MVP Phases") ?? [])]) {
     const id = getColumn(row, ["Phase", "ID"]) || `PHASE-${slugify(getColumn(row, ["Goal", "Title"]) || "phase")}`;
     nodes.push({
       id,
@@ -243,7 +373,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
     });
   }
 
-  for (const row of sections.get("Sprints") ?? []) {
+  for (const row of [...(sections.get("Sprints") ?? []), ...(sections.get("High-Level Sprint Plan") ?? [])]) {
     const id = getColumn(row, ["Sprint", "ID"]) || `SPRINT-${slugify(getColumn(row, ["Goal", "Title"]) || "sprint")}`;
     nodes.push({
       id,
@@ -259,7 +389,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
     });
   }
 
-  for (const row of sections.get("Backlog Items") ?? []) {
+  for (const row of [...(sections.get("Backlog Items") ?? []), ...(sections.get("MVP Backlog Seed") ?? [])]) {
     const id = getColumn(row, ["ID"]) || `TASK-${slugify(getColumn(row, ["Title"]) || "task")}`;
     nodes.push({
       id,
@@ -335,13 +465,16 @@ function buildMarkdownSnapshot(text, sourcePath) {
   return {
     sourcePath,
     sourceType: "markdown",
+    planningType,
+    title,
     sourceVersion: data.version ?? "0.1.0",
     approvalStatus: data.status ?? "draft",
-    updatedAt: parsedAt,
+    updatedAt: data.updated ?? parsedAt,
     nodes,
     assignments,
     handoffs,
     verifications,
+    taskContainers: extractTaskContainers(body),
   };
 }
 
@@ -353,11 +486,13 @@ function buildHtmlSnapshot(text, sourcePath) {
     throw new Error(`HTML roadmap source '${sourcePath}' is missing [data-govibe-roadmap].`);
   }
 
-  const roadmapId = contractRoot.getAttribute("data-id") ?? `RM-${slugify(contractRoot.getAttribute("data-title") ?? path.basename(sourcePath))}`;
+  const planningType = getPlanningTypeFromPath(sourcePath);
+  const title = contractRoot.getAttribute("data-title") ?? path.basename(sourcePath);
+  const roadmapId = contractRoot.getAttribute("data-id") ?? `RM-${slugify(title)}`;
   const nodes = [{
     id: roadmapId,
     type: "roadmap",
-    title: contractRoot.getAttribute("data-title") ?? path.basename(sourcePath),
+    title,
     state: mapWorkflowState(contractRoot.getAttribute("data-status")),
     progress: parseNumber(contractRoot.getAttribute("data-progress")) ?? 0,
     sourcePath,
@@ -446,13 +581,16 @@ function buildHtmlSnapshot(text, sourcePath) {
   return {
     sourcePath,
     sourceType: "html",
+    planningType,
+    title,
     sourceVersion: contractRoot.getAttribute("data-version") ?? "0.1.0",
     approvalStatus: contractRoot.getAttribute("data-status") ?? "draft",
-    updatedAt: parsedAt,
+    updatedAt: contractRoot.getAttribute("data-updated") ?? parsedAt,
     nodes,
     assignments,
     handoffs,
     verifications,
+    taskContainers: [],
   };
 }
 

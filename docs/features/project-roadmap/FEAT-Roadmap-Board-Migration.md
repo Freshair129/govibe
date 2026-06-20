@@ -71,5 +71,45 @@ Verification additions:
 - [ ] No hardcoded `roadmapRows`, `TASK_DEFINITIONS`, or blueprint rows are treated as canonical live project progress.
 - [ ] Empty state clearly says no approved roadmap document or roadmap event is connected.
 
+## 6. A2 Roadmap Source Tab Parity Addendum
+
+The A2 roadmap source switcher should use a document-tab metaphor instead of a form dropdown when more than one approved roadmap source is available.
+
+Required behavior:
+
+- Replace the A2 roadmap source `select` with a top-aligned horizontal tab strip.
+- Each tab represents one approved roadmap source from `snapshot.roadmapSources`.
+- Tabs must only render approved sources as live-selectable roadmap inputs.
+- The active tab must reflect the currently selected approved roadmap source.
+- Tab labels should prioritize human-readable roadmap titles and may include compact source-type hints.
+- Selecting a tab must dispatch the existing `roadmap.select` command with the selected `sourcePath`.
+- The header wording, metrics semantics, approved-source gate, export actions, and reset behavior remain unchanged.
+
+Layout contract:
+
+- Keep the roadmap header card as the primary summary surface.
+- Add the document-tab strip beneath the header controls as a dedicated source-switch row.
+- Preserve the main A2 hierarchy:
+  - Roadmap source
+  - Phase container
+  - Sprint container
+  - Task row
+  - Template-style task detail dropdown
+- Task detail panels must stay template-aligned and use explicit `unavailable` placeholders when runtime task-container fields do not exist.
+
+Out of scope:
+
+- No roadmap parser schema change
+- No fake task metadata
+- No changes outside A2
+- No C4 changes
+
+Verification additions:
+
+- [ ] When multiple approved roadmap sources exist, A2 renders them as document-like tabs.
+- [ ] Clicking a tab changes the active roadmap source and visible roadmap detail.
+- [ ] Unapproved roadmap sources do not render as live-selectable tabs.
+- [ ] Sparse roadmap sources still show honest placeholders instead of invented sprint or task detail.
+
 ---
 **Please review and approve this Spec. Once approved, I will begin implementing the Roadmap Board.**

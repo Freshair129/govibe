@@ -123,6 +123,18 @@ Required task dropdown content:
 - Created/updated metadata and task ID.
 - `EXPORT TASK` controls for JSON, YAML, and Markdown.
 
+## A2 Roadmap Source Tab Reference
+
+When more than one approved roadmap source is present, A2 should expose those sources as a horizontal row of document-like tabs instead of a compact form dropdown.
+
+The tab-row contract is:
+
+- visually reads like a file/document strip above the roadmap detail panel
+- each tab uses the approved source title as the primary label
+- the active tab has stronger contrast and feels attached to the active document panel
+- tab switching changes the rendered roadmap detail while keeping approved-source gating intact
+- source tabs must not imply unapproved or unavailable files are live board inputs
+
 If a task container omits a field, React must show `unavailable` or an explicit disabled reason. It must not invent symbol links, token splits, completion state, or owner fields.
 
 ## A5 Interaction Style Reference

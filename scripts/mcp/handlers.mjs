@@ -74,6 +74,7 @@ export async function handleToolCall(name, args = {}) {
     }
     case "govibe.roadmap.load": {
       const roadmap = await govibeRuntime.reloadRoadmap(args.source, args);
+      const snapshot = govibeRuntime.getSnapshot();
       return {
         content: asTextContent(
           [
@@ -89,6 +90,9 @@ export async function handleToolCall(name, args = {}) {
           source: roadmap?.sourcePath ?? args.source ?? "docs/roadmap",
           outputShape: args.outputShape ?? "snapshot",
           roadmap,
+          availableSources: snapshot.roadmapSources ?? [],
+          activeSourcePath: snapshot.roadmap?.sourcePath ?? null,
+          activeSourceScore: snapshot.roadmap?.score ?? null,
           auditRef: buildAuditRef(name),
         },
       };

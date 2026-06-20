@@ -1,6 +1,6 @@
 ---
 title: "CONTEXT: RKOI Feasibility and Risk"
-doc_id: "CONTEXT-rkoi-feasibility-risk"
+doc_id: "CONTEXT-RKOI-FEASIBILITY-RISK"
 status: "draft"
 version: "0.1.0"
 updated: "2026-06-14"
@@ -28,3 +28,9 @@ RKOI reviews feasibility, implementation scope, code quality, and risk before ex
 - `.agents/Visual-Agent-Fleet-Scope/BA/comunication-rule01-BA-DEV.md`
 - `.agents/Visual-Agent-Fleet-Scope/Scope-Creep.md`
 - `.agents/Visual-Agent-Fleet-Scope/Requirement/Workshop - Requirement.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0 | 2026-06-20 | RKOI | Added changelog footer and normalized doc_id casing per versioning standard. |

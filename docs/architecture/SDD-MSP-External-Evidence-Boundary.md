@@ -1,9 +1,9 @@
 ---
 title: "SDD: MSP External Evidence Boundary"
 doc_id: "SDD-MSP-EXTERNAL-EVIDENCE-BOUNDARY"
-status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-16"
+status: "approved"
+version: "0.1.1"
+updated: "2026-06-20"
 owner: "ARCHON / KIN / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-09::Traceability-Audit-Verification-System"
@@ -96,25 +96,17 @@ Blocked:
 
 ## 6. Evidence Packet Normalization
 
-All MSP output must be normalized into the GoVibe packet from `FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER` before it can affect GoVibe decisions.
+All MSP output must be normalized into the GoVibe packet from `FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER` before it can affect GoVibe decisions. That FEAT packet is the canonical evidence/decision contract: it owns the base field set, the `recommended_decision` key, and the decision enum (`accept_reference | import_inbound | reject | create_change_request | blocked_by_missing_evidence`). This SDD does not restate or override that base contract; it only adds boundary-specific extension fields.
 
-Minimum derived boundary fields:
+Boundary-specific extension fields (added on top of the canonical FEAT packet):
 
 ```yaml
-source_repo:
-source_commit:
-source_git_status:
 source_boundary: "external_msp"
 internal_subsystem: "gks"
 interface_used: "cli | mcp | package_api"
-command:
-exit_code:
-validated_source_artifacts:
-govibe_taxonomy_mapping:
-unmapped_governance_concepts:
-govibe_decision:
-confidence:
 ```
+
+The decision is carried in the canonical `recommended_decision` key from the FEAT packet. Earlier drafts of this SDD used `govibe_decision` for the same field; `govibe_decision` is retained only as an explicit alias of `recommended_decision` and must use the canonical enum. New tooling should emit `recommended_decision`.
 
 ## 7. V1 Runtime Decision
 
@@ -169,4 +161,6 @@ These remain reference-only until a separate GoVibe feature contract maps them t
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1 | 2026-06-21 | ARCHON / KIN / ATHER | Signed off; promoted draft -> approved (MSP/GKS gate decision recorded in ADR-014). |
+| 0.1.1+draft | 2026-06-20 | ARCHON / KIN / ATHER | Reconciled the evidence packet with the canonical FEAT-MSP-Validate-Evidence-Adapter contract: reduced section 6 to boundary-specific extension fields only and documented `govibe_decision` as an explicit alias of the canonical `recommended_decision` key/enum. |
 | 0.1.0+draft | 2026-06-16 | ARCHON / KIN / ATHER | Added derived MSP external evidence boundary from MSP architecture v2. |

@@ -1,9 +1,9 @@
 ---
 title: "SEQ: Ollama Sidecar Flow"
 doc_id: "SEQ-OLLAMA-SIDECAR-FLOW"
-status: "draft"
-version: "0.1.0"
-updated: "2026-06-13"
+status: "approved"
+version: "0.1.2"
+updated: "2026-06-20"
 owner: "THESEUS"
 source_of_truth: false
 source_prd: "docs/PRD-GoVibe-Platform-Overview.md"
@@ -66,3 +66,11 @@ sequenceDiagram
 | bounded local sidecar execution | launcher scripts | execution router | `docs/lld/LLD-Agent-Launcher-Execution-Router.md` |
 | shared prompt-building path | launcher scripts | prompt builder | `docs/srs/SRS-Ollama-Sidecar-Execution.md` |
 | retry and escalation flow | multi-agent workflow | local sidecar executor | `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` |
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.2 | 2026-06-20 | THESEUS | Signed off; promoted draft -> approved (as-built, verified against current runtime code). |
+| 0.1.1 | 2026-06-20 | THESEUS | Added Changelog footer; verified the sequence flow against the live launcher scripts (`invoke-agent.ps1`, `build-agent-prompt.mjs`) and registry executor policy — no flow changes required. |
+| 0.1.0 | 2026-06-13 | THESEUS | Initial Ollama sidecar sequence flow. |

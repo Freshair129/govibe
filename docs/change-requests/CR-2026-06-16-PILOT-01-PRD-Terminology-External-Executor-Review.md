@@ -95,3 +95,9 @@ Return YAML only with these keys:
 - Feedback artifact is written.
 - Token telemetry is recorded.
 - Scope-control notes are appended to the session trace.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0 | 2026-06-20 | LYRA | Added changelog footer per versioning standard. |

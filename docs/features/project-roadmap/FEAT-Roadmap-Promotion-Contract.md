@@ -1,8 +1,8 @@
 ---
 title: "FEAT: Roadmap Promotion Contract"
 doc_id: "FEAT-ROADMAP-PROMOTION-CONTRACT"
-status: "draft"
-version: "0.1.0+draft"
+status: "approved"
+version: "0.1.0"
 updated: "2026-06-16"
 owner: "LYRA"
 auditor: "ATHER"
@@ -169,4 +169,5 @@ The roadmap loader or parser must enforce:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.0 | 2026-06-21 | LYRA | Signed off; promoted draft -> approved (MSP/GKS gate decision recorded in ADR-014). |
 | 0.1.0+draft | 2026-06-16 | LYRA | Introduced the roadmap promotion contract covering owner gate, metadata gate, registry gate, status gate, and A2 runtime consumption rules. |

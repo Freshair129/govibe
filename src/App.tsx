@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type UIEvent } from "react";
 import { Header } from "./app/Header";
 import { RenderView } from "./app/RenderView";
 import { Sidebar } from "./app/Sidebar";
@@ -25,13 +25,21 @@ export function App() {
   const [activeDomain, setActiveDomain] = useState<DomainId>("A");
   const [activeView, setActiveView] = useState<ViewId>("A1");
   const [sidebarExpanded, setSidebarExpanded] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const domain = missionDomains[activeDomain];
   const activeModule = moduleLookup[activeView];
+  const scrollResetRef = useRef<number | null>(null);
 
   useEffect(() => {
     document.body.classList.toggle("light-theme", theme === "light");
     localStorage.setItem("govibe-theme", theme);
   }, [theme]);
+
+  useEffect(() => () => {
+    if (scrollResetRef.current !== null) {
+      window.clearTimeout(scrollResetRef.current);
+    }
+  }, []);
 
   const connectionLabel = useMemo(() => snapshot.connectionState.toUpperCase(), [snapshot.connectionState]);
 
@@ -45,17 +53,39 @@ export function App() {
     missionGateway.handleEvent(event);
   };
 
+  const handleScroll = (event: UIEvent<HTMLElement>) => {
+    const target = event.currentTarget;
+    const max = Math.max(target.scrollHeight - target.clientHeight, 1);
+    const next = Math.min(target.scrollTop / Math.min(max, 240), 1);
+    setScrollProgress(next);
+
+    if (scrollResetRef.current !== null) {
+      window.clearTimeout(scrollResetRef.current);
+    }
+
+    scrollResetRef.current = window.setTimeout(() => {
+      setScrollProgress(0);
+      scrollResetRef.current = null;
+    }, 180);
+  };
+
   return (
-    <div className="app-shell" style={{ "--accent": domain.color } as CSSProperties}>
+    <div
+      className="app-shell"
+      style={
+        {
+          "--accent": domain.color,
+          "--shell-scroll-progress": scrollProgress,
+        } as CSSProperties
+      }
+    >
       <div className="ambient one" />
       <div className="ambient two" />
       <Header
         activeDomain={activeDomain}
-        connectionLabel={connectionLabel}
         theme={theme}
         onDomainChange={changeDomain}
         onToggleTheme={() => setTheme((value) => value === "dark" ? "light" : "dark")}
-        onRun={() => void send({ type: "reactor.run", profile: "default" })}
       />
       <div className="app-body">
         <Sidebar
@@ -65,12 +95,15 @@ export function App() {
           onToggle={() => setSidebarExpanded((value) => !value)}
           onViewChange={setActiveView}
         />
-        <main>
+        <main onScroll={handleScroll}>
           <StatusBar connectionLabel={connectionLabel} updatedAt={snapshot.updatedAt} />
           <RenderView activeView={activeView} snapshot={snapshot} theme={theme} send={send} ingest={ingest} />
         </main>
       </div>
-      <footer>GoVibe Mission Control | {domain.title} &gt; {activeView}: {activeModule.name}</footer>
+      <footer>
+        <div>GoVibe Mission Control | Stable Build</div>
+        <div>Live Context: <span>{domain.title} &gt; {activeView}: {activeModule.name}</span></div>
+      </footer>
       <Terminal snapshot={snapshot} send={send} />
     </div>
   );

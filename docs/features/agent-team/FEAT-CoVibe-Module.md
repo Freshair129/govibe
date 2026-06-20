@@ -1,8 +1,8 @@
 ---
 title: "FEAT: CoVibe Module"
 doc_id: "FEAT-COVIBE-MODULE"
-status: "draft"
-version: "0.1.0+draft"
+status: "approved"
+version: "0.1.0"
 updated: "2026-06-17"
 owner: "THESEUS"
 auditor: "ATHER"
@@ -142,4 +142,5 @@ Request
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.0 | 2026-06-20 | THESEUS | Signed off; promoted draft -> approved. |
 | 0.1.0+draft | 2026-06-17 | THESEUS | Defined the CoVibe collaboration module for solo-owner orchestration and bounded support execution. |

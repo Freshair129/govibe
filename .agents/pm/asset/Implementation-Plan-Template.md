@@ -2,11 +2,13 @@
 
 **SSOT Reference:** [.agents/pm/asset/Planning-Decomposition-Standard.md](Planning-Decomposition-Standard.md)
 **Quota-Aware Local LLM Reference:** [docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md](../../../docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md)
+**Document Hierarchy Reference:** [docs/design/GoVibe-Document-Hierarchy.md](../../../docs/design/GoVibe-Document-Hierarchy.md)
 **Tier:** H1-H0 (Execution)
 
 ```yaml
 ImpId: [[IMP-ID]]
-Source Spec: [[LINK-TO-SPEC]]
+Source Spec: [[LINK-TO-FEAT-OR-SRS]]
+Product Boundary: [[PRD-SYSTEM]]
 Methodology: DDD + CoDev multi-agent execution
 Complexity: C-1/C-2/C-3
 Risk: LOW/MEDIUM/HIGH
@@ -18,6 +20,13 @@ Target: task, sub-task, micro-task, atomic-task
 
 ## Goal
 [[Describe the goal of this implementation plan]]
+
+## Source Hierarchy Check
+
+- [ ] Work belongs under an existing platform PRD system
+- [ ] Module or feature source doc is identified
+- [ ] SRS exists or is explicitly not required for this slice
+- [ ] Architecture/design doc is identified when the slice is C-3
 
 ## Execution Table
 

@@ -1,4 +1,4 @@
-import type { RoadmapSnapshot, WorkflowTaskNode } from "../../mission";
+import type { RoadmapSnapshot, RoadmapSourceRecord, WorkflowTaskNode } from "../../mission";
 
 const actionableRoadmapTypes = new Set(["task", "sub-task", "micro-task", "atomic-task"]);
 
@@ -29,6 +29,27 @@ export function getRoadmapSourceMeta(snapshot: RoadmapSnapshot, node: WorkflowTa
   const sourceSection = node.sourceSection;
   if (!sourcePath && !sourceSection) return null;
   return { sourcePath, sourceSection };
+}
+
+export function formatRoadmapSourceType(sourceType: RoadmapSourceRecord["sourceType"] | NonNullable<RoadmapSnapshot["planningType"]>) {
+  return sourceType.replace(/-/g, " ").toUpperCase();
+}
+
+export function formatRoadmapScore(snapshot?: RoadmapSnapshot) {
+  if (!snapshot || typeof snapshot.score !== "number") return "Unranked";
+  return `Score ${snapshot.score}`;
+}
+
+export function formatRoadmapTabLabel(source: RoadmapSourceRecord) {
+  return {
+    title: source.title || source.sourcePath,
+    hint: formatRoadmapSourceType(source.sourceType),
+  };
+}
+
+export function formatRoadmapScoreBreakdown(scoreBreakdown?: string[]) {
+  if (!scoreBreakdown || scoreBreakdown.length === 0) return "No score reason available";
+  return scoreBreakdown.join(" · ");
 }
 
 export function getRoadmapStats(snapshot?: RoadmapSnapshot) {
@@ -98,4 +119,20 @@ export function getPrimaryRoadmapPhase(snapshot?: RoadmapSnapshot) {
       },
     ],
   };
+}
+
+export function getRoadmapSprintContext(snapshot: RoadmapSnapshot, node: WorkflowTaskNode) {
+  const nodeById = new Map(snapshot.nodes.map((item) => [item.id, item]));
+  let current: WorkflowTaskNode | undefined = node;
+
+  while (current?.parentId) {
+    const parent = nodeById.get(current.parentId);
+    if (!parent) break;
+    if (parent.type === "sprint") {
+      return parent;
+    }
+    current = parent;
+  }
+
+  return undefined;
 }

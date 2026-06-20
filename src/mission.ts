@@ -150,16 +150,78 @@ export type WorkflowVerification = TemporalVersion & {
   lastUpdatedAt?: string;
 };
 
+export type RoadmapSourceRecord = {
+  title: string;
+  sourcePath: string;
+  sourceType: "masterplan" | "roadmap" | "backlog" | "sprint";
+  transportType: "markdown" | "html";
+  approvalStatus?: string;
+  updatedAt: string;
+  score?: number;
+  scoreBreakdown?: string[];
+  active: boolean;
+};
+
+export type TaskContainerCriterion = { criterion: string; checked: boolean | string };
+
+export type TaskContainer = {
+  task_container_id: string;
+  task_id: string;
+  legacy_task_id?: string;
+  legacy_code?: string;
+  parent_phase_id?: string;
+  parent_sprint_id?: string;
+  title: string;
+  requirement_type?: string;
+  complexity?: string;
+  status?: string;
+  version?: string;
+  pic?: string;
+  executor?: string;
+  approver?: string;
+  auditor?: string;
+  assignee?: string;
+  completed_by?: string;
+  symbol_links?: { code?: string; doc?: string; test?: string };
+  definition_of_done?: {
+    acceptance_criteria?: TaskContainerCriterion[];
+    success_criteria?: TaskContainerCriterion[];
+    exit_criteria?: TaskContainerCriterion[];
+  };
+  changelog?: string;
+  created_at?: string;
+  last_update?: string;
+  token_telemetry?: {
+    model_name?: string;
+    context_length?: string;
+    predicted_token_usage?: string | number;
+    actual_input_tokens?: string | number;
+    actual_output_tokens?: string | number;
+    tool_calling_tokens?: string | number;
+    total_token_usage?: string | number;
+  };
+  export?: { json?: string; yaml?: string; markdown?: string };
+  ui_state?: { dropdown_default?: string; expanded?: boolean | string; disabled_reason?: string };
+  /** Contract-enforcement flags emitted by the loader: incomplete containers are rejected, not rendered. */
+  complete?: boolean;
+  missingFields?: string[];
+};
+
 export type RoadmapSnapshot = TemporalVersion & {
   sourcePath: string;
   sourceType: "markdown" | "html" | "api" | "mcp" | "event";
+  planningType?: "masterplan" | "roadmap" | "backlog" | "sprint";
   sourceVersion?: string;
   approvalStatus?: string;
+  title?: string;
+  score?: number;
+  scoreBreakdown?: string[];
   updatedAt: string;
   nodes: WorkflowTaskNode[];
   assignments: WorkflowAssignment[];
   handoffs: WorkflowHandoff[];
   verifications: WorkflowVerification[];
+  taskContainers?: TaskContainer[];
 };
 
 export type MissionSnapshot = {
@@ -186,6 +248,7 @@ export type MissionSnapshot = {
   };
   campaignLogs: string[];
   roadmap?: RoadmapSnapshot;
+  roadmapSources?: RoadmapSourceRecord[];
 };
 
 export type MissionEvent =
@@ -205,6 +268,7 @@ export type MissionEvent =
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
   | { type: "agent.select"; agentId: string }
+  | { type: "roadmap.select"; sourcePath: string }
   | { type: "reactor.run"; profile: string }
   | { type: "file.save"; hash: string; data: ArrayBuffer; meta: Record<string, unknown> };
 
@@ -292,6 +356,7 @@ const emptySnapshot: MissionSnapshot = {
   specs: [],
   symbols: [],
   campaignLogs: [],
+  roadmapSources: [],
 };
 
 function mergeSnapshot(current: MissionSnapshot, patch: Partial<MissionSnapshot>): MissionSnapshot {
@@ -309,16 +374,17 @@ function mergeSnapshot(current: MissionSnapshot, patch: Partial<MissionSnapshot>
     symbols: patch.symbols ?? current.symbols,
     campaignLogs: patch.campaignLogs ?? current.campaignLogs,
     roadmap: patch.roadmap ?? current.roadmap,
+    roadmapSources: patch.roadmapSources ?? current.roadmapSources,
     updatedAt: patch.updatedAt ?? new Date().toISOString(),
   };
 }
 
 function ensureRoadmapSnapshot(current?: RoadmapSnapshot): RoadmapSnapshot {
-  return current ?? {
-    sourcePath: "event://mission-gateway",
-    sourceType: "event",
-    updatedAt: new Date().toISOString(),
-    nodes: [],
+    return current ?? {
+      sourcePath: "event://mission-gateway",
+      sourceType: "event",
+      updatedAt: new Date().toISOString(),
+      nodes: [],
     assignments: [],
     handoffs: [],
     verifications: [],
@@ -491,11 +557,23 @@ export class MissionGateway {
       return;
     }
     const body = command.type === "file.save" ? { ...command, data: Array.from(new Uint8Array(command.data)) } : command;
-    await fetch(`${this.options.httpBaseUrl.replace(/\/$/, "")}/mission/commands`, {
+    const response = await fetch(`${this.options.httpBaseUrl.replace(/\/$/, "")}/mission/commands`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+    if (response.ok) {
+      try {
+        const result = await response.json() as { snapshot?: MissionSnapshot; roadmap?: RoadmapSnapshot };
+        if (result.snapshot) {
+          this.setSnapshot(result.snapshot);
+        } else if (result.roadmap) {
+          this.setSnapshot({ roadmap: result.roadmap });
+        }
+      } catch {
+        // Ignore non-JSON or command responses that do not include snapshot state.
+      }
+    }
   }
 
   private appendTerminal(type: TerminalLine["type"], text: string) {

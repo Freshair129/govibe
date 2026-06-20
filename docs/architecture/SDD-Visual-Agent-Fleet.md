@@ -1,7 +1,7 @@
 ---
 title: "SDD: Visual Agent Fleet"
-doc_id: "SDD-visual-agent-fleet"
-status: "draft"
+doc_id: "SDD-VISUAL-AGENT-FLEET"
+status: "approved"
 version: "0.1.0"
 updated: "2026-06-14"
 owner: "THESEUS / ARCHON"
@@ -143,3 +143,10 @@ decision:
 - Confirm `git diff -- .agents/Visual-Agent-Fleet-Scope` is empty.
 - Review registry metadata for additive-only changes.
 - Review role packets for source refs and no full-source copying.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0 | 2026-06-20 | THESEUS / ARCHON | Signed off; promoted draft -> approved. |
+| 0.1.0+draft | 2026-06-20 | THESEUS / ARCHON | Migrated to canonical draft convention: normalized version suffix to +draft, uppercased doc_id, and added this changelog footer. |

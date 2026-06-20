@@ -2,7 +2,7 @@
 title: "CONTEXT: GoVibe Shared External Agent"
 doc_id: "CONTEXT-GOVIBE-SHARED-EXTERNAL-AGENT"
 status: "draft"
-version: "0.1.1+draft"
+version: "0.1.2+draft"
 updated: "2026-06-19"
 owner: "ATHER / THESEUS"
 source_of_truth: false
@@ -11,6 +11,8 @@ related_docs:
   - "AGENT.md"
   - ".agents/context/CONTEXT-Bounded-External-Executor.md"
   - ".agents/context/shared/CONTEXT-Mission-Control-Frontend-Structure-Refactor.md"
+  - "docs/design/GoVibe-Document-Hierarchy.md"
+  - "docs/features/agent-team/FEAT-Task-Scoped-Context-Injection.md"
   - "docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md"
 ---
 
@@ -56,7 +58,26 @@ Before proposing code, check in this order:
 4. Can a one-line change solve it?
 5. Only then propose minimum implementation.
 
-## 5. Required Response Contract
+## 5. Document Hierarchy Rule
+
+When a bounded external executor is asked to propose or update documentation, use this hierarchy by default:
+
+1. `PRD` for platform or truly separate product scope only
+2. `FEAT` for system, module, or major feature contract
+3. `SRS` / `TRD` / `SRD` for technical requirements
+4. `ADR` / `SDD` / `LLD` / `Blueprint` for design and architecture
+5. `RUNBOOK`, roadmap, change request, RCA, audit, and feedback as supporting operational or control artifacts
+
+Do not create a second product-level PRD for module work when the platform PRD already owns the product boundary.
+
+For bounded context assembly work, prefer:
+
+- `docs/features/agent-team/FEAT-Task-Scoped-Context-Injection.md`
+- `docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md`
+
+over creating a new PRD-level document.
+
+## 6. Required Response Contract
 
 ```yaml
 repo_root_checked:
@@ -71,7 +92,7 @@ recommended_decision:
 confidence:
 ```
 
-## 6. Disallowed Behavior
+## 7. Disallowed Behavior
 
 - Do not pretend to inspect files that were not provided or read.
 - Do not turn a bounded review into a new feature proposal.
@@ -83,5 +104,6 @@ confidence:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-06-19 | ATHER / THESEUS | Added document hierarchy guidance so external executors use FEAT plus SRS for module work instead of spawning duplicate PRDs. |
 | 0.1.1+draft | 2026-06-19 | ATHER / THESEUS | Added bounded-loading guidance so external executors do not treat the entire `.agents/` tree as default context. |
 | 0.1.0+draft | 2026-06-17 | ATHER / THESEUS | Added shared context packet for external agent executors. |

@@ -174,3 +174,9 @@ Return Markdown with these sections:
 - recommended shared context packet: `.agents/context/shared/CONTEXT-Mission-Control-Frontend-Structure-Refactor.md`
 - recommended implementation contract seed: `.agents/frontend/AGENT.md`
 - recommended PM routing context: `.agents/pm/context/LYRA-Scope-Control-Context.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.1 | 2026-06-20 | LYRA | Added changelog footer per versioning standard. |

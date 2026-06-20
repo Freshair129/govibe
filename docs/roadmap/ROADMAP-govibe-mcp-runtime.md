@@ -1,4 +1,5 @@
 ---
+title: "ROADMAP: GoVibe MCP Runtime"
 doc_id: "ROADMAP-GOVIBE-MCP-RUNTIME"
 id: RM-govibe-mcp-runtime
 version: "0.4.8"

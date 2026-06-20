@@ -4,7 +4,7 @@ doc_id: "FEEDBACK-RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW"
 status: "draft"
 version: "0.2.1"
 updated: "2026-06-16"
-owner: "CODEx"
+owner: "CODEX"
 auditor: "ATHER"
 source_of_truth: true
 related_docs:

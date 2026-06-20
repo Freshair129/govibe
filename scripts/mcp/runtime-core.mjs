@@ -14,6 +14,13 @@ const roadmapDir = path.join(workspaceRoot, "docs", "roadmap");
 const launcherScript = path.join(workspaceRoot, "scripts", "agents", "invoke-agent.ps1");
 const agentRegistryPath = path.join(workspaceRoot, ".agents", "agent-registry.yaml");
 const agentAccents = ["#10b981", "#6366f1", "#22d3ee", "#f472b6", "#f59e0b", "#a78bfa"];
+const actionableRoadmapTypes = new Set(["task", "sub-task", "micro-task", "atomic-task"]);
+const planningTypeWeights = {
+  roadmap: 40,
+  backlog: 30,
+  sprint: 20,
+  masterplan: 10,
+};
 
 function createEmptySnapshot() {
   return {
@@ -192,6 +199,126 @@ function validateTemporalItem(item, label) {
   }
 }
 
+function getActionableDepth(parsed) {
+  const taskCount = parsed.nodes.filter((node) => actionableRoadmapTypes.has(node.type)).length;
+  if (taskCount > 0) {
+    return {
+      label: "task-rich",
+      priority: 2,
+      bonus: 20,
+      taskCount,
+      sprintCount: parsed.nodes.filter((node) => node.type === "sprint").length,
+    };
+  }
+
+  const sprintCount = parsed.nodes.filter((node) => node.type === "sprint").length;
+  if (sprintCount > 0) {
+    return {
+      label: "sprint-shaped",
+      priority: 1,
+      bonus: 10,
+      taskCount: 0,
+      sprintCount,
+    };
+  }
+
+  return {
+    label: "phase-only",
+    priority: 0,
+    bonus: 0,
+    taskCount: 0,
+    sprintCount: 0,
+  };
+}
+
+function scoreApprovedSources(inventory, envPreferredPath) {
+  const approvedItems = inventory.filter((item) => item.approvalStatus?.toLowerCase() === "approved");
+  if (approvedItems.length === 0) {
+    return inventory.map((item) => ({ ...item, score: undefined, scoreBreakdown: [] }));
+  }
+
+  const updatedTimes = approvedItems
+    .map((item) => Date.parse(item.updatedAt ?? ""))
+    .filter((value) => Number.isFinite(value));
+  const newestUpdatedAt = updatedTimes.length > 0 ? Math.max(...updatedTimes) : undefined;
+  const oldestUpdatedAt = updatedTimes.length > 0 ? Math.min(...updatedTimes) : undefined;
+  const recencyRange = Number.isFinite(newestUpdatedAt) && Number.isFinite(oldestUpdatedAt)
+    ? Math.max(1, newestUpdatedAt - oldestUpdatedAt)
+    : 1;
+
+  return inventory.map((item) => {
+    if (item.approvalStatus?.toLowerCase() !== "approved") {
+      return { ...item, score: undefined, scoreBreakdown: [] };
+    }
+
+    const planningType = item.planningType ?? "roadmap";
+    const typeWeight = planningTypeWeights[planningType] ?? 0;
+    const taskDepthScore = Math.min(item.taskCount ?? 0, 20);
+    const updatedAtMs = Date.parse(item.updatedAt ?? "");
+    const recencyScore = Number.isFinite(updatedAtMs) && Number.isFinite(newestUpdatedAt)
+      ? Math.round(((updatedAtMs - oldestUpdatedAt) / recencyRange) * 20)
+      : 0;
+    const envOverride = envPreferredPath && item.path === envPreferredPath ? 1000 : 0;
+    const scoreBreakdown = [
+      "approved",
+      planningType,
+      item.actionableDepthLabel,
+    ];
+    if (envOverride > 0) scoreBreakdown.push("env override");
+    if (recencyScore > 0) scoreBreakdown.push("recent");
+
+    return {
+      ...item,
+      score: typeWeight + item.actionableDepthBonus + taskDepthScore + recencyScore + envOverride,
+      scoreBreakdown,
+    };
+  });
+}
+
+function compareScoredSources(left, right) {
+  const leftScore = left.score ?? -Infinity;
+  const rightScore = right.score ?? -Infinity;
+  if (leftScore !== rightScore) return rightScore - leftScore;
+  if ((left.actionableDepthPriority ?? 0) !== (right.actionableDepthPriority ?? 0)) {
+    return (right.actionableDepthPriority ?? 0) - (left.actionableDepthPriority ?? 0);
+  }
+  const leftUpdatedAt = Date.parse(left.updatedAt ?? "");
+  const rightUpdatedAt = Date.parse(right.updatedAt ?? "");
+  if (Number.isFinite(leftUpdatedAt) && Number.isFinite(rightUpdatedAt) && leftUpdatedAt !== rightUpdatedAt) {
+    return rightUpdatedAt - leftUpdatedAt;
+  }
+  return left.relativePath.localeCompare(right.relativePath);
+}
+
+async function buildRoadmapSourceInventory(sources) {
+  const envPreferred = process.env.GOVIBE_ROADMAP_SOURCE;
+  const envPreferredPath = envPreferred
+    ? path.isAbsolute(envPreferred) ? envPreferred : path.join(workspaceRoot, envPreferred)
+    : undefined;
+  const inventory = await Promise.all(sources.map(async (source) => {
+    const parsed = await parseRoadmapSource(source.path);
+    const depth = getActionableDepth(parsed);
+    return {
+      path: source.path,
+      relativePath: toRelativePath(source.path),
+      name: source.name,
+      transportType: source.sourceType,
+      planningType: parsed.planningType ?? "roadmap",
+      title: parsed.title ?? source.name,
+      approvalStatus: parsed.approvalStatus ?? "draft",
+      updatedAt: parsed.updatedAt,
+      actionableDepthLabel: depth.label,
+      actionableDepthPriority: depth.priority,
+      actionableDepthBonus: depth.bonus,
+      taskCount: depth.taskCount,
+      sprintCount: depth.sprintCount,
+      parsed,
+    };
+  }));
+
+  return scoreApprovedSources(inventory, envPreferredPath).sort(compareScoredSources);
+}
+
 async function inferRoadmapSourcePath(explicitSource, sources) {
   if (explicitSource) {
     const sourcePath = path.isAbsolute(explicitSource) ? explicitSource : path.join(workspaceRoot, explicitSource);
@@ -202,28 +329,8 @@ async function inferRoadmapSourcePath(explicitSource, sources) {
     return sourcePath;
   }
 
-  const preferred = process.env.GOVIBE_ROADMAP_SOURCE;
-  if (preferred) {
-    const sourcePath = path.isAbsolute(preferred) ? preferred : path.join(workspaceRoot, preferred);
-    const parsed = await parseRoadmapSource(sourcePath);
-    if (parsed.approvalStatus?.toLowerCase() !== "approved") {
-      throw new Error(`Roadmap source '${toRelativePath(sourcePath)}' is not approved.`);
-    }
-    return sourcePath;
-  }
-
-  const orderedSources = [
-    ...sources.filter((source) => /^ROADMAP-.*\.md$/i.test(source.name)),
-    ...sources.filter((source) => /^ROADMAP-.*\.html$/i.test(source.name)),
-    ...sources.filter((source) => !/^ROADMAP-.*\.(md|html)$/i.test(source.name)),
-  ];
-  for (const source of orderedSources) {
-    const parsed = await parseRoadmapSource(source.path);
-    if (parsed.approvalStatus?.toLowerCase() === "approved") {
-      return source.path;
-    }
-  }
-  return undefined;
+  const rankedSources = await buildRoadmapSourceInventory(sources);
+  return rankedSources.find((source) => source.approvalStatus?.toLowerCase() === "approved")?.path;
 }
 
 function formatAgentRunResult(stdout, stderr, exitCode) {
@@ -293,25 +400,50 @@ export class GovibeRuntime {
   }
 
   async discoverSources() {
-    this.availableSources = await discoverRoadmapSources(roadmapDir);
+    this.availableSources = await buildRoadmapSourceInventory(await discoverRoadmapSources(roadmapDir));
     return this.availableSources.map((source) => ({
-      name: source.name,
-      path: toRelativePath(source.path),
-      sourceType: source.sourceType,
+      title: source.title,
+      path: source.relativePath,
+      sourceType: source.planningType,
+      transportType: source.transportType,
+      approvalStatus: source.approvalStatus,
+      updatedAt: source.updatedAt,
+      score: source.score,
+      scoreBreakdown: source.scoreBreakdown,
+      actionableDepth: source.actionableDepthLabel,
+      taskCount: source.taskCount,
+      sprintCount: source.sprintCount,
       active: this.activeRoadmapSource === source.path,
     }));
   }
 
   async reloadRoadmap(explicitSource, options = {}) {
     const sources = await discoverRoadmapSources(roadmapDir);
-    this.availableSources = sources;
     const selectedSource = await inferRoadmapSourcePath(explicitSource, sources);
+    const rankedSources = await buildRoadmapSourceInventory(sources);
+    this.availableSources = rankedSources;
     if (!selectedSource) {
-      this.snapshot = { ...this.snapshot, roadmap: undefined, updatedAt: new Date().toISOString() };
+      this.snapshot = {
+        ...this.snapshot,
+        roadmap: undefined,
+        roadmapSources: rankedSources.map((source) => ({
+          title: source.title,
+          sourcePath: source.relativePath,
+          sourceType: source.planningType,
+          transportType: source.transportType,
+          approvalStatus: source.approvalStatus,
+          updatedAt: source.updatedAt,
+          score: source.score,
+          scoreBreakdown: source.scoreBreakdown,
+          active: false,
+        })),
+        updatedAt: new Date().toISOString(),
+      };
       return null;
     }
 
-    const parsed = await parseRoadmapSource(selectedSource);
+    const selectedSourceMeta = rankedSources.find((source) => source.path === selectedSource);
+    const parsed = selectedSourceMeta?.parsed ?? await parseRoadmapSource(selectedSource);
     this.activeRoadmapSource = selectedSource;
     const overlayNodes = latestByKey(
       Array.from(this.temporalHistory.nodes.values()).flat(),
@@ -337,6 +469,9 @@ export class GovibeRuntime {
     let roadmap = {
       ...parsed,
       sourcePath: toRelativePath(selectedSource),
+      planningType: parsed.planningType ?? selectedSourceMeta?.planningType ?? "roadmap",
+      score: selectedSourceMeta?.score,
+      scoreBreakdown: selectedSourceMeta?.scoreBreakdown ?? [],
       ...createTemporalVersion({
         version: parsed.sourceVersion,
         validFrom: parsed.validFrom,
@@ -385,7 +520,22 @@ export class GovibeRuntime {
     }
 
     roadmap = { ...roadmap, updatedAt: new Date().toISOString() };
-    this.snapshot = { ...this.snapshot, roadmap, updatedAt: new Date().toISOString() };
+    this.snapshot = {
+      ...this.snapshot,
+      roadmap,
+      roadmapSources: rankedSources.map((source) => ({
+        title: source.title,
+        sourcePath: source.relativePath,
+        sourceType: source.planningType,
+        transportType: source.transportType,
+        approvalStatus: source.approvalStatus,
+        updatedAt: source.updatedAt,
+        score: source.score,
+        scoreBreakdown: source.scoreBreakdown,
+        active: source.path === selectedSource,
+      })),
+      updatedAt: new Date().toISOString(),
+    };
     this.emit({ type: "roadmap.snapshot", roadmap });
     return roadmap;
   }
@@ -657,17 +807,23 @@ export class GovibeRuntime {
       const roadmapLoadMatch = command.command.match(/^roadmap\s+load\s+(.+)$/i);
       if (roadmapLoadMatch) {
         const source = roadmapLoadMatch[1].trim();
-        await this.reloadRoadmap(source);
+        const roadmap = await this.reloadRoadmap(source);
         this.appendTerminal("sys", `Roadmap source loaded: ${source}`);
-        return { ok: true, action: "roadmap.load", source };
+        return { ok: true, action: "roadmap.load", source, roadmap, snapshot: this.snapshot };
       }
       if (/^roadmap\s+reload$/i.test(command.command)) {
-        await this.reloadRoadmap();
+        const roadmap = await this.reloadRoadmap();
         this.appendTerminal("sys", "Roadmap source reloaded.");
-        return { ok: true, action: "roadmap.reload" };
+        return { ok: true, action: "roadmap.reload", roadmap, snapshot: this.snapshot };
       }
       this.appendTerminal("sys", `Command acknowledged: ${command.command}`);
       return { ok: true, action: "terminal.command" };
+    }
+
+    if (command.type === "roadmap.select") {
+      const roadmap = await this.reloadRoadmap(command.sourcePath);
+      this.appendTerminal("sys", `Roadmap source selected: ${command.sourcePath}`);
+      return { ok: true, action: "roadmap.select", source: command.sourcePath, roadmap, snapshot: this.snapshot };
     }
 
     if (command.type === "agent.select") {

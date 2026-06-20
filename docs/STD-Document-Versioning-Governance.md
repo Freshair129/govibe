@@ -2,7 +2,7 @@
 title: "STD: Document Versioning Governance"
 doc_id: "STD-DOCUMENT-VERSIONING-GOVERNANCE"
 status: "draft"
-version: "0.1.1+draft"
+version: "0.1.2+draft"
 updated: "2026-06-15"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -51,6 +51,8 @@ updated:
 owner:
 source_of_truth:
 ```
+
+The `status` field must use one of the allowed document status values defined in Section 13.
 
 Recommended additional fields when relevant:
 
@@ -110,6 +112,11 @@ Allowed `edition` values in v1:
 - `genesis`
 - `legacy`
 - `local`
+- `draft`
+
+`draft` is a pre-approval edition marker: `MAJOR.MINOR.PATCH+draft` denotes a working
+document version that has not yet been signed off. On approval the `+draft` suffix is
+dropped (e.g. `0.1.0`) or replaced by a release edition such as `+govibe` / `+ga`.
 
 If a new edition label is needed, it must be added through governance review before use.
 
@@ -214,9 +221,28 @@ npm run diff:check
 - Existing documents with prose headers need frontmatter upgrades.
 - Existing validators need to be extended in a separate implementation slice.
 
+## 13. Allowed Document Status Values
+
+The `status` frontmatter field records a document's lifecycle state. Allowed values:
+
+- `draft` — authored, not yet signed off.
+- `approved` — signed off for active use (planning and specification docs).
+- `accepted` — signed off (decision records such as ADRs).
+- `stable` — generally approved and durable (standards, typically at `+ga`).
+- `deprecated` — still referenceable but not preferred for new work.
+- `archived` — retained for history only.
+- `superseded` — replaced by a newer canonical document (record it in `superseded_by`).
+
+The registry (`docs/DOC-VERSION-REGISTRY.md`) may additionally use transitional
+operational markers — `migration-needed`, `proposed-migration`, `pending-classification`,
+`tracked-outside-registry`, `unregistered` — defined in that registry's Migration Notes.
+These are registry bookkeeping states, not document lifecycle values: a document's own
+frontmatter `status` must use one of the lifecycle values above.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-06-20 | ATHER / THESEUS | Added Section 13 allowed document status values, registered `+draft` as a sanctioned pre-approval edition marker, and bound the `status` frontmatter field to the defined lifecycle set. |
 | 0.1.1+draft | 2026-06-15 | ATHER / THESEUS | Added repository diff gate automation requirements for docs/code/masterplan scope validation and staged-only review support. |
 | 0.1.0+draft | 2026-06-15 | ATHER / THESEUS | Initial document versioning governance standard for metadata, canonical version format, changelog, and registry requirements. |

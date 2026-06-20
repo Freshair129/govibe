@@ -90,7 +90,7 @@ Each domain and module below must match `docs/design/SITE_MAP.md`, `src/mission.
 | B3 Interactive Graph | Renders graph studio canvas from `snapshot.graph.nodes` or blueprint nodes. | Switch to B3; graph studio and add-node action appear. |
 | B4 Live Call Graph | Uses the graph renderer with depth controls, sync action, and selected-node info panel. | Switch to B4 after graph ingest; node labels, edge rows, depth controls, and info panel remain visible. |
 
-### Domain C: Block DB
+### Domain C: GenesisBlock DB
 
 | Module | Implemented Evidence | Verification |
 | --- | --- | --- |

@@ -1,8 +1,8 @@
 ---
 title: "FEAT: CoDev Module"
 doc_id: "FEAT-CODEV-MODULE"
-status: "draft"
-version: "0.1.0+draft"
+status: "approved"
+version: "0.1.0"
 updated: "2026-06-17"
 owner: "THESEUS"
 auditor: "ATHER"
@@ -139,4 +139,5 @@ Request
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.0 | 2026-06-20 | THESEUS | Signed off; promoted draft -> approved. |
 | 0.1.0+draft | 2026-06-17 | THESEUS | Defined the CoDev collaboration module for multi-owner and multi-team coordination. |

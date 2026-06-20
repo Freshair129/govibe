@@ -1,9 +1,9 @@
 ---
 title: "SDD: Symbol Graph Traceability Boundary"
 doc_id: "SDD-SYMBOL-GRAPH-TRACEABILITY-BOUNDARY"
-status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-16"
+status: "approved"
+version: "0.1.1"
+updated: "2026-06-20"
 owner: "ARCHON / THESEUS / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-08::Genesis-Knowledge-HCS-System"
@@ -67,6 +67,12 @@ source_bundle:
     govibe_decision: "reference_only"
 ```
 
+### 2a. Security Gate For High-Leak Sources
+
+Two of the sources above (`FRAMEWORK--SYMBOL-GRAPH` and `BLUEPRINT--SYMBOL-GRAPH-CORE`) declare `has_secret: true` and `leak_risk: high`. Per `AUDIT-Cognitive-System-Inbound-Triage-2026-06-16` (§3 Non-Negotiable Import Rules and §4 Decision States), such sources MUST first pass the `blocked_security_review` gate — an explicit ATHER security/governance review — before any derivation. The `govibe_decision: "derive_candidate"` shown above is therefore conditional, not effective: it does not authorize derivation while the security review is outstanding.
+
+Rule: no `derive_candidate` decision (in this section, in the evidence packet of section 6, or in any downstream build) may be acted on for a source flagged `leak_risk: high` or `has_secret: true` until that source has cleared `blocked_security_review` under the AUDIT. The symbol-graph boundary does not bypass that gate.
+
 ## 3. Boundary Model
 
 ```mermaid
@@ -110,12 +116,11 @@ The symbol graph is not the source of product authority. It is a reader and veri
 
 ## 6. Required Evidence Packet
 
-Any GoVibe symbol-graph build, refresh, or visual export must emit a packet with at least:
+The canonical evidence/decision contract is `FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER`. It owns the base field set, the `recommended_decision` key, and the base decision enum (`accept_reference | import_inbound | reject | create_change_request | blocked_by_missing_evidence`). This SDD references that contract and only ADDS symbol-graph-specific extension fields and one explicitly documented enum extension.
+
+Any GoVibe symbol-graph build, refresh, or visual export must emit the canonical FEAT packet plus the following symbol-graph extension fields:
 
 ```yaml
-source_repo:
-source_commit:
-source_git_status:
 source_refs:
   - ".brain/inbound/FRAMEWORK--SYMBOL-GRAPH.md"
   - ".brain/inbound/BLUEPRINT--SYMBOL-GRAPH-CORE.md"
@@ -127,9 +132,11 @@ doc_symbol_links:
 broken_links:
 unmapped_doc_sections:
 drift_score:
-recommended_decision: accept_reference | derive_candidate | create_change_request | reject | blocked_by_missing_evidence
-confidence:
 ```
+
+The decision uses the canonical `recommended_decision` key. The base enum is extended with one boundary-specific value:
+
+- `derive_candidate` — symbol-graph-specific extension of the canonical FEAT enum, meaning the structural evidence is a candidate for deriving a GoVibe doc section or feature. This is an explicit addition to, not a replacement of, the FEAT enum. A `derive_candidate` decision is only valid for sources that have cleared the security gate in section 2a; high-leak or secret-bearing sources must first pass `blocked_security_review`.
 
 ## 7. Runtime Contract
 
@@ -192,4 +199,6 @@ Defer until later:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1 | 2026-06-21 | ARCHON / THESEUS / ATHER | Signed off; promoted draft -> approved (MSP/GKS gate decision recorded in ADR-014). |
+| 0.1.1+draft | 2026-06-20 | ARCHON / THESEUS / ATHER | Referenced FEAT-MSP-Validate-Evidence-Adapter as the canonical packet/decision contract; documented `derive_candidate` as an explicit enum extension (not a replacement of `import_inbound`); added section 2a requiring high-leak/secret-bearing sources to clear the AUDIT `blocked_security_review` gate before any `derive_candidate` decision. |
 | 0.1.0+draft | 2026-06-16 | ARCHON / THESEUS / ATHER | Added derived symbol graph traceability boundary for doc-code drift and structural evidence. |

@@ -189,11 +189,16 @@ async function main() {
       },
     });
     const automaticRoadmap = automaticRoadmapLoad.structuredContent?.roadmap;
+    const availableSources = automaticRoadmapLoad.structuredContent?.availableSources ?? [];
+    const topApprovedSource = availableSources.find((source) => source.approvalStatus === "approved");
+    assert(topApprovedSource, "roadmap.load did not expose ranked approved roadmap sources.");
+    assert(availableSources.some((source) => source.sourceType === "masterplan"), "roadmap source inventory is missing masterplan discovery.");
     assert(
-      automaticRoadmap?.sourcePath === "docs/roadmap/ROADMAP-govibe-mcp-runtime.md",
-      "roadmap.load did not automatically select the approved roadmap source.",
+      automaticRoadmap?.sourcePath === topApprovedSource.sourcePath,
+      "roadmap.load did not automatically select the highest-ranked approved roadmap source.",
     );
     assert(automaticRoadmap?.approvalStatus === "approved", "automatic roadmap selection returned an unapproved source.");
+    assert(automaticRoadmap?.score === automaticRoadmapLoad.structuredContent?.activeSourceScore, "active roadmap score was not exposed consistently.");
 
     let draftSourceRejected = false;
     try {
