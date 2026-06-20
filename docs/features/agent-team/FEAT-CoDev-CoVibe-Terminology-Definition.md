@@ -1,8 +1,8 @@
 ---
 title: "FEAT: CoDev and CoVibe Terminology Definition"
 doc_id: "FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION"
-status: "draft"
-version: "0.1.1+draft"
+status: "approved"
+version: "0.1.1"
 updated: "2026-06-17"
 owner: "THESEUS"
 auditor: "ATHER"
@@ -214,5 +214,6 @@ Reviewers should confirm:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1 | 2026-06-20 | THESEUS | Signed off; promoted draft -> approved. |
 | 0.1.1+draft | 2026-06-17 | THESEUS | Added module-level feature references for CoDev and CoVibe. |
 | 0.1.0 | 2026-06-15 | THESEUS | Defined the CoDev and CoVibe terminology note. |

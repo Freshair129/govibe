@@ -1,8 +1,8 @@
 ---
 title: "Architecture: MSP/GKS Taxonomy Mapping"
 doc_id: "MSP-GKS-TAXONOMY-MAPPING"
-status: "draft"
-version: "0.1.0+draft"
+status: "approved"
+version: "0.1.0"
 updated: "2026-06-16"
 owner: "THESEUS / KIN"
 source_of_truth: true
@@ -51,4 +51,5 @@ Map GoVibe governance documents to the closest MSP/GKS atom or validation concep
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.0 | 2026-06-21 | THESEUS / KIN | Signed off; promoted draft -> approved (MSP/GKS gate decision recorded in ADR-014). |
 | 0.1.0+draft | 2026-06-16 | THESEUS / KIN | Added initial GoVibe-to-MSP/GKS taxonomy mapping for evidence adapter use. |

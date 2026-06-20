@@ -1,9 +1,9 @@
 ---
 title: "CR: MSP/GKS Integration as GoVibe Traceability Gate"
 doc_id: "CR-2026-06-14-msp-gks-govibe-integration"
-status: "proposed"
-version: "0.1.0"
-updated: "2026-06-14"
+status: "approved"
+version: "0.2.0"
+updated: "2026-06-21"
 owner: "LYRA"
 decision_owner: "ARCHON"
 auditor: "ATHER"
@@ -44,7 +44,7 @@ resource_impact: "Requires ARCHON, ATHER, LYRA, THESEUS, KIN, GHOST, and JANUS f
 risk_impact: "Medium-to-high governance architecture impact; potential coupling, taxonomy drift, and deployment-boundary decisions."
 what_moves_out: "Custom GoVibe-only dependency graph implementation should move out of v1 unless MSP/GKS fit is rejected."
 approval_owner: "ARCHON with human owner approval"
-decision: "feedback_collected_requires_refinement"
+decision: "approved_option_a_via_adr_014"
 ```
 
 ## 2. Current Understanding
@@ -167,3 +167,36 @@ Common required refinements:
 - Replacing GoVibe's current docs validator.
 - Editing protected human-dev source under `.agents/Visual-Agent-Fleet-Scope/`.
 - Exposing GKS directly to agents without MSP.
+
+## 11. Resolution
+
+All "Required Changes Before Approval" from the feedback (§3) are resolved via
+`docs/adr/ADR-014-MSP-GKS-Traceability-Gate.md`:
+
+- **Taxonomy mapping** — exists at `docs/architecture/MSP-GKS-Taxonomy-Mapping.md` and is
+  cited by ADR-014 for per-artifact mapping confidence and adapter treatment.
+- **v1 interface** — fixed as MSP MCP tools first (KIN's preference), with CLI scripts and
+  package API as fallbacks (ADR-014 Decision §2).
+- **Mandatory gates** — defined as a per-artifact-type gate matrix (PRD, ADR, FEAT, SDD,
+  agent context, registry metadata, code symbols) with enforced link/validation and stage
+  (ADR-014 Decision §3).
+- **Fail policy** — hard-fail (missing parent link blocks), soft-fail with logged bypass
+  (MSP/GKS unavailable), and bypass logging are all defined (ADR-014 Decision §4).
+- **CI-safe discovery** — mandated via environment variable or package resolution only;
+  no absolute local paths; the CR `external_refs` are workstation evidence, not config
+  (ADR-014 Decision §5).
+- **Deferrals** — custom GoVibe-only graph deferred unless MSP/GKS is rejected; rich Mission
+  Control provenance UI deferred until the gate is stable; Mission Control shows MSP/GKS as
+  provenance only, never fake live execution (ADR-014 Decision §6).
+
+GKS remains internal behind MSP and is not exposed directly to agents (ADR-014 Decision §1).
+The GoVibe human owner approved Option A on 2026-06-21. Implementation is tracked as a
+follow-up FEAT and is gated by the ADR-014 validation plan (POC plus negative/positive link
+tests, failure-mode test, CI discovery check, and UI provenance check); traceability is not
+"done" until that plan passes.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.2.0 | 2026-06-21 | LYRA | Approved Option A via ADR-014; recorded resolution of all reviewer required-changes and human-owner approval. |

@@ -1,9 +1,9 @@
 ---
 title: "FEAT: Quota-Aware Local LLM Decomposition"
 doc_id: "FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION"
-status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-16"
+status: "approved"
+version: "0.1.1"
+updated: "2026-06-20"
 owner: "LYRA / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -14,6 +14,7 @@ related_docs:
   - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
   - ".agents/pm/asset/Planning-Decomposition-Standard.md"
   - ".agents/pm/asset/Implementation-Plan-Template.md"
+  - "docs/STD-Execution-Governance.md"
 ---
 
 # FEAT: Quota-Aware Local LLM Decomposition
@@ -31,6 +32,8 @@ Cloud or high-capacity models should not spend quota on repetitive or tightly bo
 Local models are less reliable when asked to infer broad product context. GoVibe should reduce hallucination by making local work small enough that model intelligence matters less than packet quality.
 
 ## 3. Scope
+
+Context tiers (`H0`, `H1`, ...) used in this doc follow the canonical Context Scaling Tier scale defined in `docs/STD-Execution-Governance.md` §3 (H-Scale Mapping): `H0` = subtask/PR scope (local change, no broad context required), `H1` = task/component scope, ascending to `H6`. Local LLM packets target `H0` (and at most `H1`) work.
 
 Included:
 
@@ -127,4 +130,6 @@ escalation_rule: escalate_to_lead_when_more_than_one_action_is_required
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1 | 2026-06-20 | LYRA / ATHER | Signed off; promoted draft -> approved. |
+| 0.1.1+draft | 2026-06-20 | LYRA / ATHER | Anchored H0/H1 context tiers to the canonical Context Scaling Tier scale in STD-Execution-Governance §3 and added it to related_docs. |
 | 0.1.0+draft | 2026-06-16 | LYRA / ATHER | Added quota-aware local LLM decomposition contract for micro-task and atomic-task execution. |

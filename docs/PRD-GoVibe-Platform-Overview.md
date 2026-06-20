@@ -1,8 +1,9 @@
 ---
+title: "PRD: GoVibe Platform Overview"
 doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
 status: "draft"
 version: "0.4.1+draft"
-updated: "2026-06-17"
+updated: "2026-06-20"
 owner: "Rwang (Senior Dev)"
 source_of_truth: true
 block_manifest:
@@ -17,7 +18,7 @@ block_manifest:
 **Status:** `DRAFT`
 **Author:** Rwang (Senior Dev)
 **Date:** 2026-06-06
-**Updated:** 2026-06-16
+**Updated:** 2026-06-20
 
 ## 1. Product Vision
 GoVibe is an AI-native visual CoDev and project management platform for coordinating human developers, their agent teams, project documents, roadmap progress, artifacts, and third-party AI coding tools through API and MCP integrations, leveraging MemoryOS V3 (Native Runtime / GenesisBlockDB).
@@ -107,7 +108,7 @@ Detailed module behavior is captured in:
 - Hybrid Just-In-Time Context Rendering loads the minimum useful document, atom, and graph context for each agent task from the Native Runtime.
 
 ### 4.7 Execution Governance and Multi-Agent Operations
-- The Execution Governance Standard classifies work by complexity (`C-0` to `C-3`) and context tier (`H0` to `H5`) before execution.
+- The Execution Governance Standard classifies work by complexity (`C-0` to `C-3`) and context tier (`H0` to `H6`) before execution.
 - Multi-agent operations define team roles, plan approval, task claiming, file locking, PR handoff, review, and conflict resolution.
 - Complex work must preserve traceability from source document to task, agent assignment, artifact, review, and verification evidence.
 
@@ -240,10 +241,11 @@ The PRD module map is intentionally high level. A module becomes implementation-
 
 ## Changelog
 
-| Version | Date | Summary |
-|---|---|---|
-| 0.4.0 | 2026-06-16 | Expanded the Platform System Map with system responsibilities, inputs, outputs, detail-doc registry, dependencies, and change-routing rules. |
-| 0.3.0 | 2026-06-16 | Expanded the Platform System Map with product-level modules, system-based execution routing, and role-based review ownership. |
-| 0.2.1 | 2026-06-17 | Added module-level CoDev and CoVibe references under the existing Agent-Team Management system without changing the top-level system map. |
-| 0.2.0 | 2026-06-16 | Added the narrow CoDev and CoVibe terminology subsection under product positioning without changing the current system map. |
-| 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the PRD with the document versioning governance standard. |
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.4.1+draft | 2026-06-20 | Rwang (Senior Dev) | Frontmatter/title normalization and context-tier range reconciliation. |
+| 0.4.0 | 2026-06-16 | Rwang (Senior Dev) | Expanded the Platform System Map with system responsibilities, inputs, outputs, detail-doc registry, dependencies, and change-routing rules. |
+| 0.3.0 | 2026-06-16 | Rwang (Senior Dev) | Expanded the Platform System Map with product-level modules, system-based execution routing, and role-based review ownership. |
+| 0.2.1 | 2026-06-17 | Rwang (Senior Dev) | Added module-level CoDev and CoVibe references under the existing Agent-Team Management system without changing the top-level system map. |
+| 0.2.0 | 2026-06-16 | Rwang (Senior Dev) | Added the narrow CoDev and CoVibe terminology subsection under product positioning without changing the current system map. |
+| 0.1.0 | 2026-06-15 | Rwang (Senior Dev) | Added canonical doc_id metadata to align the PRD with the document versioning governance standard. |

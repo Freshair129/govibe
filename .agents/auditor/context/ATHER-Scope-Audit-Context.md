@@ -1,6 +1,6 @@
 ---
 title: "CONTEXT: ATHER Scope Audit"
-doc_id: "CONTEXT-ather-scope-audit"
+doc_id: "CONTEXT-ATHER-SCOPE-AUDIT"
 status: "draft"
 version: "0.1.0"
 updated: "2026-06-14"
@@ -38,3 +38,9 @@ protected source -> derived context -> registry metadata -> A5 display -> verifi
 - `.agents/Visual-Agent-Fleet-Scope/Requirement/Requirement Traceability.md`
 - `.agents/Visual-Agent-Fleet-Scope/UAT.md`
 - `.agents/Visual-Agent-Fleet-Scope/test case.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0 | 2026-06-20 | ATHER | Added changelog footer and normalized doc_id casing per versioning standard. |

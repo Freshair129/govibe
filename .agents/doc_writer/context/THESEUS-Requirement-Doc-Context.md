@@ -1,6 +1,6 @@
 ---
 title: "CONTEXT: THESEUS Requirement Documentation"
-doc_id: "CONTEXT-theseus-requirement-doc"
+doc_id: "CONTEXT-THESEUS-REQUIREMENT-DOC"
 status: "draft"
 version: "0.1.0"
 updated: "2026-06-14"
@@ -31,3 +31,9 @@ THESEUS does not decide product priority, approve scope expansion, or edit prote
 - `.agents/Visual-Agent-Fleet-Scope/Requirement/Requirement Traceability.md`
 - `.agents/Visual-Agent-Fleet-Scope/Acceptance Criteria.md`
 - `.agents/Visual-Agent-Fleet-Scope/User Story.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0 | 2026-06-20 | THESEUS | Added changelog footer and normalized doc_id casing per versioning standard. |

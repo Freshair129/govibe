@@ -1,6 +1,6 @@
 ---
 title: "CONTEXT: GHOST AC and UAT"
-doc_id: "CONTEXT-ghost-ac-uat"
+doc_id: "CONTEXT-GHOST-AC-UAT"
 status: "draft"
 version: "0.1.0"
 updated: "2026-06-14"
@@ -28,3 +28,9 @@ GHOST verifies user-visible behavior, acceptance criteria, UAT readiness, and A5
 - `.agents/Visual-Agent-Fleet-Scope/test case.md`
 - `.agents/Visual-Agent-Fleet-Scope/UAT.md`
 - `.agents/Visual-Agent-Fleet-Scope/Requirement/Requirement Traceability.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0 | 2026-06-20 | GHOST | Added changelog footer and normalized doc_id casing per versioning standard. |

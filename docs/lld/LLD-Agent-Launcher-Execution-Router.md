@@ -1,9 +1,9 @@
 ---
 title: "LLD: Agent Launcher Execution Router"
 doc_id: "LLD-AGENT-LAUNCHER-EXECUTION-ROUTER"
-status: "draft"
-version: "0.1.0"
-updated: "2026-06-13"
+status: "approved"
+version: "0.1.2"
+updated: "2026-06-20"
 owner: "THESEUS"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -99,3 +99,11 @@ invoke-agent(input):
 - PRD system: `SYSTEM-05::Agent-Team-Management-System`
 - SRS requirement: `SRS-OLLAMA-SIDECAR-EXECUTION`
 - SDD component: launcher + integration bridge orchestration layer
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.2 | 2026-06-20 | THESEUS | Signed off; promoted draft -> approved (as-built, verified against current runtime code). |
+| 0.1.1 | 2026-06-20 | THESEUS | Added Changelog footer; verified inputs and routing logic against `scripts/agents/invoke-agent.ps1` and `.agents/agent-registry.yaml` — the documented `Agent` input matches the launcher's `-Agent` parameter, no content change required. |
+| 0.1.0 | 2026-06-13 | THESEUS | Initial agent launcher execution router design. |

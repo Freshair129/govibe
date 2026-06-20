@@ -5,6 +5,7 @@ status: "draft"
 version: "0.1.0+draft"
 updated: "2026-06-16"
 owner: "ATHER / THESEUS"
+source_of_truth: true
 ---
 
 # Feedback: Project Agent Reality Check

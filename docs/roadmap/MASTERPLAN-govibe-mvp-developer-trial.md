@@ -2,8 +2,8 @@
 title: "MASTERPLAN: GoVibe MVP Developer Trial"
 doc_id: "MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-16"
+version: "0.1.1+draft"
+updated: "2026-06-20"
 owner: "LYRA"
 auditor: "ATHER"
 source_of_truth: true
@@ -16,7 +16,9 @@ related_docs:
   - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - ".agents/context/CONTEXT-Bounded-External-Executor.md"
   - "docs/roadmap/ROADMAP-govibe-mcp-runtime.md"
+  - "docs/roadmap/ROADMAP-task-scoped-context-injection.md"
   - "docs/roadmap/BACKLOG-p1-mvp-core.md"
+  - "docs/roadmap/BACKLOG-task-scoped-context-injection.md"
   - ".agents/pm/asset/Planning-Decomposition-Standard.md"
 ---
 
@@ -105,6 +107,7 @@ The trial should prove:
 | MVP-BL-001 | doc | Register MVP master plan and active executor docs | SYSTEM-09 | C-2/H5 | P0 | LYRA | THESEUS | GPT-5 | 128k | 6000 | in_progress |
 | MVP-BL-002 | feature | Render A2 roadmap and Task Container detail from approved source | SYSTEM-02 | C-3/H4 | P0 | LYRA | VIBE/KIN | GPT-5 | 128k | 18000 | planned |
 | MVP-BL-003 | feature | Render A5 agent-team governance and handoff context | SYSTEM-05 | C-3/H4 | P0 | LYRA | VIBE/THESEUS | GPT-5 | 128k | 16000 | planned |
+| MVP-BL-003A | feature | Deliver task-scoped context injection planning and execution chain | SYSTEM-05 | C-3/H4 | P0 | LYRA | ARCHON/ATHER | GPT-5 | 128k | 14000 | planned |
 | MVP-BL-004 | pilot | Run bounded external executor packet with Gemini CLI | SYSTEM-06 | C-3/H3 | P1 | LYRA | CODEX + Gemini CLI | gemini-3.1-flash-lite | 1m | 52000 | in_progress |
 | MVP-BL-005 | trial | Write and verify developer trial quickstart | SYSTEM-01 | C-2/H3 | P0 | LYRA | THESEUS/GHOST | GPT-5 | 128k | 10000 | planned |
 
@@ -128,8 +131,11 @@ Clone repo
 |---|---|---|---|---|
 | MVP-BL-002 | Section 8 | A2 Project Overview | `docs/roadmap/BACKLOG-p1-mvp-core.md` | Task Container dropdown verification |
 | MVP-BL-003 | Section 8 | A5 Agent Management | agent registry and Visual Agent Fleet docs | role and authority display verification |
+| MVP-BL-003A | Section 8 | A2 Project Overview | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` and `docs/roadmap/BACKLOG-task-scoped-context-injection.md` | task-scoped context packet planning chain verification |
 | MVP-BL-004 | Section 8 | A5 or runbook view | `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` | PILOT-01 feedback artifact |
 | MVP-BL-005 | Section 9 | Developer quickstart | quickstart and smoke checklist | `docs:validate` and `baseline:check` logs |
+
+> Note: `docs/roadmap/BACKLOG-p1-mvp-core.md` is a legacy import fixture used to exercise the A2 Task Container / telemetry schema, not canonical MVP product scope. Its progress values are legacy-imported telemetry, not live state.
 
 ## 11. Acceptance Criteria
 
@@ -177,4 +183,5 @@ Clone repo
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.1.1+draft | 2026-06-20 | draft | Added a one-line note qualifying BACKLOG-p1-mvp-core as a legacy import fixture in UI Traceability; no other content changed. | pending | LYRA |
 | 0.1.0+draft | 2026-06-16 | draft | Initial MVP master plan for developer trial scope, phases, backlog seed, traceability, and validation gates. | pending | Codex |

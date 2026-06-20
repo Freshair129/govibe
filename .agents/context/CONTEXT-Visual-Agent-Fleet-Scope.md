@@ -1,6 +1,6 @@
 ---
 title: "CONTEXT: Visual Agent Fleet Scope"
-doc_id: "CONTEXT-visual-agent-fleet-scope"
+doc_id: "CONTEXT-VISUAL-AGENT-FLEET-SCOPE"
 status: "draft"
 version: "0.1.0"
 updated: "2026-06-14"
@@ -86,3 +86,9 @@ out_of_scope:
 - `.agents/Visual-Agent-Fleet-Scope/PM/PM-req.md`
 - `.agents/Visual-Agent-Fleet-Scope/PO/PO-req.md`
 - `.agents/Visual-Agent-Fleet-Scope/BA/Doc for BA-PO.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0 | 2026-06-20 | THESEUS | Added changelog footer and normalized doc_id casing per versioning standard. |

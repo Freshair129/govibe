@@ -1,9 +1,9 @@
 ---
 title: "SRS: Ollama Sidecar Execution"
 doc_id: "SRS-OLLAMA-SIDECAR-EXECUTION"
-status: "draft"
-version: "0.1.0"
-updated: "2026-06-13"
+status: "approved"
+version: "0.2.1"
+updated: "2026-06-20"
 owner: "THESEUS"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -19,7 +19,7 @@ related_docs:
 
 This document defines the software requirements for the Ollama sidecar execution path inside GoVibe.
 
-The goal is to let GoVibe route bounded local subagent work through Ollama for atomic-task execution via the IPC-based runtime while preserving the existing registry-driven prompt-building workflow and keeping Codex as the lead orchestrator.
+The goal is to let GoVibe route bounded local subagent work through Ollama for atomic-task execution via the agent launcher (`scripts/agents/invoke-agent.ps1`, which spawns the `ollama` CLI) while preserving the existing registry-driven prompt-building workflow and keeping Codex as the lead orchestrator.
 
 Key terms:
 
@@ -107,6 +107,7 @@ Key terms:
   - human operators decide when to invoke the launcher
 - ABAC:
   - local subagents remain subject to the same conceptual ABAC class as other agents/subagents
+  - note: ABAC is a governance assumption at this layer; it is not yet machine-enforced by the launcher or the MCP runtime
 - Audit:
   - launcher behavior must be explainable from registry policy and injected context files
 - Scope control:
@@ -124,3 +125,11 @@ Key terms:
 
 - Should future v2 local sidecars support `plan` mode for bounded decomposition?
 - Should JSON output become the required default for machine-to-machine orchestration?
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.2.1 | 2026-06-20 | THESEUS | Signed off; promoted draft -> approved (as-built, verified against current runtime code). |
+| 0.2.0 | 2026-06-20 | THESEUS | Replaced the "IPC-based runtime" characterization with the real launcher path (`scripts/agents/invoke-agent.ps1` spawning the `ollama` CLI); noted that ABAC is an assumption, not yet machine-enforced. |
+| 0.1.0 | 2026-06-13 | THESEUS | Initial Ollama sidecar execution requirements draft. |

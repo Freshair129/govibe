@@ -1,8 +1,8 @@
 ---
 doc_id: "CR-2026-06-15-CODEV-COVIBE-POSITIONING-REVIEW"
 status: "candidate"
-version: "0.1.0b"
-updated: "2026-06-15"
+version: "0.1.1b"
+updated: "2026-06-20"
 owner: "CODEx"
 source_of_truth: false
 related_docs:
@@ -39,8 +39,12 @@ The real discussion is about how to describe two different collaboration pattern
 
 ### 3.1 CoDev mental model
 
+> Canonical diagrams: see `FEAT-CoDev-CoVibe-Terminology-Definition` §3. This CR's earlier sketches were superseded; the diagrams below have been corrected to the canonical forms.
+
 ```text
-[Human] <=GoVibe=> [Agent Team] <=CoDev=> [Human + Agent Team]
+[Human / Team A + Agent Team A]
+        <=GoVibe / CoDev=>
+[Human / Team B + Agent Team B]
 ```
 
 Interpretation:
@@ -52,7 +56,11 @@ Interpretation:
 ### 3.2 CoVibe mental model
 
 ```text
-[Human] <=GoVibe=> [Main Agent / Main Agent Team] <=CoVibe=> [Support Agent]
+[Human]
+   <=GoVibe / CoVibe=>
+[Main Agent / Main Agent Team]
+   <=support=>
+[Support Agent / Support Executor]
 ```
 
 Interpretation:
@@ -206,4 +214,5 @@ No product rename, no PRD restructure, and no implementation change should proce
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---------|------|--------|---------|-------------|-------|
+| 0.1.1b | 2026-06-20 | candidate | Corrected §3 CoDev and CoVibe mental-model diagrams to canonical forms from FEAT-CoDev-CoVibe-Terminology-Definition §3 and noted the earlier sketches as superseded. | pending | Codex |
 | 0.1.0b | 2026-06-15 | candidate | Initial discussion packet summarizing current PRD position, problem framing, proposed direction, and trade-offs for CoDev and CoVibe positioning review. | pending | Codex |

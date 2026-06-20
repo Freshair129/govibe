@@ -1,9 +1,9 @@
 ---
 title: "FEAT: MSP Validate Evidence Adapter"
 doc_id: "FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER"
-status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-16"
+status: "approved"
+version: "0.1.1"
+updated: "2026-06-20"
 owner: "ATHER / KIN"
 source_of_truth: true
 prd_system: "SYSTEM-09::Traceability-Audit-Verification-System"
@@ -55,6 +55,8 @@ confidence:
 
 The packet is evidence, not an automatic state mutation. It must not edit the MSP source repo or GoVibe docs.
 
+This packet is the canonical evidence/decision contract for MSP-derived evidence. The `recommended_decision` key and its enum are authoritative. Boundary SDDs (for example `SDD-MSP-External-Evidence-Boundary.md` and `SDD-Symbol-Graph-Traceability-Boundary.md`) must reference this contract and may only ADD boundary-specific extension fields or explicitly documented enum extensions; they must not silently rename the decision key or replace enum values.
+
 ## 4. Failure Policy
 
 | Condition | Adapter Result | GoVibe Meaning |
@@ -91,4 +93,6 @@ The packet is evidence, not an automatic state mutation. It must not edit the MS
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1 | 2026-06-21 | ATHER / KIN | Signed off; promoted draft -> approved (MSP/GKS gate decision recorded in ADR-014). |
+| 0.1.1+draft | 2026-06-20 | ATHER / KIN | Marked this packet as the canonical evidence/decision contract; clarified that boundary SDDs reference it and may only add documented extension fields/enum values, not rename the decision key. |
 | 0.1.0+draft | 2026-06-16 | ATHER / KIN | Defined the MSP validate evidence adapter boundary, packet contract, and failure policy. |

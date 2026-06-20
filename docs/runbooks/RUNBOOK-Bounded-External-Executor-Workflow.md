@@ -1,9 +1,9 @@
 ---
 title: "RUNBOOK: Bounded External Executor Workflow"
 doc_id: "RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW"
-status: "draft"
-version: "0.2.2"
-updated: "2026-06-16"
+status: "approved"
+version: "0.2.4"
+updated: "2026-06-20"
 owner: "LYRA"
 auditor: "ATHER"
 source_of_truth: true
@@ -239,8 +239,10 @@ The context container should be compact, derived, and source-cited.
 
 ## Changelog
 
-| Version | Date | Summary |
-|---|---|---|
-| 0.2.2 | 2026-06-16 | Added project reality check, evidence-backed review mode, and minimal-code guidance for external executors. |
-| 0.2.1 | 2026-06-16 | Replaced remaining freelance analogy wording in active guidance with bounded support-executor terminology. |
-| 0.2.0 | 2026-06-16 | Renamed the workflow to the SWE-friendly bounded external executor wording and updated the canonical context link. |
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.2.4 | 2026-06-20 | LYRA | Signed off; promoted draft -> approved (as-built, verified against current runtime code). |
+| 0.2.3 | 2026-06-20 | LYRA | Normalized the Changelog footer to the 4-column governance format; verified the Gemini CLI invocation pattern and CoVibe operating model against current scripts — no procedural change required. |
+| 0.2.2 | 2026-06-16 | LYRA | Added project reality check, evidence-backed review mode, and minimal-code guidance for external executors. |
+| 0.2.1 | 2026-06-16 | LYRA | Replaced remaining freelance analogy wording in active guidance with bounded support-executor terminology. |
+| 0.2.0 | 2026-06-16 | LYRA | Renamed the workflow to the SWE-friendly bounded external executor wording and updated the canonical context link. |

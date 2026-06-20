@@ -1,9 +1,9 @@
 ---
 title: "SRS: GoVibe MCP Server"
 doc_id: "SRS-GOVIBE-MCP-SERVER"
-status: "draft"
-version: "0.1.0"
-updated: "2026-06-13"
+status: "approved"
+version: "0.2.1"
+updated: "2026-06-20"
 owner: "GoVibe"
 source_of_truth: true
 prd_system: "SYSTEM-06::Integration-Bridge-System"
@@ -21,7 +21,7 @@ related_docs:
 
 This document defines the software requirements for the GoVibe MCP Server.
 
-The MCP Server is the primary orchestration interface for GoVibe. It exposes governed tools and resources for Mission Control, CLI, lead agents, sidecar executors, and external automation surfaces through the GoVibe-native IPC-based runtime.
+The MCP Server is the primary orchestration interface for GoVibe. It exposes governed tools and resources for Mission Control, CLI, lead agents, sidecar executors, and external automation surfaces. The runtime speaks MCP JSON-RPC (`Content-Length`-framed) over stdio and additionally boots an HTTP/WebSocket sidecar bound to `127.0.0.1:4310` (port configurable via `GOVIBE_MCP_PORT`, host via `GOVIBE_MCP_HOST`) for browser/Mission Control transport.
 
 ## 2. System Context
 
@@ -41,7 +41,7 @@ The MCP Server is the primary orchestration interface for GoVibe. It exposes gov
 | FR-002 | The system must expose governed document and project resources through MCP resource contracts where appropriate. | MUST | Approved docs or derived project state can be resolved through controlled resources or equivalent tool responses. |
 | FR-003 | The system must support agent execution requests through a stable orchestration tool surface. | MUST | A caller can request execution with actor, scope, task, and policy context. |
 | FR-004 | The system must support roadmap read and update operations from document-driven state. | MUST | Callers can load roadmap state and update progress without relying on hardcoded UI data. |
-| FR-005 | The system must enforce RBAC and ABAC checks before executing governed actions. | MUST | Unauthorized actions fail with a clear denial reason. |
+| FR-005 | The system must enforce RBAC and ABAC checks before executing governed actions. | MUST | Unauthorized actions fail with a clear denial reason. (Planned — not yet enforced in the current runtime; tool calls accept an `actor` argument but no permission gate is applied.) |
 | FR-006 | The system must preserve invocation audit metadata. | MUST | Invocation records capture actor, action, target, result, and decision context. |
 | FR-007 | The system must support capability discovery. | SHOULD | A caller can enumerate available tools/resources or equivalent registry-backed metadata. |
 | FR-008 | The system must allow Mission Control and CLI to use the same orchestration rules. | MUST | Presentation layers do not need separate business-rule implementations for the same action. |
@@ -62,12 +62,27 @@ The MCP Server is the primary orchestration interface for GoVibe. It exposes gov
 
 ### 5.1 Tool domains
 
-- `govibe.agent.*`
-- `govibe.docs.*`
-- `govibe.roadmap.*`
-- `govibe.progress.*`
-- `govibe.audit.*`
-- `govibe.deploy.*`
+The live catalog (`scripts/mcp/registry.mjs`) exposes:
+
+- `govibe.agent.*` — `agent.run`
+- `govibe.docs.*` — `docs.resolve`
+- `govibe.roadmap.*` — `roadmap.load`, `roadmap.update`, `roadmap.export`
+- `govibe.deploy.*` — `deploy.vercel` (scaffold; not yet bound to a real adapter)
+- `govibe.workspace.*` — `workspace.initialize`, `workspace.validate`
+- `govibe.doc.*` — `doc.create`
+
+Progress and audit are surfaced as fields on tool responses (e.g. `auditRef`) and on the mission
+snapshot rather than as standalone `govibe.progress.*` / `govibe.audit.*` tool domains. Those
+domains are not implemented in the current runtime.
+
+### 5.1a Sidecar HTTP/WS endpoints
+
+The bundled sidecar (`scripts/mcp/sidecar-server.mjs`) serves:
+
+- `GET /mission/snapshot` — current `MissionSnapshot` (optional `?source=` reloads a roadmap source)
+- `GET /roadmap/sources` — active source plus discoverable roadmap sources
+- `POST /mission/commands` — dispatch a `MissionCommand`
+- `/mission/ws` — WebSocket channel that streams snapshot/event payloads
 
 ### 5.2 Resource domains
 
@@ -105,6 +120,10 @@ Outputs may include:
 
 ## 7. Security and Governance Requirements
 
+> Status: the policy model below is the **planned** governance contract. The current runtime labels
+> its capability surface as RBAC/ABAC (`describeCapabilitySurface` in `handlers.mjs`) but does not
+> yet enforce permission checks on tool calls — there is no deny path wired into the runtime today.
+
 - Human caller permissions must be evaluated through RBAC.
 - Agent and service permissions must be evaluated through ABAC.
 - Deny paths must be explicit and inspectable.
@@ -133,3 +152,11 @@ The first acceptable slice of the MCP Server should support:
 
 - Should read-only resources always be offered as MCP resources, or can some remain tool-return payloads in the first implementation?
 - Should deployment operations be split into trigger and status capabilities from the first release?
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.2.1 | 2026-06-20 | GoVibe | Signed off; promoted draft -> approved (as-built, verified against current runtime code). |
+| 0.2.0 | 2026-06-20 | GoVibe | Corrected the transport description (MCP JSON-RPC over stdio plus an HTTP/WS sidecar on 127.0.0.1:4310) and added the sidecar endpoints; removed the non-existent `govibe.progress.*` / `govibe.audit.*` tool domains and aligned the tool domain list with the live catalog; labelled RBAC/ABAC enforcement as planned/not-yet-enforced to match the current runtime. |
+| 0.1.0 | 2026-06-13 | GoVibe | Initial software requirements draft. |

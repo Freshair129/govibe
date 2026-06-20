@@ -1,6 +1,6 @@
 ---
 title: "CONTEXT: BA and PO Requirement Guidance"
-doc_id: "CONTEXT-ba-po-requirement-guidance"
+doc_id: "CONTEXT-BA-PO-REQUIREMENT-GUIDANCE"
 status: "draft"
 version: "0.1.0"
 updated: "2026-06-14"
@@ -45,3 +45,9 @@ Requirement work should clarify:
 - `.agents/Visual-Agent-Fleet-Scope/Requirement/Requirement.md`
 - `.agents/Visual-Agent-Fleet-Scope/Requirement/Workshop - Requirement.md`
 - `.agents/Visual-Agent-Fleet-Scope/Requirement/Requirement Traceability.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0 | 2026-06-20 | THESEUS / LYRA | Added changelog footer and normalized doc_id casing per versioning standard. |

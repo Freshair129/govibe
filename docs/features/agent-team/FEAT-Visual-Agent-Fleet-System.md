@@ -1,7 +1,7 @@
 ---
 title: "FEAT: Visual Agent Fleet System"
-doc_id: "FEAT-visual-agent-fleet-system"
-status: "draft"
+doc_id: "FEAT-VISUAL-AGENT-FLEET-SYSTEM"
+status: "approved"
 version: "0.1.0"
 updated: "2026-06-14"
 owner: "THESEUS"
@@ -121,3 +121,10 @@ The system maps each agent identity to a fleet role, job-title equivalent, domai
 
 - Should BA become a standalone agent after v1 if requirement workshop volume grows?
 - Should A6 Visual Dev Office consume the same fleet metadata after A5 stabilization?
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0 | 2026-06-20 | THESEUS | Signed off; promoted draft -> approved. |
+| 0.1.0+draft | 2026-06-20 | THESEUS | Migrated to canonical draft convention: normalized version suffix to +draft, uppercased doc_id, and added this changelog footer. |

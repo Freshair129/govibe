@@ -1,4 +1,5 @@
 ---
+title: "STD: Execution Governance Standard"
 doc_id: "STD-EXECUTION-GOVERNANCE"
 status: "stable"
 version: "2.2.0+ga"
@@ -184,3 +185,9 @@ Every non-trivial task response should include:
 | **2.1** | 2026-06-12 | Rewritten into readable UTF-8, added human-first artifacts, Docs to Code gate, Diagram to Doc gate, canonical source rule, and SDD/LLD naming guidance. |
 | **2.0** | 2026-06-07 | Added C-0, mapped complexity to H-scale, and clarified enforcement to reduce over-engineering. |
 | **1.0** | Previous | Initial three-level complexity model. |
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 2.2.0+ga | 2026-06-20 | GoVibe | Normalized frontmatter (added title) and added changelog footer per STD-Document-Versioning-Governance. |
