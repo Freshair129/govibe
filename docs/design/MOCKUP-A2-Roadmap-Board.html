@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GoVibe · A2 Roadmap Board — Visual Mockup (template parity)</title>
+<!--
+  GoVibe Mission Control — A2 Roadmap Board (visual mockup, TEMPLATE PARITY)
+  Reproduced 1:1 from the real template visual language:
+    - GoVibe-Mission-Control-template.html  (header card, phase accordion, task-item detail)
+    - GoVibe-Domain-A-Project-Overview.html (cyber/glass tokens, tailwind.config)
+  Tokens: Prompt + JetBrains Mono · glass-panel · cyan-500 header accent · emerald phase badges · indigo links.
+  STATUS: design artifact / mockup only — no live runtime. Uses the template's own sample roadmap data.
+-->
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: { sans: ['Prompt', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+        colors: {
+          cyber: {
+            bg: '#08090c', card: 'rgba(18,20,28,0.65)', border: 'rgba(255,255,255,0.08)',
+            text: '#f3f4f6', muted: '#9ca3af', emerald: '#10b981', indigo: '#6366f1',
+            orange: '#f59e0b', cyan: '#06b6d4', purple: '#a855f7'
+          }
+        }
+      }
+    }
+  }
+</script>
+<style>
+  :root{
+    --bg-body:#0f1115; --text-main:#e2e8f0; --text-muted:#9ca3af; --text-title:#fff;
+    --glass-bg:rgba(30,30,35,0.65); --glass-border:rgba(255,255,255,0.08);
+    --card-hover-border:rgba(255,255,255,0.25); --orb-opacity:0.6; --active-accent:#10b981;
+  }
+  .light-theme{
+    --bg-body:#f4f4f5; --text-main:#18181b; --text-muted:#52525b; --text-title:#0f172a;
+    --glass-bg:rgba(255,255,255,0.7); --glass-border:rgba(0,0,0,0.08); --orb-opacity:0.15;
+  }
+  body{background-color:var(--bg-body);color:var(--text-main);font-family:'Prompt',sans-serif;
+    transition:background-color .4s ease,color .4s ease;min-height:100vh;margin:0}
+  .glass-panel{background:var(--glass-bg);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+    border:1px solid var(--glass-border);box-shadow:0 20px 50px rgba(0,0,0,0.15);transition:background .4s,border-color .4s}
+  .ambient-orb{position:fixed;border-radius:50%;filter:blur(100px);z-index:-1;opacity:var(--orb-opacity);pointer-events:none}
+  .orb-1{width:520px;height:520px;top:-180px;left:-100px;background:#06b6d4}
+  .orb-2{width:480px;height:480px;bottom:-220px;right:-120px;background:#6366f1}
+  .verif-icon-btn{font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+    width:22px;height:22px;border-radius:6px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);color:var(--text-muted);transition:all .3s}
+  .verif-icon-btn.active{color:var(--active-accent);background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.35);box-shadow:0 0 8px rgba(16,185,129,.2)}
+  .verif-icon-btn.disabled{cursor:not-allowed;opacity:.15;background:transparent;border-color:transparent}
+  .phase-body{display:none}
+  .phase-body.open{display:block}
+  .phase-chevron{transition:transform .25s ease}
+  .phase-chevron.open{transform:rotate(180deg)}
+  .info-chevron.open{transform:rotate(90deg)}
+  .task-item{transition:transform .2s,box-shadow .2s,background-color .2s,border-color .2s}
+  .scroll-custom::-webkit-scrollbar{width:6px}
+  .scroll-custom::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:10px}
+  input[type=checkbox].on{accent-color:#10b981}
+</style>
+</head>
+<body class="font-sans antialiased">
+<div class="ambient-orb orb-1"></div>
+<div class="ambient-orb orb-2"></div>
+
+<div class="max-w-7xl mx-auto p-6 md:p-8 space-y-6">
+
+  <!-- mini shell crumb + theme toggle (context only) -->
+  <div class="flex items-center gap-3 text-xs text-cyber-muted">
+    <span class="w-7 h-7 rounded-lg bg-gradient-to-br from-cyan-500 to-emerald-500 grid place-items-center text-[#04231a] font-extrabold">G</span>
+    <span>GoVibe · Mission Control <span class="text-white/30">›</span> Project Overview <span class="text-white/30">›</span> <span class="text-white font-semibold">A2 Roadmap Board</span></span>
+    <span class="flex-1"></span>
+    <span class="px-2.5 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold">● Gateway: connected</span>
+    <button id="themeToggle" class="px-3 py-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-white font-semibold flex items-center gap-2">
+      <i class="fa-solid fa-sun"></i><span id="themeLabel">Light</span>
+    </button>
+  </div>
+
+  <!-- ===== GoVibe Development Roadmap Header Card ===== -->
+  <div class="relative glass-panel rounded-2xl p-6 border-l-4 border-l-cyan-500">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div>
+        <h2 class="text-2xl font-extrabold text-white tracking-tight">GoVibe Development Roadmap</h2>
+        <p class="text-xs text-cyber-muted mt-1">แผนการพัฒนาและติดตามผลความคืบหน้าของฟีเจอร์</p>
+      </div>
+      <div class="text-left sm:text-right shrink-0">
+        <span class="text-[10px] text-cyber-muted font-bold uppercase tracking-wider block">ความคืบหน้ารวมโครงการ</span>
+        <span class="text-3xl font-black text-emerald-400 leading-none">81%</span>
+      </div>
+    </div>
+    <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden mt-4">
+      <div class="bg-gradient-to-r from-cyan-500 via-emerald-500 to-indigo-500 h-full" style="width:81%"></div>
+    </div>
+    <hr class="border-t border-white/5 my-5" />
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-8 font-mono">
+        <div>
+          <div class="text-xl font-bold text-cyber-muted">27</div>
+          <div class="text-[10px] text-cyber-muted font-sans font-semibold">Feature ทั้งหมด</div>
+        </div>
+        <div>
+          <div class="text-xl font-bold text-emerald-400">22</div>
+          <div class="text-[10px] text-cyber-muted font-sans font-semibold">พร้อมใช้งาน / IMP แล้ว</div>
+        </div>
+        <div>
+          <div class="text-xl font-bold text-amber-500">4</div>
+          <div class="text-[10px] text-cyber-muted font-sans font-semibold">Task ใน Backlog</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <label class="px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 text-cyan-400 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-file-import"></i> Load File
+        </label>
+        <div class="relative inline-block text-left">
+          <button onclick="event.stopPropagation(); toggleExportMenu('roadmap')" class="px-3 py-1.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+            <i class="fa-solid fa-download"></i> Export <i class="fa-solid fa-chevron-down text-[9px] text-cyber-muted"></i>
+          </button>
+          <div id="export-menu-roadmap" class="hidden absolute right-0 mt-2 w-32 rounded-xl bg-neutral-900 border border-white/10 shadow-2xl py-1 z-50 font-mono text-[10px]">
+            <button class="w-full text-left px-3.5 py-2 text-stone-300 hover:bg-white/5 hover:text-white">JSON</button>
+            <button class="w-full text-left px-3.5 py-2 text-stone-300 hover:bg-white/5 hover:text-white">YAML</button>
+            <button class="w-full text-left px-3.5 py-2 text-stone-300 hover:bg-white/5 hover:text-white">Markdown</button>
+          </div>
+        </div>
+        <button class="px-3 py-1.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-lg text-xs font-bold transition-all">
+          <i class="fa-solid fa-rotate-right mr-1.5"></i> Reset Board
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Phase accordion grid ===== -->
+  <div class="grid grid-cols-1 gap-6 items-start">
+
+    <!-- PHASE 0 (open) -->
+    <div class="glass-panel rounded-2xl" id="p0">
+      <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none" onclick="togglePhase('p0')">
+        <div class="flex items-center gap-4">
+          <span class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase 0</span>
+          <h3 class="font-bold text-white text-base">Feasibility Spike — พิสูจน์ความเสถียร</h3>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration: 1 week</span>
+          <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+            <div class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full" style="width:66%"></div>
+          </div>
+          <span class="text-xs text-cyber-muted font-mono">66%</span>
+          <button class="p-1.5 text-cyber-muted hover:text-white rounded-lg hover:bg-white/5" onclick="event.stopPropagation();"><i class="fa-solid fa-download text-[10px]"></i></button>
+          <i class="fa-solid fa-chevron-down phase-chevron open text-xs text-cyber-muted"></i>
+        </div>
+      </div>
+      <div class="phase-body open p-6 border-t border-white/5 space-y-4">
+        <p class="text-sm text-cyber-muted leading-relaxed">ก่อนเริ่ม Sprint จริง ต้องพิสูจน์ให้ได้ว่าระบบ YouTube IFrame API ทำงานร่วมกับ WebSocket sync ในการดึงพิกัดเวลาของเพลงได้เสถียรบนมือถือ 2 เครื่อง และหาข้อจำกัดระบบ</p>
+        <div class="tasks space-y-3">
+
+          <!-- TASK 1 (expanded) -->
+          <div class="task-item p-3.5 bg-white/5 border border-white/5 hover:border-white/10 rounded-xl flex flex-col gap-1.5 transition-all duration-300 cursor-pointer" data-task-id="p0-s0-1">
+            <div class="flex items-center justify-between gap-4 w-full">
+              <div class="flex items-start gap-3 min-w-0 flex-1">
+                <span class="task-status-indicator shrink-0 mt-0.5"><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i></span>
+                <button class="info-toggle-btn text-cyber-muted hover:text-white transition-colors shrink-0 mt-0.5" onclick="event.stopPropagation(); toggleTaskInfo('p0-s0-1')">
+                  <i class="fa-solid fa-chevron-right info-chevron open text-[10px] transition-transform duration-200" id="p0-s0-1-chevron"></i>
+                </button>
+                <div class="flex flex-col gap-1.5 min-w-0 flex-1">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <span class="text-sm font-semibold truncate text-white leading-none">Prototype YouTube IFrame Player บน 2 clients พร้อมกัน</span>
+                  </div>
+                  <div class="flex items-center gap-2 flex-wrap" onclick="event.stopPropagation()">
+                    <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">FR</span>
+                    <span class="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold capitalize bg-orange-500/10 text-orange-400 border border-orange-500/20 shrink-0">high</span>
+                    <button class="verif-icon-btn doc-btn active" title="Doc Check"><i class="fa-solid fa-file-invoice"></i></button>
+                    <button class="verif-icon-btn code-btn active" title="Code Check"><i class="fa-solid fa-code"></i></button>
+                    <button class="verif-icon-btn test-btn active" title="Test Check"><i class="fa-solid fa-flask"></i></button>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0" onclick="event.stopPropagation()">
+                <span class="text-[10px] text-cyber-muted font-bold font-mono uppercase assign-lbl">Assign To:</span>
+                <select class="assist-to-select bg-black/40 border border-cyber-border rounded px-1.5 py-0.5 text-xs text-white focus:outline-none">
+                  <option>EVA Agent (Gemini 3.5 Flash)</option>
+                  <option>Qwen Coder (Qwen2.5-Coder)</option>
+                  <option>UAT Agent (GPT-4o)</option>
+                  <option>Local Dev (Human)</option>
+                  <option>Unassigned</option>
+                </select>
+              </div>
+            </div>
+            <div class="task-info-panel mt-3 pt-3 border-t border-white/5 text-xs text-cyber-muted space-y-3 w-full" onclick="event.stopPropagation()">
+              <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Symbol Links</span>
+                <span class="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-red-500/10 text-red-400 border border-red-500/20 shrink-0">Not Implement</span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-white/5 pb-3">
+                <div class="flex flex-col gap-1">
+                  <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Code Link:</span>
+                  <a class="text-indigo-400 hover:underline font-mono break-all text-[11px]">src/App.tsx</a>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Doc Link:</span>
+                  <a class="text-indigo-400 hover:underline font-mono break-all text-[11px]">docs/compatibility_report.md</a>
+                </div>
+                <div class="flex flex-col gap-1">
+                  <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Test Link:</span>
+                  <a class="text-indigo-400 hover:underline font-mono break-all text-[11px]">tests/sync.test.js</a>
+                </div>
+              </div>
+              <div class="grid grid-cols-5 gap-4">
+                <div><span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider block mb-1">Version:</span><span class="px-2 py-0.5 rounded bg-white/5 border border-white/5 font-mono text-[10px] text-stone-300 font-bold">1.0.0</span></div>
+                <div><span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider block mb-1">Complexity:</span><span class="px-2 py-0.5 rounded font-mono text-[10px] capitalize bg-orange-500/10 text-orange-400 border border-orange-500/20">high</span></div>
+                <div><span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider block mb-1">Type:</span><span class="px-2 py-0.5 rounded bg-white/5 border border-white/5 font-mono text-[10px] uppercase text-stone-300">FR</span></div>
+                <div><span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider block mb-1">Status:</span><span class="px-2 py-0.5 rounded bg-white/5 border border-white/5 font-mono text-[10px] text-stone-300">stable</span></div>
+                <div><span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider block mb-1">Tokens Used:</span><span class="px-2 py-0.5 rounded bg-white/5 border border-white/5 font-mono text-[10px] text-stone-300 font-bold">12,040</span></div>
+              </div>
+              <div class="mt-3 pt-3 border-t border-white/5 flex flex-col gap-1.5">
+                <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Definition of Done (DoD):</span>
+                <div class="grid grid-cols-3 gap-4 text-[10px] text-stone-300 font-mono">
+                  <div class="flex flex-col gap-1.5">
+                    <span class="font-bold text-emerald-400 text-[9px] uppercase tracking-wider">Acceptance Criteria</span>
+                    <label class="flex items-center gap-1.5"><input type="checkbox" class="on w-3 h-3" checked disabled /><span>Spec approved</span></label>
+                    <label class="flex items-center gap-1.5"><input type="checkbox" class="on w-3 h-3" checked disabled /><span>Docs updated</span></label>
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <span class="font-bold text-emerald-400 text-[9px] uppercase tracking-wider">Success Criteria</span>
+                    <label class="flex items-center gap-1.5"><input type="checkbox" class="on w-3 h-3" checked disabled /><span>Code complete</span></label>
+                    <label class="flex items-center gap-1.5"><input type="checkbox" class="on w-3 h-3" checked disabled /><span>Lints clean</span></label>
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <span class="font-bold text-emerald-400 text-[9px] uppercase tracking-wider">Exit Criteria</span>
+                    <label class="flex items-center gap-1.5"><input type="checkbox" class="on w-3 h-3" checked disabled /><span>Tests passed</span></label>
+                    <label class="flex items-center gap-1.5"><input type="checkbox" class="on w-3 h-3" checked disabled /><span>Regression free</span></label>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3 pt-3 border-t border-white/5 flex flex-col gap-1.5">
+                <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Changelog:</span>
+                <div class="bg-black/80 border border-emerald-500/20 p-2.5 rounded-lg font-mono text-[11px] text-emerald-400 leading-relaxed shadow-inner">
+                  [1.0.0] - Added iframe configuration sandbox; resolved background autoplay restrictions.<br>
+                  <span class="text-cyber-muted">[Updated: 2026-06-05T16:22:00+07:00,Rwang,d4e5f6g]</span>
+                </div>
+              </div>
+              <div class="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-cyber-muted font-mono">
+                <div>
+                  <div>Created: 2026-06-05T09:00:00+07:00,EVA Agent,a3f2b1c</div>
+                  <div class="mt-1 font-bold text-white uppercase text-[9px] tracking-wider">Task ID: <span class="text-indigo-400">TSK-CVB01P00010</span></div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="font-bold text-white uppercase text-[9px] tracking-wider">Export Task:</span>
+                  <button class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 text-stone-300 hover:text-white text-[9px] font-bold">JSON</button>
+                  <button class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 text-stone-300 hover:text-white text-[9px] font-bold">YAML</button>
+                  <button class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 text-stone-300 hover:text-white text-[9px] font-bold">Markdown</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TASK 2 (collapsed, done) -->
+          <div class="task-item p-3.5 bg-white/5 border border-white/5 hover:border-white/10 rounded-xl flex flex-col gap-1.5 transition-all duration-300 cursor-pointer" data-task-id="p0-s0-2">
+            <div class="flex items-center justify-between gap-4 w-full">
+              <div class="flex items-start gap-3 min-w-0 flex-1">
+                <span class="task-status-indicator shrink-0 mt-0.5"><i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i></span>
+                <button class="info-toggle-btn text-cyber-muted hover:text-white shrink-0 mt-0.5" onclick="event.stopPropagation(); toggleTaskInfo('p0-s0-2')">
+                  <i class="fa-solid fa-chevron-right info-chevron text-[10px]" id="p0-s0-2-chevron"></i>
+                </button>
+                <div class="flex flex-col gap-1.5 min-w-0 flex-1">
+                  <span class="text-sm font-semibold truncate text-white leading-none">WebSocket room ขั้นต่ำ: สร้างห้อง / join / broadcast event</span>
+                  <div class="flex items-center gap-2 flex-wrap" onclick="event.stopPropagation()">
+                    <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">FR</span>
+                    <span class="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold capitalize bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">nomal</span>
+                    <button class="verif-icon-btn doc-btn active"><i class="fa-solid fa-file-invoice"></i></button>
+                    <button class="verif-icon-btn code-btn active"><i class="fa-solid fa-code"></i></button>
+                    <button class="verif-icon-btn test-btn active"><i class="fa-solid fa-flask"></i></button>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0" onclick="event.stopPropagation()">
+                <span class="text-[10px] text-cyber-muted font-bold font-mono uppercase">Assign To:</span>
+                <select class="assist-to-select bg-black/40 border border-cyber-border rounded px-1.5 py-0.5 text-xs text-white focus:outline-none">
+                  <option>Qwen Coder (Qwen2.5-Coder)</option><option>EVA Agent (Gemini 3.5 Flash)</option><option>Unassigned</option>
+                </select>
+              </div>
+            </div>
+            <div class="task-info-panel hidden" id="p0-s0-2-info"></div>
+          </div>
+
+          <!-- TASK 3 (collapsed, pending) -->
+          <div class="task-item p-3.5 bg-white/5 border border-white/5 hover:border-white/10 rounded-xl flex flex-col gap-1.5 transition-all duration-300 cursor-pointer" data-task-id="p0-s0-3">
+            <div class="flex items-center justify-between gap-4 w-full">
+              <div class="flex items-start gap-3 min-w-0 flex-1">
+                <span class="task-status-indicator shrink-0 mt-0.5"><i class="fa-solid fa-circle-half-stroke text-yellow-500 text-sm animate-pulse"></i></span>
+                <button class="info-toggle-btn text-cyber-muted hover:text-white shrink-0 mt-0.5" onclick="event.stopPropagation(); toggleTaskInfo('p0-s0-3')">
+                  <i class="fa-solid fa-chevron-right info-chevron text-[10px]" id="p0-s0-3-chevron"></i>
+                </button>
+                <div class="flex flex-col gap-1.5 min-w-0 flex-1">
+                  <span class="text-sm font-semibold truncate text-white leading-none">Play / Pause / Seek sync เบื้องต้น</span>
+                  <div class="flex items-center gap-2 flex-wrap" onclick="event.stopPropagation()">
+                    <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">FR</span>
+                    <span class="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold capitalize bg-amber-500/10 text-amber-400 border border-amber-500/20 shrink-0">nomal</span>
+                    <button class="verif-icon-btn doc-btn active"><i class="fa-solid fa-file-invoice"></i></button>
+                    <button class="verif-icon-btn code-btn"><i class="fa-solid fa-code"></i></button>
+                    <button class="verif-icon-btn test-btn"><i class="fa-solid fa-flask"></i></button>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-3 shrink-0" onclick="event.stopPropagation()">
+                <span class="text-[10px] text-cyber-muted font-bold font-mono uppercase">Assign To:</span>
+                <select class="assist-to-select bg-black/40 border border-cyber-border rounded px-1.5 py-0.5 text-xs text-white focus:outline-none">
+                  <option>Unassigned</option><option>EVA Agent (Gemini 3.5 Flash)</option>
+                </select>
+              </div>
+            </div>
+            <div class="task-info-panel hidden" id="p0-s0-3-info"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 1..4 collapsed -->
+    <div class="glass-panel rounded-2xl" id="p1">
+      <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none" onclick="togglePhase('p1')">
+        <div class="flex items-center gap-4"><span class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase 1</span><h3 class="font-bold text-white text-base">MVP Core — ฟังก์ชันหลักและการแชร์เพลง</h3></div>
+        <div class="flex items-center gap-3">
+          <span class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration: 4 weeks</span>
+          <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block"><div class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full" style="width:0%"></div></div>
+          <span class="text-xs text-cyber-muted font-mono">0%</span>
+          <button class="p-1.5 text-cyber-muted hover:text-white rounded-lg hover:bg-white/5" onclick="event.stopPropagation();"><i class="fa-solid fa-download text-[10px]"></i></button>
+          <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"></i>
+        </div>
+      </div>
+      <div class="phase-body p-6 border-t border-white/5 space-y-4"><p class="text-sm text-cyber-muted">วางรากฐานโครงสร้างระบบ Client และ Server ให้ Rider/Passenger ใช้งานได้จริงบนระบบ Production</p></div>
+    </div>
+
+    <div class="glass-panel rounded-2xl" id="p2">
+      <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none" onclick="togglePhase('p2')">
+        <div class="flex items-center gap-4"><span class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase 2</span><h3 class="font-bold text-white text-base">Sync Calibration — จูนนิ่งความตรงระดับเสี้ยววิ</h3></div>
+        <div class="flex items-center gap-3">
+          <span class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration: 3 weeks</span>
+          <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block"><div class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full" style="width:0%"></div></div>
+          <span class="text-xs text-cyber-muted font-mono">0%</span>
+          <button class="p-1.5 text-cyber-muted hover:text-white rounded-lg hover:bg-white/5" onclick="event.stopPropagation();"><i class="fa-solid fa-download text-[10px]"></i></button>
+          <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"></i>
+        </div>
+      </div>
+      <div class="phase-body p-6 border-t border-white/5 space-y-4"><p class="text-sm text-cyber-muted">จูนนิ่งระดับความเสถียรระหว่าง Rider-Passenger และแก้สภาวะ Autoplay บล็อก หรือแอปหลับขณะปิดหน้าจอขับขี่จริง</p></div>
+    </div>
+
+    <div class="glass-panel rounded-2xl" id="p3">
+      <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none" onclick="togglePhase('p3')">
+        <div class="flex items-center gap-4"><span class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase 3</span><h3 class="font-bold text-white text-base">Beta Test &amp; rider feedback — นำทางจริงบนบอร์ด</h3></div>
+        <div class="flex items-center gap-3">
+          <span class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration: 2 weeks</span>
+          <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block"><div class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full" style="width:0%"></div></div>
+          <span class="text-xs text-cyber-muted font-mono">0%</span>
+          <button class="p-1.5 text-cyber-muted hover:text-white rounded-lg hover:bg-white/5" onclick="event.stopPropagation();"><i class="fa-solid fa-download text-[10px]"></i></button>
+          <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"></i>
+        </div>
+      </div>
+      <div class="phase-body p-6 border-t border-white/5 space-y-4"><p class="text-sm text-cyber-muted">นำทางจริงบนบอร์ด เก็บ feedback ผู้ใช้กลุ่มแรก และออกอัปเดต Quick-fix ตามเสียงตอบรับ</p></div>
+    </div>
+
+    <div class="glass-panel rounded-2xl" id="p4">
+      <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none" onclick="togglePhase('p4')">
+        <div class="flex items-center gap-4"><span class="px-2.5 py-0.5 rounded bg-amber-500/15 text-amber-400 text-xs font-bold uppercase tracking-wider">Phase 4</span><h3 class="font-bold text-white text-base">Future Backlog — ฟีเจอร์เสริมในอนาคต</h3></div>
+        <div class="flex items-center gap-3">
+          <span class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration: future</span>
+          <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block"><div class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full" style="width:0%"></div></div>
+          <span class="text-xs text-cyber-muted font-mono">0%</span>
+          <button class="p-1.5 text-cyber-muted hover:text-white rounded-lg hover:bg-white/5" onclick="event.stopPropagation();"><i class="fa-solid fa-download text-[10px]"></i></button>
+          <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"></i>
+        </div>
+      </div>
+      <div class="phase-body p-6 border-t border-white/5 space-y-4"><p class="text-sm text-cyber-muted">Hotspot/Local WebSocket, Intercom voice chat, Convoy GPS tracking, Voice command — ยังไม่จัดเข้าสปรินต์</p></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function togglePhase(id){
+    var el=document.getElementById(id); if(!el)return;
+    var body=el.querySelector('.phase-body'), icon=el.querySelector('.phase-chevron');
+    body.classList.toggle('open'); icon.classList.toggle('open');
+  }
+  function toggleTaskInfo(id){
+    var panel=document.querySelector('.task-item[data-task-id="'+id+'"] .task-info-panel');
+    var chev=document.getElementById(id+'-chevron');
+    if(panel) panel.classList.toggle('hidden');
+    if(chev) chev.classList.toggle('open');
+  }
+  function toggleExportMenu(id){
+    var m=document.getElementById('export-menu-'+id); if(!m)return;
+    var hidden=m.classList.contains('hidden');
+    document.querySelectorAll('[id^="export-menu-"]').forEach(function(x){x.classList.add('hidden')});
+    if(hidden) m.classList.remove('hidden');
+  }
+  window.addEventListener('click',function(e){ if(!e.target.closest('.relative')) document.querySelectorAll('[id^="export-menu-"]').forEach(function(x){x.classList.add('hidden')}); });
+  var tgl=document.getElementById('themeToggle'), lbl=document.getElementById('themeLabel');
+  tgl.addEventListener('click',function(){
+    var light=document.body.classList.toggle('light-theme');
+    lbl.textContent=light?'Dark':'Light';
+    tgl.querySelector('i').className=light?'fa-solid fa-moon':'fa-solid fa-sun';
+  });
+</script>
+</body>
+</html>
