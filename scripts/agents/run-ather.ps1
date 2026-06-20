@@ -47,24 +47,27 @@ param(
 )
 
 $invokeScript = Join-Path $PSScriptRoot "invoke-agent.ps1"
+$args = @{
+    AgentId = "ather"
+    Task = $Task
+    Mode = $Mode
+    Registry = $Registry
+    MaxFiles = $MaxFiles
+    MaxCharsPerFile = $MaxCharsPerFile
+    OutputFormat = $OutputFormat
+    InvokeCodex = $InvokeCodex
+    CodexJson = $CodexJson
+    Ephemeral = $Ephemeral
+    RetryLargerLocalModel = $RetryLargerLocalModel
+    AsJson = $AsJson
+    PrintPrompt = $PrintPrompt
+}
 
-& $invokeScript `
-    -AgentId "ather" `
-    -Scope $Scope `
-    -Task $Task `
-    -Mode $Mode `
-    -Registry $Registry `
-    -MaxFiles $MaxFiles `
-    -MaxCharsPerFile $MaxCharsPerFile `
-    -OutputPath $OutputPath `
-    -CodexOutputPath $CodexOutputPath `
-    -Model $Model `
-    -Executor $Executor `
-    -LocalModel $LocalModel `
-    -OutputFormat $OutputFormat `
-    -InvokeCodex:$InvokeCodex `
-    -CodexJson:$CodexJson `
-    -Ephemeral:$Ephemeral `
-    -RetryLargerLocalModel:$RetryLargerLocalModel `
-    -AsJson:$AsJson `
-    -PrintPrompt:$PrintPrompt
+if ($PSBoundParameters.ContainsKey("Scope")) { $args.Scope = $Scope }
+if ($PSBoundParameters.ContainsKey("OutputPath")) { $args.OutputPath = $OutputPath }
+if ($PSBoundParameters.ContainsKey("CodexOutputPath")) { $args.CodexOutputPath = $CodexOutputPath }
+if ($PSBoundParameters.ContainsKey("Model")) { $args.Model = $Model }
+if ($PSBoundParameters.ContainsKey("Executor")) { $args.Executor = $Executor }
+if ($PSBoundParameters.ContainsKey("LocalModel")) { $args.LocalModel = $LocalModel }
+
+& $invokeScript @args

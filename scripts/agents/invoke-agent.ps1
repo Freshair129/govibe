@@ -262,6 +262,65 @@ function Get-LocalRetryModel {
     return [string]$retryModel
 }
 
+function Resolve-CodexCommand {
+    if (-not [string]::IsNullOrWhiteSpace($env:CODEX_EXE) -and (Test-Path -LiteralPath $env:CODEX_EXE)) {
+        return [string]$env:CODEX_EXE
+    }
+
+    $codexCommand = Get-Command codex -ErrorAction SilentlyContinue
+    if ($null -eq $codexCommand) {
+        $codexCommand = Get-Command codex.exe -ErrorAction SilentlyContinue
+    }
+
+    if ($null -ne $codexCommand -and -not [string]::IsNullOrWhiteSpace($codexCommand.Source)) {
+        return [string]$codexCommand.Source
+    }
+
+    if ($null -ne $codexCommand -and -not [string]::IsNullOrWhiteSpace($codexCommand.Definition)) {
+        return [string]$codexCommand.Definition
+    }
+
+    try {
+        $whereHits = @(where.exe codex.exe 2>$null) + @(where.exe codex 2>$null) |
+            Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
+        foreach ($hit in $whereHits) {
+            if (Test-Path -LiteralPath $hit) {
+                return $hit
+            }
+            if (Test-Path -LiteralPath ($hit + ".exe")) {
+                return ($hit + ".exe")
+            }
+        }
+    }
+    catch {
+    }
+
+    $desktopBinRoot = Join-Path $env:LOCALAPPDATA "OpenAI\Codex\bin"
+    if (Test-Path -LiteralPath $desktopBinRoot) {
+        $desktopFallback = Get-ChildItem -Path $desktopBinRoot -Filter "codex.exe" -Recurse -File -ErrorAction SilentlyContinue |
+            Sort-Object LastWriteTimeUtc -Descending |
+            Select-Object -First 1
+
+        if ($desktopFallback) {
+            return $desktopFallback.FullName
+        }
+    }
+
+    $windowsAppsRoot = "C:\Program Files\WindowsApps"
+    if (Test-Path -LiteralPath $windowsAppsRoot) {
+        $fallback = Get-ChildItem -Path $windowsAppsRoot -Filter "codex.exe" -Recurse -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match "OpenAI\.Codex_.*\\app\\resources\\codex\.exe$" } |
+            Sort-Object FullName -Descending |
+            Select-Object -First 1
+
+        if ($fallback) {
+            return $fallback.FullName
+        }
+    }
+
+    throw "Codex CLI was not found. Checked CODEX_EXE, Get-Command, where.exe, LocalAppData OpenAI Codex bin, and WindowsApps."
+}
+
 function Format-OllamaPrompt {
     param(
         [Parameter(Mandatory = $true)][string]$PromptText,
@@ -449,6 +508,7 @@ if (-not $shouldExecute) {
 }
 
 if ($selectedExecutor -eq "codex") {
+    $codexExecutable = Resolve-CodexCommand
     $effectiveCodexOutputPath = $CodexOutputPath
     if (-not $effectiveCodexOutputPath) {
         $effectiveCodexOutputPath = Join-Path $env:TEMP ("codex-agent-output-" + [guid]::NewGuid().ToString() + ".txt")
@@ -475,7 +535,7 @@ if ($selectedExecutor -eq "codex") {
         $codexArgs += "--ephemeral"
     }
 
-    $codexLog = $promptText | & codex @codexArgs 2>&1
+    $codexLog = $promptText | & $codexExecutable @codexArgs 2>&1
     if ($LASTEXITCODE -ne 0) {
         $logText = ($codexLog | Out-String).Trim()
         throw "Codex exec failed.`n$logText"

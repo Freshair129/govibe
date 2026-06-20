@@ -28,7 +28,12 @@ scope + task
 - `run-theseus-local.ps1` - Ollama atomic wrapper for THESEUS
 - `run-lyra-local.ps1` - Ollama atomic wrapper for LYRA
 - `run-ather-local.ps1` - Ollama atomic wrapper for ATHER
+- `run-vibe-microtask-local.ps1` - strict Ollama microtask wrapper for VIBE A2 parity work
 - `run-qwen-agent-review.ps1` - shared-context wrapper for bounded qwen-cli / OpenRouter review
+- `measure-codex-hybrid-savings.ps1` - compare Codex-only vs hybrid prompt footprint and optional observed usage deltas
+- `record-codex-hybrid-round.ps1` - save one 4-number usage round at a time and auto-summarize once both flows are present
+- `run-codex-savings-round.ps1` - interactive one-script round runner that prompts before/after values, auto-runs the selected flow, and records model/mode/context usage
+- `run-codex-savings-round.cmd` - double-click launcher that keeps the window open after finish or error
 
 ## Generic Usage
 
@@ -129,6 +134,35 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\ru
   -RetryLargerLocalModel
 ```
 
+### VIBE Local Microtask
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\run-vibe-microtask-local.ps1" `
+  -TaskId "MT-A2-01" `
+  -Profile "balanced"
+```
+
+This wrapper is stricter than the generic Ollama launcher:
+
+- injects real file contents for the assigned A2 microtask
+- strips `<think>` blocks and terminal ANSI noise
+- validates the VIBE output contract
+- returns `BLOCKED` if the local model drifts outside the required microtask shape
+
+Profiles:
+
+- `fast` -> `qwen3.5:4b` for cheap bounded checks
+- `balanced` -> `sushirl:latest` as the default UI microtask profile
+- `ui-heavy` -> `qwen3:latest` for heavier layout/context reasoning
+
+You can still override the exact model directly:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\run-vibe-microtask-local.ps1" `
+  -TaskId "MT-A2-03" `
+  -Model "sushirl:latest"
+```
+
 ## Modes
 
 - `doc` - full authoring/document context
@@ -179,3 +213,57 @@ The wrapper loads:
 - `.agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md` when the task is git-related
 
 Qwen output remains draft evidence. It cannot approve scope, release, architecture, or destructive cleanup.
+
+## Codex Hybrid Savings Test
+
+Use this when you want a repeatable estimate of whether:
+
+- Codex-only: plan + coding + output
+- Hybrid: Codex plan + local coding + Codex review + hotfix
+
+is cheaper or lighter for the current launcher system.
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\measure-codex-hybrid-savings.ps1"
+```
+
+See:
+
+- `docs/runbooks/RUNBOOK--CODEX-HYBRID-SAVINGS-TEST.md`
+
+If you want the shortest manual flow, record one round at a time with only 4 numbers:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\record-codex-hybrid-round.ps1" `
+  -SessionId "a2-test-01" `
+  -MicrotaskId "MT-A2-04" `
+  -Flow "codex-only" `
+  -DailyBefore 52 `
+  -DailyAfter 49 `
+  -WeeklyBefore 64 `
+  -WeeklyAfter 61
+```
+
+Then run again for `hybrid` with the same `SessionId`. The wrapper stores state in your local temp folder and prints the comparison as soon as both rounds exist.
+
+If you want one interactive script that asks for `before`, runs the work, then asks for `after`, use:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\run-codex-savings-round.ps1"
+```
+
+Or double-click:
+
+- `G:\govibe\scripts\agents\run-codex-savings-round.cmd`
+
+It prompts for:
+
+- flow: `codex-only` or `hybrid`
+- session id
+- before daily / weekly remaining
+- after daily / weekly remaining
+- model name
+- mode / reasoning level
+- context window tokens used
+
+Then it stores the round automatically through `record-codex-hybrid-round.ps1`.

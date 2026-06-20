@@ -2,10 +2,10 @@
 title: "BACKLOG: P1 MVP Core Task Containers"
 doc_id: "BACKLOG-P1-MVP-CORE"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-16"
+version: "0.1.1+draft"
+updated: "2026-06-20"
 owner: "LYRA"
-source_of_truth: true
+source_of_truth: false
 prd_system: "SYSTEM-02::Project-Roadmap-Management-System"
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
@@ -15,6 +15,8 @@ related_docs:
 ---
 
 # BACKLOG: P1 MVP Core Task Containers
+
+> **Legacy import fixture.** This backlog is a legacy import FIXTURE used to exercise the Task Container / telemetry schema, not canonical MVP product scope. Legacy task codes and imported values are preserved, not overwritten (see `docs/archive/legacy-p1-mvp-import-reference.md`). It is not a source of truth; canonical MVP scope lives in `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md`.
 
 **ImpId:** IMP-GVMP01P05EP01  
 **Source Export:** `C:/Users/freshair/Downloads/p1-mvp-core-.json`  
@@ -35,6 +37,8 @@ related_docs:
 Represent the P1 MVP Core export as a GoVibe roadmap source with Task Container records that can drive the A2 task detail dropdown without inventing data in React.
 
 ## Phases
+
+> Note: Progress values in this section (and the Sprints/Backlog tables below) are legacy-imported telemetry preserved from the source export, not live progress. They are intentionally not reconciled with `Status` (e.g. a `planned` row may carry a non-zero legacy progress) per the import contract in `docs/archive/legacy-p1-mvp-import-reference.md`; do not treat them as live runtime state.
 
 | Phase | Parent ID | Goal | Status | Progress | Recorded At |
 |---|---|---|---|---:|---|
@@ -102,9 +106,9 @@ auditor: ATHER
 assignee: none
 completed_by: Unassigned
 symbol_links:
-  code: package.json
+  code: src/main.tsx
   doc: GEMINI.md
-  test: tests/sync.test.js
+  test: unavailable
 definition_of_done:
   acceptance_criteria:
     - criterion: Spec approved
@@ -139,6 +143,433 @@ export:
 ui_state:
   dropdown_default: expanded
   expanded: true
+  disabled_reason: ""
+```
+
+### TC-TSK-CVB01P0102A
+
+```yaml
+task_container_id: TC-TSK-CVB01P0102A
+task_id: TSK-CVB01P0102A
+legacy_task_id: p1-s1a-2
+legacy_code: TSK-CVB01P0102A
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1A
+title: Backend Node.js TypeScript WebSocket room state
+requirement_type: FR
+complexity: high
+status: stable
+version: 1.0.0
+pic: KIN
+executor: Codex or backend agent
+approver: ARCHON
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Setup TS environment and basic router for room creation commands.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 11000
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TSK-CVB01P0103A
+
+```yaml
+task_container_id: TC-TSK-CVB01P0103A
+task_id: TSK-CVB01P0103A
+legacy_task_id: p1-s1a-3
+legacy_code: TSK-CVB01P0103A
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1A
+title: Rider creates room and receives QR code
+requirement_type: FR
+complexity: normal
+status: stable
+version: 1.0.0
+pic: VIBE
+executor: Codex or frontend agent
+approver: LYRA
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Integrated QR generation library and dynamic URL link bindings.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 8900
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TSK-CVB01P0104A
+
+```yaml
+task_container_id: TC-TSK-CVB01P0104A
+task_id: TSK-CVB01P0104A
+legacy_task_id: p1-s1a-4
+legacy_code: TSK-CVB01P0104A
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1A
+title: QR generator and share link
+requirement_type: FR
+complexity: low
+status: stable
+version: 1.0.0
+pic: VIBE
+executor: Codex or frontend agent
+approver: LYRA
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Added navigator.share fallback compatibility for mobile clients.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 5400
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TSK-CVB01P0105A
+
+```yaml
+task_container_id: TC-TSK-CVB01P0105A
+task_id: TSK-CVB01P0105A
+legacy_task_id: p1-s1a-5
+legacy_code: TSK-CVB01P0105A
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1A
+title: Passenger scans QR and joins room
+requirement_type: FR
+complexity: normal
+status: stable
+version: 1.0.0
+pic: VIBE
+executor: Codex or frontend agent
+approver: LYRA
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Added input controls for Passenger session initialization.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 9200
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TSK-CVB01P0106A
+
+```yaml
+task_container_id: TC-TSK-CVB01P0106A
+task_id: TSK-CVB01P0106A
+legacy_task_id: p1-s1a-6
+legacy_code: TSK-CVB01P0106A
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1A
+title: Participant presence connected and disconnected
+requirement_type: FR
+complexity: normal
+status: stable
+version: 1.0.0
+pic: KIN
+executor: Codex or backend agent
+approver: ARCHON
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Implemented connection heartbeats for stale participant pruning.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 7800
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TSK-CVB01P0107A
+
+```yaml
+task_container_id: TC-TSK-CVB01P0107A
+task_id: TSK-CVB01P0107A
+legacy_task_id: p1-s1a-7
+legacy_code: TSK-CVB01P0107A
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1A
+title: Thai UI foundation, dark mode, mobile-first layout
+requirement_type: NFR
+complexity: high
+status: stable
+version: 1.0.0
+pic: VIBE
+executor: Codex or frontend agent
+approver: LYRA
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Styled mobile responsive screens; added dark theme variables.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 10500
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TSK-CVB01P0108B
+
+```yaml
+task_container_id: TC-TSK-CVB01P0108B
+task_id: TSK-CVB01P0108B
+legacy_task_id: p1-s1b-1
+legacy_code: TSK-CVB01P0108B
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1B
+title: YouTube link parser and IFrame API integration
+requirement_type: FR
+complexity: normal
+status: stable
+version: 1.0.0
+pic: VIBE
+executor: Codex or frontend agent
+approver: LYRA
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Setup regex mapping to support shorts/standard YouTube URLs.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 9100
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
   disabled_reason: ""
 ```
 
@@ -203,6 +634,250 @@ ui_state:
   disabled_reason: Docs, code, and tests are incomplete in the source export.
 ```
 
+### TC-TSK-CVB01P0110B
+
+```yaml
+task_container_id: TC-TSK-CVB01P0110B
+task_id: TSK-CVB01P0110B
+legacy_task_id: p1-s1b-3
+legacy_code: TSK-CVB01P0110B
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1B
+title: Current track state on server
+requirement_type: FR
+complexity: normal
+status: stable
+version: 1.0.0
+pic: KIN
+executor: Codex or backend agent
+approver: ARCHON
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Added server timestamp offsets tracking when track transitions happen.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 8300
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TSK-CVB01P0111B
+
+```yaml
+task_container_id: TC-TSK-CVB01P0111B
+task_id: TSK-CVB01P0111B
+legacy_task_id: p1-s1b-4
+legacy_code: TSK-CVB01P0111B
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1B
+title: Play, pause, skip, and seek sync over WebSocket
+requirement_type: FR
+complexity: high
+status: stable
+version: 1.0.0
+pic: KIN
+executor: Codex or backend agent
+approver: ARCHON
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Synchronized participant seeking controls to prevent loop feedback.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 12500
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TSK-CVB01P0112B
+
+```yaml
+task_container_id: TC-TSK-CVB01P0112B
+task_id: TSK-CVB01P0112B
+legacy_task_id: p1-s1b-5
+legacy_code: TSK-CVB01P0112B
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1B
+title: Auto-next when track ends
+requirement_type: FR
+complexity: low
+status: stable
+version: 1.0.0
+pic: VIBE
+executor: Codex or frontend agent
+approver: LYRA
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Added playState callbacks updating play status in queue reducer.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 6200
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TSK-CVB01P0113B
+
+```yaml
+task_container_id: TC-TSK-CVB01P0113B
+task_id: TSK-CVB01P0113B
+legacy_task_id: p1-s1b-6
+legacy_code: TSK-CVB01P0113B
+parent_phase_id: PHA-GVMP01P01
+parent_sprint_id: SPR-GVMP01P01EP01-1B
+title: Per-device volume control
+requirement_type: FR
+complexity: low
+status: stable
+version: 1.0.0
+pic: VIBE
+executor: Codex or frontend agent
+approver: LYRA
+auditor: ATHER
+assignee: none
+completed_by: Unassigned
+symbol_links:
+  code: unavailable
+  doc: unavailable
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Spec approved
+      checked: true
+    - criterion: Docs updated
+      checked: true
+  success_criteria:
+    - criterion: Code complete
+      checked: true
+    - criterion: Lints clean
+      checked: true
+  exit_criteria:
+    - criterion: Tests passed
+      checked: true
+    - criterion: Regression free
+      checked: true
+changelog: Added HTML5 range slider mapping device-specific sound levels.
+created_at: 2026-06-14T17:23:58+07:00,LYRA,import
+last_update: 2026-06-14T17:23:58+07:00,LYRA,import
+token_telemetry:
+  model_name: unknown/legacy
+  context_length: unavailable
+  predicted_token_usage: unavailable
+  actual_input_tokens: unavailable
+  actual_output_tokens: unavailable
+  tool_calling_tokens: unavailable
+  total_token_usage: 4500
+export:
+  json: enabled
+  yaml: enabled
+  markdown: enabled
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
 ## Local LLM Packets
 
 | ID | Target Context | Max Input | Target Path | Model Name | Predicted Token Usage | Instruction | Acceptance |
@@ -245,4 +920,5 @@ ui_state:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-06-20 | LYRA | Honesty fixes: set source_of_truth to false (derived legacy import fixture), added legacy-import fixture note and legacy-imported telemetry note for progress values, without rewriting preserved legacy task content. |
 | 0.1.0+draft | 2026-06-16 | LYRA | Added canonical frontmatter and roadmap-promotion metadata so the backlog can be governed as a board-eligible roadmap source. |

@@ -1,6 +1,6 @@
 # GoVibe Mission Control Design System
 
-**Version:** 2.5.1  
+**Version:** 2.6.1  
 **Status:** Active implementation reference  
 **App Entry:** `src/App.tsx`  
 **Data Entry:** `src/mission.ts`
@@ -95,6 +95,8 @@ A5 uses a dark glass interactive-card system derived from the Mission Control te
 ## Template-Aligned Surfaces
 
 - A2 includes roadmap header controls, export/reset affordances, assist roster cards, phase containers, sprint containers, and detailed task containers from the template blueprint.
+- A2 header wording must use `GoVibe Development Roadmap` and the metric labels `Feature ทั้งหมด`, `พร้อมใช้งาน / IMP แล้ว`, and `Task ใน Backlog`.
+- A2 header counts must be derived from approved roadmap runtime state, not copied from the static template values.
 - A2 task detail dropdowns must render from `Task Container` records, not from title-only roadmap nodes. A `WorkflowTaskNode` may identify hierarchy and status, but the detailed dropdown needs a task container for symbol links, DoD, changelog, token telemetry, PIC, executor, approver, and auditor fields.
 - A2 must preserve this hierarchy: Roadmap Source -> Phase Container -> Sprint Container -> Task Container -> Task Detail Dropdown.
 - A2 task containers must include code/doc/test symbol links, version, complexity, requirement type, status, token usage, Definition of Done split into Acceptance Criteria, Success Criteria, and Exit Criteria, changelog, created/updated metadata, task ID, and per-task export controls for JSON, YAML, and Markdown.
@@ -193,6 +195,7 @@ Implementation code remains blocked until this contract is represented in the ro
 
 | Version | Date | Summary |
 | --- | --- | --- |
+| 2.6.1 | 2026-06-18 | Added the approved A2 roadmap header contract for GoVibe naming, feature/backlog stat wording, and runtime-derived count semantics. |
 | 2.6.0 | 2026-06-14 | Added the A2 Task Container contract for template-parity roadmap detail dropdowns, including PIC/Executor separation and token telemetry display rules. |
 | 2.5.1 | 2026-06-13 | Cleaned the design SSOT by removing stray reference snippets, normalizing interactive-card guidance, and keeping only GoVibe-relevant design contracts. |
 | 2.2.0 | 2026-06-10 | Expanded domain detail views to match the template more closely: A2 task rows, A5 select screen, AST/graph/spec/zoo/heatmap/log blueprints. |

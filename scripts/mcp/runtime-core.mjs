@@ -6,11 +6,14 @@ import { fileURLToPath } from "node:url";
 import { discoverRoadmapSources, parseRoadmapSource } from "./roadmap-parser.mjs";
 import { writeRoadmapMarkdownExport } from "./roadmap-exporter.mjs";
 import { compareTemporalOrder, createTemporalVersion, isTemporalVisible, nextVersion } from "./temporal-versioning.mjs";
+import { toolCatalog } from "./registry.mjs";
 import { SessionTracker } from "../../packages/govibe-core/bin/session-tracker.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const roadmapDir = path.join(workspaceRoot, "docs", "roadmap");
 const launcherScript = path.join(workspaceRoot, "scripts", "agents", "invoke-agent.ps1");
+const agentRegistryPath = path.join(workspaceRoot, ".agents", "agent-registry.yaml");
+const agentAccents = ["#10b981", "#6366f1", "#22d3ee", "#f472b6", "#f59e0b", "#a78bfa"];
 
 function createEmptySnapshot() {
   return {
@@ -20,6 +23,13 @@ function createEmptySnapshot() {
     chart: { labels: [], series: [] },
     reactor: [],
     agents: [],
+    capabilities: toolCatalog.map((tool) => ({
+      id: tool.name,
+      title: tool.name,
+      description: tool.description,
+      status: "registered",
+      sourcePath: "scripts/mcp/registry.mjs",
+    })),
     terminal: [],
     graph: { nodes: [], edges: [] },
     specs: [],
@@ -35,6 +45,99 @@ function createTerminalLine(type, text) {
     text,
     time: new Date().toLocaleTimeString("en-US", { hour12: false }),
   };
+}
+
+function unquoteYamlScalar(value) {
+  const trimmed = value.trim();
+  if (
+    (trimmed.startsWith('"') && trimmed.endsWith('"'))
+    || (trimmed.startsWith("'") && trimmed.endsWith("'"))
+  ) {
+    return trimmed.slice(1, -1);
+  }
+  return trimmed;
+}
+
+function parseAgentRegistry(text) {
+  const agents = [];
+  let inAgents = false;
+  let current;
+  let listTarget;
+
+  for (const rawLine of text.replace(/\r\n/g, "\n").split("\n")) {
+    if (rawLine === "agents:") {
+      inAgents = true;
+      continue;
+    }
+    if (!inAgents) continue;
+    if (rawLine === "scopes:") break;
+
+    const agentMatch = rawLine.match(/^  ([a-z0-9_-]+):\s*$/i);
+    if (agentMatch) {
+      current = {
+        id: agentMatch[1],
+        responsibility: [],
+        sourceRefs: [],
+        authority: { can: [], cannot: [] },
+      };
+      agents.push(current);
+      listTarget = undefined;
+      continue;
+    }
+    if (!current) continue;
+
+    const scalarMatch = rawLine.match(/^    (label|role|job_title_equivalent|domain|cluster):\s*(.+)$/);
+    if (scalarMatch) {
+      current[scalarMatch[1]] = unquoteYamlScalar(scalarMatch[2]);
+      listTarget = undefined;
+      continue;
+    }
+    if (/^    responsibility:\s*$/.test(rawLine)) {
+      listTarget = current.responsibility;
+      continue;
+    }
+    if (/^    source_refs:\s*$/.test(rawLine)) {
+      listTarget = current.sourceRefs;
+      continue;
+    }
+    const authorityMatch = rawLine.match(/^      (can|cannot):\s*$/);
+    if (authorityMatch) {
+      listTarget = current.authority[authorityMatch[1]];
+      continue;
+    }
+    const listItemMatch = rawLine.match(/^ {6,8}-\s+(.+)$/);
+    if (listItemMatch && listTarget) {
+      listTarget.push(unquoteYamlScalar(listItemMatch[1]));
+      continue;
+    }
+    if (/^    [a-z0-9_-]+:/i.test(rawLine)) {
+      listTarget = undefined;
+    }
+  }
+
+  return agents.map((agent, index) => ({
+    id: agent.id,
+    name: agent.label ?? agent.id.toUpperCase(),
+    role: agent.role ?? "Unspecified",
+    model: "Registry-defined",
+    status: "registered",
+    tasks: "unavailable",
+    accuracy: "unavailable",
+    speed: "unavailable",
+    accent: agentAccents[index % agentAccents.length],
+    fleet: {
+      fleetRole: agent.role,
+      jobTitleEquivalent: agent.job_title_equivalent,
+      domain: agent.domain,
+      cluster: agent.cluster,
+      responsibility: agent.responsibility,
+      authority: agent.authority,
+      sourceRefs: agent.sourceRefs,
+      approvalGate: "Registry metadata only; execution requires assignment and approval.",
+      scopeBoundary: "Defined by agent-registry.yaml execution policy.",
+      scopeStatus: "ready_for_assignment",
+    },
+  }));
 }
 
 function toRelativePath(fullPath) {
@@ -89,23 +192,38 @@ function validateTemporalItem(item, label) {
   }
 }
 
-function inferRoadmapSourcePath(explicitSource, sources) {
+async function inferRoadmapSourcePath(explicitSource, sources) {
   if (explicitSource) {
-    return path.isAbsolute(explicitSource) ? explicitSource : path.join(workspaceRoot, explicitSource);
+    const sourcePath = path.isAbsolute(explicitSource) ? explicitSource : path.join(workspaceRoot, explicitSource);
+    const parsed = await parseRoadmapSource(sourcePath);
+    if (parsed.approvalStatus?.toLowerCase() !== "approved") {
+      throw new Error(`Roadmap source '${toRelativePath(sourcePath)}' is not approved.`);
+    }
+    return sourcePath;
   }
 
   const preferred = process.env.GOVIBE_ROADMAP_SOURCE;
   if (preferred) {
-    return path.isAbsolute(preferred) ? preferred : path.join(workspaceRoot, preferred);
+    const sourcePath = path.isAbsolute(preferred) ? preferred : path.join(workspaceRoot, preferred);
+    const parsed = await parseRoadmapSource(sourcePath);
+    if (parsed.approvalStatus?.toLowerCase() !== "approved") {
+      throw new Error(`Roadmap source '${toRelativePath(sourcePath)}' is not approved.`);
+    }
+    return sourcePath;
   }
 
-  const defaultMarkdown = sources.find((source) => /^ROADMAP-.*\.md$/i.test(source.name));
-  if (defaultMarkdown) return defaultMarkdown.path;
-
-  const defaultHtml = sources.find((source) => /^ROADMAP-.*\.html$/i.test(source.name));
-  if (defaultHtml) return defaultHtml.path;
-
-  return sources[0]?.path;
+  const orderedSources = [
+    ...sources.filter((source) => /^ROADMAP-.*\.md$/i.test(source.name)),
+    ...sources.filter((source) => /^ROADMAP-.*\.html$/i.test(source.name)),
+    ...sources.filter((source) => !/^ROADMAP-.*\.(md|html)$/i.test(source.name)),
+  ];
+  for (const source of orderedSources) {
+    const parsed = await parseRoadmapSource(source.path);
+    if (parsed.approvalStatus?.toLowerCase() === "approved") {
+      return source.path;
+    }
+  }
+  return undefined;
 }
 
 function formatAgentRunResult(stdout, stderr, exitCode) {
@@ -139,8 +257,13 @@ export class GovibeRuntime {
   }
 
   async initialize() {
+    const registryAgents = parseAgentRegistry(await readFile(agentRegistryPath, "utf8"));
+    this.snapshot = { ...this.snapshot, agents: registryAgents, updatedAt: new Date().toISOString() };
     await this.reloadRoadmap();
-    this.appendTerminal("sys", `GoVibe runtime initialized. Session ID: ${this.sessionTracker.sessionId}`);
+    this.appendTerminal(
+      "sys",
+      `GoVibe runtime initialized with ${registryAgents.length} registered agents. Session ID: ${this.sessionTracker.sessionId}`,
+    );
     return this.snapshot;
   }
 
@@ -182,7 +305,7 @@ export class GovibeRuntime {
   async reloadRoadmap(explicitSource, options = {}) {
     const sources = await discoverRoadmapSources(roadmapDir);
     this.availableSources = sources;
-    const selectedSource = inferRoadmapSourcePath(explicitSource, sources);
+    const selectedSource = await inferRoadmapSourcePath(explicitSource, sources);
     if (!selectedSource) {
       this.snapshot = { ...this.snapshot, roadmap: undefined, updatedAt: new Date().toISOString() };
       return null;

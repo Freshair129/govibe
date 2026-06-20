@@ -1,0 +1,301 @@
+.agent-config-grid,
+.graph-layout,
+.roadmap-layout,
+.hnsw-layout,
+.reactor-grid,
+.debug-output-grid,
+.query-debugger,
+.query-row,
+.roadmap-header,
+.roadmap-board,
+.assist-roster {
+  display: grid;
+  gap: 16px;
+}
+
+.agent-config-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.agent-config-grid label {
+  display: grid;
+  gap: 8px;
+}
+
+.agent-config-grid span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.agent-config-grid textarea,
+.agent-config-grid select,
+.agent-config-grid input,
+.query-row input,
+.table-filter {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.26);
+  color: var(--text);
+  min-height: 40px;
+  padding: 10px 12px;
+}
+
+.agent-config-grid textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+
+.graph-layout,
+.roadmap-layout,
+.hnsw-layout,
+.reactor-grid {
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+}
+
+.graph-layout {
+  grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
+}
+
+.graph-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.graph-controls button,
+.hnsw-controls button {
+  min-height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-weight: 800;
+  padding: 0 12px;
+}
+
+.graph-controls button.active,
+.hnsw-controls button.active {
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.table-filter {
+  width: min(320px, 100%);
+}
+
+.table-panel {
+  overflow: auto;
+  padding: 0;
+}
+
+.table-panel table {
+  border-collapse: collapse;
+  min-width: 680px;
+  width: 100%;
+}
+
+.table-panel th,
+.table-panel td {
+  border-bottom: 1px solid var(--border);
+  padding: 14px 16px;
+  text-align: left;
+}
+
+.table-panel th {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.table-panel td:first-child {
+  color: var(--accent);
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 900;
+}
+
+.table-panel td span {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+}
+
+
+.debug-output-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.debug-output-grid article {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.18);
+  min-height: 120px;
+  padding: 14px;
+}
+
+.debug-output-grid span {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+
+.plugin-grid,
+.brain-config-grid,
+.zoo-grid,
+.ast-layout {
+  display: grid;
+  gap: 16px;
+}
+
+.plugin-grid,
+.brain-config-grid,
+.zoo-grid {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.plugin-card,
+.config-surface,
+.zoo-card {
+  min-height: 190px;
+}
+
+.plugin-card span,
+.config-surface span,
+.zoo-card span {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.plugin-card strong,
+.zoo-card strong {
+  display: block;
+  margin-top: 6px;
+}
+
+.plugin-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.config-surface {
+  display: grid;
+  gap: 14px;
+}
+
+.config-surface label {
+  display: grid;
+  gap: 8px;
+}
+
+.config-surface input[type="range"] {
+  accent-color: var(--accent);
+}
+
+.ast-layout {
+  grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+}
+
+.ast-code-panel {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  min-height: 400px;
+}
+
+.ast-code-panel button {
+  min-height: 34px;
+  border-radius: 7px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text);
+  display: flex;
+  gap: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  text-align: left;
+}
+
+.ast-code-panel button:hover {
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.ast-code-panel button span {
+  color: var(--accent);
+}
+
+.ast-canvas,
+.graph-studio-canvas {
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.ast-node,
+.graph-studio-canvas span {
+  position: absolute;
+  border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent) 12%, rgba(0,0,0,0.4));
+  color: var(--text);
+  display: grid;
+  gap: 4px;
+  min-width: 132px;
+  padding: 12px;
+}
+
+.ast-node span {
+  color: var(--accent);
+  font-size: 10px;
+}
+
+.view-note {
+  color: var(--muted);
+  font-size: 12px;
+  margin: -8px 0 0;
+  text-align: center;
+}
+
+.spec-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.spec-panel ul {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+}
+
+.reactor-overview {
+  align-content: start;
+  display: grid;
+  gap: 12px;
+}
+
+.campaign-log-panel {
+  max-height: 420px;
+  overflow: auto;
+  background: rgba(0,0,0,0.42);
+}
+
+.campaign-log-panel pre {
+  color: #fb923c;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  margin: 0 0 10px;
+  white-space: pre-wrap;
+}

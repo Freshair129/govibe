@@ -1,6 +1,8 @@
 import { spawn } from "node:child_process";
 import { unlink } from "node:fs/promises";
 
+import { GovibeRuntime } from "./runtime-core.mjs";
+
 const requiredTools = [
   "govibe.agent.run",
   "govibe.docs.resolve",
@@ -129,6 +131,25 @@ function assert(condition, message) {
 }
 
 async function main() {
+  const registryRuntime = new GovibeRuntime();
+  const registrySnapshot = await registryRuntime.initialize();
+  assert(registrySnapshot.agents.length > 0, "runtime did not load registered agents.");
+  assert(
+    registrySnapshot.agents.every((agent) => agent.status === "registered"),
+    "registry-derived agents implied a live execution status.",
+  );
+  assert(
+    registrySnapshot.agents.every((agent) => agent.fleet?.sourceRefs?.length > 0),
+    "registry-derived agents are missing source references.",
+  );
+  assert(registrySnapshot.capabilities.length === 9, "runtime capability records do not match the MCP tool catalog.");
+  assert(
+    registrySnapshot.capabilities.every(
+      (capability) => capability.status === "registered" && capability.sourcePath === "scripts/mcp/registry.mjs",
+    ),
+    "runtime capabilities imply execution state or lack registry provenance.",
+  );
+
   const client = createMcpClient();
   try {
     const init = await client.request("initialize", {
@@ -157,6 +178,38 @@ async function main() {
     const roadmap = roadmapLoad.structuredContent?.roadmap;
     assert(roadmap?.sourcePath === "docs/roadmap/ROADMAP-govibe-mcp-runtime.md", "roadmap.load did not return the expected source path.");
     assert(Array.isArray(roadmap.nodes) && roadmap.nodes.length > 0, "roadmap.load returned no roadmap nodes.");
+    assert(roadmap.approvalStatus === "approved", "roadmap.load returned a source that is not approved.");
+
+    const automaticRoadmapLoad = await client.request("tools/call", {
+      name: "govibe.roadmap.load",
+      arguments: {
+        actor: "smoke-test",
+        project: "govibe",
+        outputShape: "snapshot",
+      },
+    });
+    const automaticRoadmap = automaticRoadmapLoad.structuredContent?.roadmap;
+    assert(
+      automaticRoadmap?.sourcePath === "docs/roadmap/ROADMAP-govibe-mcp-runtime.md",
+      "roadmap.load did not automatically select the approved roadmap source.",
+    );
+    assert(automaticRoadmap?.approvalStatus === "approved", "automatic roadmap selection returned an unapproved source.");
+
+    let draftSourceRejected = false;
+    try {
+      await client.request("tools/call", {
+        name: "govibe.roadmap.load",
+        arguments: {
+          actor: "smoke-test",
+          project: "govibe",
+          source: "docs/roadmap/BACKLOG-p1-mvp-core.md",
+          outputShape: "snapshot",
+        },
+      });
+    } catch (error) {
+      draftSourceRejected = String(error).includes("is not approved");
+    }
+    assert(draftSourceRejected, "roadmap.load did not reject an explicitly requested draft source.");
 
     const roadmapUpdate = await client.request("tools/call", {
       name: "govibe.roadmap.update",

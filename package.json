@@ -11,14 +11,17 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "docs:validate": "node scripts/docs/validate-docs.mjs",
     "diff:check": "node scripts/docs/diff-check.mjs",
     "diff:check:staged": "node scripts/docs/diff-check.mjs --staged",
     "msp:evidence": "node scripts/docs/msp-evidence.mjs",
     "gemini:doc-audit": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agents/run-gemini-doc-audit.ps1",
-    "baseline:check": "npm run docs:validate && npm run lint && npm run build",
+    "baseline:check": "npm run docs:validate && npm run roadmap:validate && npm run lint && npm run test && npm run build",
     "preview": "vite preview",
     "mcp:smoke": "node scripts/mcp/smoke-test.mjs",
+    "roadmap:validate": "node scripts/docs/validate-roadmap-containers.mjs",
     "roadmap:export": "node scripts/mcp/export-roadmap.mjs",
     "mcp:dev": "node scripts/mcp/govibe-mcp-server.mjs",
     "mission:dev": "node scripts/mcp/govibe-mcp-server.mjs"
@@ -34,6 +37,8 @@
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
-    "@types/react-dom": "^19.2.3"
+    "@types/react-dom": "^19.2.3",
+    "jsdom": "^29.1.1",
+    "vitest": "^4.1.9"
   }
 }
