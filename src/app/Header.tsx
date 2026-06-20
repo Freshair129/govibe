@@ -37,18 +37,14 @@ function HeaderIcon({ kind }: { kind: string }) {
 
 export function Header({
   activeDomain,
-  connectionLabel,
   theme,
   onDomainChange,
   onToggleTheme,
-  onRun,
 }: {
   activeDomain: DomainId;
-  connectionLabel: string;
   theme: ThemeMode;
   onDomainChange: (domain: DomainId) => void;
   onToggleTheme: () => void;
-  onRun: () => void;
 }) {
   return (
     <header className="topbar">
@@ -59,10 +55,6 @@ export function Header({
             <strong>GoVibe Mission Control</strong>
             <span>Agent Command Center</span>
           </div>
-        </div>
-        <div className="reactor-status reactor-status-inline">
-          <span className={connectionLabel === "CONNECTED" ? "online" : ""} />
-          <strong>WS REACTOR</strong>
         </div>
       </div>
       <nav className="domain-tabs" aria-label="Mission domains">
@@ -79,13 +71,6 @@ export function Header({
         ))}
       </nav>
       <div className="top-actions">
-        <button className="primary-action" onClick={onRun}>
-          Test Run
-        </button>
-        <span className="run-state">
-          <i />
-          Stable Run
-        </span>
         <button className="icon-action" onClick={onToggleTheme} aria-label="Toggle theme">
           {theme === "dark" ? "Moon" : "Sun"}
         </button>

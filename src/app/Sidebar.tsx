@@ -19,6 +19,19 @@ function SidebarIcon({ kind }: { kind: string }) {
       </svg>
     );
   }
+  if (kind === "compass") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" strokeWidth="1.6" opacity=".9" />
+        <path
+          d="M14.8 9.2 12.7 14l-4.7 2.1 2.1-4.8z"
+          fill="currentColor"
+          opacity=".9"
+        />
+        <path d="M12 8.4a3.6 3.6 0 1 1 0 7.2a3.6 3.6 0 0 1 0-7.2z" fill="none" stroke="currentColor" strokeWidth="1.2" opacity=".45" />
+      </svg>
+    );
+  }
   if (kind === "plug") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -68,6 +81,10 @@ function SidebarDomainIcon({ kind }: { kind: string }) {
   return <SidebarIcon kind={kind} />;
 }
 
+function SidebarToggleIcon({ expanded }: { expanded: boolean }) {
+  return <span aria-hidden="true">{expanded ? "<<" : ">>"}</span>;
+}
+
 export function Sidebar({
   activeDomain,
   activeView,
@@ -109,8 +126,10 @@ export function Sidebar({
                 <SidebarIcon kind={sub.icon} />
               </span>
               <div className="side-nav-copy">
-                <small>{sub.id}</small>
-                <strong>{sub.name}</strong>
+                <strong>
+                  <span>{sub.id}:</span>
+                  <span>{sub.name}</span>
+                </strong>
               </div>
             </button>
           ))}
@@ -118,7 +137,7 @@ export function Sidebar({
       </div>
       <button className="sidebar-toggle" onClick={onToggle}>
         <span className="sidebar-toggle-icon" aria-hidden="true">
-          {expanded ? "\u2039" : "\u203a"}
+          <SidebarToggleIcon expanded={expanded} />
         </span>
         <strong>{expanded ? "Collapse Sidebar" : "Expand Sidebar"}</strong>
       </button>
