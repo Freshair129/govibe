@@ -103,7 +103,7 @@ Closes GV-{X}
 
 
 4.2. **GoVibe (Status & Management):**
-- **Hierarchy:** H5 (Masterplan/Roadmap) ➔ H4 (Phase/Theme) ➔ H3 (Epics) ➔ H2 (Stories/Specs) ➔ H1 (Tasks) ➔ H0 (Subtasks/PRs)
+- **Hierarchy:** H6 (Masterplan) ➔ H5 (Roadmap) ➔ H4 (Phase/Theme) ➔ H3 (Epics) ➔ H2 (Stories/Specs) ➔ H1 (Tasks) ➔ H0 (Subtasks/PRs)
 - **Labels:** `plan-review` (Yellow), `plan-approved` (Green), `file-lock` (Gray), `blocked` (Red).
 - **Self-Claiming:** Teammates self-assign tasks; assignment = file lock declaration.
 
