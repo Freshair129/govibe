@@ -212,6 +212,12 @@
   .agent-chip.expanded .row{cursor:pointer;border-radius:8px;padding:5px 7px;margin:0 -7px;transition:background .2s,color .2s}
   .agent-chip.expanded .row:hover{background:rgba(255,255,255,.05)}
   .agent-chip.expanded .row.selected{background:rgba(57,217,138,.08);border:1px solid rgba(57,217,138,.18);margin:-1px -8px}
+  /* minimize mode: shrink to a pulsing dot */
+  .agent-chip.minimize{width:32px;height:32px;padding:0;background:rgba(57,217,138,.08);border-color:rgba(57,217,138,.2);border-radius:50%;overflow:hidden}
+  .agent-chip.minimize .hdr,.agent-chip.minimize .roster,.agent-chip.minimize .expand-only,.agent-chip.minimize .ftr{display:none}
+  .agent-chip.minimize::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#39d98a;box-shadow:0 0 0 0 rgba(57,217,138,.6);animation:minPulse 2s ease-in-out infinite}
+  @keyframes minPulse{0%,100%{box-shadow:0 0 0 0 rgba(57,217,138,.6)}50%{box-shadow:0 0 0 8px rgba(57,217,138,0)}}
+  .agent-chip.minimize .close{display:none}
   .agent-chip.expanded .row.selected .nm{color:#39d98a}
   /* profile-swap fade */
   .agent-chip .focus-task{transition:opacity .25s ease}
@@ -1167,15 +1173,47 @@
     if(persist){ try{ localStorage.setItem('govibe.chip.selected', key); }catch(e){} }
   }
 
-  // hook clicks on rows (only meaningful when expanded)
-  rows.forEach(function(r){
+  // hook clicks + keyboard nav on rows
+  var selectedIdx=0;
+  rows.forEach(function(r, i){
+    r.tabIndex=0;
     r.addEventListener('click',function(e){
       if(!chip.classList.contains('expanded')) return;
       e.stopPropagation();
+      selectedIdx=i;
       var name=r.querySelector('.nm').textContent;
       setProfile(name, true);
+      rows[selectedIdx].focus();
+    });
+    r.addEventListener('keydown',function(e){
+      if(!chip.classList.contains('expanded')) return;
+      if(e.key==='ArrowDown'){ e.preventDefault(); selectedIdx=(selectedIdx+1)%rows.length; rows[selectedIdx].focus(); rows[selectedIdx].click(); }
+      if(e.key==='ArrowUp'){ e.preventDefault(); selectedIdx=(selectedIdx-1+rows.length)%rows.length; rows[selectedIdx].focus(); rows[selectedIdx].click(); }
     });
   });
+
+  // section-aware: detect current section during scroll → update chip focus task
+  if(!reduce){
+    var sections=[];
+    document.querySelectorAll('section[data-chip-title]').forEach(function(sec){
+      sections.push({el:sec, title:sec.dataset.chipTitle});
+    });
+    function updateSectionAware(){
+      if(!sections.length) return;
+      var mid=window.scrollY+innerHeight/2;
+      var cur=sections[0];
+      sections.forEach(function(s){
+        var r=s.el.getBoundingClientRect();
+        if(r.top<innerHeight/2 && r.bottom>innerHeight/2) cur=s;
+      });
+      // only update if chip is expanded (don't interrupt user)
+      if(chip.classList.contains('expanded') && !chip.classList.contains('minimize')){
+        var old=focusBox.querySelector('.ttl').textContent;
+        if(old!==cur.title) setProfile('fleet',false); // switch to fleet profile to show section context
+      }
+    }
+    window.addEventListener('scroll',updateSectionAware,{passive:true});
+  }
 
   function open(){
     if(chip.classList.contains('expanded')) return;
@@ -1195,13 +1233,24 @@
     chip.setAttribute('aria-expanded','false');
     feedEvents.forEach(function(ev){ ev.classList.remove('in'); });
     rows.forEach(function(r){ r.classList.remove('selected'); });
-    setProfile('fleet'); // reset focus content for next open
+    setProfile('fleet');
+  }
+  function minimize(){
+    close();
+    chip.classList.add('minimize');
+    try{ localStorage.setItem('govibe.chip.minimized','1'); }catch(e){}
+  }
+  function unminimize(){
+    chip.classList.remove('minimize');
+    try{ localStorage.removeItem('govibe.chip.minimized'); }catch(e){}
   }
   chip.addEventListener('click',function(e){
+    if(chip.classList.contains('minimize')){ unminimize(); open(); return; }
     if(chip.classList.contains('expanded')) return;
     if(e.target.closest('.close')) return;
     open();
   });
+  if(closeBtn) closeBtn.addEventListener('click',function(e){ e.stopPropagation(); minimize(); });
   chip.addEventListener('keydown',function(e){
     if(chip.classList.contains('expanded')) return;
     if(e.key==='Enter'||e.key===' '){ e.preventDefault(); open(); }
@@ -1213,10 +1262,17 @@
     if(!chip.contains(e.target)) close();
   });
 
-  // auto-open on first load if user opened it in a previous session
+  // auto-open or auto-minimize on first load if user set it in a previous session
   try{
-    if(!reduce && localStorage.getItem('govibe.chip.opened')==='1'){
-      setTimeout(function(){ if(chip.classList.contains('in')) open(); },1200);
+    var wasMin=localStorage.getItem('govibe.chip.minimized')==='1';
+    var wasOpen=localStorage.getItem('govibe.chip.opened')==='1';
+    if(!reduce){
+      setTimeout(function(){
+        if(chip.classList.contains('in')){
+          if(wasMin) chip.classList.add('minimize');
+          else if(wasOpen) open();
+        }
+      },1200);
     }
   }catch(e){}
 
