@@ -26,11 +26,14 @@ Build and refine high-fidelity React interfaces that match the approved Mission 
 
 Do not assume monorepo-only shared-package paths unless a current approved doc explicitly adds them.
 
-### Sibling artifact: Landing-page mockup
+### Sibling artifact: Landing-page mockup (v0.1.2)
 Self-contained marketing landing page lives at `docs/design/LANDING-GoVibe-Mockup.html`
-(framework-free, mirrored to `G:\govibe-landing\` → GitHub `Freshair129/landinggovibe`
-→ Vercel `https://govibe-landing.vercel.app`). It is NOT part of `src/`, NOT built by
-Vite, and does NOT consume the Mission Control design tokens. Load
+(framework-free, 76KB+ single HTML file, mirrored to `G:\govibe-landing\` → GitHub `Freshair129/landinggovibe`
+→ Vercel production `https://govibe-landing.vercel.app`).
+
+**v0.1.2 features:** cinematic WebGL hero · edge-anchored scroll-blur · system dock · 3D tilt cards + spotlight · magnetic CTAs · word-stagger headlines · scroll-progress reveal · section tints · **floating agent chip** (expandable popup, draggable snap-to-corner, minimize dot, keyboard nav arrow keys, agent profile selection with persistent state).
+
+Not part of `src/`, NOT built by Vite, does NOT consume Mission Control design tokens. Load
 `VIBE-Landing-Page-Mockup-Context.md` only when the task touches the landing page.
 
 ## Frontend Standards

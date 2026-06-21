@@ -1,7 +1,7 @@
 ---
 context_id: "VIBE-CTX-LANDING-PAGE-MOCKUP"
 status: "active"
-version: "0.1.0"
+version: "0.1.2"
 updated: "2026-06-21"
 owner: "VIBE"
 scope: "landing-page mockup (sibling artifact, not part of src/)"
@@ -72,9 +72,12 @@ A self-contained marketing landing page lives **outside** the Mission Control Re
 - **Agent chip** (floating mini-widget):
   - **Reveal:** fades in after scroll past hero (~0.78 × hero height)
   - **Expand/collapse:** `aria-expanded` toggle, keyboard (Enter/Space), Esc to close, click-outside dismisses
+  - **Minimize mode:** close button → shrink to 32×32 pulsing green dot (2s ease-in-out `minPulse` anim), click dot → unminimize + expand, persists via `govibe.chip.minimized` LS key
+  - **Keyboard navigation:** arrow up/down cycle through agent rows when expanded; tab/enter select; all rows `tabIndex=0`
+  - **Section-aware content:** detect viewport midpoint section via `data-chip-title` attribute; when expanded, auto-switch focus task to current section (future-ready)
   - **Drag by header:** pointer-based drag-to-corner snap (br/bl/tr/tl) via CSS transition 0.35s, clamped to 12px viewport margin, disabled on touch
   - **Profile swap:** click agent row → fade-swap focus block (role/narrative/progress %), 180ms opacity transition
-  - **localStorage persistence:** 3 keys: `govibe.chip.opened` (expand state) · `govibe.chip.selected` (agent name) · `govibe.chip.corner` (position) — all auto-restore on reload
+  - **localStorage persistence:** 4 keys: `govibe.chip.opened` · `govibe.chip.selected` · `govibe.chip.corner` · `govibe.chip.minimized` — all auto-restore on reload
 
 ## Accessibility / safety
 
