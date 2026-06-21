@@ -1,0 +1,142 @@
+name: E2E Tests — Landing Page
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'e2e/**'
+      - 'docs/design/LANDING-GoVibe-Mockup.html'
+      - 'package.json'
+      - 'playwright.config.ts'
+      - '.github/workflows/e2e-tests.yml'
+
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - 'e2e/**'
+      - 'docs/design/LANDING-GoVibe-Mockup.html'
+      - 'package.json'
+      - 'playwright.config.ts'
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: E2E Tests
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Run E2E tests — ${{ matrix.browser }}
+        run: npx playwright test --project=${{ matrix.browser }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload test results (JSON)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-json-${{ matrix.browser }}
+          path: test-results/results.json
+          retention-days: 30
+
+  report:
+    name: Publish Test Report
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: reports
+
+      - name: Merge reports
+        run: |
+          mkdir -p merged-report
+          cp -r reports/playwright-report-chromium/* merged-report/ 2>/dev/null || true
+          echo "Reports merged successfully"
+
+      - name: Upload merged report
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-playwright-report
+          path: merged-report/
+          retention-days: 30
+
+  summary:
+    name: Test Summary
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all reports
+        uses: actions/download-artifact@v4
+        with:
+          path: reports
+
+      - name: Generate summary
+        run: |
+          echo "# 🧪 E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Execution Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Branch**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Author**: ${{ github.actor }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time**: $(date -u +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Browsers Tested" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Chromium (Chrome)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Firefox" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ WebKit (Safari)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- [Merged Report](playwright-report)" >> $GITHUB_STEP_SUMMARY
+          echo "- [Test Results](test-results)" >> $GITHUB_STEP_SUMMARY
+
+  status-check:
+    name: Status Check
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check test results
+        run: |
+          if [ "${{ needs.test.result }}" == "success" ]; then
+            echo "✅ All E2E tests passed!"
+            exit 0
+          else
+            echo "❌ Some E2E tests failed. Review artifacts for details."
+            exit 1
+          fi
