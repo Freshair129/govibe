@@ -14,6 +14,7 @@ export default defineConfig({
   ],
   use: {
     baseURL: 'file:///G:/govibe/docs/design/LANDING-GoVibe-Mockup.html',
+    reducedMotion: 'reduce', // kills WebGL rAF loop (fixes teardown timeouts), disables smooth-scroll & magnetic CTAs
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
