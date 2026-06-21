@@ -57,6 +57,7 @@ A self-contained marketing landing page lives **outside** the Mission Control Re
 | 110 | `.site-header` | sticky mini-header, slides in after hero (~78% of hero height) |
 | 108 | `.scroll-blur` (top + bottom) | progressive backdrop-blur strips with gradient mask; `.active` on scroll, melt-away 900ms after rest |
 | 107 | `.sys-dock` | slim 46px status bar (MCP Online dot, keyboard hints, version); auto-tucks on scroll-down past 60% vh |
+| **106** | **`.agent-chip`** | **floating Mission Control mini-widget · expandable popup · draggable by header · snaps to 4 corners** |
 | 95 | `.hero-notch` | trapezoid logo banner overlapping hero card top edge |
 
 ## Motion inventory
@@ -68,6 +69,12 @@ A self-contained marketing landing page lives **outside** the Mission Control Re
 - **Marquee:** trust badges, 82s linear infinite, hover-paused, mask-faded edges
 - **Pricing:** pill toggle with sliding indicator (`cubic-bezier(.4,0,.2,1)` 0.35s) + price fade-swap 250ms
 - **Counters:** ease-out count-up triggered on viewport entry; `data-target` stores ground truth; safety finalize at 4.5s
+- **Agent chip** (floating mini-widget):
+  - **Reveal:** fades in after scroll past hero (~0.78 × hero height)
+  - **Expand/collapse:** `aria-expanded` toggle, keyboard (Enter/Space), Esc to close, click-outside dismisses
+  - **Drag by header:** pointer-based drag-to-corner snap (br/bl/tr/tl) via CSS transition 0.35s, clamped to 12px viewport margin, disabled on touch
+  - **Profile swap:** click agent row → fade-swap focus block (role/narrative/progress %), 180ms opacity transition
+  - **localStorage persistence:** 3 keys: `govibe.chip.opened` (expand state) · `govibe.chip.selected` (agent name) · `govibe.chip.corner` (position) — all auto-restore on reload
 
 ## Accessibility / safety
 
@@ -84,7 +91,13 @@ A self-contained marketing landing page lives **outside** the Mission Control Re
 4. **Do** keep CSS vars (`--sb-*`, `--reveal-y`, `--p`, `--mx`, `--my`, `--rx`, `--ry`, `--gx`, `--gy`, `--tcol`) as the public knobs — JS only sets these; CSS reads them.
 5. **Do** preserve `--p` continuous mapping (not binary `.in`) for reveal — that's what makes it feel "buttery" vs "snap".
 6. **Do** keep `--sb-fade-out` longer than `--sb-fade-in` (currently 900ms vs 280ms) — quick fade-in, slow melt-out is the spec.
-7. **Sync after edits:** when changing `docs/design/LANDING-GoVibe-Mockup.html`, copy to `G:\govibe-landing\index.html`, commit, push to `Freshair129/landinggovibe`, then `vercel --prod`.
+7. **Agent chip localStorage keys** — don't rename without migration logic:
+   - `govibe.chip.opened` → boolean `'1'` when user expanded; absence = never opened
+   - `govibe.chip.selected` → agent name string (`'LYRA'`, `'ARCHON'`, etc.); default fallback = fleet profile
+   - `govibe.chip.corner` → position string (`'br'`, `'bl'`, `'tr'`, `'tl'`); default fallback = `'br'`
+8. **Drag-to-corner snap:** use CSS `[data-corner]` attribute selector (not inline style) to switch position anchors cleanly. Dragging sets inline `left`/`top`, release clears inlines and sets `data-corner` attr to trigger CSS rule.
+9. **Pointer event handlers:** use `pointer*` (not `mouse*`/`touch*`) for unified handling. Drag handler respects `setPointerCapture()` and respects pointer type filters (`pointerType==='touch'` for rejection).
+10. **Sync after edits:** when changing `docs/design/LANDING-GoVibe-Mockup.html`, copy to `G:\govibe-landing\index.html`, commit, push to `Freshair129/landinggovibe`, then `vercel --prod`.
 
 ## Placeholders awaiting real data (live-data-only)
 
