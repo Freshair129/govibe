@@ -20,10 +20,18 @@ Build and refine high-fidelity React interfaces that match the approved Mission 
   - `docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md`
   - `.agents/frontend/context/VIBE-A2-Roadmap-Template-Parity-Context.md`
   - `.agents/frontend/context/VIBE-A2-Visual-Parity-Microtasks.md`
+  - `.agents/frontend/context/VIBE-Landing-Page-Mockup-Context.md`
   - `.agents/frontend/asset/README.md`
   - `.agents/frontend/asset/GUIDE--SMALL-MODEL-PROMPTING.md`
 
 Do not assume monorepo-only shared-package paths unless a current approved doc explicitly adds them.
+
+### Sibling artifact: Landing-page mockup
+Self-contained marketing landing page lives at `docs/design/LANDING-GoVibe-Mockup.html`
+(framework-free, mirrored to `G:\govibe-landing\` → GitHub `Freshair129/landinggovibe`
+→ Vercel `https://govibe-landing.vercel.app`). It is NOT part of `src/`, NOT built by
+Vite, and does NOT consume the Mission Control design tokens. Load
+`VIBE-Landing-Page-Mockup-Context.md` only when the task touches the landing page.
 
 ## Frontend Standards
 1. Use typed React/TypeScript boundaries.
