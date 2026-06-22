@@ -1,8 +1,8 @@
 ---
 title: "ROADMAP: GoVibe Translator Core"
 doc_id: "ROADMAP-TRANSLATOR-CORE"
-status: "draft"
-version: "0.1.0+draft"
+status: "approved"
+version: "0.1.0"
 updated: "2026-06-22"
 owner: "LYRA"
 auditor: "ATHER"
@@ -109,4 +109,5 @@ Make GoVibe's translator positioning runnable end-to-end: ingest any repo's code
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.0 | 2026-06-22 | LYRA | Promoted draft → approved for Mission Control roadmap consumption. |
 | 0.1.0+draft | 2026-06-22 | LYRA | Created the translator-core roadmap (Now/Next/Later as phases): foundation slice done; fidelity-embedding + persistence now; output-governance + MSP + end-to-end translate next; multi-team + full-eco later. Mapped to audit findings #1-#8. |
