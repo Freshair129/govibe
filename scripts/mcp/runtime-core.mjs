@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -17,6 +18,7 @@ import { extractTemplate } from "./translator/format-template.mjs";
 import { render as renderFromTemplate, selectScope } from "./translator/renderer.mjs";
 import { evaluate as evaluateFidelity } from "./translator/fidelity.mjs";
 import { buildRecord as buildProvenance, appendRecord as appendProvenance } from "./translator/provenance.mjs";
+import { atomizeCode, CODE_LANGS } from "./translator/code-atomizer.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const roadmapDir = path.join(workspaceRoot, "docs", "roadmap");
@@ -654,9 +656,21 @@ export class GovibeRuntime {
   ingestCode(args = {}) {
     const startedAt = new Date().toISOString();
     const repo = args.repo ?? args.repoPath ?? "unknown";
-    const text = String(args.content ?? "");
-    const { atoms } = atomize(text);
-    const template = extractTemplate(text, { repo });
+    let text = String(args.content ?? "");
+    let lang = String(args.lang ?? "").toLowerCase();
+    if (!text && args.repoPath) {
+      const abs = path.isAbsolute(args.repoPath) ? args.repoPath : path.join(workspaceRoot, args.repoPath);
+      if (existsSync(abs)) {
+        text = readFileSync(abs, "utf8");
+        if (!lang) lang = (args.repoPath.split(".").pop() || "").toLowerCase();
+      }
+    }
+    if (!lang) lang = "md";
+    const isCode = CODE_LANGS.has(lang);
+    const atoms = isCode
+      ? atomizeCode(text, { file: args.repoPath ?? `inline.${lang}`, lang }).atoms
+      : atomize(text).atoms;
+    const template = isCode ? extractTemplate("", { repo }) : extractTemplate(text, { repo });
     const atomsRef = `atoms:${repo}:${this.atomStore.size + 1}`;
     this.atomStore.set(atomsRef, atoms);
     this.templateStore.set(template.id, template);
@@ -668,12 +682,14 @@ export class GovibeRuntime {
     this.appendTerminal("translator", `Ingested ${atoms.length} atoms from ${repo}.`);
     return {
       capability: "govibe.ingest.code",
+      mode: isCode ? "code" : "doc",
+      lang,
       atomCount: atoms.length,
       atomsRef,
       templateRef: template.id,
       templateConfidence: template.confidence,
       needsConfirm: template.needsConfirm,
-      warnings: atoms.length === 0 ? ["no atoms parsed — provide Markdown via `content`"] : [],
+      warnings: atoms.length === 0 ? ["no atoms parsed — provide `content` or a readable repoPath"] : [],
       auditRef,
     };
   }

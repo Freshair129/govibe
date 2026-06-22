@@ -31,7 +31,7 @@ export function normalizeContent(content) {
     .toLowerCase();
 }
 
-function atomKey(heading, content) {
+export function atomKey(heading, content) {
   return createHash("sha1")
     .update(`${normalizeHeading(heading)}${normalizeContent(content)}`)
     .digest("hex")
@@ -63,8 +63,14 @@ export function atomize(markdown) {
     }
   };
 
+  let inFence = false;
   for (const line of lines) {
-    const m = line.match(HEADING_RE);
+    if (/^\s*```/.test(line)) {
+      inFence = !inFence;
+      if (current) current.bodyLines.push(line);
+      continue;
+    }
+    const m = inFence ? null : line.match(HEADING_RE);
     if (m) {
       flush();
       const level = m[1].length;
