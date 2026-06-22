@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.47+draft"
+version: "0.1.48+draft"
 updated: "2026-06-22"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.47+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.48+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -69,6 +69,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Audit | `AUDIT-COGNITIVE-SYSTEM-INBOUND-TRIAGE-2026-06-16` | `0.1.1` | approved | ATHER / LYRA | `docs/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md` |
 | Audit | `POC-5-AXIS-COVERAGE` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/POC-5-Axis-Coverage.md` |
 | Audit | `POC-H6-BUDGET-SUFFICIENCY` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/POC-H6-Budget-Sufficiency.md` |
+| Audit | `AUDIT-USER-FLOW-RUNTIME-GAPS-2026-06-22` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md` |
 | Feature | `FEAT-ROADMAP-PROMOTION-CONTRACT` | `0.1.0` | approved | LYRA | `docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md` |
 | Feature | `FEAT-VISUAL-AGENT-FLEET-SYSTEM` | `0.1.0` | approved | THESEUS | `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md` |
 | Feature | `FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION` | `0.1.0+draft` | draft | Boss (CEO) | `docs/features/genesis-knowledge-system/FEAT-Doc-Format-Template-Extraction.md` |
@@ -97,6 +98,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | SRS | `SRS-GOVIBE-MCP-SERVER` | `0.2.1` | approved | GoVibe | `docs/srs/SRS-GoVibe-MCP-Server.md` |
 | SRS | `SRS-OLLAMA-SIDECAR-EXECUTION` | `0.2.1` | approved | THESEUS | `docs/srs/SRS-Ollama-Sidecar-Execution.md` |
 | SRS | `SRS-GKS-RETRIEVAL-LAYER` | `0.1.0+draft` | draft | Boss (CEO) | `docs/srs/SRS-GKS-Retrieval-Layer.md` |
+| SRS | `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | Boss (CEO) | `docs/srs/SRS-GoVibe-Translator-Core-Slice.md` |
 | Architecture | `SEQ-OLLAMA-SIDECAR-FLOW` | `0.1.2` | approved | THESEUS | `docs/architecture/SEQ-Ollama-Sidecar-Flow.md` |
 | LLD | `LLD-GOVIBE-MCP-TOOLS` | `0.2.1` | approved | GoVibe | `docs/lld/LLD-GoVibe-MCP-Tools.md` |
 | LLD | `LLD-AGENT-LAUNCHER-EXECUTION-ROUTER` | `0.1.2` | approved | THESEUS | `docs/lld/LLD-Agent-Launcher-Execution-Router.md` |
@@ -121,6 +123,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.48+draft | 2026-06-22 | Boss (CEO) | Registered `AUDIT-USER-FLOW-RUNTIME-GAPS-2026-06-22` (translator core = 0% runtime; 8 findings) + `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` (ingest→render→fidelity-gate slice for audit #1–#3). |
 | 0.1.47+draft | 2026-06-22 | Boss (CEO) | Adopted ADR-016 Option B (0.2.0 — GoVibe+MSP core mandatory, full eco optional/tiered); repositioned PRD-Platform-Overview (0.4.2+draft, governance+translator identity); fixed BRD (0.1.1+draft, hidden→internal GKS, CoDev no-bridge wording). |
 | 0.1.46+draft | 2026-06-22 | Boss (CEO) | Synced AGENT.md (1.2.1+draft, AGENTS.md-standard refactor), PRD-MCP-Orchestration (0.2.1+draft, +`orchestrate.step`), ADR-017 (0.1.1, GKS-not-hidden + language-pack=doc-format-template); registered new `FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION` (format-adaptive JIT). |
 | 0.1.45+draft | 2026-06-22 | Boss (CEO) | Drained §8 Auto-Registered into curated sections (BRD→§3; ADR-015..019, PoC-1/2, SDD-Integration→§5; SRS-Retrieval→§6); dropped `+draft` from the 5 accepted ADRs per STD §6 (frontmatter + footer) to match the ADR-013/014 precedent. |
