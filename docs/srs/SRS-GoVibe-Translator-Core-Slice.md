@@ -2,7 +2,7 @@
 title: "SRS: GoVibe Translator-Core Slice (Ingest → Render → Fidelity Gate)"
 doc_id: "SRS-GOVIBE-TRANSLATOR-CORE-SLICE"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 auditor: "ATHER"
@@ -91,14 +91,17 @@ Specify the **smallest end-to-end vertical slice** that turns GoVibe's translato
 | #3 no fidelity verification | FR-5 | `ADR-017` §3 |
 | #4 gate not on output | NFR-4 | `STD-Execution-Governance` |
 
-## 9. Open Questions
+## 9. Decisions (resolved 2026-06-22)
 
-- **Language-pack curation:** is the per-convention mapping (vocabulary + format template) **auto-derived** from the repo scan, or **human-curated/confirmed**? This drives both feasibility and the onboarding UX, and must be decided before build.
-- **Fidelity metric:** exact round-trip equality, or a semantic-similarity threshold with a confidence score? What threshold blocks vs flags?
-- **Provenance home before MSP:** where does provenance live until MSP is wired (audit #5)?
+- **Language-pack curation = HYBRID.** Auto-derive a draft mapping (vocabulary + format template) from the repo scan; sections below a confidence threshold are flagged for human/agent confirmation. Scales by default, stays correct on ambiguous mappings. (Drives FR-2; ties to the fidelity gate FR-5.)
+- **Fidelity metric = BOTH.** (a) Round-trip structural check `A1 → GKS → A1` to catch structural loss, **and** (b) semantic-similarity score with a confidence threshold to catch meaning drift. Verdict = pass / flag (human-confirm) / block. (Defines FR-5.)
+- **Provenance home = LOCAL JSONL (interim).** Write provenance/audit to a local `.jsonl` store now; migrate to MSP when MSP is wired (audit #5). Unblocks the slice without waiting on MSP. (Defines FR-6.)
+
+Downstream design: `BLUEPRINT-Translator-Core-Slice` (architecture) and `LLD-Translator-Core-Slice` (tool contracts + algorithms).
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-06-22 | Boss (CEO) | Resolved the three open questions: language-pack curation = hybrid (auto-draft + confirm low-confidence); fidelity = both (round-trip + semantic threshold); provenance = local jsonl interim → migrate to MSP. Linked downstream Blueprint + LLD. |
 | 0.1.0+draft | 2026-06-22 | Boss (CEO) | Initial SRS for the translator-core slice (ingest → atomize → symbol-link → render → fidelity gate) addressing audit findings #1–#3; carries open questions on curation, fidelity metric, and provenance home. |

@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.48+draft"
+version: "0.1.49+draft"
 updated: "2026-06-22"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.48+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.49+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -81,6 +81,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | ADR | `ADR-018-STRUCTURAL-DECOMPOSITION-CONTAINMENT-WIKILINK` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md` |
 | ADR | `ADR-019-UNIVERSAL-CODE-IN-MCP-OUT` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-019-Universal-Code-In-MCP-Out.md` |
 | Architecture | `BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.1` | approved | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md` |
+| Architecture | `BLUEPRINT-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Translator-Core-Slice.md` |
 | LLD | `LLD-TASK-SCOPED-CONTEXT-INJECTION-CORE` | `0.1.1` | approved | ARCHON / ATHER | `docs/lld/LLD-Task-Scoped-Context-Injection-Core.md` |
 | Architecture | `MSP-GKS-TAXONOMY-MAPPING` | `0.1.0` | approved | THESEUS / KIN | `docs/architecture/MSP-GKS-Taxonomy-Mapping.md` |
 | Architecture | `SDD-MSP-EXTERNAL-EVIDENCE-BOUNDARY` | `0.1.1` | approved | ARCHON / KIN / ATHER | `docs/architecture/SDD-MSP-External-Evidence-Boundary.md` |
@@ -98,9 +99,10 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | SRS | `SRS-GOVIBE-MCP-SERVER` | `0.2.1` | approved | GoVibe | `docs/srs/SRS-GoVibe-MCP-Server.md` |
 | SRS | `SRS-OLLAMA-SIDECAR-EXECUTION` | `0.2.1` | approved | THESEUS | `docs/srs/SRS-Ollama-Sidecar-Execution.md` |
 | SRS | `SRS-GKS-RETRIEVAL-LAYER` | `0.1.0+draft` | draft | Boss (CEO) | `docs/srs/SRS-GKS-Retrieval-Layer.md` |
-| SRS | `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | Boss (CEO) | `docs/srs/SRS-GoVibe-Translator-Core-Slice.md` |
+| SRS | `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` | `0.1.1+draft` | draft | Boss (CEO) | `docs/srs/SRS-GoVibe-Translator-Core-Slice.md` |
 | Architecture | `SEQ-OLLAMA-SIDECAR-FLOW` | `0.1.2` | approved | THESEUS | `docs/architecture/SEQ-Ollama-Sidecar-Flow.md` |
 | LLD | `LLD-GOVIBE-MCP-TOOLS` | `0.2.1` | approved | GoVibe | `docs/lld/LLD-GoVibe-MCP-Tools.md` |
+| LLD | `LLD-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/lld/LLD-Translator-Core-Slice.md` |
 | LLD | `LLD-AGENT-LAUNCHER-EXECUTION-ROUTER` | `0.1.2` | approved | THESEUS | `docs/lld/LLD-Agent-Launcher-Execution-Router.md` |
 | Context | `AGENT-BRIDGE-QWEN-COMPAT` | `1.2.1+draft` | draft | ATHER / THESEUS | `AGENT.md` |
 | Context | `CONTEXT-BOUNDED-EXTERNAL-EXECUTOR` | `0.2.3` | draft | THESEUS | `.agents/context/CONTEXT-Bounded-External-Executor.md` |
@@ -123,6 +125,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.49+draft | 2026-06-22 | Boss (CEO) | Resolved SRS-Translator-Core open questions (0.1.1+draft); registered `BLUEPRINT-TRANSLATOR-CORE-SLICE` + `LLD-TRANSLATOR-CORE-SLICE` (govibe.ingest.code/render tool contracts, both-metric fidelity, local-jsonl provenance). |
 | 0.1.48+draft | 2026-06-22 | Boss (CEO) | Registered `AUDIT-USER-FLOW-RUNTIME-GAPS-2026-06-22` (translator core = 0% runtime; 8 findings) + `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` (ingest→render→fidelity-gate slice for audit #1–#3). |
 | 0.1.47+draft | 2026-06-22 | Boss (CEO) | Adopted ADR-016 Option B (0.2.0 — GoVibe+MSP core mandatory, full eco optional/tiered); repositioned PRD-Platform-Overview (0.4.2+draft, governance+translator identity); fixed BRD (0.1.1+draft, hidden→internal GKS, CoDev no-bridge wording). |
 | 0.1.46+draft | 2026-06-22 | Boss (CEO) | Synced AGENT.md (1.2.1+draft, AGENTS.md-standard refactor), PRD-MCP-Orchestration (0.2.1+draft, +`orchestrate.step`), ADR-017 (0.1.1, GKS-not-hidden + language-pack=doc-format-template); registered new `FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION` (format-adaptive JIT). |
