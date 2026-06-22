@@ -2,10 +2,11 @@
 title: "PRD: GoVibe Platform Overview"
 doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
 status: "draft"
-version: "0.4.1+draft"
-updated: "2026-06-20"
+version: "0.4.2+draft"
+updated: "2026-06-22"
 owner: "Rwang (Senior Dev)"
 source_of_truth: true
+related_adrs: ["ADR-015", "ADR-016", "ADR-017", "ADR-018", "ADR-019"]
 block_manifest:
   core:
     id: "[[DOC::PRD_PLATFORM_OVERVIEW]]"
@@ -21,14 +22,16 @@ block_manifest:
 **Updated:** 2026-06-20
 
 ## 1. Product Vision
-GoVibe is an AI-native visual CoDev and project management platform for coordinating human developers, their agent teams, project documents, roadmap progress, artifacts, and third-party AI coding tools through API and MCP integrations, leveraging MemoryOS V3 (Native Runtime / GenesisBlockDB).
+GoVibe is the **governance + interoperability layer** for multi-agent software development — a rule-keeper and translator that lets developers' AI agent teams build to one shared, enforced, traceable standard, riding open protocols (MCP/A2A) instead of replacing the tools they already use. It reads **code** (the universal artifact) and decomposes it into GKS atoms (universal code-in, `ADR-019`), then translates between each team's own conventions through GKS as an internal pivot (`ADR-017`). It is **not** a coding agent, an orchestrator, or a database competitor. It leverages MemoryOS V3 (Native Runtime / GenesisBlockDB).
 
 The platform is built around two operating loops:
 
 - **Docs to Code:** approved human-readable SWE documents become the source for tasks, agent assignments, implementation context, review criteria, and verification.
 - **Diagram to Doc:** architecture diagrams, flow diagrams, entity diagrams, site maps, and sequence diagrams can be transformed into structured documentation before implementation begins.
 
-GoVibe keeps the visual identity of Mission Control, but the product center is project coordination: progress tracking, agent team management, access control, knowledge retrieval, and delivery visibility.
+GoVibe keeps the visual identity of Mission Control, but the product center is governance + translation: enforced standards, provenance, knowledge retrieval, and delivery visibility across teams.
+
+**Adoption is tiered (`ADR-016`):** the mandatory core is **GoVibe + MSP** (governance + memory passport, so provenance is never hollow). The **full eco** — GenesisBlockDB, the visual GKS UI (ERD / DAG / node graph), the `.agents` orchestrator, native-GKS rendering — is optional; partial adopters run the core over their own orchestration and lose only the full-eco features.
 
 The platform uses three coordinated surfaces:
 
@@ -37,7 +40,7 @@ The platform uses three coordinated surfaces:
 - `GoVibe CLI` as a thin human/operator and automation surface
 
 ## 2. Product Positioning
-GoVibe is a coordination layer, not a replacement for external coding agents.
+GoVibe is a **governance + interop (translator) layer**, not a coding agent, orchestrator, memory, or database competitor. It sits above/across those tools and rides MCP/A2A. **Orchestration (via the `.agents` system) and the visual GKS/GenesisBlockDB UI are full-eco capabilities, not the positioning or moat** — the moat is governance + provenance + translation fidelity.
 
 ### 2.1 Goals
 - Provide a single visual surface for CoDev project planning, execution, review, and progress tracking.
@@ -46,12 +49,15 @@ GoVibe is a coordination layer, not a replacement for external coding agents.
 - Coordinate multiple developer-owned agent teams without taking over third-party billing, subscriptions, or runtime quotas.
 - Support RBAC for human users and ABAC for agents, subagents, MCP clients, and services.
 - Extract internal knowledge atoms from approved SWE documents for AI context retrieval, graph linking, Mission Control visualization, and progress tracking via MemoryOS V3.
+- Translate between teams' own doc/code conventions through the GKS pivot (N mappings, not N²) so heterogeneous swarms interoperate without migrating their docs (`ADR-017`).
 
 ### 2.2 Non-goals
 - GoVibe does not manage Claude Code, Gemini CLI, OpenClaw, Hermes, or similar provider billing.
 - GoVibe does not replace third-party AI coding tools.
 - GoVibe does not require human developers to write Genesis atoms directly.
 - GoVibe does not make atom files the canonical source of truth when a human-readable SWE document exists.
+- GoVibe does not build per-framework adapters or bridges (e.g. a LangGraph bridge); cross-team interop is via the GKS semantic pivot (N mappings, not N²).
+- GoVibe does not position as an orchestrator, memory, or database product; those are full-eco capabilities or composed tools, not the market identity.
 
 ### 2.3 Collaboration Terminology
 `CoDev` and `CoVibe` are narrow GoVibe collaboration terms that sit on top of the current platform system map.
@@ -243,6 +249,7 @@ The PRD module map is intentionally high level. A module becomes implementation-
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.4.2+draft | 2026-06-22 | Rwang (Senior Dev) | Repositioned §1/§2 to the governance + interop (translator) identity per ADR-016/017/019: code-in→GKS pivot, no per-framework adapters, tiered adoption (GoVibe+MSP core mandatory; full eco optional), orchestration/visual UI = full-eco capability not moat. |
 | 0.4.1+draft | 2026-06-20 | Rwang (Senior Dev) | Frontmatter/title normalization and context-tier range reconciliation. |
 | 0.4.0 | 2026-06-16 | Rwang (Senior Dev) | Expanded the Platform System Map with system responsibilities, inputs, outputs, detail-doc registry, dependencies, and change-routing rules. |
 | 0.3.0 | 2026-06-16 | Rwang (Senior Dev) | Expanded the Platform System Map with product-level modules, system-based execution routing, and role-based review ownership. |

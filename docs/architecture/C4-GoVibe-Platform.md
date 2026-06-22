@@ -11,6 +11,15 @@ This document describes GoVibe with the C4 model so product, SWE, architecture, 
 
 The PRD remains the product source of truth. This C4 document is the architecture view of the product systems declared in the PRD.
 
+## 1.1 Decision Alignment (accepted ADR-015..019, 2026-06-22)
+
+This C4 view is governed by the accepted decisions:
+- **Stack (4 layers):** Cognitive (GoVibe + agents) → MSP (Memory OS / passport) → GKS (atomic-`.md` corpus + index) → Obsidian / GenesisBlockDB (swappable backend). GoVibe = cognitive **surface that wraps MSP**, not a standalone runtime (ADR-016).
+- **Positioning:** governance + interop **translator** — GKS is an internal interlingua (`A1 ⇄ GKS ⇄ A25`); GoVibe **rides MCP/A2A and bridges INTO** LangGraph, it does not replace them (ADR-017).
+- **Structure:** single containment tree `PLAT→SYS→SUBSYS→MOD→…→METH` + wikilink cross-link graph; criticality (support/core/central) auto-derived from the dependency graph (ADR-018).
+- **Flow:** universal code-in (12-step decomposition) + MCP-out (7-phase generation), gated by H + W + Complexity (ADR-019).
+- **Naming:** root governance policy = `GOV--`; "Master" = essence/index (ADR-015). See also `BRD-GoVibe-Platform`, `SDD-GoVibe-MSP-GKS-Integration`.
+
 ## 2. C4 Level Summary
 | C4 Level | Scope | GoVibe Meaning |
 |---|---|---|

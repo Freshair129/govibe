@@ -28,8 +28,8 @@ function initWorkspace() {
     console.log(`[Info] Created: .agents/devops/handoff/log.jsonl`);
   }
 
-  // Base Contracts
-  const contracts = ["agent.md", "GEMINI.md", "AGENTS.md"];
+  // Base Contracts — AGENTS.md is the standard contract (codex/gpt auto-load); agent.md is a singular-name bridge.
+  const contracts = ["AGENTS.md", "GEMINI.md", "agent.md"];
   contracts.forEach(c => {
     const p = path.join(root, c);
     if (!fs.existsSync(p)) {
