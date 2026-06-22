@@ -51,6 +51,26 @@ export async function handleToolCall(name, args = {}) {
         },
       };
     }
+    case "govibe.orchestrate.step": {
+      const response = await govibeRuntime.runStep(args);
+      return {
+        content: asTextContent(
+          [
+            "GoVibe StEP executed with a real Definition-of-Done verification gate.",
+            "",
+            `actor: ${args.actor ?? "unknown"}`,
+            `taskId: ${args.taskId ?? "n/a"}`,
+            `agentId: ${args.agentId ?? "n/a"}`,
+            `status: ${response.result.status}`,
+            `attempts: ${response.result.attempts}`,
+            `selfCheck: ${response.result.selfCheck?.verdict ?? "n/a"}`,
+          ].join("\n"),
+        ),
+        structuredContent: {
+          ...response,
+        },
+      };
+    }
     case "govibe.docs.resolve": {
       const packet = await govibeRuntime.resolveDocs(args.selectors ?? []);
       return {
@@ -186,6 +206,41 @@ export async function handleToolCall(name, args = {}) {
           success: true,
           auditRef: buildAuditRef(name),
         },
+      };
+    }
+    case "govibe.ingest.code": {
+      const result = govibeRuntime.ingestCode(args);
+      return {
+        content: asTextContent(
+          [
+            "GoVibe translator ingested a document into GKS atoms.",
+            "",
+            `actor: ${args.actor ?? "unknown"}`,
+            `atoms: ${result.atomCount}`,
+            `atomsRef: ${result.atomsRef}`,
+            `templateRef: ${result.templateRef}`,
+            `templateConfidence: ${result.templateConfidence}`,
+            result.needsConfirm?.length ? `needsConfirm: ${result.needsConfirm.join(", ")}` : "",
+          ].filter(Boolean).join("\n"),
+        ),
+        structuredContent: { ...result },
+      };
+    }
+    case "govibe.render": {
+      const result = govibeRuntime.renderDocument(args);
+      return {
+        content: asTextContent(
+          [
+            "GoVibe translator rendered a document through the fidelity gate.",
+            "",
+            `actor: ${args.actor ?? "unknown"}`,
+            `verdict: ${result.verdict}`,
+            result.error ? `error: ${result.error}` : "",
+            "",
+            result.document ?? "(blocked — no document emitted)",
+          ].filter(Boolean).join("\n"),
+        ),
+        structuredContent: { ...result },
       };
     }
     default:
