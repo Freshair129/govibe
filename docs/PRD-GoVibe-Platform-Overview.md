@@ -2,8 +2,8 @@
 title: "PRD: GoVibe Platform Overview"
 doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
 status: "draft"
-version: "0.4.2+draft"
-updated: "2026-06-22"
+version: "0.4.3+draft"
+updated: "2026-06-23"
 owner: "Rwang (Senior Dev)"
 source_of_truth: true
 related_adrs: ["ADR-015", "ADR-016", "ADR-017", "ADR-018", "ADR-019"]
@@ -47,12 +47,13 @@ GoVibe is a **governance + interop (translator) layer**, not a coding agent, orc
 - Let agent-written PRD, SRD, SRS, SDD, LLD, API contracts, runbooks, and test plans drive UI state and implementation tasks.
 - Let diagrams become first-class project inputs that can generate or update documentation.
 - Coordinate multiple developer-owned agent teams without taking over third-party billing, subscriptions, or runtime quotas.
+- Reduce developer frontier-model token/quota spend by routing bounded, atomic work to local SLMs while reserving frontier models for planning, review, and ambiguous work (`FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION`), keeping execution on-device for cost efficiency and data residency.
 - Support RBAC for human users and ABAC for agents, subagents, MCP clients, and services.
 - Extract internal knowledge atoms from approved SWE documents for AI context retrieval, graph linking, Mission Control visualization, and progress tracking via MemoryOS V3.
 - Translate between teams' own doc/code conventions through the GKS pivot (N mappings, not N²) so heterogeneous swarms interoperate without migrating their docs (`ADR-017`).
 
 ### 2.2 Non-goals
-- GoVibe does not manage Claude Code, Gemini CLI, OpenClaw, Hermes, or similar provider billing.
+- GoVibe does not own or manage your provider's billing or subscription (Claude Code, Gemini CLI, OpenClaw, Hermes, etc.) — it is designed to *reduce* that spend via hybrid-local execution, not to take it over.
 - GoVibe does not replace third-party AI coding tools.
 - GoVibe does not require human developers to write Genesis atoms directly.
 - GoVibe does not make atom files the canonical source of truth when a human-readable SWE document exists.
