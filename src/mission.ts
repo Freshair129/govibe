@@ -15,6 +15,14 @@ export type TerminalLine = {
   time: string;
 };
 
+export type AgentUsageWindow = { used: number; limit: number };
+
+export type AgentUsage = {
+  planType?: string;
+  fiveHour?: AgentUsageWindow;
+  weekly?: AgentUsageWindow;
+};
+
 export type AgentRecord = {
   id: string;
   name: string;
@@ -24,6 +32,12 @@ export type AgentRecord = {
   tasks: string;
   accuracy: string;
   speed: string;
+  /** Registry execution policy (real, from agent-registry.yaml execution_policy). */
+  defaultExecutor?: string;
+  defaultMode?: string;
+  modelTier?: string;
+  /** Plan/quota feed — rendered only when a real usage source populates it. */
+  usage?: AgentUsage;
   accent?: string;
   avatarUrl?: string;
   fleet?: AgentFleetMetadata;
@@ -117,6 +131,8 @@ export type WorkflowTaskNode = TemporalVersion & {
   progress?: number;
   tags?: string[];
   artifactLinks?: string[];
+  /** Explicit dependency edge: ids of tasks that must reach "done" before this one is ready. */
+  dependsOn?: string[];
   reviewLinks?: string[];
   verificationLinks?: string[];
   sourcePath?: string;
@@ -207,6 +223,40 @@ export type TaskContainer = {
   missingFields?: string[];
 };
 
+export type DagNodeStatus = "blocked" | "ready" | "active" | "done";
+
+export type DagNode = {
+  id: string;
+  label: string;
+  type: WorkflowTaskType;
+  state: WorkflowTaskState;
+  status: DagNodeStatus;
+  /** Topological layer; -1 when the node is in (or downstream of) a cycle and cannot be ordered. */
+  level: number;
+  dependsOn: string[];
+  outDegree: number;
+  inDegree: number;
+};
+
+export type DagEdge = {
+  source: string; // dependency id (must finish first)
+  target: string; // dependent id
+  kind: "depends_on";
+};
+
+export type DagWScaleWarning = { id: string; outDegree: number; level: "W3" | "W4" };
+
+export type RoadmapDag = {
+  nodes: DagNode[];
+  edges: DagEdge[];
+  levels: string[][];
+  cycles: string[][];
+  ready: string[];
+  danglingDeps: Array<{ id: string; missing: string[] }>;
+  wScale: { worst: "none" | "W2" | "W3" | "W4"; warnings: DagWScaleWarning[] };
+  computedAt?: string;
+};
+
 export type RoadmapSnapshot = TemporalVersion & {
   sourcePath: string;
   sourceType: "markdown" | "html" | "api" | "mcp" | "event";
@@ -222,6 +272,59 @@ export type RoadmapSnapshot = TemporalVersion & {
   handoffs: WorkflowHandoff[];
   verifications: WorkflowVerification[];
   taskContainers?: TaskContainer[];
+  dag?: RoadmapDag;
+};
+
+export type WaveTaskStatus =
+  | "queued" | "running" | "verifying" | "handoff" | "blocked" | "done" | "failed";
+
+export type WaveTask = {
+  taskId: string;
+  assigneeId?: string;
+  status: WaveTaskStatus;
+  attempts?: number;
+  progress?: number;
+  startedAt?: string;
+  updatedAt?: string;
+};
+
+export type OrchestrationWaveStatus = "pending" | "active" | "complete" | "skipped";
+
+export type OrchestrationWave = {
+  id: string;
+  index: number;
+  level?: number;
+  label?: string;
+  status: OrchestrationWaveStatus;
+  taskIds: string[];
+  tasks: WaveTask[];
+  concurrency?: number;
+  startedAt?: string;
+  completedAt?: string;
+};
+
+export type OrchestrationSnapshot = {
+  waves: OrchestrationWave[];
+  updatedAt?: string;
+};
+
+export type StepStatus = "done" | "blocked" | "retry";
+
+export type StepEvidence = { kind: "agent_stdout" | "check"; ref: string; ok: boolean; detail?: string };
+
+export type StepCheck = { name: string; ok: boolean; output?: string };
+
+export type StepResult = TemporalVersion & {
+  stepId: string;
+  taskId: string;
+  lane?: string;
+  status: StepStatus;
+  attempts: number;
+  artifactRefs: string[];
+  evidence: StepEvidence[];
+  selfCheck: { verdict: "pass" | "fail"; checks: StepCheck[] };
+  humanGate?: { required: boolean; reason?: string };
+  auditRef?: string;
 };
 
 export type MissionSnapshot = {
@@ -249,6 +352,7 @@ export type MissionSnapshot = {
   campaignLogs: string[];
   roadmap?: RoadmapSnapshot;
   roadmapSources?: RoadmapSourceRecord[];
+  orchestration?: OrchestrationSnapshot;
 };
 
 export type MissionEvent =
@@ -263,7 +367,16 @@ export type MissionEvent =
   | { type: "roadmap.node.update"; node: WorkflowTaskNode }
   | { type: "roadmap.assignment"; assignment: WorkflowAssignment }
   | { type: "roadmap.handoff"; handoff: WorkflowHandoff }
-  | { type: "roadmap.verification"; verification: WorkflowVerification };
+  | { type: "roadmap.verification"; verification: WorkflowVerification }
+  // PARITY ANCHOR: mirror emit() in scripts/mcp/runtime-core.mjs
+  | { type: "dag.update"; dag: RoadmapDag }
+  | { type: "orchestration.update"; orchestration: OrchestrationSnapshot }
+  | { type: "wave.start"; wave: OrchestrationWave }
+  | { type: "wave.task.update"; waveId: string; task: WaveTask }
+  | { type: "wave.complete"; waveId: string; completedAt?: string }
+  | { type: "step.start"; stepId: string; taskId: string; lane?: string }
+  | { type: "step.attempt"; stepId: string; taskId: string; attempt: number }
+  | { type: "step.gate"; stepId: string; taskId: string; status: StepStatus; humanGate?: { required: boolean; reason?: string } };
 
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
@@ -375,6 +488,7 @@ function mergeSnapshot(current: MissionSnapshot, patch: Partial<MissionSnapshot>
     campaignLogs: patch.campaignLogs ?? current.campaignLogs,
     roadmap: patch.roadmap ?? current.roadmap,
     roadmapSources: patch.roadmapSources ?? current.roadmapSources,
+    orchestration: patch.orchestration ?? current.orchestration,
     updatedAt: patch.updatedAt ?? new Date().toISOString(),
   };
 }
@@ -389,6 +503,10 @@ function ensureRoadmapSnapshot(current?: RoadmapSnapshot): RoadmapSnapshot {
     handoffs: [],
     verifications: [],
   };
+}
+
+function ensureOrchestration(current?: OrchestrationSnapshot): OrchestrationSnapshot {
+  return current ?? { waves: [] };
 }
 
 function upsertByKey<T>(items: T[], next: T, matches: (item: T) => boolean) {
@@ -488,6 +606,50 @@ export class MissionGateway {
     if (event.type === "graph.update") this.setSnapshot({ graph: event.graph });
     if (event.type === "heatmap.update") this.setSnapshot({ heatmap: event.heatmap });
     if (event.type === "roadmap.snapshot") this.setSnapshot({ roadmap: event.roadmap });
+    if (event.type === "dag.update") {
+      const roadmap = ensureRoadmapSnapshot(this.snapshot.roadmap);
+      this.setSnapshot({ roadmap: { ...roadmap, updatedAt: new Date().toISOString(), dag: event.dag } });
+    }
+    if (event.type === "orchestration.update") {
+      this.setSnapshot({ orchestration: event.orchestration });
+    }
+    if (event.type === "wave.start") {
+      const orch = ensureOrchestration(this.snapshot.orchestration);
+      this.setSnapshot({
+        orchestration: {
+          ...orch,
+          updatedAt: new Date().toISOString(),
+          waves: upsertByKey(orch.waves, event.wave, (wave) => wave.id === event.wave.id),
+        },
+      });
+    }
+    if (event.type === "wave.task.update") {
+      const orch = ensureOrchestration(this.snapshot.orchestration);
+      this.setSnapshot({
+        orchestration: {
+          ...orch,
+          updatedAt: new Date().toISOString(),
+          waves: orch.waves.map((wave) => wave.id !== event.waveId ? wave : {
+            ...wave,
+            tasks: upsertByKey(wave.tasks, event.task, (task) => task.taskId === event.task.taskId),
+          }),
+        },
+      });
+    }
+    if (event.type === "wave.complete") {
+      const orch = ensureOrchestration(this.snapshot.orchestration);
+      this.setSnapshot({
+        orchestration: {
+          ...orch,
+          updatedAt: new Date().toISOString(),
+          waves: orch.waves.map((wave) => wave.id !== event.waveId ? wave : {
+            ...wave,
+            status: "complete",
+            completedAt: event.completedAt ?? new Date().toISOString(),
+          }),
+        },
+      });
+    }
     if (event.type === "roadmap.node.update") {
       const roadmap = ensureRoadmapSnapshot(this.snapshot.roadmap);
       this.setSnapshot({

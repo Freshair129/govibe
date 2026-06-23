@@ -33,7 +33,7 @@ Running a single test:
 ```bash
 npx vitest run src/roadmapExport.test.ts          # one file
 npx vitest run -t "scoring"                         # by test name
-npx vitest run scripts/mcp/runtime-core.test.mjs    # NOTE: see gotcha below
+npx vitest run scripts/mcp/runtime-core.test.mjs    # runtime tests also run under `npm test`
 ```
 
 ## Architecture
@@ -82,8 +82,9 @@ The **roadmap is document-driven**: the board's data originates from Markdown/HT
 
 - **`npm run lint` is `tsc --noEmit`**, with `strict`, `noUnusedLocals`, `noUnusedParameters`,
   `noFallthroughCasesInSwitch`. Unused imports/vars and un-handled switch cases fail the build.
-- **Vitest only collects `src/**/*.test.ts`** (`vitest.config.ts`). The MCP runtime test
-  (`scripts/mcp/runtime-core.test.mjs`) is **not** picked up by `npm test` — run it by explicit path.
+- **Vitest collects `src/**/*.test.ts` and `scripts/**/*.test.mjs`** (`vitest.config.ts`), running
+  `scripts/**` under a Node environment. So `npm test` **does** run the MCP runtime tests
+  (`scripts/mcp/*.test.mjs`); you can still target one by explicit path.
 - Frontend and backend share *type intent* but not files: `src/mission.ts` (TS types) and the
   `.mjs` runtime produce the same snapshot shape independently. Keep them in sync when changing the
   `MissionSnapshot`/event contract.

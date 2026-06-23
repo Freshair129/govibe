@@ -119,3 +119,127 @@
   color: var(--text, #e2e8f0);
   background: rgba(255, 255, 255, 0.06);
 }
+
+/* ── Status badge — top-right, color follows status ─────────────────── */
+.rac-status-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.54rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  color: var(--rac-status, #94a3b8);
+  background: color-mix(in srgb, var(--rac-status, #94a3b8) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--rac-status, #94a3b8) 45%, transparent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--rac-status, #94a3b8) 28%, transparent);
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.rac-status-badge::before {
+  content: "";
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin-right: 4px;
+  border-radius: 50%;
+  background: var(--rac-status, #94a3b8);
+  box-shadow: 0 0 6px var(--rac-status, #94a3b8);
+}
+
+.rac-status-badge[data-status="registered"] { --rac-status: #38bdf8; }
+.rac-status-badge[data-status="online"]     { --rac-status: #10b981; }
+.rac-status-badge[data-status="idle"]       { --rac-status: #f59e0b; }
+.rac-status-badge[data-status="offline"]    { --rac-status: #64748b; }
+.rac-status-badge[data-status="error"]      { --rac-status: #ef4444; }
+
+/* ── Shimmer sweep (continuous, intensifies on hover, reduced-motion safe) ─ */
+.rac-shimmer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, 0.14) 50%, transparent 65%);
+  background-size: 250% 100%;
+  background-position: 150% 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Interactive shimmer: a single light sweep on hover (settles — no infinite animation). */
+.raycast-agent-card:hover .rac-shimmer {
+  opacity: 1;
+  animation: racShimmerSweep 1.1s ease-in-out;
+}
+
+@keyframes racShimmerSweep {
+  from { background-position: 150% 0; }
+  to { background-position: -150% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rac-shimmer { animation: none; opacity: 0; }
+}
+
+/* ── Plan usage meters (5h / weekly) — only when a real quota feed exists ─ */
+.rac-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 8px 2px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 2px;
+}
+
+.rac-usage-plan {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--agent-accent, #10b981);
+  font-weight: 600;
+}
+
+.rac-usage-row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.rac-usage-label {
+  font-size: 0.58rem;
+  color: var(--muted, #64748b);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.rac-usage-track {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.rac-usage-fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--agent-accent, #10b981);
+  transition: width 0.3s ease;
+}
+
+.rac-usage-fill[data-tone="warn"] { background: #f59e0b; }
+.rac-usage-fill[data-tone="danger"] { background: #ef4444; }
+
+.rac-usage-value {
+  font-size: 0.58rem;
+  color: var(--muted, #94a3b8);
+  font-variant-numeric: tabular-nums;
+}

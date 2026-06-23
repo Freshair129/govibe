@@ -404,6 +404,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
       sourceSection: getColumn(row, ["Source Section"]) || "Backlog Items",
       tags: parseDelimitedList(getColumn(row, ["PRD System", "Priority"])),
       artifactLinks: parseDelimitedList(getColumn(row, ["Dependencies"])),
+      dependsOn: parseDelimitedList(getColumn(row, ["Depends On", "DependsOn", "Blocked By", "BlockedBy"])),
       ...readTemporalColumns((aliases) => getColumn(row, aliases), parsedAt),
     });
   }
@@ -422,6 +423,7 @@ function buildMarkdownSnapshot(text, sourcePath) {
       sourceSection: getColumn(row, ["Source Section"]) || "Nodes",
       tags: parseDelimitedList(getColumn(row, ["Tags"])),
       artifactLinks: parseDelimitedList(getColumn(row, ["Artifacts"])),
+      dependsOn: parseDelimitedList(getColumn(row, ["Depends On", "DependsOn", "Blocked By", "BlockedBy"])),
       ...readTemporalColumns((aliases) => getColumn(row, aliases), parsedAt),
     });
   }
@@ -520,6 +522,7 @@ function buildHtmlSnapshot(text, sourcePath) {
       sourceSection: element.getAttribute("data-source-section") || "HTML Contract",
       tags: parseDelimitedList(element.getAttribute("data-tags")),
       artifactLinks: parseDelimitedList(element.getAttribute("data-artifacts")),
+      dependsOn: parseDelimitedList(element.getAttribute("data-depends-on")),
       ...createTemporalVersion({
         version: element.getAttribute("data-version"),
         validFrom: element.getAttribute("data-valid-from"),

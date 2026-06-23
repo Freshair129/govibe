@@ -1526,29 +1526,12 @@ footer span {
 
   .agent-deck-card {
     gap: 10px;
-    grid-template-columns: 44px minmax(0, 1fr);
-    inset-inline: 0;
-    min-height: 78px;
-    min-width: 0;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
     padding: 12px;
-    top: 104px;
-    transform:
-      translateY(calc(var(--deck-offset) * 88px)) scale(1);
+    /* transform / top come from the base rule + inline curve math (AgentCard.tsx) */
   }
 
-  .agent-deck-card[data-offset="-1"],
-  .agent-deck-card[data-offset="1"] {
-    transform:
-      translateY(calc(var(--deck-offset) * 88px)) scale(0.94);
-  }
-
-  .agent-deck-card[data-offset="-2"],
-  .agent-deck-card[data-offset="2"] {
-    transform:
-      translateY(calc(var(--deck-offset) * 88px)) scale(0.88);
-  }
-
-  .agent-deck-card>span:not(.deck-avatar) {
+  .agent-deck-card > * {
     min-width: 0;
   }
 

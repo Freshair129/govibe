@@ -121,6 +121,48 @@ export function getPrimaryRoadmapPhase(snapshot?: RoadmapSnapshot) {
   };
 }
 
+export type RoadmapAgentStats = {
+  taskCount: number;
+  doneCount: number;
+  /** QA pass rate over verified tasks (0-100); null when no verification evidence exists. */
+  successRate: number | null;
+};
+
+/**
+ * Real per-agent rollup derived live from the approved roadmap snapshot.
+ * Task count = actionable nodes assigned to the agent (via assignment subject or node.assigneeId).
+ * Success rate = QA-passed / QA-evaluated for those tasks. Returns honest zeros/null when no data.
+ */
+export function getAgentRoadmapStats(snapshot: RoadmapSnapshot | undefined, agentId: string): RoadmapAgentStats {
+  if (!snapshot) return { taskCount: 0, doneCount: 0, successRate: null };
+
+  const assignedTaskIds = new Set<string>();
+  for (const assignment of snapshot.assignments) {
+    if (assignment.subjectId === agentId) assignedTaskIds.add(assignment.taskId);
+  }
+  for (const node of snapshot.nodes) {
+    if (node.assigneeId === agentId && actionableRoadmapTypes.has(node.type)) assignedTaskIds.add(node.id);
+  }
+
+  const doneCount = snapshot.nodes.filter((node) => assignedTaskIds.has(node.id) && node.state === "done").length;
+
+  let passed = 0;
+  let evaluated = 0;
+  for (const verification of snapshot.verifications) {
+    if (!assignedTaskIds.has(verification.taskId)) continue;
+    if (verification.qaStatus === "passed" || verification.qaStatus === "failed") {
+      evaluated += 1;
+      if (verification.qaStatus === "passed") passed += 1;
+    }
+  }
+
+  return {
+    taskCount: assignedTaskIds.size,
+    doneCount,
+    successRate: evaluated > 0 ? Math.round((passed / evaluated) * 100) : null,
+  };
+}
+
 export function getRoadmapSprintContext(snapshot: RoadmapSnapshot, node: WorkflowTaskNode) {
   const nodeById = new Map(snapshot.nodes.map((item) => [item.id, item]));
   let current: WorkflowTaskNode | undefined = node;

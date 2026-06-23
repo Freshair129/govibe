@@ -468,7 +468,7 @@
   opacity: 1;
 }
 
-.a2-template-board .raycast-agent-card > :not(.card-shine):not(.card-glare) {
+.a2-template-board .raycast-agent-card > :not(.card-shine):not(.card-glare):not(.rac-shimmer):not(.rac-status-badge) {
   position: relative;
   z-index: 2;
 }

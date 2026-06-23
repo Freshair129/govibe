@@ -149,7 +149,7 @@ export function renderRoadmapMarkdown(roadmap, options = {}) {
     "",
     "## Backlog Items",
     table(
-      ["ID", "Parent ID", "Type", "Title", "PRD System", "Priority", "Owner", "Source Section", "Dependencies", "Acceptance", "Status", "Progress", ...temporalColumns],
+      ["ID", "Parent ID", "Type", "Title", "PRD System", "Priority", "Owner", "Source Section", "Dependencies", "Depends On", "Acceptance", "Status", "Progress", ...temporalColumns],
       tasks.map((node) => [
         node.id,
         node.parentId ?? "",
@@ -160,6 +160,7 @@ export function renderRoadmapMarkdown(roadmap, options = {}) {
         node.assigneeId ?? "",
         node.sourceSection ?? "Backlog Items",
         node.artifactLinks?.join("; ") ?? "",
+        node.dependsOn?.join("; ") ?? "",
         node.summary ?? "",
         stateForMarkdown(node.state),
         progressForMarkdown(node.progress),

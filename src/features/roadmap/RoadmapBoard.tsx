@@ -9,6 +9,7 @@ import {
   formatRoadmapSourceType,
   formatRoadmapState,
   formatRoadmapTabLabel,
+  getAgentRoadmapStats,
   getPrimaryRoadmapPhase,
   getRoadmapScope,
   getRoadmapStats,
@@ -318,6 +319,7 @@ export function RoadmapBoard({ snapshot, send }: { snapshot: MissionSnapshot; se
               <RoadmapAgentCard
                 key={agent.id}
                 agent={agent}
+                stats={getAgentRoadmapStats(roadmap, agent.id)}
                 dragging={draggingAgentId === agent.id}
                 onPointerDown={(event, nextAgent) => startAgentDrag(event, nextAgent.id, nextAgent.accent ?? "#10b981")}
                 onPointerMove={updateAgentRaycast}
