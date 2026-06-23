@@ -2,21 +2,21 @@
 title: "GoVibe Agent Bridge"
 doc_id: "AGENT-BRIDGE-QWEN-COMPAT"
 status: "draft"
-version: "1.2.0+draft"
-updated: "2026-06-17"
+version: "1.2.1+draft"
+updated: "2026-06-22"
 owner: "ATHER / THESEUS"
 source_of_truth: false
 attributes:
   domain: "agent-governance"
   scope: "G:/govibe"
-  purpose: "Compatibility bridge for tools that auto-load AGENT.md"
+  purpose: "Compatibility bridge for tools that auto-load the singular AGENT.md (e.g. qwen-cli); AGENTS.md is the standard contract used by codex/gpt"
 ---
 
 # GoVibe Agent Bridge
 
-This file is a compatibility bridge for external tools that auto-load `AGENT.md`, including `qwen-cli`.
+**`AGENTS.md` is the standard GoVibe operating contract** — the file auto-loaded by `codex`, GPT-based tools, and the `AGENTS.md` convention. Always prefer `AGENTS.md`.
 
-It is not the full GoVibe operating contract. The canonical contract is `AGENTS.md`.
+This `AGENT.md` (singular) is only a thin compatibility bridge for tools that auto-load the singular filename (e.g. `qwen-cli`). It is **not** the full contract and carries no rules of its own — it defers entirely to `AGENTS.md`.
 
 ## Required Context Load Order
 
@@ -58,6 +58,7 @@ confidence:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.2.1+draft | 2026-06-22 | ATHER / THESEUS | Reframed as a singular-filename compat bridge only; affirmed `AGENTS.md` as the standard contract for codex/gpt and that this file defers entirely to it. |
 | 1.2.0+draft | 2026-06-17 | ATHER / THESEUS | Converted root AGENT.md into a thin compatibility bridge for qwen-cli and shared external-agent context loading. |
 | 1.1.0 | 2026-06-13 | THESEUS | ID-based agent references, MemoryOS V3 alignment, traceability headers. |
 | 0.1.0 | 2026-06-12 | ATHER | Added root agent operating contract aligned with GoVibe PRD, C4, execution governance, PM roadmap source, QA, and auditor workflows. |

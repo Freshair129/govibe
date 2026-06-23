@@ -1,8 +1,8 @@
 ﻿---
 doc_id: "CONCEPT--HYBRID-JIT-CONTEXT"
 id: CONCEPT--HYBRID-JIT-CONTEXT
-version: "0.1.0+draft"
-updated: "2026-06-15"
+version: "0.1.1+draft"
+updated: "2026-06-22"
 phase: 1
 type: concept
 status: stable
@@ -66,10 +66,25 @@ role: Strategic intent / PRD
 4. **JIT Renderer:** สร้าง Virtual Document ส่งคืนให้ Agent (Agent จะไม่เห็นไฟล์เต็มๆ แต่เห็นเฉพาะข้อมูลที่จำเป็น)
 5. **Agent:** เขียนโค้ดได้อย่างแม่นยำ และส่งคำสั่ง Overwrite ทับเฉพาะส่วนหัวข้อนั้นกลับเข้าไฟล์ `.md` อย่างเนียนตา
 
+## 4. Format-Adaptive Rendering (มิติที่ 2 — ตาม Format ไม่ใช่แค่ Scope)
+
+JIT rendering ข้างต้นตัด context ตาม **scope (hop H0–H6)** แต่ปัญหา mismatch ข้ามโปรเจกต์ — เช่น repo หนึ่งเขียนแบบ **Feature-Base** อีก repo เขียนแบบ **System-Base** — ต้องการมิติที่สอง: **render ตาม format/paradigm ของ repo ปลายทาง**
+
+หลักการ: GKS atom เป็น canonical กลาง — ก้อนเดียวกัน render ออกได้ทุก format ตามมาตรฐานของ repo ที่ถาม (ผู้ใช้ไม่ต้อง migrate เอกสารเดิม)
+
+กลไก:
+1. **Scan doc-format** ของแต่ละ repo → เก็บเป็น **format template** (เป็นส่วนหนึ่งของ "language pack" ตาม `ADR-017`)
+2. **Scan codebase** → symbol-link + semantic matching (`API-002-Symbol-Linking`) → ผูกเข้ากับ GKS atom
+3. **User ถาม** → รวบ atom ตาม scope → **render เข้า format template ของ repo ผู้ถาม**
+4. อีก repo ถาม concept เดียวกัน → render เข้า format ของ repo นั้น (atom ชุดเดิม, output คนละ format)
+
+→ **render = scope (hops) × format (template)**. มิตินี้คือ operational arm ของ `ADR-017` (governance translator) และเป็นตัวแก้ Feature-Base / System-Base mismatch จริง ๆ รายละเอียดกลไก scan→template→render อยู่ใน `FEAT-Doc-Format-Template-Extraction`.
+
 ## Changelog
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.1.1+draft | 2026-06-22 | Added §4 Format-Adaptive Rendering (render = scope × format-template) to capture doc-format-agnostic JIT output; links to ADR-017 language packs and FEAT-Doc-Format-Template-Extraction. |
 | 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the concept doc with the document versioning governance standard. |
 
 

@@ -6,6 +6,7 @@ version: "2.2.0+ga"
 updated: "2026-06-15"
 owner: "GoVibe"
 source_of_truth: true
+related_adrs: ["ADR-015", "ADR-018", "ADR-019"]
 ---
 
 # STD: Execution Governance Standard

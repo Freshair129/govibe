@@ -1,9 +1,8 @@
 version: "1.0"
 root_contract:
   global_context:
-    - agent.md
-    - GEMINI.md
     - AGENTS.md
+    - GEMINI.md
 
 executor_defaults:
   default: codex

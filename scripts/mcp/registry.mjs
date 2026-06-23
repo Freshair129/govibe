@@ -22,6 +22,32 @@ export const toolCatalog = [
     },
   },
   {
+    name: "govibe.orchestrate.step",
+    description: "Run one Standard Execution Packet (StEP): execute a task via an agent, then verify it against a real Definition-of-Done gate; advance the roadmap on pass or block + raise a human gate.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+        taskId: { type: "string" },
+        agentId: { type: "string" },
+        mode: { type: "string", enum: ["doc", "plan", "audit", "atomic"] },
+        scope: { type: "string" },
+        task: { type: "string" },
+        lane: { type: "string" },
+        executor: { type: "string" },
+        localModel: { type: "string" },
+        modelTier: { type: "string", enum: ["tiny", "default", "pro", "retry"] },
+        contextSelectors: { type: "array", items: { type: "string" } },
+        definitionOfDone: { type: "object" },
+        maxAttempts: { type: "number" },
+        budget: { type: "object" },
+        complexity: { type: "string" },
+        contextTier: { type: "string" },
+      },
+      required: ["actor", "taskId", "agentId"],
+    },
+  },
+  {
     name: "govibe.docs.resolve",
     description: "Resolve approved GoVibe documents or bounded context packets.",
     inputSchema: {
@@ -134,6 +160,36 @@ export const toolCatalog = [
         complexity: { type: "string", enum: ["low", "medium", "high"] },
       },
       required: ["type", "slug", "title", "owner", "complexity"],
+    },
+  },
+  {
+    name: "govibe.ingest.code",
+    description: "Ingest a repo's docs/code into GKS atoms and extract a doc-format template (translator-core slice).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+        repo: { type: "string" },
+        repoPath: { type: "string" },
+        content: { type: "string" },
+        scope: { type: "string" },
+      },
+      required: ["actor"],
+    },
+  },
+  {
+    name: "govibe.render",
+    description: "Render a document from GKS atoms into a target format template, gated by a real fidelity check (round-trip + semantic).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+        atomsRef: { type: "string" },
+        templateRef: { type: "string" },
+        selector: { type: "string" },
+        hop: { type: "number" },
+      },
+      required: ["actor", "atomsRef"],
     },
   },
 ];

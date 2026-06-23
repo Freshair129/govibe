@@ -1,13 +1,24 @@
 import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { discoverRoadmapSources, parseRoadmapSource } from "./roadmap-parser.mjs";
 import { writeRoadmapMarkdownExport } from "./roadmap-exporter.mjs";
+import { buildDag } from "./dag.mjs";
+import { computeWaves } from "./wave.mjs";
+import { runStep as executeStep } from "./step.mjs";
+import { runVerifyGate } from "./verify-gate.mjs";
 import { compareTemporalOrder, createTemporalVersion, isTemporalVisible, nextVersion } from "./temporal-versioning.mjs";
 import { toolCatalog } from "./registry.mjs";
 import { SessionTracker } from "../../packages/govibe-core/bin/session-tracker.mjs";
+import { atomize } from "./translator/atomizer.mjs";
+import { extractTemplate } from "./translator/format-template.mjs";
+import { render as renderFromTemplate, selectScope } from "./translator/renderer.mjs";
+import { evaluate as evaluateFidelity } from "./translator/fidelity.mjs";
+import { buildRecord as buildProvenance, appendRecord as appendProvenance } from "./translator/provenance.mjs";
+import { atomizeCode, CODE_LANGS } from "./translator/code-atomizer.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const roadmapDir = path.join(workspaceRoot, "docs", "roadmap");
@@ -21,6 +32,20 @@ const planningTypeWeights = {
   sprint: 20,
   masterplan: 10,
 };
+
+function createEmptyOrchestration() {
+  return { waves: [], updatedAt: new Date().toISOString() };
+}
+
+function gitPorcelain(cwd) {
+  return new Promise((resolve) => {
+    const child = spawn("git", ["status", "--porcelain"], { cwd });
+    let out = "";
+    child.stdout.on("data", (chunk) => { out += chunk.toString(); });
+    child.on("error", () => resolve([]));
+    child.on("close", () => resolve(out.split(/\r?\n/).map((line) => line.trim()).filter(Boolean)));
+  });
+}
 
 function createEmptySnapshot() {
   return {
@@ -42,6 +67,7 @@ function createEmptySnapshot() {
     specs: [],
     symbols: [],
     campaignLogs: [],
+    orchestration: createEmptyOrchestration(),
   };
 }
 
@@ -112,6 +138,11 @@ function parseAgentRegistry(text) {
       listTarget = current.authority[authorityMatch[1]];
       continue;
     }
+    const execPolicyMatch = rawLine.match(/^      (default_executor|default_mode|local_model_tier):\s*(.+)$/);
+    if (execPolicyMatch) {
+      current[execPolicyMatch[1]] = unquoteYamlScalar(execPolicyMatch[2]);
+      continue;
+    }
     const listItemMatch = rawLine.match(/^ {6,8}-\s+(.+)$/);
     if (listItemMatch && listTarget) {
       listTarget.push(unquoteYamlScalar(listItemMatch[1]));
@@ -131,6 +162,9 @@ function parseAgentRegistry(text) {
     tasks: "unavailable",
     accuracy: "unavailable",
     speed: "unavailable",
+    defaultExecutor: agent.default_executor,
+    defaultMode: agent.default_mode,
+    modelTier: agent.local_model_tier,
     accent: agentAccents[index % agentAccents.length],
     fleet: {
       fleetRole: agent.role,
@@ -347,6 +381,8 @@ export class GovibeRuntime {
     this.snapshot = createEmptySnapshot();
     this.sessionTracker = new SessionTracker(workspaceRoot);
     this.listeners = new Set();
+    this.atomStore = new Map();      // translator-core slice: in-process atom store (ref -> atoms)
+    this.templateStore = new Map();  // translator-core slice: in-process format templates
     this.overlay = {
       nodes: new Map(),
       assignments: new Map(),
@@ -426,6 +462,7 @@ export class GovibeRuntime {
       this.snapshot = {
         ...this.snapshot,
         roadmap: undefined,
+        orchestration: createEmptyOrchestration(),
         roadmapSources: rankedSources.map((source) => ({
           title: source.title,
           sourcePath: source.relativePath,
@@ -519,10 +556,19 @@ export class GovibeRuntime {
       roadmap.verifications = upsertByKey(roadmap.verifications, verification, (item) => item.taskId === verification.taskId);
     }
 
-    roadmap = { ...roadmap, updatedAt: new Date().toISOString() };
+    roadmap = {
+      ...roadmap,
+      dag: buildDag(roadmap.nodes, { actionableTypes: actionableRoadmapTypes }),
+      updatedAt: new Date().toISOString(),
+    };
+    const orchestration = {
+      waves: computeWaves(roadmap.dag, { actionableTypes: actionableRoadmapTypes }),
+      updatedAt: new Date().toISOString(),
+    };
     this.snapshot = {
       ...this.snapshot,
       roadmap,
+      orchestration,
       roadmapSources: rankedSources.map((source) => ({
         title: source.title,
         sourcePath: source.relativePath,
@@ -537,6 +583,8 @@ export class GovibeRuntime {
       updatedAt: new Date().toISOString(),
     };
     this.emit({ type: "roadmap.snapshot", roadmap });
+    this.emit({ type: "dag.update", dag: roadmap.dag });
+    this.emit({ type: "orchestration.update", orchestration });
     return roadmap;
   }
 
@@ -574,7 +622,7 @@ export class GovibeRuntime {
       args.outputFormat ?? "text",
     ];
 
-    if (args.agent) psArgs.push("-Agent", args.agent);
+    if (args.agent) psArgs.push("-AgentId", args.agent);
     if (args.scope) psArgs.push("-Scope", args.scope);
     if (args.mode) psArgs.push("-Mode", args.mode);
     if (args.executor) psArgs.push("-Executor", args.executor);
@@ -603,6 +651,120 @@ export class GovibeRuntime {
       result,
     };
     }
+
+  // Translator-core slice (SRS-GoVibe-Translator-Core-Slice / LLD-Translator-Core-Slice).
+  ingestCode(args = {}) {
+    const startedAt = new Date().toISOString();
+    const repo = args.repo ?? args.repoPath ?? "unknown";
+    let text = String(args.content ?? "");
+    let lang = String(args.lang ?? "").toLowerCase();
+    if (!text && args.repoPath) {
+      const abs = path.isAbsolute(args.repoPath) ? args.repoPath : path.join(workspaceRoot, args.repoPath);
+      if (existsSync(abs)) {
+        text = readFileSync(abs, "utf8");
+        if (!lang) lang = (args.repoPath.split(".").pop() || "").toLowerCase();
+      }
+    }
+    if (!lang) lang = "md";
+    const isCode = CODE_LANGS.has(lang);
+    const atoms = isCode
+      ? atomizeCode(text, { file: args.repoPath ?? `inline.${lang}`, lang }).atoms
+      : atomize(text).atoms;
+    const template = isCode ? extractTemplate("", { repo }) : extractTemplate(text, { repo });
+    const atomsRef = `atoms:${repo}:${this.atomStore.size + 1}`;
+    this.atomStore.set(atomsRef, atoms);
+    this.templateStore.set(template.id, template);
+    const auditRef = buildAuditRef("govibe.ingest.code");
+    appendProvenance(buildProvenance({
+      kind: "ingest", auditRef, actor: args.actor, atomsRef, templateRef: template.id,
+      startedAt, endedAt: new Date().toISOString(),
+    }));
+    this.appendTerminal("translator", `Ingested ${atoms.length} atoms from ${repo}.`);
+    return {
+      capability: "govibe.ingest.code",
+      mode: isCode ? "code" : "doc",
+      lang,
+      atomCount: atoms.length,
+      atomsRef,
+      templateRef: template.id,
+      templateConfidence: template.confidence,
+      needsConfirm: template.needsConfirm,
+      warnings: atoms.length === 0 ? ["no atoms parsed — provide `content` or a readable repoPath"] : [],
+      auditRef,
+    };
+  }
+
+  renderDocument(args = {}) {
+    const startedAt = new Date().toISOString();
+    const auditRef = buildAuditRef("govibe.render");
+    const all = this.atomStore.get(args.atomsRef);
+    if (!all) {
+      return { capability: "govibe.render", verdict: "block", document: null, citedAtoms: [], error: `unknown atomsRef: ${args.atomsRef}`, auditRef };
+    }
+    const template = this.templateStore.get(args.templateRef) ?? extractTemplate("", {});
+    const selected = selectScope(all, { selectorId: args.selector ?? null, hop: args.hop ?? 6 });
+    const rendered = renderFromTemplate(selected, template, {});
+    const sourceText = selected.map((a) => `${"#".repeat(a.level)} ${a.heading}\n${a.content}`).join("\n\n");
+    const fidelity = evaluateFidelity({ sourceAtoms: selected, sourceText, rendered });
+    const citedAtoms = selected.map((a) => a.id);
+    appendProvenance(buildProvenance({
+      kind: "render", auditRef, actor: args.actor, atomsRef: args.atomsRef,
+      templateRef: args.templateRef ?? null, citedAtoms, fidelity,
+      startedAt, endedAt: new Date().toISOString(),
+    }));
+    this.appendTerminal("translator", `Rendered doc (fidelity: ${fidelity.verdict}).`);
+    return {
+      capability: "govibe.render",
+      verdict: fidelity.verdict,
+      document: fidelity.verdict === "block" ? null : rendered,
+      citedAtoms,
+      fidelity,
+      needsConfirm: fidelity.verdict === "flag" ? ["fidelity below pass threshold — human confirm before deliverable"] : [],
+      auditRef,
+    };
+  }
+
+  async runStep(args = {}) {
+    const step = {
+      stepId: args.stepId ?? `step-${crypto.randomUUID()}`,
+      taskId: args.taskId,
+      lane: args.lane,
+      agentId: args.agentId ?? args.agent_id,
+      mode: args.mode ?? "atomic",
+      scope: args.scope,
+      task: args.task ?? `Execute task ${args.taskId ?? ""}`.trim(),
+      executorRoute: {
+        executor: args.executor,
+        localModel: args.localModel,
+        modelTier: args.modelTier,
+      },
+      contextSelectors: args.contextSelectors ?? [],
+      definitionOfDone: args.definitionOfDone ?? { checks: [], requireAll: true },
+      maxAttempts: args.maxAttempts ?? 1,
+      budget: args.budget,
+      complexity: args.complexity,
+      contextTier: args.contextTier,
+    };
+
+    const result = await executeStep(step, {
+      runAgent: (agentArgs) => this.runAgent(agentArgs),
+      runGate: (dod) => runVerifyGate(dod, { cwd: workspaceRoot, maxMs: step.budget?.maxMs }),
+      applyMutation: (mutation) => this.applyRoadmapMutation(mutation),
+      appendTerminal: (type, text) => this.appendTerminal(type, text),
+      logEvent: (name, payload) => this.sessionTracker.logEvent(name, payload),
+      emit: (event) => this.emit(event),
+      gitStatus: () => gitPorcelain(workspaceRoot),
+      createTemporal: createTemporalVersion,
+      now: () => new Date().toISOString(),
+    });
+
+    return {
+      capability: "govibe.orchestrate.step",
+      auditRef: buildAuditRef("govibe.orchestrate.step"),
+      request: args,
+      result,
+    };
+  }
 
   async applyRoadmapMutation(args = {}) {
     const mutationType = args.mutationType ?? "";

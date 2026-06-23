@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.43+draft"
-updated: "2026-06-21"
+version: "0.1.54+draft"
+updated: "2026-06-23"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -29,15 +29,16 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.43+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.54+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
+| BRD | `BRD-GOVIBE-PLATFORM` | `0.1.1+draft` | draft | Boss (CEO) | `docs/BRD-GoVibe-Platform.md` |
 | API | `API-004-TASK-SCOPED-CONTEXT-PACKET-SCHEMA` | `0.1.0` | approved | ARCHON / ATHER | `docs/api/API-004-Task-Scoped-Context-Packet-Schema.md` |
-| PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.4.1+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
-| PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.0+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
+| PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.4.3+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
+| PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.1+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
 | Design | `DESIGN-GOVIBE-DOCUMENT-HIERARCHY` | `0.1.0+draft` | draft | ARCHON / THESEUS / ATHER | `docs/design/GoVibe-Document-Hierarchy.md` |
 | Design | `DESIGN-WIREFRAME-A2-ROADMAP-BOARD` | `0.1.1+draft` | draft | THESEUS / VIBE | `docs/design/WIREFRAME-A2-Roadmap-Board.md` |
 
@@ -48,6 +49,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
+| Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
 | Backlog | `BACKLOG-P1-MVP-CORE` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/BACKLOG-p1-mvp-core.md` |
 | Backlog | `BACKLOG-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/BACKLOG-task-scoped-context-injection.md` |
 | Implementation Plan | `IMP-SYSTEM05-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.2` | approved | LYRA / ARCHON / ATHER | `docs/roadmap/IMP-SYSTEM05-Task-Scoped-Context-Injection.md` |
@@ -60,22 +62,36 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Feature | `FEAT-DOCUMENT-VERSION-GOVERNANCE` | `0.1.0` | approved | ATHER / THESEUS | `docs/features/traceability-audit/FEAT-Document-Version-Governance.md` |
 | Feature | `FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.1` | approved | ATHER / KIN | `docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md` |
 | Feature | `FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION` | `0.1.1` | approved | LYRA / ATHER | `docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md` |
+| Feature | `FEAT-PER-AGENT-MEMORY-UNIT` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/features/agent-team/FEAT-Per-Agent-Memory-Unit.md` |
+| Feature | `FEAT-TIERED-REVIEW` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/features/agent-team/FEAT-Tiered-Review.md` |
 | Feature | `FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION` | `0.1.1` | approved | THESEUS | `docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md` |
 | Feature | `FEAT-CODEV-MODULE` | `0.1.0` | approved | THESEUS | `docs/features/agent-team/FEAT-CoDev-Module.md` |
 | Feature | `FEAT-COVIBE-MODULE` | `0.1.0` | approved | THESEUS | `docs/features/agent-team/FEAT-CoVibe-Module.md` |
 | Feature | `FEAT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | ARCHON / ATHER | `docs/features/agent-team/FEAT-Task-Scoped-Context-Injection.md` |
 | Feature | `FEAT-QWEN-CLI-MODEL-ROUTING` | `0.1.3` | approved | KIN / LYRA / ATHER | `docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md` |
 | Audit | `AUDIT-COGNITIVE-SYSTEM-INBOUND-TRIAGE-2026-06-16` | `0.1.1` | approved | ATHER / LYRA | `docs/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md` |
+| Audit | `POC-5-AXIS-COVERAGE` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/POC-5-Axis-Coverage.md` |
+| Audit | `POC-H6-BUDGET-SUFFICIENCY` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/POC-H6-Budget-Sufficiency.md` |
+| Audit | `AUDIT-USER-FLOW-RUNTIME-GAPS-2026-06-22` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md` |
 | Feature | `FEAT-ROADMAP-PROMOTION-CONTRACT` | `0.1.0` | approved | LYRA | `docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md` |
 | Feature | `FEAT-VISUAL-AGENT-FLEET-SYSTEM` | `0.1.0` | approved | THESEUS | `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md` |
+| Feature | `FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION` | `0.1.0+draft` | draft | Boss (CEO) | `docs/features/genesis-knowledge-system/FEAT-Doc-Format-Template-Extraction.md` |
 | ADR | `ADR-013-task-scoped-context-injection` | `0.1.0` | accepted | ARCHON / ATHER | `docs/adr/ADR-013-Task-Scoped-Context-Injection.md` |
 | ADR | `ADR-014-msp-gks-traceability-gate` | `0.1.0` | accepted | ARCHON / ATHER | `docs/adr/ADR-014-MSP-GKS-Traceability-Gate.md` |
+| ADR | `ADR-015-MASTER-ESSENCE-VS-GOV-POLICY` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-015-Master-Essence-vs-GOV-Policy.md` |
+| ADR | `ADR-016-FULL-STACK-MANDATORY-SWAPPABLE-BACKEND` | `0.2.0` | accepted | Boss (CEO) | `docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md` |
+| ADR | `ADR-017-GOVIBE-GOVERNANCE-TRANSLATOR-GKS-INTERLINGUA` | `0.1.1` | accepted | Boss (CEO) | `docs/adr/ADR-017-GoVibe-Governance-Translator-GKS-Interlingua.md` |
+| ADR | `ADR-018-STRUCTURAL-DECOMPOSITION-CONTAINMENT-WIKILINK` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md` |
+| ADR | `ADR-019-UNIVERSAL-CODE-IN-MCP-OUT` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-019-Universal-Code-In-MCP-Out.md` |
+| ADR | `ADR-020-PER-AGENT-MEMORY-UNIT` | `0.1.0+draft` | proposed | ARCHON / ATHER | `docs/adr/ADR-020-Per-Agent-Memory-Unit.md` |
 | Architecture | `BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.1` | approved | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md` |
+| Architecture | `BLUEPRINT-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Translator-Core-Slice.md` |
 | LLD | `LLD-TASK-SCOPED-CONTEXT-INJECTION-CORE` | `0.1.1` | approved | ARCHON / ATHER | `docs/lld/LLD-Task-Scoped-Context-Injection-Core.md` |
 | Architecture | `MSP-GKS-TAXONOMY-MAPPING` | `0.1.0` | approved | THESEUS / KIN | `docs/architecture/MSP-GKS-Taxonomy-Mapping.md` |
 | Architecture | `SDD-MSP-EXTERNAL-EVIDENCE-BOUNDARY` | `0.1.1` | approved | ARCHON / KIN / ATHER | `docs/architecture/SDD-MSP-External-Evidence-Boundary.md` |
 | Architecture | `SDD-SYMBOL-GRAPH-TRACEABILITY-BOUNDARY` | `0.1.1` | approved | ARCHON / THESEUS / ATHER | `docs/architecture/SDD-Symbol-Graph-Traceability-Boundary.md` |
 | Architecture | `SDD-VISUAL-AGENT-FLEET` | `0.1.0` | approved | THESEUS / ARCHON | `docs/architecture/SDD-Visual-Agent-Fleet.md` |
+| Architecture | `SDD-GOVIBE-MSP-GKS-INTEGRATION` | `0.1.2+draft` | draft | Boss (CEO) | `docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md` |
 
 ## 6. Runbooks And Context Packets
 
@@ -86,10 +102,13 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | SRS | `SRS-GOVIBE-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | ARCHON / ATHER | `docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md` |
 | SRS | `SRS-GOVIBE-MCP-SERVER` | `0.2.1` | approved | GoVibe | `docs/srs/SRS-GoVibe-MCP-Server.md` |
 | SRS | `SRS-OLLAMA-SIDECAR-EXECUTION` | `0.2.1` | approved | THESEUS | `docs/srs/SRS-Ollama-Sidecar-Execution.md` |
+| SRS | `SRS-GKS-RETRIEVAL-LAYER` | `0.1.0+draft` | draft | Boss (CEO) | `docs/srs/SRS-GKS-Retrieval-Layer.md` |
+| SRS | `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` | `0.1.1+draft` | draft | Boss (CEO) | `docs/srs/SRS-GoVibe-Translator-Core-Slice.md` |
 | Architecture | `SEQ-OLLAMA-SIDECAR-FLOW` | `0.1.2` | approved | THESEUS | `docs/architecture/SEQ-Ollama-Sidecar-Flow.md` |
 | LLD | `LLD-GOVIBE-MCP-TOOLS` | `0.2.1` | approved | GoVibe | `docs/lld/LLD-GoVibe-MCP-Tools.md` |
+| LLD | `LLD-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/lld/LLD-Translator-Core-Slice.md` |
 | LLD | `LLD-AGENT-LAUNCHER-EXECUTION-ROUTER` | `0.1.2` | approved | THESEUS | `docs/lld/LLD-Agent-Launcher-Execution-Router.md` |
-| Context | `AGENT-BRIDGE-QWEN-COMPAT` | `1.2.0+draft` | draft | ATHER / THESEUS | `AGENT.md` |
+| Context | `AGENT-BRIDGE-QWEN-COMPAT` | `1.2.1+draft` | draft | ATHER / THESEUS | `AGENT.md` |
 | Context | `CONTEXT-BOUNDED-EXTERNAL-EXECUTOR` | `0.2.3` | draft | THESEUS | `.agents/context/CONTEXT-Bounded-External-Executor.md` |
 | Context | `CONTEXT-GOVIBE-SHARED-EXTERNAL-AGENT` | `0.1.2+draft` | draft | ATHER / THESEUS | `.agents/context/shared/CONTEXT-GoVibe-Shared-External-Agent.md` |
 | Context | `CONTEXT-GOVIBE-GIT-HYGIENE` | `0.1.0+draft` | draft | JANUS / ATHER | `.agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md` |
@@ -110,6 +129,14 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.51+draft | 2026-06-22 | LYRA | Promoted `ROADMAP-TRANSLATOR-CORE` draft → approved (0.1.0, dropped +draft per STD §6). |
+| 0.1.50+draft | 2026-06-22 | LYRA | Registered `ROADMAP-TRANSLATOR-CORE` (draft) — Now/Next/Later phases for the translator-core epic mapped to audit findings #1–#8. |
+| 0.1.49+draft | 2026-06-22 | Boss (CEO) | Resolved SRS-Translator-Core open questions (0.1.1+draft); registered `BLUEPRINT-TRANSLATOR-CORE-SLICE` + `LLD-TRANSLATOR-CORE-SLICE` (govibe.ingest.code/render tool contracts, both-metric fidelity, local-jsonl provenance). |
+| 0.1.48+draft | 2026-06-22 | Boss (CEO) | Registered `AUDIT-USER-FLOW-RUNTIME-GAPS-2026-06-22` (translator core = 0% runtime; 8 findings) + `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` (ingest→render→fidelity-gate slice for audit #1–#3). |
+| 0.1.47+draft | 2026-06-22 | Boss (CEO) | Adopted ADR-016 Option B (0.2.0 — GoVibe+MSP core mandatory, full eco optional/tiered); repositioned PRD-Platform-Overview (0.4.2+draft, governance+translator identity); fixed BRD (0.1.1+draft, hidden→internal GKS, CoDev no-bridge wording). |
+| 0.1.46+draft | 2026-06-22 | Boss (CEO) | Synced AGENT.md (1.2.1+draft, AGENTS.md-standard refactor), PRD-MCP-Orchestration (0.2.1+draft, +`orchestrate.step`), ADR-017 (0.1.1, GKS-not-hidden + language-pack=doc-format-template); registered new `FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION` (format-adaptive JIT). |
+| 0.1.45+draft | 2026-06-22 | Boss (CEO) | Drained §8 Auto-Registered into curated sections (BRD→§3; ADR-015..019, PoC-1/2, SDD-Integration→§5; SRS-Retrieval→§6); dropped `+draft` from the 5 accepted ADRs per STD §6 (frontmatter + footer) to match the ADR-013/014 precedent. |
+| 0.1.44+draft | 2026-06-22 | Boss (CEO) | Added §8 Auto-Registered (ADR-015..019 accepted, BRD, PoC-1/2, SRS-Retrieval, SDD-Integration); operationalized ADR-007 via `docs:register` + `docs:ratify`; added governance CI + H→D rename note. |
 | 0.1.43+draft | 2026-06-21 | ATHER / THESEUS | Closed CR-2026-06-14 via accepted ADR-014 (MSP/GKS adapter as traceability gate) and signed off the now-unblocked MSP/governance cluster: FEAT-MSP, SDD-MSP, SDD-Symbol-Graph, AUDIT, MSP-GKS-Taxonomy (0.1.1/0.1.0), plus FEAT-Document-Version-Governance and FEAT-Roadmap-Promotion-Contract (0.1.0); registered ADR-014; synced PRD-GoVibe-MCP-Orchestration to 0.2.0+draft after authoring its body (held draft for owner review). |
 | 0.1.42+draft | 2026-06-20 | ATHER / THESEUS | Recorded sign-off: promoted three conflict-free chains to approved — TSCI (FEAT/SRS 0.1.0, BLUEPRINT/LLD 0.1.1, API-004 0.1.0, IMP 0.1.2), agent-team (Terminology/Quota 0.1.1, CoDev/CoVibe/Visual-Fleet FEAT 0.1.0, Qwen 0.1.3, SDD-Visual-Fleet 0.1.0), and runtime/MCP as-built (SRS-MCP/SRS-Ollama/LLD-Tools 0.2.1, SEQ/LLD-Launcher 0.1.2, RUNBOOK 0.2.4). MSP/GKS + governance-feature cluster held draft pending CR-2026-06-14. |
 | 0.1.41+draft | 2026-06-20 | ATHER / THESEUS | Synced registry after the draft-document conflict-refinement pass: bumped TSCI, MSP/governance, agent-team, and product rows; resolved both Visual Agent Fleet docs from migration-needed to draft with normalized uppercase doc_ids; registered SRS-GoVibe-MCP-Server, SRS-Ollama-Sidecar-Execution, SEQ-Ollama-Sidecar-Flow, LLD-GoVibe-MCP-Tools, LLD-Agent-Launcher-Execution-Router; normalized the IMP-GVMP01P05EP01 version cell to n/a. |

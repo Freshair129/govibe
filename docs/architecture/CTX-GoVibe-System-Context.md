@@ -27,6 +27,10 @@ This context view covers:
 
 This context view does not define low-level component behavior, persistence schema, or UI layout rules.
 
+## 2.1 Decision Alignment (accepted ADR-015..019, 2026-06-22)
+
+Per the accepted ADRs, the context boundary is: **GoVibe (cognitive surface) wraps MSP (Memory OS) → GKS (knowledge) → GenesisBlockDB (swappable backend)**. GoVibe is a governance + interop **translator** that rides MCP/A2A and bridges into external orchestrators (e.g. LangGraph), not a replacement; GKS is an internal interlingua (`A1 ⇄ GKS ⇄ A25`). See `docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md`.
+
 ## 3. Context Diagram
 ```mermaid
 flowchart LR

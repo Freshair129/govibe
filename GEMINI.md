@@ -21,7 +21,7 @@ runbooks and workflow: `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 
 ## Project Overview
 
-GoVibe is an AI-native visual CoDev and project management platform. It coordinates human developers, their agent teams, project documents, roadmap progress, artifacts, access policy, and third-party AI coding tools through API and MCP integrations, leveraging MemoryOS V3 (Native Runtime / GenesisBlockDB).
+GoVibe is the **governance + interoperability layer** for multi-agent software development — it governs and translates work across developers' own agent teams and tools (riding MCP/A2A) rather than being a coding or orchestration platform itself. It keeps roadmap progress, documents, artifacts, access policy, and traceability to one enforced, shared standard, leveraging MemoryOS V3 (Native Runtime / GenesisBlockDB). Orchestration via the `.agents` system and the visual GKS/GenesisBlockDB UI are full-eco capabilities, not the core positioning. (`CoDev`/`CoVibe` are collaboration *modes*, not platform names.)
 
 GoVibe is not a billing or quota manager for Claude Code, Gemini CLI, OpenClaw, Hermes, or other third-party coding tools. GoVibe is the project management, progress tracking, agent management, traceability, and visual coordination layer.
 
@@ -79,7 +79,7 @@ Human SWE docs are canonical. Atoms and generated views are derived via MemoryOS
 - Auditor and compliance gates: `[[AGENT::ATHER]]`
 - QA and release verification: `[[AGENT::GHOST]]`
 
-Atomic-task sidecar execution may be routed through Ollama by the scripts in `scripts/agents/`, but Codex remains the lead orchestrator.
+Atomic-task sidecar execution may be routed through Ollama by the scripts in `scripts/agents/`, but Codex remains the lead/main agent (CoVibe lead).
 
 ## Development Rules
 

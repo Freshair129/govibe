@@ -142,7 +142,7 @@ async function main() {
     registrySnapshot.agents.every((agent) => agent.fleet?.sourceRefs?.length > 0),
     "registry-derived agents are missing source references.",
   );
-  assert(registrySnapshot.capabilities.length === 9, "runtime capability records do not match the MCP tool catalog.");
+  assert(registrySnapshot.capabilities.length === 12, "runtime capability records do not match the MCP tool catalog.");
   assert(
     registrySnapshot.capabilities.every(
       (capability) => capability.status === "registered" && capability.sourcePath === "scripts/mcp/registry.mjs",
@@ -335,6 +335,23 @@ async function main() {
       String(agentRun.structuredContent?.result?.stdout ?? "").includes("Smoke-test prompt build only"),
       "agent.run did not return launcher prompt output.",
     );
+
+    const stepRun = await client.request("tools/call", {
+      name: "govibe.orchestrate.step",
+      arguments: {
+        actor: "smoke-test",
+        taskId: "SMOKE-STEP-TASK",
+        agentId: "theseus",
+        mode: "doc",
+        scope: "docs/features/integration-bridge",
+        task: "Smoke-test StEP prompt build only; do not execute an external agent.",
+        definitionOfDone: { checks: [] },
+        maxAttempts: 1,
+      },
+    });
+    assert(stepRun.structuredContent?.capability === "govibe.orchestrate.step", "orchestrate.step did not return structured StEP metadata.");
+    assert(stepRun.structuredContent?.result?.status === "done", "orchestrate.step did not reach done on a prompt-build run with an empty Definition-of-Done.");
+    assert(stepRun.structuredContent?.result?.selfCheck?.verdict === "pass", "orchestrate.step self-check did not pass for an empty Definition-of-Done.");
 
     console.log("PASS: GoVibe MCP smoke test");
     console.log(`tools: ${requiredTools.length}`);
