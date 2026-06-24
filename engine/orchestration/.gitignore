@@ -1,0 +1,8 @@
+# orchestrator runtime artifacts (ไม่ commit)
+state.json
+usage.jsonl
+.state.lock
+logs/
+brain/failures.jsonl
+brain/*.gdb
+brain/orch.gdb/
