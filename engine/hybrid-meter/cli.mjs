@@ -3,9 +3,10 @@
 //   npx hybrid-meter                                    replay a real build as a live meter (demo)
 //   npx hybrid-meter watch FILE                         live meter over your own usage.jsonl
 //   npx hybrid-meter report FILE                        one-shot savings report
-//   npx hybrid-meter run "<task>" [--max N] [--exec-model provider:model]
-//                                                       drive the existing orchestration/run.mjs pipeline,
-//                                                       then print the cost report over orchestration/usage.jsonl
+//   npx hybrid-meter run "<task>" [--repo PATH] [--max N] [--exec-model provider:model]
+//                                                       drive the existing orchestration/run.mjs pipeline
+//                                                       (--repo targets an external repo), then print the
+//                                                       cost report over orchestration/usage.jsonl
 import { readFileSync, watchFile } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
@@ -78,15 +79,15 @@ function run() {
   // Collect the task string and pass-through flags from argv[1..] (everything after 'run')
   const runArgv = argv.slice(1) // drop 'run', keep task + flags
   const taskParts = runArgv.filter((a, i) => {
-    // Flags: --max, --exec-model consume the next token; skip both
+    // Flags: --max, --exec-model, --repo consume the next token; skip both
     if (a.startsWith('--')) return false
     const prev = runArgv[i - 1]
-    if (prev === '--max' || prev === '--exec-model') return false
+    if (prev === '--max' || prev === '--exec-model' || prev === '--repo') return false
     return true
   })
   if (!taskParts.length) {
-    process.stderr.write(`  ${C.yellow}usage: hybrid-meter run "<task>" [--max N] [--exec-model provider:model]${C.reset}\n`)
-    process.stderr.write(`  ${C.dim}Note: --repo is not supported yet (run.mjs always targets the engine's own repo root).${C.reset}\n`)
+    process.stderr.write(`  ${C.yellow}usage: hybrid-meter run "<task>" [--repo PATH] [--max N] [--exec-model provider:model]${C.reset}\n`)
+    process.stderr.write(`  ${C.dim}--repo runs the loop against an external repo (default: the engine's own root).${C.reset}\n`)
     process.exit(1)
   }
   // Build args for orchestration/run.mjs: forward task + supported flags verbatim

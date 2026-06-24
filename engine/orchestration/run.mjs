@@ -7,8 +7,8 @@
  *   node run.mjs "add a /health endpoint"                       # plan + run via engine routing
  *   node run.mjs "..." --max 1 --exec-model ollama:gemma4:latest  # cap + pin execution model
  */
-import { writeFileSync, readFileSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { writeFileSync, readFileSync, existsSync, statSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { CONFIG, PATHS, reload, loadState, saveState, freshState, readyTasks, byId, executeWithReview, modelFor } from "./engine.mjs";
 import { planTasks, summarizeRepo } from "./planner.mjs";
@@ -26,7 +26,25 @@ for (let i = 0; i < argv.length; i++) {
 const taskText = taskParts.join(" ").trim();
 const max = Number(opts.max) || 0;
 const execModel = opts["exec-model"] || null;
-if (!taskText) { console.error('usage: node run.mjs "<task>" [--max N] [--exec-model provider:model]'); process.exit(1); }
+if (!taskText) { console.error('usage: node run.mjs "<task>" [--repo PATH] [--max N] [--exec-model provider:model]'); process.exit(1); }
+
+// ── 0. optional external target repo (TASK-HYB-RM-005) ──
+// Override only PATHS.ROOT (agent cwd + file ops + diff) and CONFIG.project (prompt facts).
+// The engine board/state/usage stay anchored to PATHS.__dir, so bookkeeping never leaks into
+// the target repo — only the actual code changes land there.
+if (opts.repo && opts.repo !== true) {
+  const target = resolve(String(opts.repo));
+  if (!existsSync(target) || !statSync(target).isDirectory()) {
+    console.error(`--repo path is not an existing directory: ${target}`); process.exit(1);
+  }
+  PATHS.ROOT = target;
+  const name = target.split(/[\\/]/).filter(Boolean).pop() || "target";
+  CONFIG.project = { ...(CONFIG.project || {}), name, repoRoot: target.replace(/\\/g, "/") };
+  // don't point workers at GoVibe-specific docs inside a foreign repo
+  if (CONFIG.scope?.default) CONFIG.scope.default = { ...CONFIG.scope.default, docs: [] };
+  CONFIG.docsForContext = [];
+  console.log(`target repo : ${target}`);
+}
 
 const usageSince = (t0) => {
   if (!existsSync(USAGE_PATH)) return [];
