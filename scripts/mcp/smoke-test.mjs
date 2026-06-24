@@ -5,6 +5,7 @@ import { GovibeRuntime } from "./runtime-core.mjs";
 
 const requiredTools = [
   "govibe.agent.run",
+  "govibe.orchestrate.run",
   "govibe.docs.resolve",
   "govibe.roadmap.load",
   "govibe.roadmap.update",
@@ -142,7 +143,7 @@ async function main() {
     registrySnapshot.agents.every((agent) => agent.fleet?.sourceRefs?.length > 0),
     "registry-derived agents are missing source references.",
   );
-  assert(registrySnapshot.capabilities.length === 12, "runtime capability records do not match the MCP tool catalog.");
+  assert(registrySnapshot.capabilities.length === 13, "runtime capability records do not match the MCP tool catalog.");
   assert(
     registrySnapshot.capabilities.every(
       (capability) => capability.status === "registered" && capability.sourcePath === "scripts/mcp/registry.mjs",
@@ -352,6 +353,17 @@ async function main() {
     assert(stepRun.structuredContent?.capability === "govibe.orchestrate.step", "orchestrate.step did not return structured StEP metadata.");
     assert(stepRun.structuredContent?.result?.status === "done", "orchestrate.step did not reach done on a prompt-build run with an empty Definition-of-Done.");
     assert(stepRun.structuredContent?.result?.selfCheck?.verdict === "pass", "orchestrate.step self-check did not pass for an empty Definition-of-Done.");
+
+    // AutonomyController dry-run: must plan the live roadmap's waves and spawn NO agents.
+    const autonomyDryRun = await client.request("tools/call", {
+      name: "govibe.orchestrate.run",
+      arguments: { actor: "smoke-test" },
+    });
+    const autonomyReport = autonomyDryRun.structuredContent?.report;
+    assert(autonomyDryRun.structuredContent?.capability === "govibe.orchestrate.run", "orchestrate.run did not return structured autonomy metadata.");
+    assert(autonomyReport?.mode === "dry-run", "orchestrate.run defaulted to something other than a guarded dry-run.");
+    assert(["planned", "empty"].includes(autonomyReport?.status), "orchestrate.run dry-run returned an unexpected status.");
+    assert(Array.isArray(autonomyReport?.steps) && autonomyReport.steps.length === 0, "orchestrate.run dry-run executed StEPs instead of only planning.");
 
     console.log("PASS: GoVibe MCP smoke test");
     console.log(`tools: ${requiredTools.length}`);

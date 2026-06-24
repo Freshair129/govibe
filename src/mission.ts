@@ -383,6 +383,7 @@ export type MissionCommand =
   | { type: "agent.select"; agentId: string }
   | { type: "roadmap.select"; sourcePath: string }
   | { type: "reactor.run"; profile: string }
+  | { type: "orchestrate.run"; execute?: boolean; concurrencyCap?: number; maxWaves?: number }
   | { type: "file.save"; hash: string; data: ArrayBuffer; meta: Record<string, unknown> };
 
 export type MissionDomain = {

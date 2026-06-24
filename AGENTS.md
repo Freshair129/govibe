@@ -2,8 +2,8 @@
 title: "GoVibe Universal Agent Operating Contract"
 summary: "สัญญาการทำงานสากลและการควบคุมจริยธรรมของ AI Agents ในโครงการ GoVibe"
 doc_id: "AGENTS-CORE-001"
-version: "1.3.1"
-updated: "2026-06-22"
+version: "1.3.2"
+updated: "2026-06-24"
 owner: "THESEUS"
 type: "agents"
 # --- MASTER HUB METADATA ---
@@ -77,6 +77,7 @@ Agent ต้องจำกัดวงการเรียกใช้เค�
 > metadata: { "color": "#9E9E9E", "icon": "cog", "link_to": "[[AGENTS::UNIVERSAL_HUB]]", "label": "Execution Rules" }
 
 - **Docs First:** ห้ามเขียน Code ก่อนที่ Blueprint/Spec จะได้รับการ Approve
+- **MCP Runtime Registration First:** ก่อนที่ session ฝั่ง MCP-client (เช่น Claude Code หรือ codex ที่รันที่ root) จะเรียกใช้ `govibe.*` tools ได้ (`govibe.orchestrate.run/step`, `govibe.roadmap.load`, ฯลฯ) **ต้องลงทะเบียน GoVibe MCP server ก่อน** — repo นี้ไม่มี `.mcp.json` โดย default. ลงทะเบียนด้วย `claude mcp add govibe -- node scripts/mcp/govibe-mcp-server.mjs` หรือเพิ่ม `.mcp.json` (`mcpServers.govibe` → `node scripts/mcp/govibe-mcp-server.mjs`). จนกว่าจะลงทะเบียน session ทำงานได้เพียงฐานะ **Lead orchestrator** จาก context (`AGENTS.md` / `CLAUDE.md`) เท่านั้น และห้ามอ้างว่า `govibe.*` พร้อมใช้งานทั้งที่ยังไม่ได้ลงทะเบียน (สอดคล้องกับ No Imagined Capability). หมายเหตุ: registry fleet (THESEUS/LYRA/GHOST/...) วิ่งบน executor `codex`/`ollama` ผ่าน `scripts/agents/invoke-agent.ps1` ไม่ใช่ subagent ของ Claude Code.
 - **Surgical Edit:** แก้ไขเฉพาะจุดที่เกี่ยวข้องกับ Task ID เท่านั้น
 - **Traceability:** ทุก Commit ต้องระบุ Task ID หรือ Atom ID ที่เกี่ยวข้อง
 - **Handoff Awareness:** Agent ทุกตัวต้องตรวจสอบโฟลเดอร์ `handoff/` และไฟล์ `log.jsonl` ในโดเมนที่รับผิดชอบทุกครั้งเมื่อได้รับมอบหมายงาน (Revoke/Invoke) เพื่อรับช่วงต่องานที่ค้างอยู่หรือข้อมูลบริบทเพิ่มเติม
@@ -92,5 +93,6 @@ Agent ต้องจำกัดวงการเรียกใช้เค�
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.3.2 | 2026-06-24 | THESEUS | Added the "MCP Runtime Registration First" execution rule: an MCP-client session (Claude Code / codex at root) must register the GoVibe MCP server (`.mcp.json` / `claude mcp add govibe`) before `govibe.*` tools are callable; until then it operates only as Lead from context, and registry-fleet agents run on codex/ollama via the launcher, not as Claude Code subagents. |
 | 1.3.1 | 2026-06-22 | THESEUS | Affirmed `AGENTS.md` as the standard contract auto-loaded by codex/gpt (with `AGENT.md`/`GEMINI.md` as compatibility bridges); fixed the stale Full-Scale Hub reference (`agent.md` → `AGENTS.md`). |
 | 1.3.0 | 2026-06-16 | THESEUS | Universal agent operating contract: hub-and-spoke metadata, unified handover, context scaling tiers, role directory, execution rules. |

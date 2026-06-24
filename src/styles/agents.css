@@ -1364,3 +1364,193 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+/* ── Visual Fleet (Phase 5) — wave-orchestration lanes in A5 ──────────────── */
+.fleet-waves {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.4rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--panel);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.fleet-waves__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+}
+
+.fleet-waves__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+
+.fleet-waves__sub {
+  margin: 0.3rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.fleet-waves__actions {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.fleet-btn {
+  padding: 0.45rem 0.95rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--panel-strong);
+  cursor: pointer;
+  transition: border-color 160ms ease, transform 160ms ease;
+}
+
+.fleet-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.fleet-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.fleet-btn--live {
+  border-color: rgba(245, 158, 11, 0.5);
+  color: #f59e0b;
+}
+
+.fleet-lanes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.fleet-lane {
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border);
+  border-radius: 12px;
+  padding: 0.7rem 0.85rem;
+  background: var(--panel-strong);
+}
+
+.fleet-lane--active { border-left-color: var(--accent); }
+.fleet-lane--complete { border-left-color: #22d3ee; }
+.fleet-lane--blocked { border-left-color: #ef4444; }
+.fleet-lane--pending { border-left-color: rgba(148, 163, 184, 0.5); }
+
+.fleet-lane__head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  margin-bottom: 0.6rem;
+}
+
+.fleet-lane__index {
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--text);
+}
+
+.fleet-lane__status {
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.12rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.fleet-lane__status--active { color: var(--accent); border-color: rgba(16, 185, 129, 0.45); }
+.fleet-lane__status--complete { color: #22d3ee; border-color: rgba(34, 211, 238, 0.45); }
+.fleet-lane__status--blocked { color: #ef4444; border-color: rgba(239, 68, 68, 0.45); }
+
+.fleet-lane__meta {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.fleet-lane__cells {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 0.5rem;
+}
+
+.fleet-cell {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--panel);
+  min-width: 0;
+}
+
+.fleet-cell__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+.fleet-cell--running .fleet-cell__dot { box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18); animation: fleet-pulse 1.4s ease-in-out infinite; }
+.fleet-cell--blocked .fleet-cell__dot,
+.fleet-cell--failed .fleet-cell__dot { background: #ef4444; }
+.fleet-cell--done .fleet-cell__dot { background: #22d3ee; }
+
+.fleet-cell__task {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fleet-cell__assignee {
+  grid-column: 2;
+  grid-row: 2;
+  font-size: 0.66rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fleet-cell__status {
+  grid-row: 1 / span 2;
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.fleet-cell__status--running { color: var(--accent); }
+.fleet-cell__status--verifying { color: #f59e0b; }
+.fleet-cell__status--done { color: #22d3ee; }
+.fleet-cell__status--blocked,
+.fleet-cell__status--failed { color: #ef4444; }
+
+@keyframes fleet-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.12); }
+  50% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.28); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fleet-cell--running .fleet-cell__dot { animation: none; }
+}

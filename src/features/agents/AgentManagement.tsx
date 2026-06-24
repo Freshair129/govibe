@@ -4,6 +4,7 @@ import { EmptyState } from "../../shared/EmptyState";
 import { ViewHeader } from "../../shared/ViewHeader";
 import { AgentConfigPanel } from "./AgentConfigPanel";
 import { AgentCard } from "./AgentCard";
+import { FleetWaves } from "./FleetWaves";
 import { deriveAgentStats } from "./agentStats";
 
 export function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot; send: (command: MissionCommand) => void }) {
@@ -199,6 +200,7 @@ export function AgentManagement({ snapshot, send }: { snapshot: MissionSnapshot;
           body="The mission runtime did not return agent registry metadata. Registry agents are not inferred from UI placeholders."
         />
       )}
+      <FleetWaves snapshot={snapshot} send={send} />
     </div>
   );
 }

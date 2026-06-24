@@ -71,6 +71,29 @@ export async function handleToolCall(name, args = {}) {
         },
       };
     }
+    case "govibe.orchestrate.run": {
+      const response = await govibeRuntime.runAutonomy(args);
+      const report = response.report;
+      return {
+        content: asTextContent(
+          [
+            `GoVibe AutonomyController ${report.mode} run over the live roadmap DAG.`,
+            "",
+            `actor: ${args.actor ?? "unknown"}`,
+            `mode: ${report.mode}`,
+            `status: ${report.status}`,
+            `waves: ${report.waveCount}`,
+            report.status === "refused" ? `reason: ${report.refusedReason}` : "",
+            report.blockedAt ? `blockedAt: ${report.blockedAt.taskId} (${report.blockedAt.reason})` : "",
+          ]
+            .filter(Boolean)
+            .join("\n"),
+        ),
+        structuredContent: {
+          ...response,
+        },
+      };
+    }
     case "govibe.docs.resolve": {
       const packet = await govibeRuntime.resolveDocs(args.selectors ?? []);
       return {

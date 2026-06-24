@@ -9,6 +9,7 @@ import { writeRoadmapMarkdownExport } from "./roadmap-exporter.mjs";
 import { buildDag } from "./dag.mjs";
 import { computeWaves } from "./wave.mjs";
 import { runStep as executeStep } from "./step.mjs";
+import { runAutonomy } from "./autonomy.mjs";
 import { runVerifyGate } from "./verify-gate.mjs";
 import { compareTemporalOrder, createTemporalVersion, isTemporalVisible, nextVersion } from "./temporal-versioning.mjs";
 import { toolCatalog } from "./registry.mjs";
@@ -724,8 +725,9 @@ export class GovibeRuntime {
     };
   }
 
-  async runStep(args = {}) {
-    const step = {
+  // Normalize a tool/orchestrator argument bag into a StepInput for step.mjs.
+  buildStepInput(args = {}) {
+    return {
       stepId: args.stepId ?? `step-${crypto.randomUUID()}`,
       taskId: args.taskId,
       lane: args.lane,
@@ -745,10 +747,14 @@ export class GovibeRuntime {
       complexity: args.complexity,
       contextTier: args.contextTier,
     };
+  }
 
-    const result = await executeStep(step, {
+  // Shared injected effects for one StEP — reused by runStep and runAutonomy so both paths
+  // execute through the identical agent/gate/mutation/emit wiring.
+  stepRuntimeDeps(step) {
+    return {
       runAgent: (agentArgs) => this.runAgent(agentArgs),
-      runGate: (dod) => runVerifyGate(dod, { cwd: workspaceRoot, maxMs: step.budget?.maxMs }),
+      runGate: (dod) => runVerifyGate(dod, { cwd: workspaceRoot, maxMs: step?.budget?.maxMs }),
       applyMutation: (mutation) => this.applyRoadmapMutation(mutation),
       appendTerminal: (type, text) => this.appendTerminal(type, text),
       logEvent: (name, payload) => this.sessionTracker.logEvent(name, payload),
@@ -756,13 +762,72 @@ export class GovibeRuntime {
       gitStatus: () => gitPorcelain(workspaceRoot),
       createTemporal: createTemporalVersion,
       now: () => new Date().toISOString(),
-    });
+    };
+  }
 
+  async runStep(args = {}) {
+    const step = this.buildStepInput(args);
+    const result = await executeStep(step, this.stepRuntimeDeps(step));
     return {
       capability: "govibe.orchestrate.step",
       auditRef: buildAuditRef("govibe.orchestrate.step"),
       request: args,
       result,
+    };
+  }
+
+  // AutonomyController entrypoint (autonomy.mjs). Guarded: dry-run plan by default; spawns real
+  // agents + real gates + roadmap mutation only when args.execute === true.
+  async runAutonomy(args = {}) {
+    const roadmap = this.snapshot.roadmap;
+    const dag = roadmap?.dag ?? buildDag(roadmap?.nodes ?? [], { actionableTypes: actionableRoadmapTypes });
+    const execute = args.execute === true;
+
+    // Resolve each task's registered assignee so StEPs route to the right agent.
+    const assigneeByTask = new Map((roadmap?.assignments ?? []).map((a) => [a.taskId, a.subjectId]));
+    const nodeById = new Map((roadmap?.nodes ?? []).map((n) => [n.id, n]));
+
+    const buildStep = (taskId, wave) =>
+      this.buildStepInput({
+        taskId,
+        lane: wave?.id,
+        agentId: assigneeByTask.get(taskId) ?? args.agentId,
+        task: nodeById.get(taskId)?.title ?? `Execute task ${taskId}`,
+        scope: args.scope,
+        executor: args.executor,
+        modelTier: args.modelTier,
+        definitionOfDone: args.definitionOfDone ?? { checks: [], requireAll: true },
+        maxAttempts: args.maxAttempts ?? 1,
+      });
+
+    const report = await runAutonomy(
+      {
+        dag,
+        execute,
+        concurrencyCap: args.concurrencyCap,
+        actionableTypes: actionableRoadmapTypes,
+        executorLimits: args.executorLimits,
+        maxWaves: args.maxWaves ?? Infinity,
+        buildStep,
+      },
+      {
+        runStep: (step) => executeStep(step, this.stepRuntimeDeps(step)),
+        emit: (event) => this.emit(event),
+        now: () => new Date().toISOString(),
+      },
+    );
+
+    this.appendTerminal(
+      report.status === "blocked" ? "warn" : "agent",
+      `Autonomy ${report.mode} run: ${report.status} (${report.waveCount} wave(s)).`,
+    );
+    this.sessionTracker.logEvent("orchestrate_run", { args, report });
+
+    return {
+      capability: "govibe.orchestrate.run",
+      auditRef: buildAuditRef("govibe.orchestrate.run"),
+      request: { ...args, execute },
+      report,
     };
   }
 
@@ -995,6 +1060,13 @@ export class GovibeRuntime {
     if (command.type === "reactor.run") {
       this.appendTerminal("sys", `Reactor run requested for profile: ${command.profile}`);
       return { ok: true, action: "reactor.run" };
+    }
+    if (command.type === "orchestrate.run") {
+      // Operator-triggered autonomy. Guarded: dry-run unless the command explicitly opts into live.
+      const execute = command.execute === true;
+      this.appendTerminal("sys", `Autonomy run requested (${execute ? "live" : "dry-run"}).`);
+      const response = await this.runAutonomy({ ...command, execute });
+      return { ok: true, action: "orchestrate.run", response, snapshot: this.snapshot };
     }
     if (command.type === "file.save") {
       this.appendTerminal("sys", `File save command received for hash: ${command.hash}`);

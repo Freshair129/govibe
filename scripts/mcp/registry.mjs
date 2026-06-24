@@ -48,6 +48,27 @@ export const toolCatalog = [
     },
   },
   {
+    name: "govibe.orchestrate.run",
+    description: "Run the AutonomyController over the live roadmap DAG wave-by-wave. Guarded: dry-run plan by default (emits the full wave lifecycle, spawns no agents); set execute:true for a live run that spawns agents, runs real Definition-of-Done gates, and advances the roadmap, halting at the first human gate.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+        execute: { type: "boolean" },
+        concurrencyCap: { type: "number" },
+        maxWaves: { type: "number" },
+        executorLimits: { type: "object" },
+        agentId: { type: "string" },
+        scope: { type: "string" },
+        executor: { type: "string" },
+        modelTier: { type: "string", enum: ["tiny", "default", "pro", "retry"] },
+        definitionOfDone: { type: "object" },
+        maxAttempts: { type: "number" },
+      },
+      required: ["actor"],
+    },
+  },
+  {
     name: "govibe.docs.resolve",
     description: "Resolve approved GoVibe documents or bounded context packets.",
     inputSchema: {
