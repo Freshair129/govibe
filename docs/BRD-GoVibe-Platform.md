@@ -1,8 +1,10 @@
 ---
 doc_id: "BRD-GOVIBE-PLATFORM"
+uid: "01KVXGFTDVRFN6T3PPZE2EFCGT"
 title: "GoVibe — Business Requirements Document & Business Overview"
 status: "draft"
 version: "0.1.1+draft"
+content_hash: "atom:0bc388242adad9f4"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 source_of_truth: true

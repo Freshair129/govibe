@@ -1,11 +1,15 @@
 ---
 doc_id: "POC-H6-BUDGET-SUFFICIENCY"
+uid: "01KVXGFT5F5PCKZNVMYMJ02QWS"
 title: "PoC-2: H0–H6 + budget is sufficient & complete as agent context"
 status: "draft"
 version: "0.1.0+draft"
+content_hash: "atom:ecd4c5391142e260"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 type: audit
+related_docs:
+  - "docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md"
 ---
 
 # PoC-2: H0–H6 + Budget Sufficiency

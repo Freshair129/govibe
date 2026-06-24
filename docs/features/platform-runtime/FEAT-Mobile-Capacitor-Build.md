@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-MOBILE-CAPACITOR-BUILD"
+uid: "01KVXGFVBR6EKF903X3844C5A4"
+title: "FEAT-MOBILE-DEPLOY: Capacitor Build Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:1cc5b68c2dcb506d"
+updated: "2026-06-24"
+owner: "TURBO (DevOps Specialist)"
+type: feature
+---
 # FEAT-MOBILE-DEPLOY: Capacitor Build Spec
 
 **Task ID:** GV-S511
@@ -46,3 +57,9 @@
 
 ---
 **Please review and approve this Mobile Build Spec. Once approved, I will begin the Capacitor integration.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | TURBO (DevOps Specialist) | Brought under document governance (docs:backfill): frontmatter + changelog. |

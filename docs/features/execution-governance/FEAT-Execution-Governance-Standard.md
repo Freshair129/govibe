@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-EXECUTION-GOVERNANCE-STANDARD"
+uid: "01KVXGFTXZN7HEEXAC7DMQXNPP"
+title: "FEAT: Execution Governance System"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:94fb50459bd5918f"
+updated: "2026-06-24"
+owner: "ATHER"
+type: feature
+---
 # FEAT: Execution Governance System
 
 **Status:** `DRAFT`
@@ -33,3 +44,8 @@ Operationalize the execution governance standard so every non-trivial task is cl
 - Approval and verification requirements are explicit, not implicit team memory.
 - The system can point back to `docs/STD-Execution-Governance.md` as the governing standard.
 
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ATHER | Brought under document governance (docs:backfill): frontmatter + changelog. |

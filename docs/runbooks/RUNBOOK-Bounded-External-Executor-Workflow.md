@@ -1,8 +1,10 @@
 ---
 title: "RUNBOOK: Bounded External Executor Workflow"
 doc_id: "RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW"
+uid: "01KVXGFW7S45Q5EV6R1SDKSRAY"
 status: "approved"
 version: "0.2.4"
+content_hash: "atom:5abc5386cfc4a121"
 updated: "2026-06-20"
 owner: "LYRA"
 auditor: "ATHER"

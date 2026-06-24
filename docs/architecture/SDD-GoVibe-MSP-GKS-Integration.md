@@ -1,11 +1,19 @@
 ---
 doc_id: "SDD-GOVIBE-MSP-GKS-INTEGRATION"
+uid: "01KVXGFT56TAPEYV44Z17776F8"
 title: "SDD: GoVibe ↔ MSP ↔ GKS ↔ GenesisBlockDB integration"
 status: "draft"
 version: "0.1.2+draft"
+content_hash: "atom:bf22110c74b76c7b"
 updated: "2026-06-23"
 owner: "Boss (CEO)"
 type: sdd
+related_docs:
+  - "docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md"
+  - "docs/adr/ADR-017-GoVibe-Governance-Translator-GKS-Interlingua.md"
+  - "docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md"
+  - "docs/adr/ADR-019-Universal-Code-In-MCP-Out.md"
+  - "docs/api/API-004-Task-Scoped-Context-Packet-Schema.md"
 ---
 
 # SDD: GoVibe ↔ MSP ↔ GKS ↔ GenesisBlockDB integration

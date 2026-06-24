@@ -1,22 +1,25 @@
 ---
 title: "RUNBOOK: GoVibe Multi-Agent Workflow"
 doc_id: "RUNBOOK-GOVIBE-MULTI-AGENT"
+uid: "01KVXGFW7TGVVFFW5VJHE7VJHW"
 status: "candidate"
 version: "0.1.0"
+content_hash: "atom:dcf025b4dab1de30"
 updated: "2026-06-13"
 owner: "GoVibe"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
-  - "docs/architecture/C4-GoVibe-Platform.md"
   - "docs/SDD-System-Design.md"
   - "docs/STD-Execution-Governance.md"
+  - "docs/adr/ADR-006-Deterministic-Agent-ID-Generation.md"
+  - "docs/api/API-003-Mission-Workflow-Event-Schema.md"
+  - "docs/architecture/C4-GoVibe-Platform.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Collaboration.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
-  - "docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md"
   - "docs/features/governance-access/FEAT-RBAC-ABAC-Governance.md"
-  - "docs/api/API-003-Mission-Workflow-Event-Schema.md"
+  - "docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md"
 ---
 
 # RUNBOOK: GoVibe Multi-Agent Workflow
@@ -290,3 +293,9 @@ A multi-agent workflow run is complete when:
 
 - Migrate remaining legacy references from `.agents/RUNBOOK-GoVibe-Multi-Agent.md` once all active contracts point here.
 - Add machine-readable workflow event schema if Mission Control needs real-time orchestration playback.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 2026-06-24 | 2026-06-24 | GoVibe | Added governance Changelog section (docs:backfill). |

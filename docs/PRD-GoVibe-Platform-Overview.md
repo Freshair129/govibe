@@ -1,8 +1,10 @@
 ---
 title: "PRD: GoVibe Platform Overview"
 doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
+uid: "01KVXGFW2JXDF9EF05C0S1DMM2"
 status: "draft"
 version: "0.4.3+draft"
+content_hash: "atom:b8b4d405f35546a6"
 updated: "2026-06-23"
 owner: "Rwang (Senior Dev)"
 source_of_truth: true

@@ -1,8 +1,10 @@
 ---
 title: "FEAT: CoDev Module"
 doc_id: "FEAT-CODEV-MODULE"
+uid: "01KVXGFTQRD9DG6AG7DJ9K302G"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:2c77c3b664f1ddaf"
 updated: "2026-06-17"
 owner: "THESEUS"
 auditor: "ATHER"

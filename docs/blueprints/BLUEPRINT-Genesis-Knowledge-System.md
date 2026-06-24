@@ -2,9 +2,11 @@
 title: "Unified Blueprint: Genesis Knowledge System"
 summary: "ระบบบริหารจัดการองค์ความรู้เชิงปัญญาและโครงสร้างกราฟบริบทสำหรับ AI Agents"
 doc_id: "UGB-GKS-001"
+uid: "01KVXGFT77RT844GCG804K5VMJ"
 created: "2026-06-13T12:00:00+07:00,THESEUS"
 updated: "2026-06-13T12:30:00+07:00,THESEUS"
 version: "1.3.0"
+content_hash: "atom:d4aad244006a1ed2"
 status: "candidate"
 state: candidate
 type: genesis
@@ -102,3 +104,9 @@ graph LR
 - [ ] **Acyclic Check:** ตรวจสอบวงจรกราฟ
 - [ ] **Compaction Check:** ตรวจสอบความลึกของเลเยอร์ (Max L7)
 - [ ] **Metadata Hub Validation:** `block_id` ต้องชี้กลับมาที่ GKS_CORE
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 2026-06-24 | 2026-06-24 | GoVibe | Added governance Changelog section (docs:backfill). |

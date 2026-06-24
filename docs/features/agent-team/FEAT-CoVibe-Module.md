@@ -1,8 +1,10 @@
 ---
 title: "FEAT: CoVibe Module"
 doc_id: "FEAT-COVIBE-MODULE"
+uid: "01KVXGFTV44Z3TYXFHJT8YT6Z1"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:6aaa0cd66058ab77"
 updated: "2026-06-17"
 owner: "THESEUS"
 auditor: "ATHER"

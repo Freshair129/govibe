@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-DIAGRAM-TO-DOC-SYSTEM"
+uid: "01KVXGFTXW0KKS0JH1JDH903G5"
+title: "FEAT: Diagram to Doc System"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:65a4e051acb85a8c"
+updated: "2026-06-24"
+owner: "ARCHON"
+type: feature
+---
 # FEAT: Diagram to Doc System
 
 **Status:** `DRAFT`
@@ -46,3 +57,8 @@ diagram input
 - Approved diagram-derived docs can feed the same task and context pipelines as hand-written docs.
 - Auditor can trace document sections back to the source diagram asset.
 
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ARCHON | Brought under document governance (docs:backfill): frontmatter + changelog. |

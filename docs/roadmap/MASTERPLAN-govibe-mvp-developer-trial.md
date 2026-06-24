@@ -1,8 +1,10 @@
 ---
 title: "MASTERPLAN: GoVibe MVP Developer Trial"
 doc_id: "MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL"
+uid: "01KVXGFW5J9Q03R4X69330V160"
 status: "draft"
 version: "0.1.1+draft"
+content_hash: "atom:2ad5a8f3a1f127ef"
 updated: "2026-06-20"
 owner: "LYRA"
 auditor: "ATHER"

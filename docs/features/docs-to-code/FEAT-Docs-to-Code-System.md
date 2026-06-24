@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-DOCS-TO-CODE-SYSTEM"
+uid: "01KVXGFTXX7JVKNF1VZ53WJAA5"
+title: "FEAT: Docs to Code System"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:2efe3d1af6c9a3d2"
+updated: "2026-06-24"
+owner: "LYRA / PM"
+type: feature
+---
 # FEAT: Docs to Code System
 
 **Status:** `DRAFT`
@@ -50,3 +61,8 @@ approved document
 - A parsed section can be traced to task, agent assignment, artifact, and verification evidence.
 - Auditor can reject flows that treat ad hoc UI state as canonical requirements.
 
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | LYRA / PM | Brought under document governance (docs:backfill): frontmatter + changelog. |

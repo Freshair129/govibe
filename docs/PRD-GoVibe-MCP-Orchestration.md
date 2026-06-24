@@ -1,9 +1,11 @@
 ---
 title: "PRD: GoVibe MCP Orchestration"
 doc_id: "PRD-GOVIBE-MCP-ORCHESTRATION"
+uid: "01KVXGFW2HTDF7VA0MKBTJ4N55"
 status: "draft"
-version: "0.2.1+draft"
-updated: "2026-06-22"
+version: "0.2.3+draft"
+content_hash: "atom:8420c0eff7ea3376"
+updated: "2026-06-24"
 owner: "GoVibe"
 source_of_truth: true
 related_adrs: ["ADR-016", "ADR-017", "ADR-019"]
@@ -82,7 +84,7 @@ The business rules for permissions, context injection, task routing, and state m
 
 ## 7. Capability Surface
 
-The orchestration surface is exposed as a governed catalog of MCP tools (`scripts/mcp/registry.mjs`). The current runtime ships ten `govibe.*` tools grouped by capability domain. Each capability is described below as a product capability; the tool names are the as-built contract from `docs/lld/LLD-GoVibe-MCP-Tools.md`.
+The orchestration surface is exposed as a governed catalog of MCP tools (`scripts/mcp/registry.mjs`). The current runtime ships 13 `govibe.*` tools grouped by capability domain (the smoke test `scripts/mcp/smoke-test.mjs` asserts `capabilities.length === 13` as the source of truth). Each capability is described below as a product capability; the tool names are the as-built contract from `docs/lld/LLD-GoVibe-MCP-Tools.md`.
 
 The MCP runtime speaks MCP JSON-RPC (`Content-Length`-framed) over stdio and additionally boots an HTTP/WebSocket sidecar bound to `127.0.0.1:4310` (port via `GOVIBE_MCP_PORT`, host via `GOVIBE_MCP_HOST`) so Mission Control and other browser surfaces can reach the same capabilities. The sidecar exposes `GET /mission/snapshot`, `GET /roadmap/sources`, `POST /mission/commands`, and a `/mission/ws` WebSocket channel.
 
@@ -125,6 +127,12 @@ The roadmap is document-driven: board data originates from Markdown/HTML plannin
 
 - **`govibe.orchestrate.step`** — execute one bounded StEP (a single step of a roadmap DAG / wave). It runs the step's agent action through `govibe.agent.run`, then evaluates the step's Definition-of-Done against the real verify-gate (`lint` / `build` / `test` / `docs:validate` / `roadmap:validate`) before advancing the task. Returns the step verdict, gate results, and an audit reference. This is the orchestration primitive the `.agents` system uses to advance work deterministically — orchestration here is a runtime capability, not a separate product identity.
 
+### 7.8 Autonomous Run
+
+- **`govibe.orchestrate.run`** — run the AutonomyController over the live roadmap DAG wave-by-wave. A caller supplies an `actor`, optionally `execute`, `concurrencyCap`, `maxWaves`, `executorLimits`, and the same execution preferences (`agentId`, `scope`, `executor`, `modelTier`, `definitionOfDone`, `maxAttempts`) that bound an individual StEP. The capability is **guarded: a dry-run by default** — it plans the live roadmap's waves and emits the full wave lifecycle while spawning **no** agents and mutating no state. Setting `execute: true` promotes it to a live run that spawns real agents, runs real Definition-of-Done gates (via `govibe.orchestrate.step`), and advances the roadmap one wave at a time, **halting at the first human gate** so a person remains in the loop. Returns an autonomy report (mode, status, and the per-wave/per-StEP results) plus an audit reference.
+
+This is the capability that lets an operator (or CI) advance an entire roadmap wave-by-wave through one contract, while the dry-run default and the human-gate halt keep autonomous execution inspectable rather than open-loop.
+
 ## 8. Permission Model
 
 GoVibe's intended governance model is two-tier:
@@ -165,7 +173,7 @@ Numeric targets (e.g. enforced-denial coverage, latency) are deferred until perm
 
 Phasing is derived from the current as-built runtime and the work the SRS/LLD mark as planned.
 
-- **Phase 1 — Orchestration baseline (shipped).** MCP JSON-RPC over stdio plus the HTTP/WS sidecar on `127.0.0.1:4310`; the ten `govibe.*` tools (agent.run, orchestrate.step, docs.resolve, roadmap.load/update/export, workspace.initialize/validate, doc.create, deploy.vercel scaffold); document-driven roadmap; audit references surfaced on tool responses and the mission snapshot.
+- **Phase 1 — Orchestration baseline (shipped).** MCP JSON-RPC over stdio plus the HTTP/WS sidecar on `127.0.0.1:4310`; the 13 `govibe.*` tools (agent.run, orchestrate.step, orchestrate.run, docs.resolve, roadmap.load/update/export, workspace.initialize/validate, doc.create, deploy.vercel scaffold, ingest.code, render); document-driven roadmap; audit references surfaced on tool responses and the mission snapshot.
 - **Phase 2 — Permission enforcement (planned).** Wire the RBAC/ABAC policy decision/enforcement points into the runtime so unauthorized actions fail with an explicit, inspectable denial reason (SRS FR-005, §7). Until this lands, the policy labels are descriptive, not enforced.
 - **Phase 3 — Deployment binding (planned).** Bind `govibe.deploy.vercel` to a governed Vercel CLI / GitHub workflow adapter, replacing the current acknowledgement-only scaffold (LLD §3.5).
 - **Phase 4 — Resource/discovery hardening (planned).** Decide which read-only data is offered as MCP resources versus tool-return payloads, and broaden capability-discovery metadata (SRS Open Questions).
@@ -207,6 +215,8 @@ Phasing is derived from the current as-built runtime and the work the SRS/LLD ma
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.3+draft | 2026-06-24 | GoVibe | No body change; version bump recorded alongside repo-wide doc-governance enforcement (location lock + registration gate + pre-commit hook). |
+| 0.2.2+draft | 2026-06-24 | GoVibe | Corrected the tool count (ten → 13) and added the `govibe.orchestrate.run` Autonomous Run capability (§7.8 — guarded dry-run by default, `execute:true` spawns real agents/gates and advances the roadmap wave-by-wave, halting at the first human gate); refreshed the Phase 1 tool list (added orchestrate.run, ingest.code, render). |
 | 0.2.1+draft | 2026-06-22 | GoVibe | Corrected the tool count (nine → ten) and added the missing `govibe.orchestrate.step` capability (§7.7); framed orchestration as a runtime capability, not a separate product identity. |
 | 0.2.0+draft | 2026-06-21 | GoVibe | Authored the previously-stubbed PRD body (capability surface, permission model, boundaries, metrics, rollout, risks, traceability) synthesized from the approved MCP SRS and tools LLD. |
 | 0.1.1+draft | 2026-06-20 | GoVibe | Added missing title frontmatter field. Body remains stubbed and incomplete for sign-off. |

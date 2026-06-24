@@ -1,11 +1,15 @@
 ---
 doc_id: "ADR-016-FULL-STACK-MANDATORY-SWAPPABLE-BACKEND"
+uid: "01KVXGFSJGY9NPVWD2NEH8P5XK"
 title: "ADR-016: Mandatory GoVibe + MSP core; full eco optional (tiered); swappable storage backend"
 status: "accepted"
 version: "0.2.0"
+content_hash: "atom:bb497f9145e446b8"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 type: adr
+related_docs:
+  - "docs/adr/ADR-017-GoVibe-Governance-Translator-GKS-Interlingua.md"
 ---
 
 # ADR-016: Mandatory GoVibe + MSP core; full eco optional (tiered); swappable storage backend

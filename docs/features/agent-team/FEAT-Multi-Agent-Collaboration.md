@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-MULTI-AGENT-COLLABORATION"
+uid: "01KVXGFTVP1ZVXA3M8ZF7J0ETQ"
+title: "FEAT-MULTI-AGENT-COLLAB: Multi-Agent Collaboration Engine Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:8803e7fb192755a8"
+updated: "2026-06-24"
+owner: "ARCHON (Architect)"
+type: feature
+---
 # FEAT-MULTI-AGENT-COLLAB: Multi-Agent Collaboration Engine Spec
 
 > Legacy subview-oriented spec. Use `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md` as the system-level SSOT for workflow semantics.
@@ -54,3 +65,9 @@
 
 ---
 **Please review and approve this Collaboration Spec. Once approved, I will build the engine and sync logic.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ARCHON (Architect) | Brought under document governance (docs:backfill): frontmatter + changelog. |

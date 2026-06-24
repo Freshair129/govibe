@@ -1,8 +1,10 @@
 ---
 title: "FEAT: Quota-Aware Local LLM Decomposition"
 doc_id: "FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION"
+uid: "01KVXGFTVTNMWK8VRK2V9Q7P00"
 status: "approved"
 version: "0.1.1"
+content_hash: "atom:3b7a2a14dc265c82"
 updated: "2026-06-20"
 owner: "LYRA / ATHER"
 source_of_truth: true

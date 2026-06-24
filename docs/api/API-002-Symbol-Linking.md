@@ -1,3 +1,14 @@
+---
+doc_id: "API-002-SYMBOL-LINKING"
+uid: "01KVXGFSJRZPCXQV05BJ5FJZVC"
+title: "API-002: Symbol Linking & Search Contract"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:24969edec4f6aba1"
+updated: "2026-06-24"
+owner: "User (Boss)"
+type: api
+---
 # API-002: Symbol Linking & Search Contract
 
 **Status:** APPROVED
@@ -46,3 +57,9 @@
 ## 🚨 Error Handling
 - หากไม่มีฐานข้อมูลหรือไม่พร้อมทำงาน ให้ตอบกลับด้วย Error string ธรรมดาผ่าน `Result::Err`
 - Frontend ต้องรับค่าและจับ `try...catch` จาก `useGateway` พร้อมแสดงแจ้งเตือน (Toast/Badge)
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | User (Boss) | Brought under document governance (docs:backfill): frontmatter + changelog. |

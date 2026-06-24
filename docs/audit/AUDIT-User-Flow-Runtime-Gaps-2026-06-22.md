@@ -1,8 +1,10 @@
 ---
 title: "AUDIT: GoVibe User-Flow Runtime Gaps (2026-06-22)"
 doc_id: "AUDIT-USER-FLOW-RUNTIME-GAPS-2026-06-22"
+uid: "01KVXGFT5DPWMFZARRHJAHBSH1"
 status: "draft"
 version: "0.1.0+draft"
+content_hash: "atom:748c6c59f6c9279b"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 auditor: "ATHER"

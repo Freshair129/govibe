@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-HYBRID-JIT-CONTEXT-SYSTEM"
+uid: "01KVXGFTYATD8CC843N39Z35MZ"
+title: "FEAT: Hybrid JIT Context System"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:6d7c57c786af9109"
+updated: "2026-06-24"
+owner: "ARCHON"
+type: feature
+---
 # FEAT: Hybrid JIT Context System
 
 **Status:** `DRAFT`
@@ -35,3 +46,8 @@ approved source document
 - JIT rendering works with compacted documents rather than requiring one atom per file.
 - Batch ingest and virtual rendering rules remain compatible with Obsidian and GenesisDB workflow assumptions.
 
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ARCHON | Brought under document governance (docs:backfill): frontmatter + changelog. |

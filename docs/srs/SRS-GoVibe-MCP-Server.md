@@ -1,8 +1,10 @@
 ---
 title: "SRS: GoVibe MCP Server"
 doc_id: "SRS-GOVIBE-MCP-SERVER"
+uid: "01KVXGFWAMESDB8YD491EVZ5DB"
 status: "approved"
 version: "0.2.1"
+content_hash: "atom:1de34ff14164736e"
 updated: "2026-06-20"
 owner: "GoVibe"
 source_of_truth: true

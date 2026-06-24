@@ -1,8 +1,10 @@
 ---
 title: "FEAT: Bi-Temporal Versioning for Genesis-Style Roadmap State"
 doc_id: "FEAT-TRACE-BITEMPORAL-001"
+uid: "01KVXGFVYW1DJQ4SEDP8DWWVSB"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:04119e66dd469285"
 updated: "2026-06-14"
 owner: "ATHER"
 source_of_truth: true

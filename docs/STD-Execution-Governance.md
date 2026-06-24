@@ -1,8 +1,10 @@
 ---
 title: "STD: Execution Governance Standard"
 doc_id: "STD-EXECUTION-GOVERNANCE"
+uid: "01KVXGFWHR1XD2YF3GH6NTJ5G6"
 status: "stable"
 version: "2.2.0+ga"
+content_hash: "atom:94e9b8d9ee792110"
 updated: "2026-06-15"
 owner: "GoVibe"
 source_of_truth: true

@@ -1,0 +1,15 @@
+#!/bin/sh
+# GoVibe governance pre-commit gate — operationalizes ADR-007 (Deterministic Governance):
+# "a mandatory validation gate enforced via Git pre-commit hook".
+#
+# Blocks any commit that violates doc/roadmap governance (scattered location, unregistered
+# doc, broken frontmatter, incomplete Task Container). Activated by `git config core.hooksPath
+# .githooks`, which `npm install` wires automatically via the package.json "prepare" script.
+#
+# Bypass (discouraged, leaves a trail): git commit --no-verify
+set -e
+
+echo "[govibe] governance pre-commit gate: docs:validate + roadmap:validate"
+npm run --silent docs:validate
+npm run --silent roadmap:validate
+echo "[govibe] governance gate passed."

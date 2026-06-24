@@ -1,8 +1,10 @@
 ---
 title: "SRS: GoVibe Task-Scoped Context Injection"
 doc_id: "SRS-GOVIBE-TASK-SCOPED-CONTEXT-INJECTION"
+uid: "01KVXGFWAM40M5YWXZD4QY9R6D"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:f5ea39bb9f010a67"
 updated: "2026-06-19"
 owner: "ARCHON / ATHER"
 source_of_truth: true

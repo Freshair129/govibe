@@ -1,3 +1,17 @@
+---
+doc_id: "RCA-2026-06-14-VISUAL-AGENT-FLEET-GOVERNANCE-FAILURE"
+uid: "01KVXGFW2K8H1V1T8EC4GTR790"
+title: "[ROOT CAUSE] Visual Agent Fleet Documentation Governance Failure"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:4a1916286ab40e2d"
+updated: "2026-06-24"
+owner: "GoVibe"
+type: rca
+related_docs:
+  - "docs/STD-Execution-Governance.md"
+  - "docs/adr/ADR-012-Visual-Agent-Fleet-Governance.md"
+---
 # [ROOT CAUSE] Visual Agent Fleet Documentation Governance Failure
 
 **Incident:** Documentation Governance Escape (Missing ADR/PRD Alignment in initial implementation)
@@ -32,3 +46,9 @@ The task was treated as a **C-2 (Doc-Driven Feature)** implementation rather tha
 ## 6. Responsible Roles
 - **THESEUS**: Responsible for ensuring documentation hierarchy (Parent before Peer).
 - **ATHER**: Responsible for auditing governance compliance and blocking non-compliant implementation.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | GoVibe | Brought under document governance (docs:backfill): frontmatter + changelog. |

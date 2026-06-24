@@ -1,8 +1,10 @@
 ---
 title: "SDD: Symbol Graph Traceability Boundary"
 doc_id: "SDD-SYMBOL-GRAPH-TRACEABILITY-BOUNDARY"
+uid: "01KVXGFT58V3APX2DNK4S1YGG4"
 status: "approved"
 version: "0.1.1"
+content_hash: "atom:8e45a71ff42598e4"
 updated: "2026-06-20"
 owner: "ARCHON / THESEUS / ATHER"
 source_of_truth: true

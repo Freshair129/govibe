@@ -1,8 +1,10 @@
 ---
 title: "Architecture: MSP/GKS Taxonomy Mapping"
 doc_id: "MSP-GKS-TAXONOMY-MAPPING"
+uid: "01KVXGFSZMPQFKZ0BAK07WQJ35"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:ba7fa980c82c72c5"
 updated: "2026-06-16"
 owner: "THESEUS / KIN"
 source_of_truth: true

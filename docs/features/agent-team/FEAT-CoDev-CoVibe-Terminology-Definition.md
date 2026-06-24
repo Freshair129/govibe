@@ -1,8 +1,10 @@
 ---
 title: "FEAT: CoDev and CoVibe Terminology Definition"
 doc_id: "FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION"
+uid: "01KVXGFTQ5Z513NDCTCCFYRWND"
 status: "approved"
 version: "0.1.1"
+content_hash: "atom:d64ecb1cbbdaaed0"
 updated: "2026-06-17"
 owner: "THESEUS"
 auditor: "ATHER"

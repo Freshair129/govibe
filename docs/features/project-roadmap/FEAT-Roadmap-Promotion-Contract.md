@@ -1,8 +1,10 @@
 ---
 title: "FEAT: Roadmap Promotion Contract"
 doc_id: "FEAT-ROADMAP-PROMOTION-CONTRACT"
+uid: "01KVXGFVBTXSGF23YCR7V21HF5"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:ef30d942d39574a3"
 updated: "2026-06-16"
 owner: "LYRA"
 auditor: "ATHER"

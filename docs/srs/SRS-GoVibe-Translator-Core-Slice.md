@@ -1,8 +1,10 @@
 ---
 title: "SRS: GoVibe Translator-Core Slice (Ingest → Render → Fidelity Gate)"
 doc_id: "SRS-GOVIBE-TRANSLATOR-CORE-SLICE"
+uid: "01KVXGFWANM2W3MDV7G7RVT5VT"
 status: "draft"
 version: "0.1.1+draft"
+content_hash: "atom:00f060102d576a47"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 auditor: "ATHER"

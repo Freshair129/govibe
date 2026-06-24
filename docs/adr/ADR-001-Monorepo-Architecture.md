@@ -1,3 +1,14 @@
+---
+doc_id: "ADR-001-MONOREPO-ARCHITECTURE"
+uid: "01KVXGFREPE4KGGPM6B4V3B2WQ"
+title: "ADR-001: GoVibe Monorepo Architecture & Workspace Strategy"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:2c471ebea463edb2"
+updated: "2026-06-24"
+owner: "User (Boss)"
+type: adr
+---
 # ADR-001: GoVibe Monorepo Architecture & Workspace Strategy
 
 **Status:** `APPROVED`
@@ -53,3 +64,9 @@ D:/GoVibe/
 ---
 
 **Please review and approve this ADR. Once approved, I will proceed to Step 1: Scaffolding and File Migration.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | User (Boss) | Brought under document governance (docs:backfill): frontmatter + changelog. |

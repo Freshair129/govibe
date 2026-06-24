@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-PLAYWRIGHT-E2E-SETUP"
+uid: "01KVXGFVBWHVP33VKH313B31AD"
+title: "FEAT-PLAYWRIGHT-SETUP: E2E Testing Infrastructure"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:bbc874a4f937d468"
+updated: "2026-06-24"
+owner: "CHECK (QA Agent)"
+type: feature
+---
 # FEAT-PLAYWRIGHT-SETUP: E2E Testing Infrastructure
 
 **Task ID:** GV-S105 (New Task for Phase 1)
@@ -35,3 +46,9 @@
 
 ---
 **Please review and approve this E2E Spec. Once approved, I will setup Playwright and write the first navigation tests.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | CHECK (QA Agent) | Brought under document governance (docs:backfill): frontmatter + changelog. |

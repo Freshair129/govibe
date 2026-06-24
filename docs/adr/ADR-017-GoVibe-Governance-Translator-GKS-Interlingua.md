@@ -1,11 +1,17 @@
 ---
 doc_id: "ADR-017-GOVIBE-GOVERNANCE-TRANSLATOR-GKS-INTERLINGUA"
+uid: "01KVXGFSJH44KH4W1JZSHH4RR3"
 title: "ADR-017: GoVibe = governance translator; GKS = interlingua; ride MCP/A2A"
 status: "accepted"
 version: "0.1.1"
+content_hash: "atom:721eff2feb78f101"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 type: adr
+related_docs:
+  - "docs/CONCEPT--HYBRID-JIT-CONTEXT.md"
+  - "docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md"
+  - "docs/adr/ADR-019-Universal-Code-In-MCP-Out.md"
 ---
 
 # ADR-017: GoVibe = governance translator; GKS = interlingua; ride MCP/A2A

@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-UI-MIGRATION-PHASE-2"
+uid: "01KVXGFVBQ6RTH4E8WPCQ8HRXS"
+title: "FEAT-UI-MIGRATION: Layout & Dashboard Migration Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:92b987143aec9b7e"
+updated: "2026-06-24"
+owner: "User (Boss)"
+type: feature
+---
 # FEAT-UI-MIGRATION: Layout & Dashboard Migration Spec
 
 **Status:** `APPROVED`
@@ -41,3 +52,9 @@ Migrate โครงสร้าง Layout (Header/Sidebar) เข้าสู�
 
 ---
 **Please review and approve this UI Spec. Once approved, I will begin implementing these components.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | User (Boss) | Brought under document governance (docs:backfill): frontmatter + changelog. |

@@ -1,8 +1,10 @@
 ---
 title: "FEAT: Tiered Review (Deterministic → SLM → Frontier)"
 doc_id: "FEAT-TIERED-REVIEW"
+uid: "01KVXGFTXSC09EQQB0A57FY8C1"
 status: "draft"
 version: "0.1.0+draft"
+content_hash: "atom:22c0261d043813fa"
 updated: "2026-06-23"
 owner: "ARCHON / ATHER"
 source_of_truth: true

@@ -1,8 +1,10 @@
 ---
 title: "FEAT: MSP Validate Evidence Adapter"
 doc_id: "FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER"
+uid: "01KVXGFVYZGM30ACJ8NVR32CPG"
 status: "approved"
 version: "0.1.1"
+content_hash: "atom:c0c02fc98f7d3963"
 updated: "2026-06-20"
 owner: "ATHER / KIN"
 source_of_truth: true

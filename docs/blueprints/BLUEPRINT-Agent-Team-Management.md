@@ -2,9 +2,11 @@
 title: "Unified Blueprint: Multi-Agent Team Orchestration"
 summary: "ระบบบริหารจัดการทีม Agent แบบไฮบริด (Human-Agent Collaboration) และการควบคุมวงจรการส่งต่องาน (Orchestration)"
 doc_id: "UGB-SYSTEM-05-001"
+uid: "01KVXGFT5GWF4JAQNR3WK2FZ8B"
 created: "2026-06-13T13:00:00+07:00,THESEUS"
 updated: "2026-06-13T13:15:00+07:00,THESEUS"
 version: "1.0.0"
+content_hash: "atom:13f6febb7bd7fa5a"
 status: "candidate"
 state: candidate
 type: genesis
@@ -109,3 +111,9 @@ status: "active"
 - [ ] **Source Document Gate:** งาน C-2/C-3 ต้องมีเอกสารอนุมัติก่อนเริ่ม
 - [ ] **ABAC Check:** Agent ต้องไม่สามารถเข้าถึงไฟล์นอกเหนือจาก H-Tier ที่กำหนด
 - [ ] **Verification Evidence:** งานจะไม่ถือว่าเสร็จ (Done) หากขาดหลักฐานการตรวจสอบจาก GHOST หรือ ATHER
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 2026-06-24 | 2026-06-24 | GoVibe | Added governance Changelog section (docs:backfill). |

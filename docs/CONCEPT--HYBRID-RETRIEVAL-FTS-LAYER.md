@@ -1,7 +1,9 @@
 ---
 doc_id: "CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER"
+uid: "01KVXGFTDY1M2765J03C8B8D7S"
 id: CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER
 version: "0.1.0+draft"
+content_hash: "atom:22bae554c46c4ce1"
 updated: "2026-06-15"
 phase: 1
 type: concept

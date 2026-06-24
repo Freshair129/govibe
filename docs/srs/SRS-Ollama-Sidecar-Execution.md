@@ -1,8 +1,10 @@
 ---
 title: "SRS: Ollama Sidecar Execution"
 doc_id: "SRS-OLLAMA-SIDECAR-EXECUTION"
+uid: "01KVXGFWC1ZR2EF8YRRDD0MQMQ"
 status: "approved"
 version: "0.2.1"
+content_hash: "atom:0b60af1a0b8aefc5"
 updated: "2026-06-20"
 owner: "THESEUS"
 source_of_truth: true

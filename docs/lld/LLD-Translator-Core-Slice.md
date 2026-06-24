@@ -1,8 +1,10 @@
 ---
 title: "LLD: GoVibe Translator-Core Slice (tool contracts + algorithms)"
 doc_id: "LLD-TRANSLATOR-CORE-SLICE"
+uid: "01KVXGFW2GE51G6AF7HCV7N4JH"
 status: "draft"
 version: "0.1.0+draft"
+content_hash: "atom:e9ca217e3f56fe78"
 updated: "2026-06-22"
 owner: "ARCHON / ATHER"
 type: lld

@@ -1,8 +1,10 @@
 ---
 title: "RUNBOOK: MSP Validate Evidence Adapter"
 doc_id: "RUNBOOK-MSP-VALIDATE-EVIDENCE-ADAPTER"
+uid: "01KVXGFW7VGD46J88289QPCTYF"
 status: "draft"
 version: "0.1.0+draft"
+content_hash: "atom:4c633e6bdb546541"
 updated: "2026-06-16"
 owner: "JANUS / KIN"
 source_of_truth: true

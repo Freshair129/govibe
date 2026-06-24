@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-MCP-INTEGRATION-BRIDGE"
+uid: "01KVXGFVBKZA1VKR59B7KX8M43"
+title: "FEAT: MCP Integration Bridge"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:11948ed8c5e662a9"
+updated: "2026-06-24"
+owner: "EVA / Platform"
+type: feature
+---
 # FEAT: MCP Integration Bridge
 
 **Status:** `DRAFT`
@@ -37,3 +48,9 @@ MCP is the primary orchestration interface for this bridge layer. Mission Contro
 - The bridge can distinguish platform coordination from external provider billing.
 - Adapter failures surface as operational state, not silent data loss.
 - Mission Control and CLI can consume the same governed orchestration capabilities without duplicating policy or routing logic.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | EVA / Platform | Brought under document governance (docs:backfill): frontmatter + changelog. |

@@ -1,8 +1,10 @@
 ---
 title: "ADR: Task-Scoped Context Injection"
 doc_id: "ADR-013-task-scoped-context-injection"
+uid: "01KVXGFRV7FHH7BB26DZ994TZF"
 status: "accepted"
 version: "0.1.0"
+content_hash: "atom:d7f67244ed2bc7db"
 updated: "2026-06-19"
 owner: "ARCHON / ATHER"
 source_of_truth: true

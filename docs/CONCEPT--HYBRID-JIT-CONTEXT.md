@@ -1,7 +1,9 @@
 ﻿---
 doc_id: "CONCEPT--HYBRID-JIT-CONTEXT"
+uid: "01KVXGFTDX9XB2F8F9PRXQF5KR"
 id: CONCEPT--HYBRID-JIT-CONTEXT
 version: "0.1.1+draft"
+content_hash: "atom:2b1c49d85df3e26c"
 updated: "2026-06-22"
 phase: 1
 type: concept

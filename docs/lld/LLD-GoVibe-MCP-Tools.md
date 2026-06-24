@@ -1,17 +1,20 @@
 ---
 title: "LLD: GoVibe MCP Tools"
 doc_id: "LLD-GOVIBE-MCP-TOOLS"
+uid: "01KVXGFW1G6X862AXBAGFP05JK"
 status: "approved"
 version: "0.2.1"
+content_hash: "atom:3dfeca15c9fbdbee"
 updated: "2026-06-20"
 owner: "GoVibe"
 source_of_truth: true
 prd_system: "SYSTEM-06::Integration-Bridge-System"
 related_docs:
   - "docs/PRD-GoVibe-MCP-Orchestration.md"
-  - "docs/srs/SRS-GoVibe-MCP-Server.md"
+  - "docs/STD-Execution-Governance.md"
   - "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md"
   - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/srs/SRS-GoVibe-MCP-Server.md"
 ---
 
 # LLD: GoVibe MCP Tools

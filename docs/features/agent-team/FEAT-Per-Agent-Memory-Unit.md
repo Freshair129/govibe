@@ -1,8 +1,10 @@
 ---
 title: "FEAT: Per-Agent Memory Unit"
 doc_id: "FEAT-PER-AGENT-MEMORY-UNIT"
+uid: "01KVXGFTVS9F8JAYR1XRGWE6J7"
 status: "draft"
 version: "0.1.0+draft"
+content_hash: "atom:5b7a42d70776839f"
 updated: "2026-06-23"
 owner: "ARCHON / ATHER"
 source_of_truth: true

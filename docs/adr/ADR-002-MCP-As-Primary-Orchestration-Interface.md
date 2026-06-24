@@ -1,3 +1,14 @@
+---
+doc_id: "ADR-002-MCP-AS-PRIMARY-ORCHESTRATION-INTERFACE"
+uid: "01KVXGFRV06947TRKB9T8MDSNS"
+title: "ADR-002: MCP As Primary Orchestration Interface"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:29d531e446139e38"
+updated: "2026-06-24"
+owner: "GoVibe"
+type: adr
+---
 # ADR-002: MCP As Primary Orchestration Interface
 
 **Status:** `PROPOSED`
@@ -122,3 +133,9 @@ This ADR is proposed and should be kept aligned with:
 - `docs/PRD-GoVibe-Platform-Overview.md`
 - `docs/architecture/C4-GoVibe-Platform.md`
 - `docs/STD-Execution-Governance.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | GoVibe | Brought under document governance (docs:backfill): frontmatter + changelog. |

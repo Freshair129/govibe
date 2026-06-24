@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-ROADMAP-BOARD-MIGRATION"
+uid: "01KVXGFVBSPGY3CDC8T47VV2Z2"
+title: "FEAT-ROADMAP-MIGRATION: Roadmap Board View Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:4079f8865582a0bd"
+updated: "2026-06-24"
+owner: "User (Boss)"
+type: feature
+---
 # FEAT-ROADMAP-MIGRATION: Roadmap Board View Spec
 
 **Status:** `APPROVED`
@@ -113,3 +124,9 @@ Verification additions:
 
 ---
 **Please review and approve this Spec. Once approved, I will begin implementing the Roadmap Board.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | User (Boss) | Brought under document governance (docs:backfill): frontmatter + changelog. |

@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-VISUAL-OFFICE-SIMULATION"
+uid: "01KVXGFTXV5F54VXG4X8W7ZJC2"
+title: "FEAT-VISUAL-OFFICE: Visual Dev Office Simulation Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:79ea861d347e83be"
+updated: "2026-06-24"
+owner: "GoVibe"
+type: feature
+---
 # FEAT-VISUAL-OFFICE: Visual Dev Office Simulation Spec
 
 **Status:** `DRAFT` / `PENDING APPROVAL`
@@ -44,3 +55,9 @@
 
 ---
 **Please review and approve this Office Simulation Spec. Once approved, I will build the Dev Team roster and the Office View.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | GoVibe | Brought under document governance (docs:backfill): frontmatter + changelog. |

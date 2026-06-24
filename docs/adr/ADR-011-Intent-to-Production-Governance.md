@@ -1,3 +1,14 @@
+---
+doc_id: "ADR-011-INTENT-TO-PRODUCTION-GOVERNANCE"
+uid: "01KVXGFRV5JNVYQM5SBKXCRC9R"
+title: "ADR-011: Intent-to-Production (I2P) Governance Paradigm"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:3115660b9061ccdb"
+updated: "2026-06-24"
+owner: "ARCHON (CTO)"
+type: adr
+---
 # ADR-011: Intent-to-Production (I2P) Governance Paradigm
 
 **Status:** Approved
@@ -23,3 +34,9 @@ Current workflows (Doc-to-Code) require manual effort to author specifications a
 - **Phase B**: Implement `IntentDecomposer` in `packages/govibe-core/` to translate intent to Production-Grade Blueprints.
 - **Phase C**: Integrate `IntentFactory` with GenesisBlockDB for persistent storage of intent and resulting artifacts.
 - **Phase D**: Deprecate manual ADR authoring for trivial features, shifting human effort to reviewing high-level business goals only.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ARCHON (CTO) | Brought under document governance (docs:backfill): frontmatter + changelog. |

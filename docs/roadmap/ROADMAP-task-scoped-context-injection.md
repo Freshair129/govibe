@@ -1,8 +1,10 @@
 ---
 title: "ROADMAP: Task-Scoped Context Injection"
 doc_id: "ROADMAP-TASK-SCOPED-CONTEXT-INJECTION"
+uid: "01KVXGFW5NXS4PPE0VF9KKYC3M"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:dcf39101d4342346"
 updated: "2026-06-19"
 owner: "LYRA"
 auditor: "ATHER"

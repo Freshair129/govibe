@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-COMMAND-PALETTE-ORCHESTRATION"
+uid: "01KVXGFVBMW10FQ3VT6DA3953E"
+title: "FEAT-COMMAND-PALETTE: Global Command Palette & Terminal FX"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:cc9e186e792315f9"
+updated: "2026-06-24"
+owner: "VIBE (Agent)"
+type: feature
+---
 # FEAT-COMMAND-PALETTE: Global Command Palette & Terminal FX
 
 **Task ID:** GV-S410
@@ -51,3 +62,9 @@
 ## 8. Out-of-Task Dependencies
 - **GV-S203** (Agent Management) - สำเร็จแล้ว
 - **GV-S101** (Global State) - สำเร็จแล้ว
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | VIBE (Agent) | Brought under document governance (docs:backfill): frontmatter + changelog. |

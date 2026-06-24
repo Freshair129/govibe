@@ -1,17 +1,20 @@
 ---
 title: "BACKLOG: P1 MVP Core Task Containers"
 doc_id: "BACKLOG-P1-MVP-CORE"
+uid: "01KVXGFW3QR4K308ZD3KZQ5B2M"
 status: "draft"
 version: "0.1.1+draft"
+content_hash: "atom:f9c0179372dc7cf5"
 updated: "2026-06-20"
 owner: "LYRA"
 source_of_truth: false
 prd_system: "SYSTEM-02::Project-Roadmap-Management-System"
 related_docs:
+  - ".agents/.devlog/implement/IMP-GVMP01P05EP01.md"
   - "docs/PRD-GoVibe-Platform-Overview.md"
+  - "docs/design/DESIGN_SYSTEM.md"
   - "docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md"
   - "docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md"
-  - "docs/design/DESIGN_SYSTEM.md"
 ---
 
 # BACKLOG: P1 MVP Core Task Containers

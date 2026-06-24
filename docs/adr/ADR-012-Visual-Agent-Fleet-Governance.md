@@ -1,8 +1,10 @@
 ---
 title: "ADR: Visual Agent Fleet Governance"
 doc_id: "ADR-012-visual-agent-fleet-governance"
+uid: "01KVXGFRV6JFQFGXKP8V7ARQ6N"
 status: "accepted"
 version: "0.1.0"
+content_hash: "atom:e678d6b9fbbfa97e"
 updated: "2026-06-14"
 owner: "ARCHON / THESEUS"
 source_of_truth: true
@@ -77,3 +79,9 @@ GoVibe will implement Visual Agent Fleet as a derived governance layer:
 - `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md`
 - `docs/architecture/SDD-Visual-Agent-Fleet.md`
 - `.agents/context/CONTEXT-Visual-Agent-Fleet-Scope.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 2026-06-24 | 2026-06-24 | ARCHON / THESEUS | Added governance Changelog section (docs:backfill). |

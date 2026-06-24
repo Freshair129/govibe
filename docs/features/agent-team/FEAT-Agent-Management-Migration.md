@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-AGENT-MANAGEMENT-MIGRATION"
+uid: "01KVXGFTQ4EXTFF0B73APFGXP6"
+title: "FEAT-AGENT-MIGRATION: Agent Management View Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:ddde4cb3fdb88fef"
+updated: "2026-06-24"
+owner: "User (Boss)"
+type: feature
+---
 # FEAT-AGENT-MIGRATION: Agent Management View Spec
 
 **Status:** `APPROVED`
@@ -51,3 +62,9 @@ The A5 React migration must preserve these interaction styles from `GoVibe-Missi
 
 ---
 **Please review and approve this Spec. Once approved, I will begin implementing the Agent Management system.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | User (Boss) | Brought under document governance (docs:backfill): frontmatter + changelog. |

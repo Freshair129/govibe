@@ -1,20 +1,23 @@
 ---
 title: "ADR: Per-Agent Memory via Composed Tiered Units (EVA Memory-OS Subset Port)"
 doc_id: "ADR-020-PER-AGENT-MEMORY-UNIT"
+uid: "01KVXGFSJKC7YPNS9B0PY63X77"
 status: "proposed"
 version: "0.1.0+draft"
+content_hash: "atom:d0e5e97d713b69dc"
 updated: "2026-06-23"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
 related_docs:
-  - "docs/features/agent-team/FEAT-Per-Agent-Memory-Unit.md"
-  - "docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md"
-  - "docs/features/genesis-knowledge-system/FEAT-Hierarchy-Compaction-System.md"
-  - "docs/features/traceability-audit/FEAT-Bi-Temporal-Versioning.md"
+  - ".agents/FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS.md"
   - "docs/adr/ADR-014-MSP-GKS-Traceability-Gate.md"
   - "docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md"
-  - ".agents/FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS.md"
+  - "docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md"
+  - "docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md"
+  - "docs/features/agent-team/FEAT-Per-Agent-Memory-Unit.md"
+  - "docs/features/genesis-knowledge-system/FEAT-Hierarchy-Compaction-System.md"
+  - "docs/features/traceability-audit/FEAT-Bi-Temporal-Versioning.md"
 ---
 
 # ADR: Per-Agent Memory via Composed Tiered Units (EVA Memory-OS Subset Port)

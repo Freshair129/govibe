@@ -1,11 +1,15 @@
 ---
 doc_id: "ADR-015-MASTER-ESSENCE-VS-GOV-POLICY"
+uid: "01KVXGFSJFK2J6ZMFRT7X5XNQP"
 title: "ADR-015: 'Master' = essence tier; root governance policy → GOV-- prefix"
 status: "accepted"
 version: "0.1.0"
+content_hash: "atom:26f8d2401564a101"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 type: adr
+related_docs:
+  - "docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md"
 ---
 
 # ADR-015: "Master" = essence tier; root governance policy → `GOV--`

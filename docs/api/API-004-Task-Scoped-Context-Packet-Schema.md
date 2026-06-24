@@ -1,8 +1,10 @@
 ---
 title: "API: Task-Scoped Context Packet Schema"
 doc_id: "API-004-TASK-SCOPED-CONTEXT-PACKET-SCHEMA"
+uid: "01KVXGFSJWRYZ3XPWSYBMZFXRP"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:5b3f233f24602463"
 updated: "2026-06-19"
 owner: "ARCHON / ATHER"
 source_of_truth: true

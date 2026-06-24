@@ -1,3 +1,14 @@
+---
+doc_id: "API-003-MISSION-WORKFLOW-EVENT-SCHEMA"
+uid: "01KVXGFSJT5A6NKPQX632SJAFJ"
+title: "API-003: Mission Workflow Event Schema"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:ca59343b251b0cfe"
+updated: "2026-06-24"
+owner: "KIN"
+type: api
+---
 # API-003: Mission Workflow Event Schema
 
 **Status:** `DRAFT`
@@ -258,3 +269,9 @@ May consume:
 - `docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md`
 - `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 - `docs/design/DOMAIN_DETAILS.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | KIN | Brought under document governance (docs:backfill): frontmatter + changelog. |

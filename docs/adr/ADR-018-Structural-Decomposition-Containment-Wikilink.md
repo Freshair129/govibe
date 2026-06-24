@@ -1,11 +1,15 @@
 ---
 doc_id: "ADR-018-STRUCTURAL-DECOMPOSITION-CONTAINMENT-WIKILINK"
+uid: "01KVXGFSJJS266CQDJ62AWA3JE"
 title: "ADR-018: Structural decomposition = single containment tree + wikilink cross-link graph"
 status: "accepted"
 version: "0.1.0"
+content_hash: "atom:0c0e272bfb8a4f69"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 type: adr
+related_docs:
+  - "docs/adr/ADR-015-Master-Essence-vs-GOV-Policy.md"
 ---
 
 # ADR-018: Structural decomposition = containment tree + wikilink graph

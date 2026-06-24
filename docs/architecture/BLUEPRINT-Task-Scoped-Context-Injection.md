@@ -1,8 +1,10 @@
 ---
 title: "BLUEPRINT: Task-Scoped Context Injection"
 doc_id: "BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION"
+uid: "01KVXGFSK0GJ9FPZ7B6GSP92M0"
 status: "approved"
 version: "0.1.1"
+content_hash: "atom:9a3f8bf635474b18"
 updated: "2026-06-19"
 owner: "ARCHON / ATHER"
 source_of_truth: true

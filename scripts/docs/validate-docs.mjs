@@ -1,6 +1,9 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
 
+import { GOVERNED_DOC_PREFIX, LOCATION_RULES, isExemptDocPath, prefixOf, isAllowedDir } from "./governance-rules.mjs";
+import { docContentHash } from "./content-hash.mjs";
+
 const repoRoot = process.cwd();
 const docWriterRoot = ".agents/doc_writer";
 const templateRoot = ".agents/doc_writer/template";
@@ -155,8 +158,88 @@ function isActionableType(type) {
   return ["task", "sub-task", "micro-task", "atomic-task"].includes(String(type ?? "").trim().toLowerCase());
 }
 
+// A canonical doc is governed if it carries a known doc-type prefix and lives under docs/
+// (archive + change-request review artifacts are exempt). Placement rules live in
+// governance-rules.mjs so the create-time and validate-time gates share one definition.
 function isGovernedDoc(file) {
-  return governedDocPatterns.some((pattern) => pattern.test(file));
+  if (governedDocPatterns.some((pattern) => pattern.test(file))) return true;
+  if (isExemptDocPath(file)) return false;
+  return GOVERNED_DOC_PREFIX.test(file.split("/").pop());
+}
+
+// Lock every governed doc to its registered directory.
+function checkCanonicalLocation(markdownFiles) {
+  for (const file of markdownFiles) {
+    if (isExemptDocPath(file)) continue;
+    const name = file.split("/").pop();
+    if (!GOVERNED_DOC_PREFIX.test(name)) continue;
+    const prefix = prefixOf(name);
+    const dir = file.slice(0, file.lastIndexOf("/"));
+    if (!isAllowedDir(prefix, dir)) {
+      const allowed = LOCATION_RULES[prefix];
+      const where = prefix === "FEAT" ? "docs/features/<area>" : (allowed ? allowed.join(" or ") : "its canonical dir");
+      addError(file, `${prefix} doc must live in ${where}/, found ${dir}/.`);
+    }
+  }
+}
+
+// Content-drift gate (ADR-021 / FEAT-Doc-Content-Integrity): a governed doc whose recorded
+// content_hash no longer matches its body was edited without a version bump — silent staleness.
+// Mismatch = error (run docs:bump); missing hash = warning (run docs:hash to establish it).
+function checkContentDrift(markdownFiles) {
+  for (const file of markdownFiles) {
+    if (!file.startsWith("docs/") || !isGovernedDoc(file)) continue;
+    if (file === "docs/DOC-VERSION-REGISTRY.md") continue; // the registry is an index, not a content-addressed doc
+    const content = readRepoFile(file);
+    const frontmatter = parseFrontmatter(content);
+    if (!frontmatter?.doc_id) continue;
+    if (!frontmatter.content_hash) {
+      addWarning(file, "Governed doc has no content_hash (run docs:hash to establish content identity).");
+      continue;
+    }
+    const actual = docContentHash(content);
+    if (frontmatter.content_hash !== actual) {
+      addError(file, `Content drifted: body no longer matches content_hash (run docs:bump). recorded ${frontmatter.content_hash}, computed ${actual}.`);
+    }
+  }
+}
+
+// A governed doc with no related_docs/related_adrs is a "traceability island" — registered but
+// disconnected from the doc graph. Warning (not error): crosslinks are semantic, so this surfaces
+// the gap for `docs:derive-crosslinks` / human authoring without blocking the baseline.
+function checkCrosslinkCoverage(markdownFiles) {
+  for (const file of markdownFiles) {
+    if (!file.startsWith("docs/") || !isGovernedDoc(file)) continue;
+    const content = readRepoFile(file);
+    const frontmatter = parseFrontmatter(content);
+    if (!frontmatter?.doc_id) continue;
+    const hasListRelated = /^related_docs:[ \t]*\r?\n[ \t]*-[ \t]+\S/m.test(content);
+    const hasInlineRelated = /^related_(?:docs|adrs):[ \t]*\[[^\]]*\S[^\]]*\]/m.test(content);
+    if (!hasListRelated && !hasInlineRelated) {
+      addWarning(file, "Governed doc has no related_docs crosslinks (traceability island — run docs:derive-crosslinks or add links).");
+    }
+  }
+}
+
+// Every governed doc with a doc_id must appear in the version registry (file -> registry,
+// the reverse of checkDocumentVersionRegistry). Closes the "fully-formed but unregistered" gap.
+function checkGovernedRegistration(markdownFiles) {
+  const registryPath = "docs/DOC-VERSION-REGISTRY.md";
+  if (!existsSync(repoResolve(registryPath))) return;
+  const rows = [...collectSectionTables(readRepoFile(registryPath)).values()].flat();
+  const registeredPaths = new Set(
+    rows.map((row) => String(getColumn(row, ["Path"])).replace(/`/g, "").trim()).filter(Boolean),
+  );
+  for (const file of markdownFiles) {
+    // The registry is the sitemap for canonical docs/ artifacts; .agents infra is governed for
+    // frontmatter quality but not tracked as a registry row.
+    if (!file.startsWith("docs/") || !isGovernedDoc(file)) continue;
+    const frontmatter = parseFrontmatter(readRepoFile(file));
+    if (!frontmatter?.doc_id) continue; // missing doc_id is already an error via checkDocIds
+    if (!registeredPaths.has(file)) {
+      addError(file, "Governed doc is not registered in docs/DOC-VERSION-REGISTRY.md (run `npm run docs:register -- " + file + "`).");
+    }
+  }
 }
 
 function checkTemporalOrder(file, row, label) {
@@ -561,6 +644,10 @@ function main() {
 
   checkTemplateRegistry();
   checkDocIds(markdownFiles);
+  checkCanonicalLocation(markdownFiles);
+  checkGovernedRegistration(markdownFiles);
+  checkContentDrift(markdownFiles);
+  checkCrosslinkCoverage(markdownFiles);
   checkDocumentVersionRegistry(markdownFiles);
   checkTemplateSections();
   checkPathReferences(referenceFiles);

@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-RBAC-ABAC-GOVERNANCE"
+uid: "01KVXGFVBJRFXNSM9QZ4SDY3ED"
+title: "FEAT: RBAC and ABAC Governance"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:f6ab6351b167129a"
+updated: "2026-06-24"
+owner: "ATHER"
+type: feature
+---
 # FEAT: RBAC and ABAC Governance
 
 **Status:** `DRAFT`
@@ -31,3 +42,8 @@ Define the access-control model where human users are governed by RBAC and agent
 - Policy denials are logged and reviewable.
 - Governance rules can be referenced by roadmap, docs, bridge, and audit systems.
 
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ATHER | Brought under document governance (docs:backfill): frontmatter + changelog. |

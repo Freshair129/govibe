@@ -1,8 +1,10 @@
 ---
 title: "ROADMAP: GoVibe Translator Core"
 doc_id: "ROADMAP-TRANSLATOR-CORE"
+uid: "01KVXGFW5PR4PXTSQ5425BC7JA"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:0e4cb14b633ecb08"
 updated: "2026-06-22"
 owner: "LYRA"
 auditor: "ATHER"

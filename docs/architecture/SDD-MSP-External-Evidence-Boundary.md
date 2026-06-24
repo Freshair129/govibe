@@ -1,8 +1,10 @@
 ---
 title: "SDD: MSP External Evidence Boundary"
 doc_id: "SDD-MSP-EXTERNAL-EVIDENCE-BOUNDARY"
+uid: "01KVXGFT57HXQVG3GA2MNKZVH6"
 status: "approved"
 version: "0.1.1"
+content_hash: "atom:f29f5244b7e3e786"
 updated: "2026-06-20"
 owner: "ARCHON / KIN / ATHER"
 source_of_truth: true

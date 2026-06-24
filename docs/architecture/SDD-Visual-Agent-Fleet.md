@@ -1,8 +1,10 @@
 ---
 title: "SDD: Visual Agent Fleet"
 doc_id: "SDD-VISUAL-AGENT-FLEET"
+uid: "01KVXGFT5AFDPT2CCRH9PXQ5WW"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:619723b0561698e7"
 updated: "2026-06-14"
 owner: "THESEUS / ARCHON"
 source_of_truth: true

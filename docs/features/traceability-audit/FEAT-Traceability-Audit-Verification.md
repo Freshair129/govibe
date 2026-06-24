@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-TRACEABILITY-AUDIT-VERIFICATION"
+uid: "01KVXGFW1FXSAVP3MPZ6NXVRGN"
+title: "FEAT: Traceability Audit Verification"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:35024b625890939e"
+updated: "2026-06-24"
+owner: "ATHER"
+type: feature
+---
 # FEAT: Traceability Audit Verification
 
 **Status:** `DRAFT`
@@ -38,3 +49,9 @@ source document
 - Traceability works for both human and agent-authored artifacts.
 - Benchmark and stress-test views can attach back to reviewable source and evidence.
 - Symbol graph evidence can be consumed as read-only proof of structural linkage without becoming the source of product authority.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ATHER | Brought under document governance (docs:backfill): frontmatter + changelog. |

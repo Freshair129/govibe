@@ -1,3 +1,20 @@
+---
+doc_id: "C4-GOVIBE-PLATFORM"
+uid: "01KVXGFSNY1BS1GWRZD5KJVFHZ"
+title: "C4: GoVibe Platform Architecture"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:b1f776ee2d358f45"
+updated: "2026-06-24"
+owner: "ATHER"
+type: doc
+related_docs:
+  - "docs/adr/ADR-015-Master-Essence-vs-GOV-Policy.md"
+  - "docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md"
+  - "docs/adr/ADR-017-GoVibe-Governance-Translator-GKS-Interlingua.md"
+  - "docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md"
+  - "docs/adr/ADR-019-Universal-Code-In-MCP-Out.md"
+---
 # C4: GoVibe Platform Architecture
 
 **Status:** `DRAFT`
@@ -530,3 +547,9 @@ McpOrchestrationService
 - Every C3 component group maps to a product capability.
 - Low-level skeletons are ready to become LLD/API/Test Plan documents.
 - The document does not replace PRD/SRS/SDD/LLD; it links architecture views across them.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ATHER | Brought under document governance (docs:backfill): frontmatter + changelog. |

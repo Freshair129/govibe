@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-MULTI-AGENT-WORKFLOW-SYSTEM"
+uid: "01KVXGFTVQ0BBAVN19PDXQEXWE"
+title: "FEAT: Multi-Agent Workflow System"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:9857d59f5b58c938"
+updated: "2026-06-24"
+owner: "THESEUS"
+type: feature
+---
 # FEAT: Multi-Agent Workflow System
 
 **Status:** `DRAFT`
@@ -223,3 +234,9 @@ Primary consumers:
 - `docs/features/governance-access/FEAT-RBAC-ABAC-Governance.md`
 - `docs/features/traceability-audit/FEAT-Traceability-Audit-Verification.md`
 - `docs/api/API-003-Mission-Workflow-Event-Schema.md`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | THESEUS | Brought under document governance (docs:backfill): frontmatter + changelog. |

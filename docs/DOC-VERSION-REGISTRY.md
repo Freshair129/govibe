@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.54+draft"
-updated: "2026-06-23"
+version: "0.1.58+draft"
+updated: "2026-06-24"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.54+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.58+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -38,7 +38,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | BRD | `BRD-GOVIBE-PLATFORM` | `0.1.1+draft` | draft | Boss (CEO) | `docs/BRD-GoVibe-Platform.md` |
 | API | `API-004-TASK-SCOPED-CONTEXT-PACKET-SCHEMA` | `0.1.0` | approved | ARCHON / ATHER | `docs/api/API-004-Task-Scoped-Context-Packet-Schema.md` |
 | PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.4.3+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
-| PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.1+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
+| PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.3+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
 | Design | `DESIGN-GOVIBE-DOCUMENT-HIERARCHY` | `0.1.0+draft` | draft | ARCHON / THESEUS / ATHER | `docs/design/GoVibe-Document-Hierarchy.md` |
 | Design | `DESIGN-WIREFRAME-A2-ROADMAP-BOARD` | `0.1.1+draft` | draft | THESEUS / VIBE | `docs/design/WIREFRAME-A2-Roadmap-Board.md` |
 
@@ -50,6 +50,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
+| Roadmap | `ROADMAP-HYBRID-MVP` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/ROADMAP-hybrid-mvp.md` |
 | Backlog | `BACKLOG-P1-MVP-CORE` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/BACKLOG-p1-mvp-core.md` |
 | Backlog | `BACKLOG-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/BACKLOG-task-scoped-context-injection.md` |
 | Implementation Plan | `IMP-SYSTEM05-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.2` | approved | LYRA / ARCHON / ATHER | `docs/roadmap/IMP-SYSTEM05-Task-Scoped-Context-Injection.md` |
@@ -125,10 +126,72 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 - Still held `draft`: `PRD-GOVIBE-MCP-ORCHESTRATION` (body now authored — awaiting human-owner review before PRD sign-off); `BACKLOG-P1-MVP-CORE` / `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` (legacy import fixture, pending MVP scope confirmation); `STD-DOCUMENT-VERSIONING-GOVERNANCE` and this registry remain `draft` as the living governance authority.
 - Known coverage gap (to register in a later sweep): per-role agent context packets under `.agents/**/context/` (e.g. `CONTEXT-BA-PO-REQUIREMENT-GUIDANCE`, `CONTEXT-VISUAL-AGENT-FLEET-SCOPE`, `CONTEXT-ATHER-SCOPE-AUDIT`, `CONTEXT-THESEUS-REQUIREMENT-DOC`, `CONTEXT-RKOI-FEASIBILITY-RISK`, `CONTEXT-GHOST-AC-UAT`, `CONTEXT-LYRA-SCOPE-CONTROL`) now carry normalized uppercase `doc_id`s and changelog footers but are not yet listed above. Change-request and feedback artifacts under `docs/change-requests/**` are intentionally treated as review artifacts and are not registered.
 
+## 8. Auto-Registered (script: docs:register)
+
+Docs registered deterministically by `npm run docs:register` (ADR-007). Re-file into curated sections in a later sweep.
+
+| Group | Doc ID | Version | Status | Owner | Path |
+|---|---|---|---|---|---|
+| FEAT | `FEAT-DOC-CONTENT-INTEGRITY` | `0.1.0+draft` | approved | ATHER | `docs/features/execution-governance/FEAT-Doc-Content-Integrity.md` |
+| FEAT | `FEAT-GKS-NODE-IDENTITY` | `0.1.0+draft` | approved | ARCHON | `docs/features/genesis-knowledge-system/FEAT-GKS-Node-Identity.md` |
+| ADR | `ADR-021-DOC-IDENTITY-MODEL` | `0.1.0+draft` | accepted | ARCHON / Boss (CEO) | `docs/adr/ADR-021-doc-identity-model.md` |
+| SDD | `SDD-SYSTEM-DESIGN` | `0.1.0+draft` | draft | Rwang (Senior Dev) | `docs/SDD-System-Design.md` |
+| RCA | `RCA-2026-06-14-VISUAL-AGENT-FLEET-GOVERNANCE-FAILURE` | `0.1.0+draft` | draft | GoVibe | `docs/rca/RCA-2026-06-14-Visual-Agent-Fleet-Governance-Failure.md` |
+| FEATURE | `FEAT-TRACEABILITY-AUDIT-VERIFICATION` | `0.1.0+draft` | draft | ATHER | `docs/features/traceability-audit/FEAT-Traceability-Audit-Verification.md` |
+| FEATURE | `FEAT-AI-STRESS-TEST` | `0.1.0+draft` | draft | VIBE (Agent) | `docs/features/traceability-audit/FEAT-AI-Stress-Test.md` |
+| FEATURE | `FEAT-AI-BENCHMARK-HEATMAP` | `0.1.0+draft` | draft | VIBE (Agent) | `docs/features/traceability-audit/FEAT-AI-Benchmark-Heatmap.md` |
+| FEATURE | `FEAT-TESTING-INFRASTRUCTURE` | `0.1.0+draft` | draft | User (Boss) | `docs/features/quality-testing/FEAT-Testing-Infrastructure.md` |
+| FEATURE | `FEAT-PLAYWRIGHT-E2E-SETUP` | `0.1.0+draft` | draft | CHECK (QA Agent) | `docs/features/quality-testing/FEAT-Playwright-E2E-Setup.md` |
+| FEATURE | `FEAT-ROADMAP-BOARD-MIGRATION` | `0.1.0+draft` | draft | User (Boss) | `docs/features/project-roadmap/FEAT-Roadmap-Board-Migration.md` |
+| FEATURE | `FEAT-DOCUMENT-DRIVEN-ROADMAP-SOURCE` | `0.1.0+draft` | draft | LYRA / PM | `docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md` |
+| FEATURE | `FEAT-MOBILE-CAPACITOR-BUILD` | `0.1.0+draft` | draft | TURBO (DevOps Specialist) | `docs/features/platform-runtime/FEAT-Mobile-Capacitor-Build.md` |
+| FEATURE | `FEAT-UI-MIGRATION-PHASE-2` | `0.1.0+draft` | draft | User (Boss) | `docs/features/mission-control/FEAT-UI-Migration-Phase-2.md` |
+| FEATURE | `FEAT-MISSION-CONTROL-SPECIFICATION` | `0.1.0+draft` | draft | GoVibe | `docs/features/mission-control/FEAT-Mission-Control-Specification.md` |
+| FEATURE | `FEAT-COMMAND-PALETTE-ORCHESTRATION` | `0.1.0+draft` | draft | VIBE (Agent) | `docs/features/mission-control/FEAT-Command-Palette-Orchestration.md` |
+| FEATURE | `FEAT-MCP-INTEGRATION-BRIDGE` | `0.1.0+draft` | draft | EVA / Platform | `docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md` |
+| FEATURE | `FEAT-RBAC-ABAC-GOVERNANCE` | `0.1.0+draft` | draft | ATHER | `docs/features/governance-access/FEAT-RBAC-ABAC-Governance.md` |
+| FEATURE | `FEAT-VISUAL-ENGINEERING-AST` | `0.1.0+draft` | draft | User (Boss) | `docs/features/genesis-knowledge-system/FEAT-Visual-Engineering-AST.md` |
+| FEATURE | `FEAT-MARKDOWN-RENDERER` | `0.1.0+draft` | draft | VIBE (Agent) | `docs/features/genesis-knowledge-system/FEAT-Markdown-Renderer.md` |
+| FEATURE | `FEAT-HYBRID-JIT-CONTEXT-SYSTEM` | `0.1.0+draft` | draft | ARCHON | `docs/features/genesis-knowledge-system/FEAT-Hybrid-JIT-Context-System.md` |
+| FEATURE | `FEAT-HNSW-VECTOR-SPACE` | `0.1.0+draft` | draft | ARCHON (Architect) | `docs/features/genesis-knowledge-system/FEAT-HNSW-Vector-Space.md` |
+| FEATURE | `FEAT-HIERARCHY-COMPACTION-SYSTEM` | `0.1.0+draft` | draft | ARCHON | `docs/features/genesis-knowledge-system/FEAT-Hierarchy-Compaction-System.md` |
+| FEATURE | `FEAT-GENESISBLOCKDB-CORE` | `0.1.0+draft` | draft | ARCHON (Architect) | `docs/features/genesis-knowledge-system/FEAT-GenesisBlockDB-Core.md` |
+| FEATURE | `FEAT-CALL-GRAPH-VISUALIZATION` | `0.1.0+draft` | draft | VIBE (Agent) | `docs/features/genesis-knowledge-system/FEAT-Call-Graph-Visualization.md` |
+| FEATURE | `FEAT-EXECUTION-GOVERNANCE-STANDARD` | `0.1.0+draft` | draft | ATHER | `docs/features/execution-governance/FEAT-Execution-Governance-Standard.md` |
+| FEATURE | `FEAT-DOCS-TO-CODE-SYSTEM` | `0.1.0+draft` | draft | LYRA / PM | `docs/features/docs-to-code/FEAT-Docs-to-Code-System.md` |
+| FEATURE | `FEAT-DIAGRAM-TO-DOC-SYSTEM` | `0.1.0+draft` | draft | ARCHON | `docs/features/diagram-to-doc/FEAT-Diagram-to-Doc-System.md` |
+| FEATURE | `FEAT-VISUAL-OFFICE-SIMULATION` | `0.1.0+draft` | draft | GoVibe | `docs/features/agent-team/FEAT-Visual-Office-Simulation.md` |
+| FEATURE | `FEAT-MULTI-AGENT-WORKFLOW-SYSTEM` | `0.1.0+draft` | draft | THESEUS | `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md` |
+| FEATURE | `FEAT-MULTI-AGENT-COLLABORATION` | `0.1.0+draft` | draft | ARCHON (Architect) | `docs/features/agent-team/FEAT-Multi-Agent-Collaboration.md` |
+| FEATURE | `FEAT-AGENT-MANAGEMENT-MIGRATION` | `0.1.0+draft` | draft | User (Boss) | `docs/features/agent-team/FEAT-Agent-Management-Migration.md` |
+| DOC | `C4-GOVIBE-PLATFORM` | `0.1.0+draft` | draft | ATHER | `docs/architecture/C4-GoVibe-Platform.md` |
+| API | `API-003-MISSION-WORKFLOW-EVENT-SCHEMA` | `0.1.0+draft` | draft | KIN | `docs/api/API-003-Mission-Workflow-Event-Schema.md` |
+| API | `API-002-SYMBOL-LINKING` | `0.1.0+draft` | draft | User (Boss) | `docs/api/API-002-Symbol-Linking.md` |
+| API | `API-001-BACKEND-GATEWAY` | `0.1.0+draft` | draft | User (Boss) | `docs/api/API-001-Backend-Gateway.md` |
+| ADR | `ADR-011-INTENT-TO-PRODUCTION-GOVERNANCE` | `0.1.0+draft` | draft | ARCHON (CTO) | `docs/adr/ADR-011-Intent-to-Production-Governance.md` |
+| ADR | `ADR-008-SESSION-TRACEABILITY` | `0.1.0+draft` | draft | THESEUS | `docs/adr/ADR-008-Session-Traceability.md` |
+| ADR | `ADR-007-DETERMINISTIC-GOVERNANCE` | `0.1.0+draft` | draft | THESEUS / RKOI | `docs/adr/ADR-007-Deterministic-Governance.md` |
+| ADR | `ADR-006-DETERMINISTIC-AGENT-ID-GENERATION` | `0.1.0+draft` | draft | THESEUS | `docs/adr/ADR-006-Deterministic-Agent-ID-Generation.md` |
+| ADR | `ADR-002-MCP-AS-PRIMARY-ORCHESTRATION-INTERFACE` | `0.1.0+draft` | draft | GoVibe | `docs/adr/ADR-002-MCP-As-Primary-Orchestration-Interface.md` |
+| ADR | `ADR-001-MONOREPO-ARCHITECTURE` | `0.1.0+draft` | draft | User (Boss) | `docs/adr/ADR-001-Monorepo-Architecture.md` |
+| ADR | `ADR-012-visual-agent-fleet-governance` | `0.1.0` | accepted | ARCHON / THESEUS | `docs/adr/ADR-012-Visual-Agent-Fleet-Governance.md` |
+| CONCEPT | `CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER` | `0.1.0+draft` | stable | THESEUS | `docs/CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER.md` |
+| CONCEPT | `CONCEPT--HYBRID-JIT-CONTEXT` | `0.1.1+draft` | stable | THESEUS | `docs/CONCEPT--HYBRID-JIT-CONTEXT.md` |
+| SRS | `SRS-GKS-001` | `1.2.0` | candidate | THESEUS | `docs/srs/SRS-Genesis-Block.md` |
+| RUNBOOK | `RUNBOOK-GOVIBE-MULTI-AGENT` | `0.1.0` | candidate | GoVibe | `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` |
+| RUNBOOK | `RUNBOOK-CODEX-HYBRID-SAVINGS-TEST` | `0.1.1` | active | JANUS | `docs/runbooks/RUNBOOK--CODEX-HYBRID-SAVINGS-TEST.md` |
+| RCA | `RCA-20260613-001` | `1.0.0` | stable | THESEUS | `docs/rca/RCA-20260613-Local-Model-Friction.md` |
+| FEAT | `FEAT-TRACE-BITEMPORAL-001` | `0.1.0` | approved | ATHER | `docs/features/traceability-audit/FEAT-Bi-Temporal-Versioning.md` |
+| GENESIS | `UGB-GKS-001` | `1.3.0` | candidate | - | `docs/blueprints/BLUEPRINT-Genesis-Knowledge-System.md` |
+| GENESIS | `UGB-SYSTEM-05-001` | `1.0.0` | candidate | - | `docs/blueprints/BLUEPRINT-Agent-Team-Management.md` |
+| SDD | `SDD-GKS-001` | `1.2.0` | candidate | THESEUS | `docs/architecture/SDD-Genesis-Block.md` |
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
-|---|---|---|---|
+|---|---|---|---|| 0.1.58+draft | 2026-06-24 | GoVibe | Synced PRD-GOVIBE-MCP-ORCHESTRATION to 0.2.3+draft. |
+| 0.1.57+draft | 2026-06-24 | GoVibe | Governance-coverage sweep: backfilled frontmatter into 40 legacy docs (docs:backfill) and registered all 50 previously-orphan canonical docs (ADR/API/C4/SDD/SRS/RCA/RUNBOOK/FEAT) into §8. Enforced going forward by new validate gates (canonical-location lock + must-be-registered) and the ADR-007 pre-commit hook. |
+| 0.1.56+draft | 2026-06-24 | GoVibe | Synced PRD-GoVibe-MCP-Orchestration to 0.2.2+draft (tool count ten → 13; added §7.8 `govibe.orchestrate.run` Autonomous Run capability). |
 | 0.1.51+draft | 2026-06-22 | LYRA | Promoted `ROADMAP-TRANSLATOR-CORE` draft → approved (0.1.0, dropped +draft per STD §6). |
 | 0.1.50+draft | 2026-06-22 | LYRA | Registered `ROADMAP-TRANSLATOR-CORE` (draft) — Now/Next/Later phases for the translator-core epic mapped to audit findings #1–#8. |
 | 0.1.49+draft | 2026-06-22 | Boss (CEO) | Resolved SRS-Translator-Core open questions (0.1.1+draft); registered `BLUEPRINT-TRANSLATOR-CORE-SLICE` + `LLD-TRANSLATOR-CORE-SLICE` (govibe.ingest.code/render tool contracts, both-metric fidelity, local-jsonl provenance). |

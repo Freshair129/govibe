@@ -1,8 +1,10 @@
 ---
 title: "BLUEPRINT: GoVibe Translator-Core Slice"
 doc_id: "BLUEPRINT-TRANSLATOR-CORE-SLICE"
+uid: "01KVXGFSK1GB7E1YGKNRX8R9R8"
 status: "draft"
 version: "0.1.0+draft"
+content_hash: "atom:7b5c02e59543825b"
 updated: "2026-06-22"
 owner: "ARCHON / ATHER"
 type: blueprint

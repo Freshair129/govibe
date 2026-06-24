@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-HIERARCHY-COMPACTION-SYSTEM"
+uid: "01KVXGFTY5QD4XW5YTFFQ82HX8"
+title: "FEAT: Hierarchy Compaction System"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:0deae47093a03481"
+updated: "2026-06-24"
+owner: "ARCHON"
+type: feature
+---
 # FEAT: Hierarchy Compaction System
 
 **Status:** `DRAFT`
@@ -36,3 +47,9 @@ request
 - Human-readable source docs remain canonical after compaction.
 - Compaction reduces document sprawl without erasing traceability.
 - Downstream systems can still build graph and retrieval context from the compacted source.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ARCHON | Brought under document governance (docs:backfill): frontmatter + changelog. |

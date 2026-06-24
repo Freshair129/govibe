@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-VISUAL-ENGINEERING-AST"
+uid: "01KVXGFVBHQS2MDNBH42R44E85"
+title: "FEAT-VISUAL-ENGINEERING: AST Hierarchy Tree Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:fcaadc2564dcb1b7"
+updated: "2026-06-24"
+owner: "User (Boss)"
+type: feature
+---
 # FEAT-VISUAL-ENGINEERING: AST Hierarchy Tree Spec
 
 **Status:** `APPROVED`
@@ -41,3 +52,9 @@
 
 ---
 **Please review and approve this Visual Engineering Spec. Once approved, I will implement the AST Scanner and Tree View.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | User (Boss) | Brought under document governance (docs:backfill): frontmatter + changelog. |

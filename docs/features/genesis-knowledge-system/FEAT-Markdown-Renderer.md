@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-MARKDOWN-RENDERER"
+uid: "01KVXGFVBGV99S82QJKC93RD16"
+title: "FEAT-MARKDOWN-RENDERER: Business Spec View Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:00e03d0156b3d336"
+updated: "2026-06-24"
+owner: "VIBE (Agent)"
+type: feature
+---
 # FEAT-MARKDOWN-RENDERER: Business Spec View Spec
 
 **Task ID:** GV-S112
@@ -50,3 +61,9 @@
 ## 8. Out-of-Task Dependencies
 - **GV-S301** (Backend Gateway) - สำเร็จแล้ว
 - **GV-S111** (Project Scanner) - สำเร็จแล้ว
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | VIBE (Agent) | Brought under document governance (docs:backfill): frontmatter + changelog. |

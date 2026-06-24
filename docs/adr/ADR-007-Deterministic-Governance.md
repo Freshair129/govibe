@@ -1,3 +1,14 @@
+---
+doc_id: "ADR-007-DETERMINISTIC-GOVERNANCE"
+uid: "01KVXGFRV34D202VJYRFQN75M0"
+title: "ADR-007: Deterministic Governance via Hardened Tooling"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:a045dec2a5ddeb4a"
+updated: "2026-06-24"
+owner: "THESEUS / RKOI"
+type: adr
+---
 # ADR-007: Deterministic Governance via Hardened Tooling
 
 **Status:** Approved
@@ -22,3 +33,9 @@ Previous governance relied on loosely coupled YAML configuration and trust-based
 - **Phase A**: Migrate all agent contracts to `AGENT.md` (Completed).
 - **Phase B**: Implement `govibe doc create` and `govibe workspace validate`.
 - **Phase C**: Install pre-commit hooks to enforce validation.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | THESEUS / RKOI | Brought under document governance (docs:backfill): frontmatter + changelog. |

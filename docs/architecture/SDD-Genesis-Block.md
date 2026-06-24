@@ -1,8 +1,10 @@
 ---
 title: "SDD: Genesis Block Architecture"
 doc_id: "SDD-GKS-001"
+uid: "01KVXGFT191NNK249QPY7C00TQ"
 status: "candidate"
 version: "1.2.0"
+content_hash: "atom:00c04c36d57f9854"
 updated: "2026-06-13"
 owner: "THESEUS"
 source_of_truth: true
@@ -72,3 +74,9 @@ graph LR
 ## 5. Security & Governance
 - **Deterministic Backlink Injection:** ป้องกันการเกิด Loop ในระบบกราฟโดยการฉีดพ่นความสัมพันธ์แบบทิศทางเดียวย้อนกลับขึ้นไปหา Parent
 - **Acyclic Invariant Enforcement:** ตรวจสอบความถูกต้องของกราฟทุกครั้งก่อนที่ Agent จะเริ่มทำงาน
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 2026-06-24 | 2026-06-24 | THESEUS | Added governance Changelog section (docs:backfill). |

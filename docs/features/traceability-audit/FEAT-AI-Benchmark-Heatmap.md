@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-AI-BENCHMARK-HEATMAP"
+uid: "01KVXGFVYTHBGQQWE0MGZ8ZKGK"
+title: "FEAT-AI-BENCHMARK: Cyber Reactor Heatmap Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:99a446bfdd7cac7b"
+updated: "2026-06-24"
+owner: "VIBE (Agent)"
+type: feature
+---
 # FEAT-AI-BENCHMARK: Cyber Reactor Heatmap Spec
 
 **Task ID:** GV-S310, GV-S311
@@ -55,3 +66,9 @@
 ## 8. Out-of-Task Dependencies
 - **GV-S301** (Backend Gateway) - สำเร็จแล้ว
 - **GV-S002** (Desktop App) - สำเร็จแล้ว
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | VIBE (Agent) | Brought under document governance (docs:backfill): frontmatter + changelog. |

@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-MISSION-CONTROL-SPECIFICATION"
+uid: "01KVXGFVBPJMF0NB22NKTY0PCA"
+title: "Feature Spec: GoVibe Mission Control Center (React Migration)"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:b9d512dc16a930c4"
+updated: "2026-06-24"
+owner: "GoVibe"
+type: feature
+---
 # Feature Spec: GoVibe Mission Control Center (React Migration)
 
 **Version:** 1.0.0
@@ -81,3 +92,9 @@ The interface adheres to the **Glassmorphism 2.5** standard defined in `DESIGN_S
 3. **Sprint 3**: Domain A - Roadmap Accordion & Task Logic.
 4. **Sprint 4**: Domain A - Agent 3D Carousel & Configuration.
 5. **Sprint 5**: Domain B - Graph Studio Integration.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | GoVibe | Brought under document governance (docs:backfill): frontmatter + changelog. |

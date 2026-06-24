@@ -1,11 +1,17 @@
 ---
 doc_id: "SRS-GKS-RETRIEVAL-LAYER"
+uid: "01KVXGFW98ZZ5BZ62ADPSTAKVV"
 title: "SRS: GKS 4-Layer Hybrid Retrieval (the Retriever / Compute layer)"
 status: "draft"
 version: "0.1.0+draft"
+content_hash: "atom:975dd74543c9d216"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 type: srs
+related_docs:
+  - "docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md"
+  - "docs/adr/ADR-019-Universal-Code-In-MCP-Out.md"
+  - "docs/api/API-004-Task-Scoped-Context-Packet-Schema.md"
 ---
 
 # SRS: GKS 4-Layer Hybrid Retrieval

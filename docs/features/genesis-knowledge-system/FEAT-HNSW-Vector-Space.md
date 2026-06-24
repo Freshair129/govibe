@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-HNSW-VECTOR-SPACE"
+uid: "01KVXGFTY99BH902VYG351J6MD"
+title: "FEAT-HNSW-SPACE: HNSW Vector Space Map Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:e772c506fc9882c8"
+updated: "2026-06-24"
+owner: "ARCHON (Architect)"
+type: feature
+---
 # FEAT-HNSW-SPACE: HNSW Vector Space Map Spec
 
 **Task ID:** GV-S210, GV-S211
@@ -50,3 +61,9 @@
 
 ---
 **Please review and approve this Architecture Spec. Once approved, I will build the HNSW Core and the Knowledge Map.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ARCHON (Architect) | Brought under document governance (docs:backfill): frontmatter + changelog. |

@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-GENESISBLOCKDB-CORE"
+uid: "01KVXGFTY1MK9V4E5V9JK5E8TB"
+title: "FEAT-GENESIS-DB: GenesisBlockDB Core & Symbol Search"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:78f687b62409ec31"
+updated: "2026-06-24"
+owner: "ARCHON (Architect)"
+type: feature
+---
 # FEAT-GENESIS-DB: GenesisBlockDB Core & Symbol Search
 
 **Task ID:** GV-S210, GV-S220
@@ -71,3 +82,9 @@ graph TD
 - [ ] **Unit Test (Core)**: ยืนยันว่า Gateway คืนค่า Mock Symbol Data ได้ถูกต้อง
 - [ ] **Component Test**: ตรวจสอบการใช้งาน Debounce ในช่องค้นหาของ C1
 - [ ] **Architecture Check (ATHER)**: โค้ดไม่ล้นทะลักข้ามขอบเขต และรักษากฎ C-3 ไว้ได้
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | ARCHON (Architect) | Brought under document governance (docs:backfill): frontmatter + changelog. |

@@ -1,8 +1,10 @@
 ---
 title: "FEAT: Qwen CLI Model Routing"
 doc_id: "FEAT-QWEN-CLI-MODEL-ROUTING"
+uid: "01KVXGFVBKHX9G3J54YMJWJ3GJ"
 status: "approved"
 version: "0.1.3"
+content_hash: "atom:fdbe6bfd445549c2"
 updated: "2026-06-20"
 owner: "KIN / LYRA / ATHER"
 source_of_truth: true

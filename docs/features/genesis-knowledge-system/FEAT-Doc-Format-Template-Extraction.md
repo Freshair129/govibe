@@ -1,8 +1,10 @@
 ---
 title: "FEAT: Doc-Format Template Extraction & Format-Adaptive Rendering"
 doc_id: "FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION"
+uid: "01KVXGFTY0JWVQ73J8HER4J7PD"
 status: "draft"
 version: "0.1.0+draft"
+content_hash: "atom:4c77448774136407"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 auditor: "ATHER"

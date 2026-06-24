@@ -1,8 +1,10 @@
 ---
 title: "SRS: Genesis Block Cognitive Engine"
 doc_id: "SRS-GKS-001"
+uid: "01KVXGFW9731K4Z629RYADQX48"
 status: "candidate"
 version: "1.2.0"
+content_hash: "atom:63108836fd120dc9"
 updated: "2026-06-13"
 owner: "THESEUS"
 source_of_truth: true
@@ -62,3 +64,9 @@ Agent Runtime ต้องจำกัดวงการค้นหาข้อ
 ## 4. Interface Requirements
 - **GKS Parser:** ต้องสามารถสกัด Atoms โดยใช้ Pattern: `^#\s.+\s\[L\d-.+\]\s([A-Z0-9_--]+)`
 - **Metadata:** ต้องใช้ YAML Frontmatter หรือ YAML Block ภายในสัญลักษณ์ `---` หรือ Markdown Code Block
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 2026-06-24 | 2026-06-24 | THESEUS | Added governance Changelog section (docs:backfill). |

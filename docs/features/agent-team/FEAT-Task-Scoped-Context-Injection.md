@@ -1,8 +1,10 @@
 ---
 title: "FEAT: Task-Scoped Context Injection"
 doc_id: "FEAT-TASK-SCOPED-CONTEXT-INJECTION"
+uid: "01KVXGFTX0AFYMR50F9TJ13PW8"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:d2cdd03e5a4ac6e9"
 updated: "2026-06-19"
 owner: "ARCHON / ATHER"
 auditor: "ATHER"

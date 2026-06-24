@@ -1,8 +1,10 @@
 ---
 title: "FEAT: Document Version Governance"
 doc_id: "FEAT-DOCUMENT-VERSION-GOVERNANCE"
+uid: "01KVXGFVYY8ZMR0ERVEM6WCDNT"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:5d3f6290fd367825"
 updated: "2026-06-15"
 owner: "ATHER / THESEUS"
 source_of_truth: true

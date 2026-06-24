@@ -1,8 +1,10 @@
 ---
 title: "IMP: Task-Scoped Context Injection"
 doc_id: "IMP-SYSTEM05-TASK-SCOPED-CONTEXT-INJECTION"
+uid: "01KVXGFW4REYERV70K57G6CFNP"
 status: "approved"
 version: "0.1.2"
+content_hash: "atom:be5147e07b6cde42"
 updated: "2026-06-19"
 owner: "LYRA / ARCHON / ATHER"
 source_of_truth: true

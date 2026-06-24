@@ -1,8 +1,10 @@
 ---
 title: "RCA: Local Model Execution Friction & Drift"
 doc_id: "RCA-20260613-001"
+uid: "01KVXGFW2MN13NFSGQD94AR65D"
 status: "stable"
 version: "1.0.0"
+content_hash: "atom:de1f974e65424c85"
 updated: "2026-06-13"
 owner: "THESEUS"
 type: "rca"
@@ -35,3 +37,9 @@ type: "rca"
 2.  **[DONE] Global Hub Injection:** เพิ่ม `AGENTS.md` เข้าใน `global_context` เพื่อให้ Agent ทุกตัวเห็นมาตรฐานสากลเสมอ
 3.  **[PLANNED] Smart Context Slicing:** ปรับปรุง `build-agent-prompt.mjs` ให้มีความฉลาดในการเลือกเฉพาะ "ส่วนสำคัญ" ของไฟล์แวดล้อมแทนการส่งไฟล์เต็ม (Chunk-based Injection)
 4.  **[PLANNED] Stream Health Check:** เพิ่มระบบ Retry และตรวจสอบสถานะการค้างของ Ollama Process ในสคริปต์ `invoke-agent.ps1`
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 2026-06-24 | 2026-06-24 | THESEUS | Added governance Changelog section (docs:backfill). |

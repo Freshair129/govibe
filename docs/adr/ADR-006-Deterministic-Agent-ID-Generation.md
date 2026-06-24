@@ -1,3 +1,14 @@
+---
+doc_id: "ADR-006-DETERMINISTIC-AGENT-ID-GENERATION"
+uid: "01KVXGFRV28DR72F7P39HPKM43"
+title: "ADR-006: Deterministic Agent ID Generation Engine"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:aa368a18e4d8560d"
+updated: "2026-06-24"
+owner: "THESEUS"
+type: adr
+---
 # ADR-006: Deterministic Agent ID Generation Engine
 
 **Status:** Draft
@@ -17,3 +28,9 @@ To ensure robust orchestration, GoVibe must transition from display-name based i
 - **Phase A**: Enforce `agent_id` presence in `agent-registry.yaml` for all active agents.
 - **Phase B**: Implement `govibe.registry.add` MCP tool.
 - **Phase C**: Integrate ID uniqueness check in `packages/govibe-core/bin/validate.mjs`.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | THESEUS | Brought under document governance (docs:backfill): frontmatter + changelog. |

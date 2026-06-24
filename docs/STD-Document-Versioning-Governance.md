@@ -1,8 +1,10 @@
 ---
 title: "STD: Document Versioning Governance"
 doc_id: "STD-DOCUMENT-VERSIONING-GOVERNANCE"
+uid: "01KVXGFWGKPCJR7K0JQCGKTMS2"
 status: "draft"
 version: "0.1.2+draft"
+content_hash: "atom:2fa12db8acde3142"
 updated: "2026-06-15"
 owner: "ATHER / THESEUS"
 source_of_truth: true

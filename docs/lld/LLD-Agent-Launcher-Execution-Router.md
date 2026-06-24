@@ -1,8 +1,10 @@
 ---
 title: "LLD: Agent Launcher Execution Router"
 doc_id: "LLD-AGENT-LAUNCHER-EXECUTION-ROUTER"
+uid: "01KVXGFW1FSAFGBE2KAM3WSFVS"
 status: "approved"
 version: "0.1.2"
+content_hash: "atom:6cc46361a58f3da6"
 updated: "2026-06-20"
 owner: "THESEUS"
 source_of_truth: true

@@ -1,3 +1,16 @@
+---
+doc_id: "SDD-SYSTEM-DESIGN"
+uid: "01KVXGFW95C4W4NH90724NTQ8S"
+title: "SDD: GoVibe System Architecture"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:4d55b337def41a08"
+updated: "2026-06-24"
+owner: "Rwang (Senior Dev)"
+type: sdd
+related_docs:
+  - "docs/adr/ADR-001-Monorepo-Architecture.md"
+---
 # SDD: GoVibe System Architecture
 
 **Status:** `APPROVED` (via ADR-001)
@@ -88,3 +101,9 @@ If a human-readable SWE document conflicts with a derived atom, the SWE document
 - **Strict Typing**: TypeScript enforced across all packages.
 - **Human Review Gate**: Diagram-derived and atom-derived content must be approved before it becomes canonical.
 - **Access Control Split**: RBAC applies to human users; ABAC applies to agents, subagents, MCP clients, services, and scheduled jobs within the GenesisBlockDB governance model.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | Rwang (Senior Dev) | Brought under document governance (docs:backfill): frontmatter + changelog. |

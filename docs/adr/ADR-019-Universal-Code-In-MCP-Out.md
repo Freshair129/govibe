@@ -1,11 +1,16 @@
 ---
 doc_id: "ADR-019-UNIVERSAL-CODE-IN-MCP-OUT"
+uid: "01KVXGFSJK1608VP5Y0G4YEB5X"
 title: "ADR-019: Universal code-in (12-step) + MCP-out (7-phase) — no per-framework adapters"
 status: "accepted"
 version: "0.1.0"
+content_hash: "atom:801c25e5d9b1ce64"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 type: adr
+related_docs:
+  - "docs/STD-Execution-Governance.md"
+  - "docs/adr/ADR-017-GoVibe-Governance-Translator-GKS-Interlingua.md"
 ---
 
 # ADR-019: Universal code-in + MCP-out — no per-framework adapters

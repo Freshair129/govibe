@@ -1,11 +1,17 @@
 ---
 doc_id: "POC-5-AXIS-COVERAGE"
+uid: "01KVXGFT5EXJH2DSVWBGBKA2WJ"
 title: "PoC-1: The 5-axis model covers project documents at every density (sparse → dense)"
 status: "draft"
 version: "0.1.0+draft"
+content_hash: "atom:d7f232aea7b500fe"
 updated: "2026-06-22"
 owner: "Boss (CEO)"
 type: audit
+related_docs:
+  - "docs/DOC-VERSION-REGISTRY.md"
+  - "docs/SDD-System-Design.md"
+  - "docs/adr/ADR-019-Universal-Code-In-MCP-Out.md"
 ---
 
 # PoC-1: 5-Axis Document Coverage

@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-CALL-GRAPH-VISUALIZATION"
+uid: "01KVXGFTXZTRM2X9E0EC3E4CDC"
+title: "FEAT-CALL-GRAPH: Live Call Graph Visualization Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:3c94de2490666ab6"
+updated: "2026-06-24"
+owner: "VIBE (Agent)"
+type: feature
+---
 # FEAT-CALL-GRAPH: Live Call Graph Visualization Spec
 
 **Task ID:** GV-S120
@@ -50,3 +61,9 @@
 ## 8. Out-of-Task Dependencies
 - **GV-S201** (Layout) - สำเร็จแล้ว
 - **GV-S110** (AST Tree) - สำเร็จแล้ว
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | VIBE (Agent) | Brought under document governance (docs:backfill): frontmatter + changelog. |

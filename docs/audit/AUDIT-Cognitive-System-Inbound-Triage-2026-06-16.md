@@ -1,8 +1,10 @@
 ---
 title: "Audit: Cognitive System Inbound Knowledge Triage"
 doc_id: "AUDIT-COGNITIVE-SYSTEM-INBOUND-TRIAGE-2026-06-16"
+uid: "01KVXGFT5B1XRW5J5FXC6C5YFK"
 status: "approved"
 version: "0.1.1"
+content_hash: "atom:e2c1c377f2fc2963"
 updated: "2026-06-16"
 owner: "ATHER / LYRA"
 source_of_truth: true

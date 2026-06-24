@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-TESTING-INFRASTRUCTURE"
+uid: "01KVXGFVBYNGNRSV1E8XJWQV64"
+title: "FEAT-TESTING: Automated Testing Infrastructure & Core Unit Tests"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:03d9af1cba0012ef"
+updated: "2026-06-24"
+owner: "User (Boss)"
+type: feature
+---
 # FEAT-TESTING: Automated Testing Infrastructure & Core Unit Tests
 
 **Status:** `APPROVED`
@@ -47,3 +58,9 @@
 
 ---
 **Please review and approve this Testing Spec. Once approved, I will setup Vitest and write the first batch of unit tests.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | User (Boss) | Brought under document governance (docs:backfill): frontmatter + changelog. |

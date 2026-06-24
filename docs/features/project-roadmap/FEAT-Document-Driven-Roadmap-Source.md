@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-DOCUMENT-DRIVEN-ROADMAP-SOURCE"
+uid: "01KVXGFVBR1N9GT8585Z3411RJ"
+title: "FEAT: Document-Driven Roadmap Source"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:2a5bc90ff989f837"
+updated: "2026-06-24"
+owner: "LYRA / PM"
+type: feature
+---
 # FEAT: Document-Driven Roadmap Source
 
 **Status:** `DRAFT`
@@ -97,3 +108,9 @@ Minimum fields:
 - Progress changes when task status changes.
 - Auditor can trace roadmap item -> task -> agent assignment -> artifact -> review -> verification evidence.
 - ATHER blocks work that treats hardcoded React rows as canonical project roadmap state.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | LYRA / PM | Brought under document governance (docs:backfill): frontmatter + changelog. |

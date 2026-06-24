@@ -1,7 +1,9 @@
 ---
 title: "RUNBOOK — Codex Hybrid Savings Test"
 doc_id: "RUNBOOK-CODEX-HYBRID-SAVINGS-TEST"
+uid: "01KVXGFW5Q8JRSN1K37VA6C820"
 version: "0.1.1"
+content_hash: "atom:4b78ae2cf6f11a01"
 updated: "2026-06-19"
 status: "active"
 owner: "JANUS"

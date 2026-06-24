@@ -1,3 +1,14 @@
+---
+doc_id: "FEAT-AI-STRESS-TEST"
+uid: "01KVXGFVYV890TSCZJ3JCD42XK"
+title: "FEAT-AI-STRESS-TEST: Reactor Run Controller Spec"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:0ee885e7f1ba25a0"
+updated: "2026-06-24"
+owner: "VIBE (Agent)"
+type: feature
+---
 # FEAT-AI-STRESS-TEST: Reactor Run Controller Spec
 
 **Task ID:** GV-S312
@@ -55,3 +66,9 @@
 
 ---
 **Please review and approve this Spec. Once approved, I will implement the AI Stress Test Controller.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | VIBE (Agent) | Brought under document governance (docs:backfill): frontmatter + changelog. |

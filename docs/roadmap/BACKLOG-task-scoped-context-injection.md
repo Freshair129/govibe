@@ -1,8 +1,10 @@
 ---
 title: "BACKLOG: Task-Scoped Context Injection"
 doc_id: "BACKLOG-TASK-SCOPED-CONTEXT-INJECTION"
+uid: "01KVXGFW3SDMTEWBX3V64Z8WB6"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:bcc55fe8d285d43b"
 updated: "2026-06-19"
 owner: "LYRA"
 source_of_truth: true

@@ -1,8 +1,10 @@
 ---
 title: "ADR: MSP/GKS as GoVibe Traceability Gate"
 doc_id: "ADR-014-msp-gks-traceability-gate"
+uid: "01KVXGFS1A91A8N1R34T8WSCXR"
 status: "accepted"
 version: "0.1.0"
+content_hash: "atom:791fda2244b6fb3f"
 updated: "2026-06-21"
 owner: "ARCHON / ATHER"
 source_of_truth: true

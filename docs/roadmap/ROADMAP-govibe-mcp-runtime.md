@@ -1,12 +1,17 @@
 ---
 title: "ROADMAP: GoVibe MCP Runtime"
 doc_id: "ROADMAP-GOVIBE-MCP-RUNTIME"
+uid: "01KVXGFW5KJH053QFBXBBVRP1E"
 id: RM-govibe-mcp-runtime
 version: "0.4.8"
+content_hash: "atom:703b923b5ea87d4b"
 updated: "2026-06-18"
 status: approved
 owner: "LYRA"
 source_of_truth: true
+related_docs:
+  - "docs/PRD-GoVibe-MCP-Orchestration.md"
+  - "docs/PRD-GoVibe-Platform-Overview.md"
 ---
 
 # ROADMAP: GoVibe MCP Runtime

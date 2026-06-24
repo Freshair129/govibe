@@ -1,3 +1,14 @@
+---
+doc_id: "API-001-BACKEND-GATEWAY"
+uid: "01KVXGFSJQ7PEE0ZBSM5NP25GH"
+title: "API-001: GoVibe Backend IPC Gateway Contract"
+status: "draft"
+version: "0.1.0+draft"
+content_hash: "atom:b4b9020ce409aaee"
+updated: "2026-06-24"
+owner: "User (Boss)"
+type: api
+---
 # API-001: GoVibe Backend IPC Gateway Contract
 
 **Status:** `APPROVED`
@@ -49,3 +60,9 @@ useEffect(() => { syncData(); }, []);
 
 ---
 **Please review and approve this API Contract. Once approved, I will implement the Rust Commands and the Frontend Bridge.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-06-24 | User (Boss) | Brought under document governance (docs:backfill): frontmatter + changelog. |

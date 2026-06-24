@@ -1,8 +1,10 @@
 ---
 title: "FEAT: Visual Agent Fleet System"
 doc_id: "FEAT-VISUAL-AGENT-FLEET-SYSTEM"
+uid: "01KVXGFTXTMJBPQE85MRAK3M27"
 status: "approved"
 version: "0.1.0"
+content_hash: "atom:6ed3c6db6baa9ac7"
 updated: "2026-06-14"
 owner: "THESEUS"
 source_of_truth: true

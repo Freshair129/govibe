@@ -1,8 +1,10 @@
 ---
 title: "LLD: Task-Scoped Context Injection Core"
 doc_id: "LLD-TASK-SCOPED-CONTEXT-INJECTION-CORE"
+uid: "01KVXGFW1HNET9S20GYQPMMDPQ"
 status: "approved"
 version: "0.1.1"
+content_hash: "atom:72957291b83ebc06"
 updated: "2026-06-19"
 owner: "ARCHON / ATHER"
 source_of_truth: true
