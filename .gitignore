@@ -24,3 +24,8 @@ Thumbs.db
 
 # Reference/sample trees used for comparison only; not live GoVibe source truth.
 ref/
+
+# Test / build artifacts — auto-generated, never commit (stops IDE auto-stage noise).
+playwright-report/
+test-results/
+.playwright-cli/
