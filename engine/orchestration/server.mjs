@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * G-Maiden Orchestrator — Web UI server
+ * G-orchestra Orchestrator (GoVibe fork) — Web UI server
  *   node server.mjs [--port 4577]
  * เปิด http://localhost:4577 เพื่อ monitor + สั่งงาน (claim/done/fail/release/assign/dispatch/reset)
  * ไม่มี dependency ภายนอก (Node http ล้วน). ใช้ engine.mjs ร่วมกับ CLI.
@@ -58,5 +58,5 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`\n  G-Maiden Orchestrator UI → http://localhost:${PORT}\n  (Ctrl+C เพื่อหยุด)\n`);
+  console.log(`\n  ${E.CONFIG.project?.name ?? "GoVibe"} Orchestrator UI → http://localhost:${PORT}\n  (Ctrl+C เพื่อหยุด)\n`);
 });

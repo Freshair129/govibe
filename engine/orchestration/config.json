@@ -3,11 +3,11 @@
   "leaseMs": 1800000,
 
   "project": {
-    "name": "G-Maiden",
-    "repoRoot": "G:/G-Maiden",
-    "stack": ["Tauri v2", "Axum", "SQLite"],
-    "langLine": "Rust (src-tauri/src/) + React/TypeScript (src/src/)",
-    "exclusions": ["ไม่มีไฟล์ Python ในโปรเจกต์นี้"]
+    "name": "GoVibe",
+    "repoRoot": "G:/govibe",
+    "stack": ["React", "Vite", "TypeScript", "Node ESM MCP server"],
+    "langLine": "TypeScript/React (src/) + Node ESM MCP runtime (scripts/mcp/) + this forked engine (engine/)",
+    "exclusions": []
   },
 
   "providers": {
@@ -86,7 +86,7 @@
     "coder": {
       "description": "Implementation, testing, integration â€” needs file access",
       "requires": ["file_edit"],
-      "preferred": ["claude:sonnet", "codex:o4-mini", "antigravity:default", "ollama:hf.co/sillykiwi/Aroow-Rust-Coder-9B-Q4_K_S-GGUF:Q4_K_S", "ollama:gemma4-rust-coder:latest"]
+      "preferred": ["claude:sonnet", "codex:o4-mini", "antigravity:default", "ollama:qwen3.5:4b"]
     },
     "worker": {
       "description": "Scaffolding, config files, documentation â€” light work",
@@ -140,29 +140,25 @@
   },
 
   "docsForContext": [
-    { "path": "docs/architecture/tech-stack.md", "tier": "shared" },
-    { "path": "docs/architecture/engineering-spec.md", "tier": "shared" },
-    { "path": "docs/architecture/technical-design-document.md", "tier": "shared" },
-    { "path": "docs/product/roadmap-legacy.md", "tier": "shared" },
-    { "path": "docs/architecture/implementation-plan.md", "tier": "shared" },
-    { "path": "docs/research/concepts/subagent-context-scoping.md", "tier": "orchestrator-only" },
-    { "path": "docs/guides/small-model-prompting.md", "tier": "worker-guide" }
+    { "path": "CLAUDE.md", "tier": "shared" },
+    { "path": "AGENTS.md", "tier": "shared" },
+    { "path": "docs/PRD-GoVibe-Platform-Overview.md", "tier": "shared" }
   ],
 
   "scope": {
     "_comment": "POLA: parent à¸›à¸£à¸°à¸à¸²à¸¨ scope à¸•à¹ˆà¸­ task.",
-    "default": { "docs": ["docs/architecture/engineering-spec.md", "docs/architecture/technical-design-document.md"], "budgetTokens": 8000 },
+    "default": { "docs": ["CLAUDE.md", "AGENTS.md", "docs/PRD-GoVibe-Platform-Overview.md"], "budgetTokens": 8000 },
     "byPhase": {
-      "spike": { "docs": ["docs/architecture/engineering-spec.md", "docs/architecture/technical-design-document.md"], "budgetTokens": 12000 },
-      "0": { "docs": ["docs/architecture/tech-stack.md", "docs/architecture/technical-design-document.md"], "budgetTokens": 8000 },
-      "1": { "docs": ["docs/architecture/engineering-spec.md", "docs/architecture/technical-design-document.md"], "budgetTokens": 9000 },
-      "2": { "docs": ["docs/architecture/engineering-spec.md", "docs/architecture/technical-design-document.md"], "budgetTokens": 10000 },
-      "3": { "docs": ["docs/architecture/engineering-spec.md", "docs/architecture/technical-design-document.md"], "budgetTokens": 12000 },
-      "4": { "docs": ["docs/architecture/tech-stack.md", "docs/architecture/engineering-spec.md", "docs/architecture/technical-design-document.md"], "budgetTokens": 10000 },
-      "5": { "docs": ["docs/architecture/engineering-spec.md", "docs/architecture/technical-design-document.md"], "budgetTokens": 9000 },
-      "6": { "docs": ["docs/architecture/engineering-spec.md", "docs/architecture/technical-design-document.md"], "budgetTokens": 9000 },
-      "7": { "docs": ["docs/architecture/tech-stack.md", "docs/architecture/technical-design-document.md"], "budgetTokens": 9000 },
-      "8": { "docs": ["docs/architecture/tech-stack.md", "docs/product/roadmap-legacy.md"], "budgetTokens": 8000 }
+      "spike": { "budgetTokens": 12000 },
+      "0": { "budgetTokens": 8000 },
+      "1": { "budgetTokens": 9000 },
+      "2": { "budgetTokens": 10000 },
+      "3": { "budgetTokens": 12000 },
+      "4": { "budgetTokens": 10000 },
+      "5": { "budgetTokens": 9000 },
+      "6": { "budgetTokens": 9000 },
+      "7": { "budgetTokens": 9000 },
+      "8": { "budgetTokens": 8000 }
     }
   },
 

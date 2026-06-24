@@ -1,5 +1,5 @@
 /**
- * G-Maiden Orchestrator — shared engine
+ * G-orchestra — shared engine (GoVibe fork)
  * ใช้ร่วมกันโดย orchestrator.mjs (CLI) และ server.mjs (web UI).
  * ฟังก์ชันทั้งหมด return ค่าแบบ structured (ไม่ print) เพื่อให้ทั้ง CLI/HTTP ใช้ได้.
  */
@@ -264,7 +264,7 @@ function isTextOnly(provider) {
 export function buildPrompt(t, model, provider = "claude", reworkNote = null, pastMistakes = null, grounded = null) {
   const s = scopeFor(t);
   const deps = (t.deps || []).join(", ") || "(none)";
-  const projectName = CONFIG.project?.name ?? "G-Maiden";
+  const projectName = CONFIG.project?.name ?? "GoVibe";
   const head = [
     `คุณคือ worker agent ของโปรเจกต์ ${projectName} ทำงาน task เดียวให้เสร็จ`, ``,
     `# Task ${t.id}: ${t.title}`,
@@ -288,10 +288,10 @@ export function buildPrompt(t, model, provider = "claude", reworkNote = null, pa
   // full-agent providers (claude, codex, antigravity, ollama+tools): ชี้ path ให้ agent ไปอ่านเอง
   const ollamaHint = provider === "ollama" ? (() => {
     const proj = CONFIG.project ?? {};
-    const name = proj.name ?? "G-Maiden";
-    const root = proj.repoRoot ?? "G:/G-Maiden";
-    const stack = Array.isArray(proj.stack) && proj.stack.length ? proj.stack.join(", ") : "Tauri v2, Axum, SQLite";
-    const langLine = proj.langLine ?? "Rust (src-tauri/src/) + React/TypeScript (src/src/)";
+    const name = proj.name ?? "GoVibe";
+    const root = proj.repoRoot ?? "G:/govibe";
+    const stack = Array.isArray(proj.stack) && proj.stack.length ? proj.stack.join(", ") : "React, Vite, TypeScript";
+    const langLine = proj.langLine ?? "TypeScript/React (src/) + Node ESM MCP runtime (scripts/mcp/)";
     const exclusions = Array.isArray(proj.exclusions) ? proj.exclusions : [];
     return [
       `## โครงสร้างโปรเจกต์ (${name})`,

@@ -472,8 +472,8 @@ async function runOpenRouter(t, model, worker, prompt, config, paths, opts) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://github.com/Freshair129/G-Maiden",
-        "X-Title": "G-Maiden Orchestrator",
+        "HTTP-Referer": "https://github.com/Freshair129/govibe",
+        "X-Title": "GoVibe Orchestrator",
       },
       body: JSON.stringify({
         model,

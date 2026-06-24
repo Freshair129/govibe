@@ -1,9 +1,9 @@
 {
-  "name": "g-maiden-orchestrator",
+  "name": "govibe-g-orchestra",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Multi-agent task orchestrator + web UI for building G-Maiden",
+  "description": "G-orchestra — multi-agent hybrid orchestration engine (GoVibe fork)",
   "scripts": {
     "ui": "node server.mjs",
     "status": "node orchestrator.mjs status",

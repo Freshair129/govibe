@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * G-Maiden Multi-Agent Orchestrator — CLI
+ * G-orchestra Multi-Agent Orchestrator (GoVibe fork) — CLI
  * (logic อยู่ใน engine.mjs ซึ่ง server.mjs ใช้ร่วมกัน)
  *
  *   node orchestrator.mjs status | next | graph [--mermaid]
@@ -20,7 +20,7 @@ function out(r) { if (r && r.ok === false) { console.error("ERROR: " + r.error);
 function cmdStatus() {
   const snap = E.snapshot();
   const { done, total, pct } = snap.progress;
-  console.log(`\n  G-Maiden Orchestrator — ${done}/${total} done (${pct}%)`);
+  console.log(`\n  ${E.CONFIG.project?.name ?? "GoVibe"} Orchestrator — ${done}/${total} done (${pct}%)`);
   console.log("  " + bar(done, total) + "\n");
   console.log("  สถานะ: " + Object.entries(snap.counts).map(([k, v]) => `${k}=${v}`).join("  "));
   const ready = snap.tasks.filter((t) => t.ready).length;

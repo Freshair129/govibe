@@ -86,7 +86,7 @@ function run() {
   })
   if (!taskParts.length) {
     process.stderr.write(`  ${C.yellow}usage: hybrid-meter run "<task>" [--max N] [--exec-model provider:model]${C.reset}\n`)
-    process.stderr.write(`  ${C.dim}Note: --repo is not supported (run.mjs always targets the G-Maiden repo root).${C.reset}\n`)
+    process.stderr.write(`  ${C.dim}Note: --repo is not supported yet (run.mjs always targets the engine's own repo root).${C.reset}\n`)
     process.exit(1)
   }
   // Build args for orchestration/run.mjs: forward task + supported flags verbatim
