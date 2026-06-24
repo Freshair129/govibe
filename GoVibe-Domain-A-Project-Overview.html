@@ -1,0 +1,2766 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoDev - Agent Command Center</title>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <!-- Stylesheets & Libraries -->
+    <script>
+        (function () {
+            const originalWarn = console.warn;
+            console.warn = function (...args) {
+                if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) {
+                    return;
+                }
+                originalWarn.apply(console, args);
+            };
+        })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        glass: {
+                            100: 'var(--glass-bg-100)',
+                            200: 'var(--glass-bg-200)',
+                            300: 'var(--glass-bg-300)',
+                        },
+                        neon: {
+                            green: 'var(--neon-green)',
+                            blue: 'var(--neon-blue)',
+                            purple: 'var(--neon-purple)'
+                        },
+                        cyber: {
+                            bg: '#08090c',
+                            card: 'rgba(18, 20, 28, 0.65)',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            text: '#f3f4f6',
+                            muted: '#9ca3af',
+                            emerald: '#10b981',
+                            indigo: '#6366f1',
+                            orange: '#f59e0b',
+                            cyan: '#06b6d4',
+                            purple: '#a855f7'
+                        },
+                        dark: 'var(--bg-body)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Core UI & Glassmorphism Design Tokens -->
+    <style>
+        :root {
+            --bg-body: #0f1115;
+            --text-main: #e2e8f0;
+            --text-muted: #9ca3af;
+            --text-title: #ffffff;
+
+            --glass-bg: rgba(30, 30, 35, 0.65);
+            --glass-bg-100: rgba(255, 255, 255, 0.05);
+            --glass-bg-200: rgba(255, 255, 255, 0.1);
+            --glass-bg-300: rgba(255, 255, 255, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-hover-border: rgba(255, 255, 255, 0.25);
+
+            --neon-green: #00ff88;
+            --neon-blue: #00e1ff;
+            --neon-purple: #b700ff;
+
+            --shimmer-start: #ffffff;
+            --shimmer-end: #ffffff;
+            --orb-opacity: 0.6;
+            --card-glare: rgba(255, 255, 255, 0.12);
+            --shadow-intensity: rgba(0, 0, 0, 0.3);
+            --badge-bg: rgba(0, 255, 136, 0.15);
+        }
+
+        .light-theme {
+            --bg-body: #f4f4f5;
+            --text-main: #18181b;
+            --text-muted: #52525b;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(0, 0, 0, 0.08);
+            --card-hover-border: rgba(0, 0, 0, 0.15);
+            --card-glare: rgba(0, 0, 0, 0.03);
+            --orb-opacity: 0.15;
+            --neon-green: #059669;
+            --neon-blue: #0284c7;
+            --neon-purple: #a855f7;
+            --shimmer-start: #ffc320;
+            --shimmer-end: #059669;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            overflow: hidden;
+            font-family: 'Prompt', sans-serif;
+            transition: background-color 0.4s ease, color 0.4s ease;
+        }
+
+        .ambient-orb,
+        .glow-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: -1;
+            opacity: var(--orb-opacity);
+            pointer-events: none;
+            animation: pulse 10s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1) translate(0, 0);
+            }
+
+            100% {
+                transform: scale(1.2) translate(20px, -20px);
+            }
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+            transition: background 0.4s ease, border-color 0.4s ease;
+        }
+
+        .scroll-custom::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .scroll-custom::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .scroll-custom::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.12);
+            border-radius: 10px;
+        }
+
+        .scroll-custom::-webkit-scrollbar-thumb:hover {
+            background: var(--active-accent, #10b981);
+        }
+
+        .shimmer-title {
+            background: linear-gradient(90deg,
+                    var(--shimmer-start) 0%,
+                    #a855f7 35%,
+                    var(--active-accent, #10b981) 50%,
+                    #06b6d4 65%,
+                    var(--shimmer-start) 100%);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 5s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .sidebar {
+            width: 80px;
+            transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+        }
+
+        .sidebar:hover,
+        .sidebar.expanded-lock {
+            width: 280px;
+        }
+
+        .sidebar-text,
+        .sidebar-expand-content {
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.4s ease;
+            white-space: nowrap;
+        }
+
+        .sidebar:hover .sidebar-text,
+        .sidebar:hover .sidebar-expand-content,
+        .sidebar.expanded-lock .sidebar-text,
+        .sidebar.expanded-lock .sidebar-expand-content {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .nav-item::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 80px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--text-title);
+            color: var(--bg-body);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+            z-index: 100;
+        }
+
+        .sidebar:not(:hover):not(.expanded-lock) .nav-item:hover::after {
+            opacity: 1;
+        }
+
+        .interactive-card {
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.5s ease, border-color 0.3s ease;
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+            will-change: transform;
+        }
+
+        .interactive-card:hover {
+            border-color: var(--card-hover-border);
+            box-shadow: 0 20px 40px rgba(0, 255, 136, 0.12), 0 5px 15px var(--shadow-intensity);
+            z-index: 10;
+        }
+
+        .card-glare {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle 250px at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--card-glare), transparent 80%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .interactive-card:hover .card-glare {
+            opacity: 1;
+        }
+
+        /* Raycast 3D Card styles */
+        .raycast-perspective-container {
+            perspective: 1000px;
+        }
+
+        .raycast-agent-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out, border-color 0.4s ease, box-shadow 0.4s ease;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .raycast-agent-card:hover {
+            box-shadow:
+                0 25px 60px -15px rgba(0, 0, 0, 0.6),
+                0 0 25px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .raycast-agent-card.eva-card:hover {
+            border-color: rgba(16, 185, 129, 0.45);
+            box-shadow:
+                0 0 25px rgba(16, 185, 129, 0.25),
+                0 25px 60px -15px rgba(0, 0, 0, 0.65);
+        }
+
+        .raycast-agent-card.qwen-card:hover {
+            border-color: rgba(245, 158, 11, 0.45);
+            box-shadow:
+                0 0 25px rgba(245, 158, 11, 0.25),
+                0 25px 60px -15px rgba(0, 0, 0, 0.65);
+        }
+
+        .raycast-agent-card.uat-card:hover {
+            border-color: rgba(99, 102, 241, 0.45);
+            box-shadow:
+                0 0 25px rgba(99, 102, 241, 0.25),
+                0 25px 60px -15px rgba(0, 0, 0, 0.65);
+        }
+
+        .raycast-agent-card.local-card:hover {
+            border-color: rgba(14, 165, 233, 0.45);
+            box-shadow:
+                0 0 25px rgba(14, 165, 233, 0.25),
+                0 25px 60px -15px rgba(0, 0, 0, 0.65);
+        }
+
+        .raycast-agent-card .card-shine {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle 120px at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 255, 255, 0.09), transparent 70%);
+            z-index: 1;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .raycast-agent-card:hover .card-shine {
+            opacity: 1;
+        }
+
+        .raycast-agent-card img,
+        .raycast-agent-card h4,
+        .raycast-agent-card span,
+        .raycast-agent-card .brand-title,
+        .raycast-agent-card .ext-badge,
+        .raycast-agent-card .floating-logo,
+        .raycast-agent-card .card-footer {
+            transform: translateZ(20px);
+        }
+
+        .raycast-agent-card .config:hover i {
+            transform: translateX(4px);
+        }
+
+        /* Agent drag follow-cursor styles */
+        .agent-drag-float {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            transform: rotate(-5deg) scale(1.05);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 40px rgba(255, 255, 255, 0.08);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: none;
+        }
+
+        .agent-card-dragging {
+            opacity: 0.3;
+            transform: scale(0.96) !important;
+            transition: opacity 0.2s ease, transform 0.2s ease !important;
+        }
+
+        /* Task drop target glow + elevation */
+        .task-item {
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .task-drop-hover {
+            transform: scale(1.02) translateY(-3px) !important;
+            z-index: 5;
+            position: relative;
+        }
+
+        .task-drop-hover.drop-eva {
+            border-color: rgba(16, 185, 129, 0.6) !important;
+            background-color: rgba(16, 185, 129, 0.08) !important;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3), 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .task-drop-hover.drop-qwen {
+            border-color: rgba(245, 158, 11, 0.6) !important;
+            background-color: rgba(245, 158, 11, 0.08) !important;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3), 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .task-drop-hover.drop-uat {
+            border-color: rgba(99, 102, 241, 0.6) !important;
+            background-color: rgba(99, 102, 241, 0.08) !important;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3), 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .task-drop-hover.drop-local {
+            border-color: rgba(14, 165, 233, 0.6) !important;
+            background-color: rgba(14, 165, 233, 0.08) !important;
+            box-shadow: 0 0 20px rgba(14, 165, 233, 0.3), 0 8px 30px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .grid-canvas {
+            background-size: 24px 24px;
+            background-image:
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+        }
+
+        /* 3-State Task Checkboxes */
+        .verif-icon-btn {
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: var(--text-muted);
+        }
+
+        .verif-icon-btn.active {
+            color: var(--active-accent, #10b981);
+            background: rgba(16, 185, 129, 0.12);
+            border-color: rgba(16, 185, 129, 0.35);
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.2);
+        }
+
+        .verif-icon-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.15;
+            background: transparent;
+            border-color: transparent;
+        }
+
+        /* Accordion Phase styling */
+        .phase-body {
+            display: none;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .phase-body.open {
+            display: block;
+        }
+
+        .phase-chevron {
+            transition: transform 0.25s ease;
+        }
+
+        .phase-chevron.open {
+            transform: rotate(180deg);
+        }
+
+        .light-theme .text-white {
+            color: #18181b !important;
+        }
+
+        .light-theme .text-stone-300,
+        .light-theme .text-gray-400,
+        .light-theme .text-cyber-muted {
+            color: #52525b !important;
+        }
+
+        .light-theme .bg-black\/40 {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+            border-color: rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .light-theme pre {
+            background-color: rgba(0, 0, 0, 0.03) !important;
+            color: #18181b !important;
+        }
+
+        .light-theme input,
+        .light-theme select {
+            color: #18181b !important;
+            background-color: rgba(255, 255, 255, 0.9) !important;
+        }
+
+        .light-theme #hitl-card {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border-color: rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .light-theme #hitl-card .text-indigo-400 {
+            color: #4f46e5 !important;
+        }
+
+        .light-theme #hitl-card button.border-white\/10 {
+            border-color: rgba(0, 0, 0, 0.1) !important;
+            color: #18181b !important;
+        }
+
+        .light-theme #hitl-card button.border-white\/10:hover {
+            background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+
+
+        /* 3D Flip Card Utilities */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .rotate-y-180 {
+            transform: rotateY(180deg) !important;
+        }
+
+        .flipper-wrapper {
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+
+        .raycast-perspective-container {
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out;
+        }
+
+        /* Premium Switch Toggles */
+        .switch-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .switch-input {
+            display: none;
+        }
+
+        .switch-track {
+            width: 2.25rem;
+            height: 1.25rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 9999px;
+            transition: background-color 0.3s ease;
+            position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .switch-handle {
+            width: 1rem;
+            height: 1rem;
+            background-color: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 1px;
+            left: 2px;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+        }
+
+        .switch-input:checked+.switch-track {
+            background-color: #FF6363;
+        }
+
+        .switch-input:checked+.switch-track .switch-handle {
+            transform: translateX(1rem);
+        }
+
+        /* Model Source Tab Controls (old raycast cards) */
+        .tab-btn {
+            flex: 1;
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            background: transparent;
+            border: 1px solid transparent;
+        }
+
+        .tab-btn.active {
+            background-color: rgba(255, 99, 99, 0.15);
+            color: #fff;
+            border: 1px solid rgba(255, 99, 99, 0.3);
+        }
+
+        .tab-btn.inactive {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .tab-btn.inactive:hover {
+            color: #fff;
+        }
+
+        /* Model Source Pill Switcher (new config panel) */
+        .model-src-pill {
+            display: flex;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            padding: 3px;
+            gap: 3px;
+        }
+
+        .model-src-pill button {
+            flex: 1;
+            padding: 6px 10px;
+            border-radius: 7px;
+            border: none;
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.22s ease;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .model-src-pill button.pill-active {
+            background: var(--current-accent, var(--accent));
+            color: #fff;
+            box-shadow: 0 2px 12px rgba(var(--accent-rgb, 255, 99, 99), 0.35);
+        }
+
+        .model-src-pill button:not(.pill-active):hover {
+            color: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+
+        /* Config Save/Cancel bar */
+        .config-action-bar {
+            display: flex;
+            gap: 0.6rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .btn-save-cfg {
+            flex: 1;
+            padding: 0.6rem;
+            border-radius: 10px;
+            border: none;
+            background: var(--current-accent, var(--accent));
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(var(--accent-rgb, 255, 99, 99), 0.3);
+        }
+
+        .btn-save-cfg:hover {
+            filter: brightness(1.1);
+        }
+
+        .btn-cancel-cfg {
+            flex: 0 0 auto;
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            background: transparent;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 0.62rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .btn-cancel-cfg:hover {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .shine-overlay {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
+            border-radius: inherit;
+            background: radial-gradient(300px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 99, 99, 0.12), transparent 50%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .raycast-agent-card:hover .shine-overlay {
+            opacity: 1;
+        }
+
+        .raycast-agent-card {
+            transition: transform 0.6s cubic-bezier(0.165, 0.84, 0.44, 1), border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+    </style>
+</head>
+
+<body class="h-screen flex flex-col antialiased">
+    <!-- Glowing background elements -->
+    <div class="ambient-orb bg-emerald-600/30 w-[40vw] h-[40vw] top-[-10%] left-[-10%]"></div>
+    <div class="ambient-orb bg-indigo-600/20 w-[35vw] h-[35vw] bottom-[-5%] right-[10%]"></div>
+    <div class="ambient-orb bg-purple-600/20 w-[20vw] h-[20vw] top-[40%] left-[50%]"></div>
+    <div id="orb-left" class="glow-orb w-[45vw] h-[45vw] top-[-10%] left-[-10%] bg-emerald-600/20"></div>
+
+    <!-- SECTOR 1: HEADER (Top Nav Area) -->
+    <header
+        class="h-[64px] shrink-0 glass-panel border-b border-cyber-border flex items-center justify-between px-6 z-50 relative">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-indigo-600 flex items-center justify-center font-black text-white shadow-lg text-sm">
+                    CV
+                </div>
+                <span class="font-extrabold text-lg tracking-wider text-white">
+                    CoVibe CoDev
+                    <span
+                        class="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/60 font-mono tracking-normal ml-1">v2.5</span>
+                </span>
+            </div>
+
+            <!-- Right action hooks & Theme Toggler -->
+            <div class="flex items-center gap-4">
+                <button onclick="startWorkflow()"
+                    class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-lg transition-all duration-300">
+                    <i class="fa-solid fa-play"></i> Test Run
+                </button>
+                <span class="text-xs text-cyber-muted font-mono hidden sm:inline">
+                    <i class="fa-solid fa-circle text-emerald-500 animate-pulse text-[8px] mr-1.5"></i> STABLE RUN
+                </span>
+                <button onclick="toggleTheme()"
+                    class="w-9 h-9 rounded-lg flex items-center justify-center border border-white/10 hover:bg-white/10 text-emerald-400 transition-all duration-300"
+                    id="theme-toggle-btn">
+                    <i class="fa-solid fa-sun text-sm hidden" id="sun-icon"></i>
+                    <i class="fa-solid fa-moon text-sm" id="moon-icon"></i>
+                </button>
+            </div>
+    </header>
+
+    <!-- SECTOR 2: WORKSPACE (Sidebar & Main content viewport) -->
+    <div class="flex-1 flex overflow-hidden relative z-40">
+        <!-- SECTOR 2.1: Collapsible Sidebar -->
+        <aside id="app-sidebar"
+            class="sidebar glass-panel border-r border-cyber-border flex flex-col justify-between py-6 px-4 z-30 relative shrink-0">
+            <div>
+                <div class="flex items-center gap-3 mb-6 px-2">
+                    <div id="sidebar-context-icon"
+                        class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg shadow-inner shrink-0 transition-all duration-300">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div class="sidebar-expand-content">
+                        <h3 class="text-xs text-cyber-muted uppercase tracking-widest font-black leading-none">ACTIVE
+                            DOMAIN</h3>
+                        <span id="sidebar-context-title"
+                            class="text-sm font-bold text-white tracking-wide">Overview</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/5 my-4"></div>
+
+                <ul class="flex flex-col gap-1.5" id="sidebar-sub-nav">
+                    <!-- Dynamic rendering via switchDomain() -->
+                </ul>
+            </div>
+
+            <!-- Lock and Collapse Switcher -->
+            <div>
+                <button onclick="toggleSidebar()"
+                    class="w-full flex items-center gap-3 text-cyber-muted hover:text-white py-2 px-3 rounded-lg hover:bg-white/5 transition-all text-left">
+                    <i id="sidebar-toggle-icon" class="fa-solid fa-chevron-right text-center w-5"></i>
+                    <span class="sidebar-expand-content text-xs font-semibold tracking-wide">Expand Sidebar</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- SECTOR 2.2: MAIN CONTENT CONTAINER -->
+        <main class="flex-1 overflow-y-auto scroll-custom p-6 md:p-8 relative" id="main-scroll-container">
+            <div id="main-wrapper" class="max-w-7xl mx-auto space-y-8 fade-in">
+
+
+                <!-- DOMAIN A: PROJECT OVERVIEW -->
+
+
+                <!-- GoVibe Development Roadmap Header Card -->
+                <div class="relative glass-panel rounded-2xl p-6 border-l-4 border-l-cyan-500" id="roadmap-header-card">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <h2 class="text-2xl font-extrabold text-white tracking-tight">GoVibe Development Roadmap
+                            </h2>
+                            <p class="text-xs text-cyber-muted mt-1">
+                                à¹à¸œà¸™à¸à¸²à¸£à¸žà¸±à¸’à¸™à¸²à¹à¸¥à¸°à¸•à¸´à¸”à¸•à¸²à¸¡à¸œà¸¥à¸„à¸§à¸²à¸¡à¸„à¸·à¸šà¸«à¸™à¹‰à¸²à¸‚à¸­à¸‡à¸Ÿà¸µà¹€à¸ˆà¸­à¸£à¹Œ
+                            </p>
+                        </div>
+                        <div class="text-left sm:text-right shrink-0">
+                            <span
+                                class="text-[10px] text-cyber-muted font-bold uppercase tracking-wider block">à¸„à¸§à¸²à¸¡à¸„à¸·à¸šà¸«à¸™à¹‰à¸²à¸£à¸§à¸¡à¹‚à¸„à¸£à¸‡à¸à¸²à¸£</span>
+                            <span class="text-3xl font-black text-emerald-400 leading-none"
+                                id="global-percent-text">81%</span>
+                        </div>
+                    </div>
+
+                    <!-- Progress bar container -->
+                    <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden mt-4">
+                        <div class="bg-gradient-to-r from-cyan-500 via-emerald-500 to-indigo-500 h-full w-[81%]"
+                            id="global-progress-fill"></div>
+                    </div>
+
+                    <hr class="border-t border-white/5 my-5">
+
+                    <!-- Footer stats and control row -->
+                    <div class="flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-8 font-mono">
+                            <div>
+                                <div class="text-xl font-bold text-cyber-muted" id="stats-total-tasks">27</div>
+                                <div class="text-[10px] text-cyber-muted font-sans font-semibold">Feature ทั้งหมด
+                                </div>
+                            </div>
+                            <div>
+                                <div class="text-xl font-bold text-emerald-400" id="stats-completed-tasks">22</div>
+                                <div class="text-[10px] text-cyber-muted font-sans font-semibold">
+                                    พร้อมใช้งาน / IMP
+                                    à¹à¸¥à¹‰à¸§</div>
+                            </div>
+                            <div>
+                                <div class="text-xl font-bold text-amber-500" id="stats-pending-tasks">4</div>
+                                <div class="text-[10px] text-cyber-muted font-sans font-semibold">Task ใน Backlog
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <!-- Load Roadmap File Input -->
+                            <label
+                                class="px-3 py-1.5 bg-cyan-500/10 border border-cyan-500/30 hover:bg-cyan-500/20 text-cyan-400 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-file-import"></i> Load File
+                                <input type="file" id="roadmap-file-input" accept=".json,.yaml,.yml,.md" class="hidden"
+                                    onchange="loadRoadmapFromFile(event)">
+                            </label>
+                            <!-- Roadmap Export Dropdown -->
+                            <div class="relative inline-block text-left" id="export-roadmap-dropdown">
+                                <button onclick="event.stopPropagation(); toggleExportMenu('roadmap')"
+                                    class="px-3 py-1.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+                                    <i class="fa-solid fa-download"></i> Export <i
+                                        class="fa-solid fa-chevron-down text-[9px] text-cyber-muted"></i>
+                                </button>
+                                <div id="export-menu-roadmap"
+                                    class="hidden absolute right-0 mt-2 w-32 rounded-xl bg-neutral-900 border border-white/10 shadow-2xl py-1 z-50 font-mono text-[10px]">
+                                    <button
+                                        class="w-full text-left px-3.5 py-2 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                        onclick="event.stopPropagation(); exportData('roadmap', 'json')">JSON</button>
+                                    <button
+                                        class="w-full text-left px-3.5 py-2 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                        onclick="event.stopPropagation(); exportData('roadmap', 'yaml')">YAML</button>
+                                    <button
+                                        class="w-full text-left px-3.5 py-2 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                        onclick="event.stopPropagation(); exportData('roadmap', 'md')">Markdown</button>
+                                </div>
+                            </div>
+                            <button id="reset-btn"
+                                class="px-3 py-1.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-lg text-xs font-bold transition-all">
+                                <i class="fa-solid fa-rotate-right mr-1.5"></i> Reset Board
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty state — shown when no roadmap file is loaded -->
+                <div id="roadmap-empty-state"
+                    class="hidden col-span-4 flex flex-col items-center justify-center py-20 gap-6">
+                    <div
+                        class="w-20 h-20 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-4xl text-cyan-400">
+                        <i class="fa-solid fa-file-arrow-up"></i>
+                    </div>
+                    <div class="text-center">
+                        <h3 class="text-lg font-bold text-white mb-1">ยังไม่มีข้อมูล Roadmap</h3>
+                        <p class="text-sm text-cyber-muted">กด Load File เพื่อนำเข้าไฟล์ <span
+                                class="font-mono text-cyan-400">covibe-roadmap-export.json</span></p>
+                    </div>
+                    <label
+                        class="px-5 py-2.5 bg-cyan-500/15 border border-cyan-500/40 hover:bg-cyan-500/25 text-cyan-300 rounded-xl text-sm font-bold transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-cyan-500/10">
+                        <i class="fa-solid fa-file-import text-base"></i> Load Roadmap File
+                        <input type="file" accept=".json,.yaml,.yml,.md" class="hidden"
+                            onchange="loadRoadmapFromFile(event)">
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start mt-6" id="roadmap-phases-grid">
+
+
+
+                    <!-- Dynamic rendered checklist in accordion format -->
+                    <!-- Phase 0 -->
+                    <div class="glass-panel rounded-2xl" id="p0">
+                        <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none"
+                            onclick="togglePhase('p0')">
+                            <div class="flex items-center gap-4">
+                                <span
+                                    class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase
+                                    0</span>
+                                <h3 class="font-bold text-white text-base">Feasibility Spike — พิสูจน์ความเสถียร
+                                </h3>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration:
+                                    1 week</span>
+                                <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                    <div id="p0-mini-fill"
+                                        class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-[0%]"
+                                        style="width: 0%;"></div>
+                                </div>
+                                <span class="text-xs text-cyber-muted font-mono" id="p0-progress-lbl">0%</span>
+                                <!-- Phase Export Dropdown -->
+                                <div class="relative inline-block text-left" onclick="event.stopPropagation()">
+                                    <button
+                                        class="p-1.5 text-cyber-muted hover:text-white transition-colors rounded-lg hover:bg-white/5 flex items-center justify-center"
+                                        onclick="event.stopPropagation(); toggleExportMenu('p0')">
+                                        <i class="fa-solid fa-download text-[10px]"></i>
+                                    </button>
+                                    <div id="export-menu-p0"
+                                        class="hidden absolute right-0 mt-1 w-24 rounded-lg bg-neutral-900 border border-white/10 shadow-lg py-1 z-50 text-[10px] font-mono">
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'json', 'p0')">JSON</button>
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'yaml', 'p0')">YAML</button>
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'md', 'p0')">Markdown</button>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"
+                                    id="p0-ch"></i>
+                            </div>
+                        </div>
+                        <div class="phase-body p-6 border-t border-white/5 hidden space-y-4" id="p0-body">
+                            <p class="text-sm text-cyber-muted leading-relaxed">à¸à¹ˆà¸­à¸™à¹€à¸£à¸´à¹ˆà¸¡ Sprint
+                                จริง
+                                ต้องพิสูจน์ให้ได้ว่าระบบ YouTube
+                                IFrame API à¸—à¸³à¸‡à¸²à¸™à¸£à¹ˆà¸§à¸¡à¸à¸±à¸š WebSocket sync
+                                à¹ƒà¸™à¸à¸²à¸£à¸”à¸¶à¸‡à¸žà¸´à¸à¸±à¸”à¹€à¸§à¸¥à¸²à¸‚à¸­à¸‡à¹€à¸žà¸¥à¸‡à¹„à¸”à¹‰à¹€à¸ªà¸–à¸µà¸¢à¸£à¸šà¸™à¸¡à¸·à¸­à¸–à¸·à¸­
+                                2 à¹€à¸„à¸£à¸·à¹ˆà¸­à¸‡ à¹à¸¥à¸°à¸«à¸²à¸‚à¹‰à¸­à¸ˆà¸³à¸à¸±à¸”à¸£à¸°à¸šà¸š</p>
+                            <div class="tasks space-y-3" data-sprint="p0-s0">
+                                <!-- Dynamic tasks lists with inputs -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 1 -->
+                    <div class="glass-panel rounded-2xl" id="p1">
+                        <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none"
+                            onclick="togglePhase('p1')">
+                            <div class="flex items-center gap-4">
+                                <span
+                                    class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase
+                                    1</span>
+                                <h3 class="font-bold text-white text-base">MVP Core â€”
+                                    à¸Ÿà¸±à¸‡à¸à¹Œà¸Šà¸±à¸™à¸«à¹‰à¸­à¸‡à¹à¸¥à¸°à¸à¸²à¸£à¹à¸Šà¸£à¹Œà¹€à¸žà¸¥à¸‡
+                                </h3>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration:
+                                    4 weeks</span>
+                                <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                    <div id="p1-mini-fill"
+                                        class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-[0%]"
+                                        style="width: 0%;"></div>
+                                </div>
+                                <span class="text-xs text-cyber-muted font-mono" id="p1-progress-lbl">0%</span>
+                                <!-- Phase Export Dropdown -->
+                                <div class="relative inline-block text-left" onclick="event.stopPropagation()">
+                                    <button
+                                        class="p-1.5 text-cyber-muted hover:text-white transition-colors rounded-lg hover:bg-white/5 flex items-center justify-center"
+                                        onclick="event.stopPropagation(); toggleExportMenu('p1')">
+                                        <i class="fa-solid fa-download text-[10px]"></i>
+                                    </button>
+                                    <div id="export-menu-p1"
+                                        class="hidden absolute right-0 mt-1 w-24 rounded-lg bg-neutral-900 border border-white/10 shadow-lg py-1 z-50 text-[10px] font-mono">
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'json', 'p1')">JSON</button>
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'yaml', 'p1')">YAML</button>
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'md', 'p1')">Markdown</button>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"
+                                    id="p1-ch"></i>
+                            </div>
+                        </div>
+                        <div class="phase-body p-6 border-t border-white/5 hidden space-y-4" id="p1-body">
+                            <p class="text-sm text-cyber-muted leading-relaxed">
+                                à¸§à¸²à¸‡à¸£à¸²à¸à¸à¸²à¸™à¹‚à¸„à¸£à¸‡à¸ªà¸£à¹‰à¸²à¸‡à¸£à¸°à¸šà¸š Client
+                                à¹à¸¥à¸° Server à¹ƒà¸«à¹‰ Rider
+                                à¸ªà¸²à¸¡à¸²à¸£à¸–à¹€à¸›à¸´à¸”à¸«à¹‰à¸­à¸‡à¹à¸¥à¸°à¸ªà¹ˆà¸‡à¸•à¹ˆà¸­à¸¥à¸´à¸‡à¸à¹Œà¸«à¹‰à¸­à¸‡à¹ƒà¸«à¹‰
+                                Passenger
+                                à¸£à¹ˆà¸§à¸¡à¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¹„à¸”à¹‰จริงà¸šà¸™à¸£à¸°à¸šà¸š Production</p>
+                            <div class="tasks space-y-3" data-sprint="p1-s1"></div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 2 -->
+                    <div class="glass-panel rounded-2xl" id="p2">
+                        <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none"
+                            onclick="togglePhase('p2')">
+                            <div class="flex items-center gap-4">
+                                <span
+                                    class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase
+                                    2</span>
+                                <h3 class="font-bold text-white text-base">Sync Calibration — จูนนิ่งความตรงระดับเสี้ยววิ
+                                </h3>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration:
+                                    3 weeks</span>
+                                <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                    <div id="p2-mini-fill"
+                                        class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-[0%]"
+                                        style="width: 0%;"></div>
+                                </div>
+                                <span class="text-xs text-cyber-muted font-mono" id="p2-progress-lbl">0%</span>
+                                <!-- Phase Export Dropdown -->
+                                <div class="relative inline-block text-left" onclick="event.stopPropagation()">
+                                    <button
+                                        class="p-1.5 text-cyber-muted hover:text-white transition-colors rounded-lg hover:bg-white/5 flex items-center justify-center"
+                                        onclick="event.stopPropagation(); toggleExportMenu('p2')">
+                                        <i class="fa-solid fa-download text-[10px]"></i>
+                                    </button>
+                                    <div id="export-menu-p2"
+                                        class="hidden absolute right-0 mt-1 w-24 rounded-lg bg-neutral-900 border border-white/10 shadow-lg py-1 z-50 text-[10px] font-mono">
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'json', 'p2')">JSON</button>
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'yaml', 'p2')">YAML</button>
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'md', 'p2')">Markdown</button>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"
+                                    id="p2-ch"></i>
+                            </div>
+                        </div>
+                        <div class="phase-body p-6 border-t border-white/5 hidden space-y-4" id="p2-body">
+                            <p class="text-sm text-cyber-muted leading-relaxed">
+                                จูนนิ่งระดับความเสถียรระหว่าง
+                                Rider-Passenger à¹à¸¥à¸°à¹à¸à¹‰à¸ªà¸ à¸²à¸§à¸° Autoplay à¸šà¸¥à¹‡à¸­à¸
+                                à¸«à¸£à¸·à¸­à¹à¸­à¸›à¸«à¸¥à¸±à¸šà¸‚à¸“à¸°à¸›à¸´à¸”à¸«à¸™à¹‰à¸²à¸ˆà¸­à¸‚à¸±à¸šà¸‚à¸µà¹ˆจริง
+                            </p>
+                            <div class="tasks space-y-3" data-sprint="p2-s2"></div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 3 -->
+                    <div class="glass-panel rounded-2xl" id="p3">
+                        <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none"
+                            onclick="togglePhase('p3')">
+                            <div class="flex items-center gap-4">
+                                <span
+                                    class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase
+                                    3</span>
+                                <h3 class="font-bold text-white text-base">Beta Test & rider feedback â€”
+                                    à¸™à¸³à¸—à¸²à¸‡จริงà¸šà¸™à¸šà¸­à¸£à¹Œà¸”</h3>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration:
+                                    2 weeks</span>
+                                <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                    <div id="p3-mini-fill"
+                                        class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-[0%]"
+                                        style="width: 0%;"></div>
+                                </div>
+                                <span class="text-xs text-cyber-muted font-mono" id="p3-progress-lbl">0%</span>
+                                <!-- Phase Export Dropdown -->
+                                <div class="relative inline-block text-left" onclick="event.stopPropagation()">
+                                    <button
+                                        class="p-1.5 text-cyber-muted hover:text-white transition-colors rounded-lg hover:bg-white/5 flex items-center justify-center"
+                                        onclick="event.stopPropagation(); toggleExportMenu('p3')">
+                                        <i class="fa-solid fa-download text-[10px]"></i>
+                                    </button>
+                                    <div id="export-menu-p3"
+                                        class="hidden absolute right-0 mt-1 w-24 rounded-lg bg-neutral-900 border border-white/10 shadow-lg py-1 z-50 text-[10px] font-mono">
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'json', 'p3')">JSON</button>
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'yaml', 'p3')">YAML</button>
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'md', 'p3')">Markdown</button>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"
+                                    id="p3-ch"></i>
+                            </div>
+                        </div>
+                        <div class="phase-body p-6 border-t border-white/5 hidden space-y-4" id="p3-body">
+                            <p class="text-sm text-cyber-muted leading-relaxed">รวบรวม Bugs
+                                à¹à¸¥à¸°à¸”à¸¶à¸‡ Feedback
+                                จริงà¸¡à¸²à¸›à¸£à¸°à¹€à¸¡à¸´à¸™à¸œà¸¥à¸„à¸§à¸²à¸¡à¹€à¸ªà¸–à¸µà¸¢à¸£à¸‚à¸­à¸‡à¹€à¸„à¸£à¸·à¹ˆà¸­à¸‡à¹€à¸¥à¹ˆà¸™
+                                YouTube à¸‹à¸´à¸‡à¸„à¹Œ à¹à¸¥à¸°à¸£à¸°à¸šà¸šà¹€à¸ªà¸µà¸¢à¸‡</p>
+                            <div class="tasks space-y-3" data-sprint="p3-s3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Phase 4 -->
+                    <div class="glass-panel rounded-2xl" id="p4">
+                        <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none"
+                            onclick="togglePhase('p4')">
+                            <div class="flex items-center gap-4">
+                                <span
+                                    class="px-2.5 py-0.5 rounded bg-white/5 text-cyber-muted text-xs font-bold uppercase tracking-wider">Phase
+                                    4</span>
+                                <h3 class="font-bold text-cyber-muted text-base">Future Backlog — ส่วนเสริมอนาคต
+                                </h3>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span
+                                    class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration:
+                                    Future</span>
+                                <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                    <div id="p4-mini-fill"
+                                        class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-[0%]"
+                                        style="width: 0%;"></div>
+                                </div>
+                                <span class="text-xs text-cyber-muted font-mono" id="p4-progress-lbl">0%</span>
+                                <!-- Phase Export Dropdown -->
+                                <div class="relative inline-block text-left" onclick="event.stopPropagation()">
+                                    <button
+                                        class="p-1.5 text-cyber-muted hover:text-white transition-colors rounded-lg hover:bg-white/5 flex items-center justify-center"
+                                        onclick="event.stopPropagation(); toggleExportMenu('p4')">
+                                        <i class="fa-solid fa-download text-[10px]"></i>
+                                    </button>
+                                    <div id="export-menu-p4"
+                                        class="hidden absolute right-0 mt-1 w-24 rounded-lg bg-neutral-900 border border-white/10 shadow-lg py-1 z-50 text-[10px] font-mono">
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'json', 'p4')">JSON</button>
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'yaml', 'p4')">YAML</button>
+                                        <button
+                                            class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('phase', 'md', 'p4')">Markdown</button>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"
+                                    id="p4-ch"></i>
+                            </div>
+                        </div>
+                        <div class="phase-body p-6 border-t border-white/5 hidden space-y-4" id="p4-body">
+                            <p class="text-sm text-cyber-muted leading-relaxed">
+                                à¸£à¸²à¸¢à¸à¸²à¸£à¸Ÿà¸µà¹€à¸ˆà¸­à¸£à¹Œà¸¢à¹ˆà¸­à¸¢à¸—à¸µà¹ˆà¸­à¸¢à¸¹à¹ˆà¸™à¸­à¸à¸‚à¸­à¸šà¹€à¸‚à¸•à¸‚à¸­à¸‡
+                                MVP Roadmap à¹à¸£à¸ à¹€à¸Šà¹ˆà¸™
+                                à¸à¸²à¸£à¸‹à¸´à¸‡à¸„à¹Œà¸•à¸£à¸‡à¹‚à¸”à¸¢à¹„à¸¡à¹ˆà¸žà¸¶à¹ˆà¸‡à¹€à¸™à¹‡à¸•
+                                à¸«à¸£à¸·à¸­à¸„à¸¸à¸¢à¸­à¸´à¸™à¹€à¸•à¸­à¸£à¹Œà¸„à¸­à¸¡à¹à¸Šà¸£à¹Œ GPS</p>
+                            <div class="tasks space-y-3" data-sprint="p4-s4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+
+
+    </div>
+    </main>
+    </div>
+
+    <!-- SECTOR 3: FOOTER -->
+    <footer
+        class="h-8 shrink-0 glass-panel border-t border-cyber-border flex items-center justify-between px-6 text-[10px] text-cyber-muted z-40 relative font-mono">
+        <div>COVIBE COMMAND REACTOR v2.5 | STABLE BUILD</div>
+        <div>STABLE CONTEXT: <span id="footer-context" class="text-emerald-400 font-bold uppercase">Overview</span>
+        </div>
+    </footer>
+
+
+    <!-- HITL Modal -->
+    <div id="hitl-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="bg-zinc-900/95 border border-indigo-500/40 rounded-2xl shadow-2xl max-w-md w-full p-6 transform translate-y-4 transition-transform duration-300"
+            id="hitl-card">
+            <div class="flex items-center gap-3 mb-4">
+                <div
+                    class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl animate-pulse shrink-0">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h3 class="font-bold text-white text-base">AST Verification Requested</h3>
+                    <p class="text-xs text-indigo-400">Node: BinaryExpression Verification</p>
+                </div>
+            </div>
+            <p class="text-sm text-stone-300 mb-4">Agent <span class="font-mono text-emerald-400">eva-cli</span> is
+                requesting verification.</p>
+            <div class="flex gap-3">
+                <button onclick="resolveHitl(false)"
+                    class="flex-1 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-sm font-semibold text-white transition">Halt</button>
+                <button onclick="resolveHitl(true)"
+                    class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white transition shadow-lg">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script integrations -->
+    <script>
+        const appState = {
+            activeDomain: 'A',
+            activeSubModule: 'A2',
+            sidebarExpanded: false,
+            dashboardChart: null,
+            heatmapInterval: null
+        };
+
+        const siteMap = {
+            A: {
+                title: "Project Overview",
+                icon: "fa-compass",
+                color: "#10b981",
+                bgGradient: "bg-emerald-600/20",
+                subModules: [
+                    { id: "A2", name: "Roadmap Board", icon: "fa-timeline" }
+                ]
+            }
+        };
+
+        // --- WebSocket Setup ---
+        let socket = null;
+        let reconnectTimer = null;
+        let activeTaskId = null;
+        let telData = { cost: 0.0490, calls: 14, tools: 28, in: 37202, out: 4470, time: 84 };
+
+        function connectWebSocket() {
+            const statusEl = document.getElementById('connection-status');
+            const wsUrl = `ws://${window.location.hostname || 'localhost'}:8787`;
+            socket = new WebSocket(wsUrl);
+
+            socket.onopen = () => {
+                if (statusEl) {
+                    statusEl.className = "w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]";
+                    statusEl.title = 'Connected';
+                }
+                logTerminal('sys', 'Connected to CoDev Agent Server.');
+                if (reconnectTimer) {
+                    clearInterval(reconnectTimer);
+                    reconnectTimer = null;
+                }
+            };
+
+            socket.onclose = () => {
+                if (statusEl) {
+                    statusEl.className = "w-2 h-2 rounded-full bg-red-500 animate-pulse";
+                    statusEl.title = 'Disconnected (Trying to reconnect...)';
+                }
+                logTerminal('sys', 'WebSocket connection closed. Retrying in 5s...');
+                if (!reconnectTimer) {
+                    reconnectTimer = setInterval(connectWebSocket, 5000);
+                }
+            };
+
+            socket.onerror = () => {
+                if (statusEl) statusEl.className = "w-2 h-2 rounded-full bg-red-500 animate-pulse";
+            };
+
+            socket.onmessage = (event) => {
+                try {
+                    const data = JSON.parse(event.data);
+                    if (data.type === 'agent_log') {
+                        const stream = data.stream;
+                        const type = stream === 'stderr' ? 'warn' : (stream === 'system' ? 'sys' : 'eva');
+                        logTerminal(type, data.text);
+                    } else if (data.type === 'agent_status') {
+                        logTerminal('sys', `Task ${data.taskId} status: ${data.status}`);
+                        const taskItem = document.querySelector(`.task-item[data-task-id="${data.taskId}"]`);
+                        if (taskItem) {
+                            const selectEl = taskItem.querySelector('.assist-to-select');
+                            const currentAssignee = selectEl ? selectEl.value : 'none';
+                            setTaskItemState(taskItem, data.status === 'success' ? { doc: true, code: true, test: true, assignee: currentAssignee } : 'todo');
+                            saveStateToStorage();
+                            calculateRoadmapProgress();
+                        }
+                    } else if (data.type === 'agent_output') {
+                        const text = data.data.trim();
+                        if (text) logTerminal('eva', text);
+                    } else if (data.type === 'agent_error') {
+                        const text = data.data.trim();
+                        if (text) logTerminal('warn', text);
+                    } else if (data.type === 'error') {
+                        logTerminal('warn', data.data);
+                    } else if (data.type === 'status') {
+                        logTerminal('sys', data.data);
+                    } else if (data.type === 'live_hardware_sample') {
+                        updateLiveHardwareSample(data.sample);
+                    }
+                } catch (err) {
+                    console.error('Error parsing WS message:', err);
+                }
+            };
+        }
+
+        // --- Domain Switcher ---
+        function switchDomain(domainId) {
+            appState.activeDomain = domainId;
+            const domainInfo = siteMap[domainId];
+
+            document.querySelectorAll('.domain-tab-btn').forEach(btn => {
+                btn.className = "domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 text-gray-400 hover:text-white hover:bg-white/5";
+            });
+
+            const activeBtn = document.getElementById(`domain-tab-${domainId}`);
+            let themeColor = domainInfo.color;
+
+            if (activeBtn) {
+                activeBtn.className = `domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 bg-white/10 shadow-lg`;
+                if (domainId === 'A') { activeBtn.classList.add('text-emerald-400', 'border', 'border-emerald-500/20'); }
+                else if (domainId === 'B') { activeBtn.classList.add('text-indigo-400', 'border', 'border-indigo-500/20'); }
+                else if (domainId === 'C') { activeBtn.classList.add('text-cyan-400', 'border', 'border-cyan-500/20'); }
+                else if (domainId === 'D') { activeBtn.classList.add('text-orange-400', 'border', 'border-orange-500/20'); }
+            }
+
+            document.documentElement.style.setProperty('--active-accent', themeColor);
+
+            const orbLeft = document.getElementById('orb-left');
+            if (orbLeft) {
+                orbLeft.className = `glow-orb w-[45vw] h-[45vw] top-[-10%] left-[-10%] ${domainInfo.bgGradient}`;
+            }
+
+            const contextIcon = document.getElementById('sidebar-context-icon');
+            if (contextIcon) {
+                contextIcon.innerHTML = `<i class="fa-solid ${domainInfo.icon}"></i>`;
+                contextIcon.style.color = themeColor;
+                contextIcon.style.backgroundColor = `${themeColor}20`;
+                contextIcon.style.borderColor = `${themeColor}30`;
+            }
+
+            const contextTitle = document.getElementById('sidebar-context-title');
+            if (contextTitle) {
+                contextTitle.innerText = domainInfo.title;
+            }
+
+            const subNavContainer = document.getElementById('sidebar-sub-nav');
+            if (subNavContainer) {
+                subNavContainer.innerHTML = '';
+                domainInfo.subModules.forEach((sub, idx) => {
+                    const li = document.createElement('li');
+                    li.className = 'nav-item relative';
+                    li.setAttribute('data-tooltip', sub.name);
+
+                    const activeSubClass = (idx === 0) ? 'bg-white/5 font-semibold text-white' : 'text-gray-400 hover:bg-white/5 hover:text-white';
+
+                    li.innerHTML = `
+                        <button onclick="switchMainView('${sub.id}', this)" class="sub-nav-item w-full flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300 ${activeSubClass}">
+                            <i class="fa-solid ${sub.icon} text-center w-5 text-sm" style="color: ${idx === 0 ? themeColor : 'inherit'}"></i>
+                            <span class="sidebar-expand-content text-xs font-semibold tracking-wide truncate">${sub.name}</span>
+                        </button>
+                    `;
+                    subNavContainer.appendChild(li);
+                });
+            }
+
+            switchMainView(domainInfo.subModules[0].id);
+        }
+
+        // --- Main Views switcher ---
+        function switchMainView(subModuleId, btnElement = null) {
+            appState.activeSubModule = subModuleId;
+
+            if (btnElement) {
+                document.querySelectorAll('.sub-nav-item').forEach(item => {
+                    item.className = "sub-nav-item w-full flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300 text-gray-400 hover:bg-white/5 hover:text-white";
+                    const icon = item.querySelector('i');
+                    if (icon) icon.style.color = 'inherit';
+                });
+                btnElement.className = "sub-nav-item w-full flex items-center gap-3 py-2 px-3 rounded-lg transition-all duration-300 bg-white/5 font-semibold text-white";
+                const activeIcon = btnElement.querySelector('i');
+                if (activeIcon) activeIcon.style.color = siteMap[appState.activeDomain].color;
+            }
+
+            document.querySelectorAll('.view-block').forEach(v => v.classList.add('hidden'));
+
+            const activeViewEl = document.getElementById(`view-${subModuleId}`);
+            if (activeViewEl) {
+                activeViewEl.classList.remove('hidden');
+                activeViewEl.classList.remove('fade-in');
+                void activeViewEl.offsetWidth;
+                activeViewEl.classList.add('fade-in');
+            }
+
+            const scrollContainer = document.getElementById('main-scroll-container');
+            if (scrollContainer) scrollContainer.scrollTop = 0;
+
+            if (subModuleId === 'D2') {
+                initHeatmapGrid();
+                if (!appState.heatmapInterval) appState.heatmapInterval = setInterval(randomizeHeatmapValues, 1000);
+            } else {
+                if (appState.heatmapInterval) {
+                    clearInterval(appState.heatmapInterval);
+                    appState.heatmapInterval = null;
+                }
+            }
+
+            // Sync Cytoscape canvas sizes when loading call graph page
+            if (subModuleId === 'B4') {
+                setTimeout(initCallGraph, 100);
+            }
+            if (subModuleId === 'C4') {
+                setTimeout(updateErdEdges, 100);
+            }
+            if (subModuleId === 'B1') {
+                setTimeout(updateEdges, 100);
+            }
+
+            const footerCtx = document.getElementById('footer-context');
+            if (footerCtx) {
+                footerCtx.innerText = `${siteMap[appState.activeDomain].title} > ${subModuleId}`;
+            }
+        }
+
+        // --- Sidebar drawer toggler ---
+        function toggleSidebar() {
+            const sidebar = document.getElementById('app-sidebar');
+            const toggleIcon = document.getElementById('sidebar-toggle-icon');
+            if (!sidebar || !toggleIcon) return;
+
+            appState.sidebarExpanded = !appState.sidebarExpanded;
+            if (appState.sidebarExpanded) {
+                sidebar.classList.add('expanded-lock');
+                toggleIcon.className = 'fa-solid fa-chevron-left text-center w-5';
+            } else {
+                sidebar.classList.remove('expanded-lock');
+                toggleIcon.className = 'fa-solid fa-chevron-right text-center w-5';
+            }
+        }
+
+        // --- Theme management ---
+        function toggleTheme() {
+            const body = document.body;
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            if (!body || !sunIcon || !moonIcon) return;
+
+            if (body.classList.contains('light-theme')) {
+                body.classList.remove('light-theme');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+            } else {
+                body.classList.add('light-theme');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+            updateChartColors();
+        }
+
+        function updateChartColors() {
+            if (!appState.dashboardChart) return;
+            const isLight = document.body.classList.contains('light-theme');
+            const textColor = isLight ? '#18181b' : '#f3f4f6';
+            const gridColor = isLight ? 'rgba(0, 0, 0, 0.05)' : 'rgba(255, 255, 255, 0.05)';
+
+            appState.dashboardChart.options.scales.y.grid.color = gridColor;
+            appState.dashboardChart.options.scales.y.ticks.color = textColor;
+            appState.dashboardChart.options.scales.x.ticks.color = textColor;
+            appState.dashboardChart.update();
+        }
+
+        // --- Roadmap Data Checklist rendering ---
+        let taskDefinitions = {};
+
+        async function fetchDefaultRoadmap() {
+            showRoadmapEmptyState(true);
+            if (location.protocol === 'file:') {
+                console.info('[GoVibe] file:// — click "Load File" to import covibe-roadmap-export.json');
+                return;
+            }
+            try {
+                const res = await fetch('covibe-roadmap-export.json');
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const data = await res.json();
+                applyRoadmapData(data);
+                console.info('[GoVibe] Roadmap loaded from covibe-roadmap-export.json');
+            } catch (err) {
+                console.warn('[GoVibe] Auto-load failed:', err.message);
+            }
+        }
+
+        function showRoadmapEmptyState(show) {
+            const emptyState = document.getElementById('roadmap-empty-state');
+            const grid = document.getElementById('roadmap-phases-grid');
+            if (emptyState) emptyState.classList.toggle('hidden', !show);
+            if (grid) grid.classList.toggle('hidden', show);
+        }
+
+        function togglePhase(phaseId) {
+            const phaseEl = document.getElementById(phaseId);
+            if (!phaseEl) return;
+            const body = phaseEl.querySelector('.phase-body');
+            const icon = phaseEl.querySelector('.phase-chevron');
+            if (!body || !icon) return;
+
+            const isOpen = body.classList.contains('open');
+            if (isOpen) {
+                body.classList.remove('open');
+                icon.classList.remove('open');
+            } else {
+                body.classList.add('open');
+                icon.classList.add('open');
+                setTimeout(() => {
+                    phaseEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 150);
+            }
+        }
+
+        function loadState() {
+            let savedState = localStorage.getItem('covibe_roadmap_states_v3');
+            if (savedState) {
+                try { return JSON.parse(savedState); } catch (e) { }
+            }
+            const defaultState = {};
+            Object.values(taskDefinitions).flat().forEach(task => {
+                const isDone = task.status === 'stable';
+                defaultState[task.id] = { doc: isDone, code: isDone, test: isDone, assignee: task.assignee || 'none' };
+            });
+            return defaultState;
+        }
+
+        function applyRoadmapData(data) {
+            if (!data || !data.phases) return;
+            showRoadmapEmptyState(false);
+            const newDefs = {};
+            Object.keys(data.phases).forEach(phaseKey => {
+                const phase = data.phases[phaseKey];
+                newDefs[phaseKey] = phase.tasks || [];
+            });
+            taskDefinitions = newDefs;
+            initRoadmapList();
+            calculateRoadmapProgress();
+        }
+
+        function loadRoadmapFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const text = e.target.result;
+                try {
+                    let data;
+                    if (file.name.endsWith('.json')) {
+                        data = JSON.parse(text);
+                    } else if (file.name.endsWith('.yaml') || file.name.endsWith('.yml')) {
+                        data = jsyaml.load(text);
+                    } else if (file.name.endsWith('.md')) {
+                        data = parseMarkdownRoadmap(text);
+                    } else {
+                        alert('Unsupported file type. Please load a .json, .yaml, or .md file.');
+                        return;
+                    }
+                    applyRoadmapData(data);
+                    console.info('[GoVibe] Loaded roadmap from:', file.name);
+                } catch (err) {
+                    console.error('[GoVibe] Failed to parse file:', err);
+                    alert('Error parsing file: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function parseMarkdownRoadmap(text) {
+            const phases = {};
+            const lines = text.split('\n');
+
+            // Setup default empty phases
+            phases['p0'] = { title: "Feasibility Spike", tasks: [] };
+            phases['p1'] = { title: "MVP Core", tasks: [] };
+            phases['p2'] = { title: "Drift Correction", tasks: [] };
+            phases['p3'] = { title: "Beta & Validation", tasks: [] };
+            phases['p4'] = { title: "Refinements", tasks: [] };
+
+            for (let line of lines) {
+                if (line.includes('|') && (line.toLowerCase().includes('task') || line.toLowerCase().includes('tsk'))) {
+                    const parts = line.split('|').map(p => p.trim());
+                    if (parts.length >= 10) {
+                        const id = parts[1];
+                        if (!id || id.startsWith('-') || id.toLowerCase().includes('id')) continue;
+
+                        let phaseKey = 'p0';
+                        if (id.toLowerCase().includes('p1') || id.toLowerCase().includes('s1')) phaseKey = 'p1';
+                        else if (id.toLowerCase().includes('p2') || id.toLowerCase().includes('s2')) phaseKey = 'p2';
+                        else if (id.toLowerCase().includes('p3') || id.toLowerCase().includes('s3')) phaseKey = 'p3';
+                        else if (id.toLowerCase().includes('p4') || id.toLowerCase().includes('s4')) phaseKey = 'p4';
+
+                        const task = {
+                            id: id.toLowerCase(),
+                            code: parts[1],
+                            text: parts[4] || parts[3],
+                            symbolLink: parts[5] || '',
+                            complexity: 'nomal',
+                            type: parts[3] || 'FR',
+                            status: parts[11] || 'todo',
+                            version: '1.0.0',
+                            tokensUsed: 0,
+                            assignee: 'none',
+                            completionState: { doc: false, code: false, test: false, overall: false }
+                        };
+                        phases[phaseKey].tasks.push(task);
+                    }
+                }
+            }
+            return { phases };
+        }
+
+        function saveStateToStorage() {
+            const currentState = {};
+            document.querySelectorAll('#roadmap-view .task-item').forEach(taskItem => {
+                const taskId = taskItem.getAttribute('data-task-id');
+                if (!taskId) return;
+                const doc = taskItem.dataset.doc === 'true';
+                const code = taskItem.dataset.code === 'true';
+                const test = taskItem.dataset.test === 'true';
+                const assignSelect = taskItem.querySelector('.assist-to-select');
+                const assignee = assignSelect ? assignSelect.value : 'none';
+                currentState[taskId] = { doc, code, test, assignee };
+            });
+            localStorage.setItem('covibe_roadmap_states_v3', JSON.stringify(currentState));
+        }
+
+        // Export functionality helpers
+        function toggleExportMenu(menuId) {
+            const menu = document.getElementById(`export-menu-${menuId}`);
+            if (!menu) return;
+            const isHidden = menu.classList.contains('hidden');
+            // Hide all other export menus first
+            document.querySelectorAll('[id^="export-menu-"]').forEach(m => m.classList.add('hidden'));
+            if (isHidden) {
+                menu.classList.remove('hidden');
+            }
+        }
+
+        // Close dropdowns on click-away
+        window.addEventListener('click', function (e) {
+            if (!e.target.closest('.relative')) {
+                document.querySelectorAll('[id^="export-menu-"]').forEach(m => m.classList.add('hidden'));
+            }
+        });
+
+        // Helper to stringify Javascript objects to YAML
+        function toYAML(obj, indent = 0) {
+            const pad = '  '.repeat(indent);
+            if (obj === null) return 'null';
+            if (typeof obj === 'undefined') return '';
+            if (typeof obj !== 'object') {
+                if (typeof obj === 'string') {
+                    if (obj.includes('\n') || obj.includes(':') || obj.includes('-') || obj.includes('"') || obj.includes("'")) {
+                        return JSON.stringify(obj);
+                    }
+                    return obj;
+                }
+                return String(obj);
+            }
+            if (Array.isArray(obj)) {
+                if (obj.length === 0) return '[]';
+                let res = '';
+                obj.forEach(item => {
+                    if (typeof item === 'object') {
+                        res += `\n${pad}- ` + toYAML(item, indent + 1).trimStart();
+                    } else {
+                        res += `\n${pad}- ${toYAML(item, indent + 1)}`;
+                    }
+                });
+                return res;
+            }
+            let res = '';
+            Object.entries(obj).forEach(([key, val]) => {
+                if (typeof val === 'object' && val !== null) {
+                    res += `\n${pad}${key}:` + toYAML(val, indent + 1);
+                } else {
+                    res += `\n${pad}${key}: ${toYAML(val, indent + 1)}`;
+                }
+            });
+            return res;
+        }
+
+        // Main data resolver for export
+        function getExportPayload(target, targetId) {
+            const savedStates = loadState();
+            const getTaskDetails = (task) => {
+                const state = savedStates[task.id] || { doc: false, code: false, test: false, assignee: 'none' };
+                // Resolve dependencies
+                let dependencyStatus = 'N/A';
+                let dependencyCode = '';
+                if (task.dependency) {
+                    const depTask = Object.values(taskDefinitions).flat().find(t => t.id === task.dependency);
+                    dependencyCode = depTask ? (depTask.code || depTask.id) : task.dependency;
+                    const depState = savedStates[task.dependency];
+                    const depResolved = depState && depState.doc && depState.code && depState.test;
+                    dependencyStatus = depResolved ? 'Resolved' : 'Blocking';
+                }
+                return {
+                    id: task.id,
+                    code: task.code || '',
+                    text: task.text,
+                    symbolLink: task.symbolLink,
+                    complexity: task.complexity,
+                    type: task.type,
+                    status: task.status || 'draft',
+                    version: task.version || '1.0.0',
+                    created_at: task.created_at || '',
+                    last_update: task.last_update || '',
+                    changelog: task.changelog || '',
+                    tokensUsed: task.tokensUsed || 0,
+                    assignee: state.assignee,
+                    completionState: {
+                        doc: !!state.doc,
+                        code: !!state.code,
+                        test: !!state.test,
+                        overall: !!(state.doc && state.code && state.test)
+                    },
+                    dependency: task.dependency || '',
+                    dependencyCode: dependencyCode,
+                    dependencyStatus: dependencyStatus,
+                    definitionOfDone: {
+                        acceptanceCriteria: [
+                            { criterion: "Spec approved", checked: !!state.doc },
+                            { criterion: "Docs updated", checked: !!state.doc }
+                        ],
+                        successCriteria: [
+                            { criterion: "Code complete", checked: !!state.code },
+                            { criterion: "Lints clean", checked: !!state.code }
+                        ],
+                        exitCriteria: [
+                            { criterion: "Tests passed", checked: !!state.test },
+                            { criterion: "Regression free", checked: !!state.test }
+                        ]
+                    }
+                };
+            };
+
+            const payload = {
+                exportedAt: new Date().toISOString(),
+                exportType: target
+            };
+
+            if (target === 'roadmap') {
+                payload.title = "CoVibe Implementation Roadmap";
+                payload.phases = {};
+                Object.keys(taskDefinitions).forEach(phaseKey => {
+                    const phaseTitle = getPhaseTitle(phaseKey);
+                    payload.phases[phaseKey] = {
+                        title: phaseTitle,
+                        tasks: taskDefinitions[phaseKey].map(getTaskDetails)
+                    };
+                });
+            } else if (target === 'phase') {
+                const phaseTitle = getPhaseTitle(targetId);
+                payload.phaseId = targetId;
+                payload.phaseTitle = phaseTitle;
+                payload.tasks = (taskDefinitions[targetId] || []).map(getTaskDetails);
+            } else if (target === 'task') {
+                const allTasks = Object.values(taskDefinitions).flat();
+                const task = allTasks.find(t => t.id === targetId);
+                if (!task) return null;
+                payload.task = getTaskDetails(task);
+            }
+            return payload;
+        }
+
+        function getPhaseTitle(phaseKey) {
+            const titles = {
+                p0: "Feasibility Spike â€” พิสูจน์ความเสถียร",
+                p1: "MVP Core â€” à¸Ÿà¸±à¸‡à¸à¹Œà¸Šà¸±à¸™à¸«à¹‰à¸­à¸‡à¹à¸¥à¸°à¸à¸²à¸£à¹à¸Šà¸£à¹Œà¹€à¸žà¸¥à¸‡",
+                p2: "Sync Calibration â€” จูนนิ่งความตรงระดับเสี้ยววิ",
+                p3: "Beta Test & rider feedback â€” à¸™à¸³à¸—à¸²à¸‡จริงà¸šà¸™à¸šà¸­à¸£à¹Œà¸”",
+                p4: "Future Backlog â€” ส่วนเสริมอนาคต"
+            };
+            return titles[phaseKey] || phaseKey;
+        }
+
+        // Generator for Markdown formatting
+        function generateMarkdown(payload) {
+            const formatTaskDoD = (task) => {
+                const formatCheck = (checked) => checked ? '[x]' : '[ ]';
+                return `**Definition of Done (DoD):**
+- **Acceptance Criteria**
+  - ${formatCheck(task.completionState.doc)} Spec approved
+  - ${formatCheck(task.completionState.doc)} Docs updated
+- **Success Criteria**
+  - ${formatCheck(task.completionState.code)} Code complete
+  - ${formatCheck(task.completionState.code)} Lints clean
+- **Exit Criteria**
+  - ${formatCheck(task.completionState.test)} Tests passed
+  - ${formatCheck(task.completionState.test)} Regression free`;
+            };
+
+            const formatTaskBlock = (task) => {
+                const depLine = task.dependency ? `\n- **Dependency:** ${task.dependencyStatus} (Depends on: \`${task.dependencyCode}\`)` : '';
+                return `### [${task.code || task.id}] ${task.text}
+- **Symbol Link:** \`${task.symbolLink}\`
+- **Assignee:** ${task.assignee === 'none' ? 'Unassigned' : task.assignee.toUpperCase()}
+- **Complexity:** ${task.complexity.toUpperCase()} | **Type:** ${task.type} | **Status:** ${task.status} | **Version:** ${task.version}
+- **Tokens Used:** ${task.tokensUsed.toLocaleString()}${depLine}
+
+${formatTaskDoD(task)}
+
+**Changelog:**
+\`\`\`
+[${task.version}] - ${task.changelog.replace(/;/g, '\n' + ' '.repeat(task.version.length + 5))}
+[Updated: ${task.last_update}]
+\`\`\`
+
+- **Created:** ${task.created_at}
+`;
+            };
+
+            let md = `# ${payload.title || 'Export'}\n`;
+            md += `*Exported At: ${payload.exportedAt}*\n\n`;
+
+            if (payload.exportType === 'roadmap') {
+                Object.keys(payload.phases).forEach(phaseKey => {
+                    const phase = payload.phases[phaseKey];
+                    md += `## ${phase.title} (${phaseKey.toUpperCase()})\n\n`;
+                    phase.tasks.forEach(task => {
+                        md += formatTaskBlock(task) + `\n---\n\n`;
+                    });
+                });
+            } else if (payload.exportType === 'phase') {
+                md += `## Phase: ${payload.phaseTitle} (${payload.phaseId.toUpperCase()})\n\n`;
+                payload.tasks.forEach(task => {
+                    md += formatTaskBlock(task) + `\n---\n\n`;
+                });
+            } else if (payload.exportType === 'task') {
+                md += formatTaskBlock(payload.task);
+            }
+            return md;
+        }
+
+        // Trigger download
+        function exportData(target, format, targetId) {
+            const payload = getExportPayload(target, targetId);
+            if (!payload) {
+                alert("Failed to gather export data.");
+                return;
+            }
+
+            let fileContent = "";
+            let fileType = "";
+            let fileExtension = "";
+
+            if (format === 'json') {
+                fileContent = JSON.stringify(payload, null, 2);
+                fileType = "application/json";
+                fileExtension = "json";
+            } else if (format === 'yaml') {
+                fileContent = toYAML(payload).trim();
+                fileType = "text/yaml";
+                fileExtension = "yaml";
+            } else if (format === 'md') {
+                fileContent = generateMarkdown(payload);
+                fileType = "text/markdown";
+                fileExtension = "md";
+            }
+
+            let filename = "";
+            if (target === 'roadmap') {
+                filename = `covibe-roadmap-export.${fileExtension}`;
+            } else if (target === 'phase') {
+                const nameSlug = getPhaseTitle(targetId).toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_]+/g, '-');
+                filename = `${targetId}-${nameSlug}.${fileExtension}`;
+            } else if (target === 'task') {
+                const taskCode = payload.task.code || targetId;
+                filename = `${taskCode}-task.${fileExtension}`;
+            }
+
+            const blob = new Blob([fileContent], { type: `${fileType};charset=utf-8;` });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+            // Hide export dropdowns
+            document.querySelectorAll('[id^="export-menu-"]').forEach(m => m.classList.add('hidden'));
+        }
+
+        function setTaskItemState(taskItem, stateData) {
+            let doc = false, code = false, test = false;
+            let assignee = 'none';
+            if (typeof stateData === 'string') {
+                if (stateData === 'done') { doc = true; code = true; test = true; }
+                else if (stateData === 'pending') { doc = true; code = false; test = false; }
+            } else if (stateData) {
+                doc = !!stateData.doc; code = !!stateData.code; test = !!stateData.test;
+                assignee = stateData.assignee || 'none';
+            }
+
+            let state = 'todo';
+            if (doc && code && test) state = 'done';
+            else if (doc) state = 'pending';
+            taskItem.setAttribute('data-state', state);
+
+            const docBtn = taskItem.querySelector('.doc-btn');
+            const codeBtn = taskItem.querySelector('.code-btn');
+            const testBtn = taskItem.querySelector('.test-btn');
+
+            if (docBtn && codeBtn && testBtn) {
+                if (doc) docBtn.classList.add('active'); else docBtn.classList.remove('active');
+                if (!doc) {
+                    codeBtn.classList.add('disabled'); codeBtn.classList.remove('active'); code = false;
+                } else {
+                    codeBtn.classList.remove('disabled');
+                    if (code) codeBtn.classList.add('active'); else codeBtn.classList.remove('active');
+                }
+                if (!code) {
+                    testBtn.classList.add('disabled'); testBtn.classList.remove('active'); test = false;
+                } else {
+                    testBtn.classList.remove('disabled');
+                    if (test) testBtn.classList.add('active'); else testBtn.classList.remove('active');
+                }
+            }
+
+            const indicator = taskItem.querySelector('.task-status-indicator');
+            if (indicator) {
+                if (state === 'done') {
+                    indicator.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>';
+                } else if (state === 'pending') {
+                    indicator.innerHTML = '<i class="fa-solid fa-circle-half-stroke text-yellow-500 text-sm animate-pulse"></i>';
+                } else {
+                    indicator.innerHTML = '<i class="fa-regular fa-circle text-cyber-muted text-sm"></i>';
+                }
+            }
+
+            const assignLbl = taskItem.querySelector('.assign-lbl');
+            const selectEl = taskItem.querySelector('.assist-to-select');
+            const completedLbl = taskItem.querySelector('.completed-by-lbl');
+
+            if (state === 'done') {
+                if (assignLbl) assignLbl.classList.add('hidden');
+                if (selectEl) {
+                    selectEl.classList.add('hidden');
+                    if (assignee === 'none') assignee = selectEl.value;
+                }
+                if (completedLbl) {
+                    const agentNames = {
+                        none: 'Unassigned',
+                        eva: 'EVA Agent (Gemini 3.5 Flash)',
+                        qwen: 'Qwen Coder (Qwen2.5-Coder)',
+                        uat: 'UAT Agent (GPT-4o)',
+                        local: 'Local Dev (Human)'
+                    };
+                    completedLbl.innerText = `Completed by: ${agentNames[assignee] || assignee}`;
+                    completedLbl.classList.remove('hidden');
+                }
+            } else {
+                if (assignLbl) assignLbl.classList.remove('hidden');
+                if (selectEl) {
+                    selectEl.classList.remove('hidden');
+                    if (assignee !== 'none') selectEl.value = assignee;
+                }
+                if (completedLbl) completedLbl.classList.add('hidden');
+            }
+
+            // Toggle Not Implement badge
+            const notImplBadge = taskItem.querySelector('.not-impl-badge');
+            if (notImplBadge) {
+                if (state === 'done') {
+                    notImplBadge.classList.add('hidden');
+                } else {
+                    notImplBadge.classList.remove('hidden');
+                }
+            }
+
+            // Update DoD checkboxes
+            const docChecks = taskItem.querySelectorAll('.dod-doc-check-1, .dod-doc-check-2');
+            const codeChecks = taskItem.querySelectorAll('.dod-code-check-1, .dod-code-check-2');
+            const testChecks = taskItem.querySelectorAll('.dod-test-check-1, .dod-test-check-2');
+            docChecks.forEach(c => c.checked = doc);
+            codeChecks.forEach(c => c.checked = code);
+            testChecks.forEach(c => c.checked = test);
+
+            // Status updates for verif-icon-btn buttons are handled above.
+
+            taskItem.dataset.doc = doc ? 'true' : 'false';
+            taskItem.dataset.code = code ? 'true' : 'false';
+            taskItem.dataset.test = test ? 'true' : 'false';
+        }
+
+        function updateAllDependencyBadges() {
+            document.querySelectorAll('#roadmap-view .task-item').forEach(taskItem => {
+                const depBlock = taskItem.querySelector('.dependency-block');
+                if (!depBlock) return;
+                const taskId = taskItem.getAttribute('data-task-id');
+                const taskDef = Object.values(taskDefinitions).flat().find(t => t.id === taskId);
+                if (taskDef && taskDef.dependency) {
+                    const depTaskEl = document.querySelector(`[data-task-id="${taskDef.dependency}"]`);
+                    const isDepDone = depTaskEl && depTaskEl.getAttribute('data-state') === 'done';
+                    const depBadge = depBlock.querySelector('.dep-badge');
+                    if (depBadge) {
+                        if (isDepDone) {
+                            depBadge.innerText = 'Resolved';
+                            depBadge.className = 'px-1.5 py-0.5 rounded font-bold uppercase dep-badge text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20';
+                        } else {
+                            depBadge.innerText = 'Blocking';
+                            depBadge.className = 'px-1.5 py-0.5 rounded font-bold uppercase dep-badge text-[9px] bg-red-500/10 text-red-400 border border-red-500/20';
+                        }
+                    }
+                }
+            });
+        }
+
+        window.toggleTaskInfo = function (taskId) {
+            const panel = document.getElementById(taskId + '-info-panel');
+            const chevron = document.getElementById(taskId + '-chevron');
+            if (panel && chevron) {
+                const isHidden = panel.classList.contains('hidden');
+                if (isHidden) {
+                    panel.classList.remove('hidden');
+                    chevron.style.transform = 'rotate(90deg)';
+                } else {
+                    panel.classList.add('hidden');
+                    chevron.style.transform = 'rotate(0deg)';
+                }
+            }
+        };
+
+        const sprintDefinitions = {
+            "p0": [
+                { id: "p0-s0", code: "SPRINT 0", text: "Feasibility Spike", duration: "1 week" }
+            ],
+            "p1": [
+                { id: "p1-s1a", code: "SPRINT 1A", text: "WebSocket & Core Architecture", duration: "2 weeks" },
+                { id: "p1-s1b", code: "SPRINT 1B", text: "YouTube IFrame & Queue Playback", duration: "2 weeks" }
+            ],
+            "p2": [
+                { id: "p2-s2a", code: "SPRINT 2A", text: "Sync Hardening", duration: "1.5 weeks" },
+                { id: "p2-s2b", code: "SPRINT 2B", text: "Rider & Passenger UX", duration: "1.5 weeks" }
+            ],
+            "p3": [
+                { id: "p3-s3a", code: "SPRINT 3A", text: "Recruitment & Beta Release", duration: "1 week" },
+                { id: "p3-s3b", code: "SPRINT 3B", text: "Analytics & Metrics Feedback", duration: "1 week" }
+            ],
+            "p4": [
+                { id: "p4-task", code: "BACKLOG", text: "Future Backlog Items", duration: "Future" }
+            ]
+        };
+
+        function initRoadmapList() {
+            const savedStates = loadState();
+            Object.keys(taskDefinitions).forEach(phaseKey => {
+                const phaseEl = document.getElementById(phaseKey);
+                if (!phaseEl) return;
+                const container = phaseEl.querySelector('.tasks');
+                if (!container) return;
+                container.innerHTML = '';
+
+                // Render Sprints inside phase body
+                const sprints = sprintDefinitions[phaseKey] || [];
+                const sprintContainers = {};
+
+                sprints.forEach(sprint => {
+                    const sprintDiv = document.createElement('div');
+                    sprintDiv.className = "sprint-block bg-white/5 border border-white/5 rounded-xl p-4 mb-4";
+                    sprintDiv.id = sprint.id;
+                    sprintDiv.innerHTML = `
+                        <div class="flex items-center justify-between mb-3 text-xs select-none">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 rounded border border-white/10 bg-white/5 text-stone-300 font-mono font-bold">${sprint.code}</span>
+                                <span class="font-bold text-white font-sans">${sprint.text}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px]">Duration: ${sprint.duration}</span>
+                                <span class="sprint-progress px-1.5 py-0.5 rounded border border-emerald-500/20 bg-emerald-500/10 text-emerald-400 font-mono font-bold" id="${sprint.id}-progress">0%</span>
+                            </div>
+                        </div>
+                        <div class="sprint-tasks space-y-3"></div>
+                    `;
+                    container.appendChild(sprintDiv);
+                    sprintContainers[sprint.id] = sprintDiv.querySelector('.sprint-tasks');
+                });
+
+                taskDefinitions[phaseKey].forEach(task => {
+                    const taskItem = document.createElement('div');
+                    taskItem.className = "task-item p-3.5 bg-white/5 border border-white/5 hover:border-white/10 rounded-xl flex flex-col gap-1.5 transition-all duration-300 cursor-pointer";
+                    taskItem.setAttribute('data-task-id', task.id);
+                    taskItem.setAttribute('data-task-type', task.type || '');
+
+                    const complexityColors = {
+                        extream: 'bg-red-500/10 text-red-400 border border-red-500/20',
+                        high: 'bg-orange-500/10 text-orange-400 border border-orange-500/20',
+                        nomal: 'bg-amber-500/10 text-amber-400 border border-amber-500/20',
+                        low: 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20',
+                        less: 'bg-white/5 text-stone-400 border border-white/10'
+                    };
+                    const compClass = complexityColors[task.complexity] || 'bg-white/5 text-stone-300 border border-white/10';
+
+                    let depHtml = '';
+                    if (task.dependency) {
+                        const depTask = Object.values(taskDefinitions).flat().find(t => t.id === task.dependency);
+                        const depCode = depTask ? (depTask.code || depTask.id) : task.dependency;
+                        const depText = depTask ? depTask.text : 'Unknown Task';
+                        depHtml = `
+                            <div class="mt-3 pt-3 border-t border-white/5 flex flex-col gap-1.5 dependency-block">
+                                <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Dependency:</span>
+                                <div class="flex items-center gap-2 font-mono text-[11px]">
+                                    <span class="px-1.5 py-0.5 rounded font-bold uppercase dep-badge text-[9px] bg-red-500/10 text-red-400 border border-red-500/20">Blocking</span>
+                                    <span class="text-stone-300">Depends on: <span class="text-indigo-400 font-bold">${depCode}</span> - ${depText}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    const changelogHtml = (() => {
+                        const detail = task.changelog || 'No recent changes logged.';
+                        const parts = detail.split(';').map(p => p.trim()).filter(Boolean);
+                        const versionPrefix = `[${task.version || '1.0.0'}] - `;
+                        const indentSpaces = '&nbsp;'.repeat(versionPrefix.length);
+
+                        let formattedText = `${versionPrefix}${parts[0]}${parts.length > 1 ? ';' : ''}`;
+                        for (let i = 1; i < parts.length; i++) {
+                            const isLast = i === parts.length - 1;
+                            const suffix = (!isLast || detail.endsWith(';')) ? ';' : '';
+                            formattedText += `<br>${indentSpaces}${parts[i]}${suffix}`;
+                        }
+                        formattedText += `<br>${indentSpaces}[Updated: ${task.last_update || 'N/A'}]`;
+                        return formattedText;
+                    })();
+
+                    taskItem.innerHTML = `
+                        <div class="flex items-center justify-between gap-4 w-full">
+                            <div class="flex items-start gap-3 min-w-0 flex-1">
+                                <span class="task-status-indicator shrink-0 mt-0.5"></span>
+                                <button class="info-toggle-btn text-cyber-muted hover:text-white transition-colors shrink-0 mt-0.5" onclick="event.stopPropagation(); toggleTaskInfo('${task.id}')">
+                                    <i class="fa-solid fa-chevron-right info-chevron text-[10px] transition-transform duration-200" id="${task.id}-chevron"></i>
+                                </button>
+                                <div class="flex flex-col gap-1.5 min-w-0 flex-1">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <span class="text-sm font-semibold truncate text-white leading-none">${task.text}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2 flex-wrap" onclick="event.stopPropagation()">
+                                        <span class="px-1.5 py-0.5 rounded text-[8px] font-bold uppercase ${task.type === 'FR' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'} shrink-0">${task.type}</span>
+                                        <span class="px-1.5 py-0.5 rounded text-[8px] font-mono font-bold capitalize ${compClass} shrink-0">${task.complexity}</span>
+                                        <button class="verif-icon-btn doc-btn" title="Doc Check"><i class="fa-solid fa-file-invoice"></i></button>
+                                        <button class="verif-icon-btn code-btn" title="Code Check"><i class="fa-solid fa-code"></i></button>
+                                        <button class="verif-icon-btn test-btn" title="Test Check"><i class="fa-solid fa-flask"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3 shrink-0" onclick="event.stopPropagation()">
+                                <span class="text-[10px] text-cyber-muted font-bold font-mono uppercase assign-lbl">Assign To:</span>
+                                <select class="assist-to-select bg-black/40 border border-cyber-border rounded px-1.5 py-0.5 text-xs text-white focus:outline-none" onchange="saveStateToStorage()">
+                                    <option value="none">Unassigned</option>
+                                    <option value="eva">EVA Agent (Gemini 3.5 Flash)</option>
+                                    <option value="qwen">Qwen Coder (Qwen2.5-Coder)</option>
+                                    <option value="uat">UAT Agent (GPT-4o)</option>
+                                    <option value="local">Local Dev (Human)</option>
+                                </select>
+                                <span class="completed-by-lbl text-xs text-emerald-400 font-bold hidden"></span>
+                            </div>
+                        </div>
+                        <div class="task-info-panel mt-3 pt-3 border-t border-white/5 text-xs text-cyber-muted space-y-3 hidden w-full" id="${task.id}-info-panel" onclick="event.stopPropagation()">
+                            <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                                <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Symbol Links</span>
+                                <span class="not-impl-badge px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-red-500/10 text-red-400 border border-red-500/20 shrink-0">Not Implement</span>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-b border-white/5 pb-3">
+                                <div class="flex flex-col gap-1">
+                                    <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Code Link:</span>
+                                    <a href="file:///${task.codeLink || task.symbolLink || 'src/App.tsx'}" class="text-indigo-400 hover:underline font-mono break-all text-[11px]">${task.codeLink || task.symbolLink || 'src/App.tsx'}</a>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Doc Link:</span>
+                                    <a href="file:///${task.docLink || (phaseKey === 'p0' ? 'docs/compatibility_report.md' : 'GEMINI.md')}" class="text-indigo-400 hover:underline font-mono break-all text-[11px]">${task.docLink || (phaseKey === 'p0' ? 'docs/compatibility_report.md' : 'GEMINI.md')}</a>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Test Link:</span>
+                                    <a href="file:///${task.testLink || (task.id.includes('server') ? 'server/index.js' : 'tests/sync.test.js')}" class="text-indigo-400 hover:underline font-mono break-all text-[11px]">${task.testLink || (task.id.includes('server') ? 'server/index.js' : 'tests/sync.test.js')}</a>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-5 gap-4">
+                                <div>
+                                    <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider block mb-1">Version:</span>
+                                    <span class="px-2 py-0.5 rounded bg-white/5 border border-white/5 font-mono text-[10px] text-stone-300 font-bold">${task.version || '1.0.0'}</span>
+                                </div>
+                                <div>
+                                    <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider block mb-1">Complexity:</span>
+                                    <span class="px-2 py-0.5 rounded font-mono text-[10px] capitalize ${compClass}">${task.complexity}</span>
+                                </div>
+                                <div>
+                                    <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider block mb-1">Type:</span>
+                                    <span class="px-2 py-0.5 rounded bg-white/5 border border-white/5 font-mono text-[10px] uppercase text-stone-300">${task.type}</span>
+                                </div>
+                                <div>
+                                    <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider block mb-1">Status:</span>
+                                    <span class="px-2 py-0.5 rounded bg-white/5 border border-white/5 font-mono text-[10px] text-stone-300">${task.status || 'draft'}</span>
+                                </div>
+                                <div>
+                                    <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider block mb-1">Tokens Used:</span>
+                                    <span class="px-2 py-0.5 rounded bg-white/5 border border-white/5 font-mono text-[10px] text-stone-300 font-bold">${task.tokensUsed ? task.tokensUsed.toLocaleString() : '0'}</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-white/5 flex flex-col gap-1.5">
+                                <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Definition of Done (DoD):</span>
+                                <div class="grid grid-cols-3 gap-4 text-[10px] text-stone-300 font-mono">
+                                    <div class="flex flex-col gap-1.5">
+                                        <span class="font-bold text-emerald-400 text-[9px] uppercase tracking-wider">Acceptance Criteria</span>
+                                        <label class="flex items-center gap-1.5">
+                                            <input type="checkbox" class="dod-doc-check-1 rounded bg-black/40 border border-cyber-border focus:ring-0 text-emerald-500 w-3 h-3 pointer-events-none" disabled />
+                                            <span>Spec approved</span>
+                                        </label>
+                                        <label class="flex items-center gap-1.5">
+                                            <input type="checkbox" class="dod-doc-check-2 rounded bg-black/40 border border-cyber-border focus:ring-0 text-emerald-500 w-3 h-3 pointer-events-none" disabled />
+                                            <span>Docs updated</span>
+                                        </label>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <span class="font-bold text-emerald-400 text-[9px] uppercase tracking-wider">Success Criteria</span>
+                                        <label class="flex items-center gap-1.5">
+                                            <input type="checkbox" class="dod-code-check-1 rounded bg-black/40 border border-cyber-border focus:ring-0 text-emerald-500 w-3 h-3 pointer-events-none" disabled />
+                                            <span>Code complete</span>
+                                        </label>
+                                        <label class="flex items-center gap-1.5">
+                                            <input type="checkbox" class="dod-code-check-2 rounded bg-black/40 border border-cyber-border focus:ring-0 text-emerald-500 w-3 h-3 pointer-events-none" disabled />
+                                            <span>Lints clean</span>
+                                        </label>
+                                    </div>
+                                    <div class="flex flex-col gap-1.5">
+                                        <span class="font-bold text-emerald-400 text-[9px] uppercase tracking-wider">Exit Criteria</span>
+                                        <label class="flex items-center gap-1.5">
+                                            <input type="checkbox" class="dod-test-check-1 rounded bg-black/40 border border-cyber-border focus:ring-0 text-emerald-500 w-3 h-3 pointer-events-none" disabled />
+                                            <span>Tests passed</span>
+                                        </label>
+                                        <label class="flex items-center gap-1.5">
+                                            <input type="checkbox" class="dod-test-check-2 rounded bg-black/40 border border-cyber-border focus:ring-0 text-emerald-500 w-3 h-3 pointer-events-none" disabled />
+                                            <span>Regression free</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            ${depHtml}
+                            <div class="mt-3 pt-3 border-t border-white/5 flex flex-col gap-1.5">
+                                <span class="font-bold text-white font-mono text-[10px] uppercase tracking-wider">Changelog:</span>
+                                <div class="bg-black/80 border border-emerald-500/20 p-2.5 rounded-lg font-mono text-[11px] text-emerald-400 leading-relaxed shadow-inner">
+                                    ${changelogHtml}
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-[10px] text-cyber-muted font-mono">
+                                <div>
+                                    <div>Created: ${task.created_at || 'N/A'}</div>
+                                    <div class="mt-1 font-bold text-white uppercase text-[9px] tracking-wider">Task ID: <span class="text-indigo-400">${task.code || task.id}</span></div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-white uppercase text-[9px] tracking-wider">Export Task:</span>
+                                    <button onclick="event.stopPropagation(); exportData('task', 'json', '${task.id}')" class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 text-stone-300 hover:text-white transition-all text-[9px] font-bold">JSON</button>
+                                    <button onclick="event.stopPropagation(); exportData('task', 'yaml', '${task.id}')" class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 text-stone-300 hover:text-white transition-all text-[9px] font-bold">YAML</button>
+                                    <button onclick="event.stopPropagation(); exportData('task', 'md', '${task.id}')" class="px-1.5 py-0.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 text-stone-300 hover:text-white transition-all text-[9px] font-bold">Markdown</button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Bind checkbox handlers
+                    const docBtn = taskItem.querySelector('.doc-btn');
+                    const codeBtn = taskItem.querySelector('.code-btn');
+                    const testBtn = taskItem.querySelector('.test-btn');
+                    const selectEl = taskItem.querySelector('.assist-to-select');
+
+                    const taskState = savedStates[task.id] || { doc: false, code: false, test: false, assignee: 'none' };
+                    setTaskItemState(taskItem, taskState);
+                    if (selectEl) selectEl.value = taskState.assignee;
+
+                    docBtn.addEventListener('click', () => {
+                        const currentDoc = taskItem.dataset.doc === 'true';
+                        setTaskItemState(taskItem, { doc: !currentDoc, code: false, test: false, assignee: selectEl.value });
+                        saveStateToStorage();
+                        calculateRoadmapProgress();
+                        updateAllDependencyBadges();
+                    });
+
+                    codeBtn.addEventListener('click', () => {
+                        if (taskItem.dataset.doc !== 'true') return;
+                        const currentCode = taskItem.dataset.code === 'true';
+                        setTaskItemState(taskItem, { doc: true, code: !currentCode, test: false, assignee: selectEl.value });
+                        saveStateToStorage();
+                        calculateRoadmapProgress();
+                        updateAllDependencyBadges();
+                    });
+
+                    testBtn.addEventListener('click', () => {
+                        if (taskItem.dataset.code !== 'true') return;
+                        const currentTest = taskItem.dataset.test === 'true';
+                        setTaskItemState(taskItem, { doc: true, code: true, test: !currentTest, assignee: selectEl.value });
+                        saveStateToStorage();
+                        calculateRoadmapProgress();
+                        updateAllDependencyBadges();
+                    });
+
+                    taskItem.addEventListener('click', () => {
+                        const status = taskItem.getAttribute('data-state');
+                        if (status === 'done' || status === 'pending') return;
+
+                        // WebSocket backend not available in standalone mode â€” tasks are managed via checkboxes
+                        logTerminal('warn', `Task "${task.text}" clicked â€” use the Doc/Code/Test checkboxes to update status. WebSocket backend not connected.`);
+                    });
+
+                    // Drag & Drop event listeners
+                    taskItem.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                    });
+
+                    taskItem.addEventListener('dragenter', (e) => {
+                        e.preventDefault();
+                        taskItem.classList.add('border-emerald-500/50', 'bg-emerald-500/5', 'scale-[1.01]');
+                    });
+
+                    taskItem.addEventListener('dragleave', () => {
+                        taskItem.classList.remove('border-emerald-500/50', 'bg-emerald-500/5', 'scale-[1.01]');
+                    });
+
+                    taskItem.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        taskItem.classList.remove('border-emerald-500/50', 'bg-emerald-500/5', 'scale-[1.01]');
+                        const agentId = e.dataTransfer.getData('text/plain');
+                        if (agentId) {
+                            const selectEl = taskItem.querySelector('.assist-to-select');
+                            if (selectEl) {
+                                selectEl.value = agentId;
+                                saveStateToStorage();
+                                calculateRoadmapProgress();
+                                logTerminal('sys', `Assigned agent '${agentId}' to task: "${task.text}"`);
+                            }
+                        }
+                    });
+
+                    // Find matching sprint
+                    let matchedSprintId = null;
+                    sprints.forEach(sprint => {
+                        if (task.id.startsWith(sprint.id)) {
+                            matchedSprintId = sprint.id;
+                        }
+                    });
+
+                    const targetSubContainer = matchedSprintId ? sprintContainers[matchedSprintId] : container;
+                    targetSubContainer.appendChild(taskItem);
+                });
+            });
+            calculateRoadmapProgress();
+            updateAllDependencyBadges();
+        }
+
+        function calculateRoadmapProgress() {
+            const featureTasks = document.querySelectorAll('#roadmap-view .task-item[data-task-type="FR"]');
+            let totalFeatures = featureTasks.length, readyFeatures = 0;
+            featureTasks.forEach(t => {
+                if (t.getAttribute('data-state') === 'done') readyFeatures++;
+            });
+            const backlogTasks = document.querySelectorAll('#p4 .task-item');
+            let backlogPending = 0;
+            backlogTasks.forEach(t => {
+                if (t.getAttribute('data-state') !== 'done') backlogPending++;
+            });
+            const pct = totalFeatures > 0 ? Math.round((readyFeatures / totalFeatures) * 100) : 0;
+
+            const pctText = document.getElementById('global-percent-text');
+            const pctFill = document.getElementById('global-progress-fill');
+            if (pctText) pctText.innerText = pct + '%';
+            if (pctFill) pctFill.style.width = pct + '%';
+
+            // Update roadmap feature stats
+            const statsTotal = document.getElementById('stats-total-tasks');
+            const statsCompleted = document.getElementById('stats-completed-tasks');
+            const statsPending = document.getElementById('stats-pending-tasks');
+            if (statsTotal) statsTotal.innerText = totalFeatures;
+            if (statsCompleted) statsCompleted.innerText = readyFeatures;
+            if (statsPending) statsPending.innerText = backlogPending;
+
+            // Phase percentages
+            ['p0', 'p1', 'p2', 'p3', 'p4'].forEach(id => {
+                const phaseEl = document.getElementById(id);
+                if (!phaseEl) return;
+                const tasks = phaseEl.querySelectorAll('.task-item');
+                let pTotal = tasks.length, pDone = 0;
+                tasks.forEach(t => {
+                    if (t.getAttribute('data-state') === 'done') pDone++;
+                });
+                const pPct = pTotal > 0 ? Math.round((pDone / pTotal) * 100) : 0;
+                const lbl = document.getElementById(id + '-progress-lbl');
+                const fill = document.getElementById(id + '-mini-fill');
+                if (lbl) lbl.innerText = pPct + '%';
+                if (fill) fill.style.width = pPct + '%';
+
+                // Sprint percentages
+                const sprintBlocks = phaseEl.querySelectorAll('.sprint-block');
+                sprintBlocks.forEach(sprintBlock => {
+                    const sId = sprintBlock.id;
+                    const sTasks = sprintBlock.querySelectorAll('.task-item');
+                    let sTotal = sTasks.length, sDone = 0;
+                    sTasks.forEach(t => {
+                        if (t.getAttribute('data-state') === 'done') sDone++;
+                    });
+                    const sPct = sTotal > 0 ? Math.round((sDone / sTotal) * 100) : 0;
+                    const sProgress = document.getElementById(sId + '-progress');
+                    if (sProgress) sProgress.innerText = sPct + '%';
+                });
+            });
+        }
+
+
+
+        // --- Terminal Logs Panel ---
+        const term = document.getElementById('terminal-output');
+        function logTerminal(type, text) {
+            if (!term) return;
+            const line = document.createElement('div');
+            line.className = 'mb-1.5 flex gap-2 text-xs font-mono';
+            const time = new Date().toLocaleTimeString('en-US', { hour12: false });
+
+            let tag = '';
+            if (type === 'sys') tag = `<span class="text-[#5fb1ad] shrink-0 font-bold">[SYS]</span>`;
+            else if (type === 'eva') tag = `<span class="text-emerald-400 shrink-0 font-bold">[EVA]</span>`;
+            else if (type === 'warn') tag = `<span class="text-yellow-500 shrink-0 font-bold">[WRN]</span>`;
+            else if (type === 'user') tag = `<span class="text-blue-400 shrink-0 font-bold">[USER]</span>`;
+
+            line.innerHTML = `<span class="text-gray-500 shrink-0">[${time}]</span> ${tag} <span class="text-stone-300">${text}</span>`;
+            term.appendChild(line);
+            term.scrollTop = term.scrollHeight;
+        }
+
+        function handleTerminalInput(e) {
+            if (e.key === 'Enter') {
+                const input = document.getElementById('terminal-input');
+                const val = input.value.trim();
+                if (val) {
+                    logTerminal('user', val);
+                    input.value = '';
+                    setTimeout(() => {
+                        logTerminal('sys', `Command '${val}' queued for remote WebSocket node execution.`);
+                    }, 500);
+                }
+            }
+        }
+
+        function toggleTerminal() {
+            const panel = document.getElementById('floating-terminal');
+            if (panel) panel.classList.toggle('expanded');
+        }
+
+
+
+        // Tab button handlers for back card model sources
+        const modelOptions = {
+            eva: {
+                cloud: ['Gemini 2.5 Flash', 'GPT-4o Base', 'Claude 3.5 Sonnet'],
+                local: ['Llama 3 (Ollama)', 'Mistral 7B (LM Studio)', 'Phi-3 Medium']
+            },
+            qwen: {
+                cloud: ['GPT-4o', 'Claude 3.5 Sonnet', 'Gemini 2.5 Flash'],
+                local: ['Qwen 2.5 Coder', 'Llama 3 (Ollama)', 'Mistral 7B']
+            },
+            uat: {
+                cloud: ['GPT-4o', 'Claude 3.5 Sonnet', 'Gemini 2.5 Flash'],
+                local: ['Mistral 7B', 'Llama 3 (Ollama)', 'Phi-3']
+            },
+            local: {
+                cloud: ['Gemini 2.5 Flash', 'GPT-4o Base', 'Claude 3.5 Sonnet'],
+                local: ['Llama 3 (Ollama)', 'Mistral 7B (LM Studio)', 'Phi-3 Medium']
+            }
+        };
+
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const agent = btn.dataset.agent;
+                const source = btn.dataset.source;
+                const cardContainer = btn.closest('.backface-hidden');
+
+                // Switch tab active classes
+                cardContainer.querySelectorAll(`.tab-btn[data-agent="${agent}"]`).forEach(b => {
+                    b.classList.remove('active');
+                    b.classList.add('inactive');
+                });
+                btn.classList.add('active');
+                btn.classList.remove('inactive');
+
+                // Toggle API Credentials vs Local Endpoint URL inputs
+                const cloudCred = cardContainer.querySelector('.cloud-cred-sec');
+                const localCred = cardContainer.querySelector('.local-cred-sec');
+                if (source === 'cloud') {
+                    if (cloudCred) cloudCred.classList.remove('hidden');
+                    if (localCred) localCred.classList.add('hidden');
+                } else {
+                    if (cloudCred) cloudCred.classList.add('hidden');
+                    if (localCred) localCred.classList.remove('hidden');
+                }
+
+                // Dynamically update model options
+                const select = cardContainer.querySelector('select.model-select');
+                if (select && modelOptions[agent] && modelOptions[agent][source]) {
+                    select.innerHTML = '';
+                    modelOptions[agent][source].forEach(modelName => {
+                        const option = document.createElement('option');
+                        option.value = modelName;
+                        option.textContent = modelName;
+                        select.appendChild(option);
+                    });
+                }
+            });
+        });
+
+        // Show/Hide password key toggler
+        document.querySelectorAll('.key-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = btn.closest('.cloud-cred-sec').querySelector('input');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> Hide';
+                } else {
+                    input.type = 'password';
+                    btn.innerHTML = '<i class="fa-solid fa-eye"></i> Show';
+                }
+            });
+        });
+
+        // Sync slider labels
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', () => {
+                const valEl = slider.parentElement.querySelector('.slider-val');
+                if (valEl) {
+                    if (slider.classList.contains('temp-slider')) {
+                        valEl.textContent = parseFloat(slider.value).toFixed(1);
+                    } else if (slider.classList.contains('context-slider')) {
+                        valEl.textContent = `${slider.value}k Tokens`;
+                    } else if (slider.classList.contains('latency-slider')) {
+                        valEl.textContent = `${slider.value}ms`;
+                    }
+                }
+            });
+        });
+
+        // Config card Action buttons (Reset & Save Changes)
+        document.querySelectorAll('.backface-hidden button').forEach(btn => {
+            if (btn.textContent.trim() === 'Reset' || btn.textContent.trim() === 'Save Changes') {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    // Find the closest flipper wrapper and flip back
+                    const flipper = btn.closest('.flipper-wrapper');
+                    if (flipper) flipper.classList.remove('rotate-y-180');
+                });
+            }
+        });
+
+        // Raycast 3D Card tilt and glare effect
+        document.querySelectorAll('.raycast-perspective-container').forEach(container => {
+            container.addEventListener('mousemove', (e) => {
+                const rect = container.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                // Propagate coordinates to card shine layers
+                const cardShines = container.querySelectorAll('.shine-overlay');
+                cardShines.forEach(shine => {
+                    shine.style.setProperty('--mouse-x', `${x}px`);
+                    shine.style.setProperty('--mouse-y', `${y}px`);
+                });
+
+                const width = rect.width;
+                const height = rect.height;
+                const centerX = width / 2;
+                const centerY = height / 2;
+                const rotateX = ((centerY - y) / centerY) * 15; // tilt max 15 deg
+                const rotateY = ((x - centerX) / centerX) * 15;
+
+                container.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.04)`;
+            });
+            container.addEventListener('mouseleave', () => {
+                container.style.transform = `rotateX(0deg) rotateY(0deg) scale(1)`;
+                const cardShines = container.querySelectorAll('.shine-overlay');
+                cardShines.forEach(shine => {
+                    shine.style.setProperty('--mouse-x', `50%`);
+                    shine.style.setProperty('--mouse-y', `50%`);
+                });
+            });
+        });
+
+        // â”€â”€ True Card Follow Cursor Drag â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        (function setupCardFollowDrag() {
+            let floatEl = null;
+            let sourceCard = null;
+            let activeAgent = null;
+            let offsetX = 0, offsetY = 0;
+            let lastHoveredTask = null;
+
+            function clearTaskHover() {
+                document.querySelectorAll('.task-drop-hover').forEach(el => {
+                    el.classList.remove('task-drop-hover', 'drop-eva', 'drop-qwen', 'drop-uat', 'drop-local');
+                });
+                lastHoveredTask = null;
+            }
+
+            function setTaskHover(taskEl, agent) {
+                if (lastHoveredTask === taskEl) return;
+                clearTaskHover();
+                taskEl.classList.add('task-drop-hover', `drop-${agent}`);
+                lastHoveredTask = taskEl;
+            }
+
+            function findTaskItem(x, y) {
+                // Temporarily hide float to hit-test underneath
+                if (floatEl) floatEl.style.display = 'none';
+                const el = document.elementFromPoint(x, y);
+                if (floatEl) floatEl.style.display = '';
+                if (!el) return null;
+                return el.closest('.task-item');
+            }
+
+            document.querySelectorAll('.raycast-agent-card[data-agent]').forEach(card => {
+                card.addEventListener('mousedown', (e) => {
+                    if (e.button !== 0) return;
+                    if (e.target.closest('button') || e.target.closest('select') || e.target.closest('input') || e.target.closest('.flip-back-btn')) return;
+                    e.preventDefault();
+
+                    activeAgent = card.dataset.agent;
+                    sourceCard = card;
+
+                    const rect = card.getBoundingClientRect();
+                    offsetX = e.clientX - rect.left;
+                    offsetY = e.clientY - rect.top;
+
+                    // Create floating clone
+                    floatEl = card.cloneNode(true);
+                    floatEl.classList.remove('absolute', 'inset-0', 'backface-hidden');
+                    floatEl.classList.add('agent-drag-float');
+                    floatEl.style.width = rect.width + 'px';
+                    floatEl.style.height = rect.height + 'px';
+                    floatEl.style.left = (e.clientX - offsetX) + 'px';
+                    floatEl.style.top = (e.clientY - offsetY) + 'px';
+                    // Reset inline 3D tilt styles on the clone to prevent layout distortion during drag
+                    floatEl.style.transform = 'rotate(-5deg) scale(1.05)';
+                    document.body.appendChild(floatEl);
+
+                    // Fade original
+                    card.classList.add('agent-card-dragging');
+                    card.style.cursor = 'grabbing';
+
+                    document.body.style.userSelect = 'none';
+                });
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!floatEl || !sourceCard) return;
+
+                floatEl.style.left = (e.clientX - offsetX) + 'px';
+                floatEl.style.top = (e.clientY - offsetY) + 'px';
+
+                // Hit-test for task items
+                const taskEl = findTaskItem(e.clientX, e.clientY);
+                if (taskEl) {
+                    setTaskHover(taskEl, activeAgent);
+                } else {
+                    clearTaskHover();
+                }
+            });
+
+            document.addEventListener('mouseup', (e) => {
+                if (!floatEl || !sourceCard) return;
+
+                // Check drop target
+                const taskEl = findTaskItem(e.clientX, e.clientY);
+                if (taskEl && activeAgent) {
+                    // Execute existing assign logic
+                    const taskId = taskEl.dataset.taskId || taskEl.querySelector('[data-task-id]')?.dataset.taskId;
+                    const agentNames = { eva: 'EVA Agent', qwen: 'Qwen Coder', uat: 'UAT Agent', local: 'Local Dev' };
+                    const agentName = agentNames[activeAgent] || activeAgent;
+                    logTerminal(`ðŸ¤– ${agentName} assigned to task`, 'info');
+                }
+
+                // Cleanup
+                floatEl.remove();
+                floatEl = null;
+                sourceCard.classList.remove('agent-card-dragging');
+                sourceCard.style.cursor = 'grab';
+                sourceCard = null;
+                activeAgent = null;
+                clearTaskHover();
+                document.body.style.userSelect = '';
+            });
+        })();
+
+
+
+        // =========================================
+        // Stubs for functions not available in standalone Domain A
+        // (Agent carousel, graph views, heatmap, etc. live in the full app)
+        // =========================================
+        function buildCards() { }
+        function selectAgent() { }
+        function startWorkflow() {
+            logTerminal('warn', 'Test Run: WebSocket backend not connected in standalone mode.');
+        }
+        function resolveHitl(approved) {
+            const modal = document.getElementById('hitl-modal');
+            if (modal) { modal.style.opacity = '0'; modal.style.pointerEvents = 'none'; }
+            logTerminal('sys', `HITL resolved: ${approved ? 'Verified' : 'Halted'}`);
+        }
+        function initHeatmapGrid() { }
+        function randomizeHeatmapValues() { }
+        function updateEdges() { }
+        function updateErdEdges() { }
+        function initCallGraph() { }
+        function updateLiveHardwareSample() { }
+        function loadConfigForm() { }
+
+        // =========================================
+        // Initialize
+        // =========================================
+
+        // Auto-load roadmap - uses file picker on file:// protocol
+        fetchDefaultRoadmap();
+
+        // Connect WebSocket (gracefully fails if no server)
+        connectWebSocket();
+
+        window.addEventListener('resize', () => {
+            const canvas = document.getElementById('oscilloscope-canvas');
+            if (canvas && canvas.parentElement) {
+                canvas.width = canvas.parentElement.clientWidth;
+                canvas.height = canvas.parentElement.clientHeight;
+            }
+        });
+    </script>
+
+</body>
+
+</html>

@@ -44,6 +44,8 @@ crosslink:
 ---
 
 ## **2. มาตรฐานระดับความลึกการบีบอัดไฟล์ (Compaction Heights: H5 - H1)**
+
+> **[ADR-018] Naming:** "Compaction Height" is renamed **`D` (D1–D5)** to disambiguate from the **Context Hop** scale (`H0–H6`, §3) — the same letter "H" was meaning two inverted things. `D` = how many structural levels pack into one physical `.md`; `H` = retrieval hop radius. Map to SWE doc abstraction: **D5 ≈ HLD/Architecture · D4 ≈ SDD · D3 ≈ SDD↔LLD · D2 ≈ LLD · D1 ≈ LLD/Code**. (Body below still says "H#" historically — read as "D#".)
 การเลือกใช้งานความสูง (Height) จะเป็นตัวกำหนดว่าใน 1 ไฟล์จะมีการซ้อนทับกันกี่ระดับชั้น โดยแบ่งออกตามความซับซ้อนของแต่ละ System ดังนี้:
 
 ### **📊 สรุปความสัมพันธ์ (Hierarchy Resolution Map)**

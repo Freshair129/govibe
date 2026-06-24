@@ -1,0 +1,343 @@
+{
+  "docHeight": 17098,
+  "viewport": {
+    "w": 1440,
+    "h": 900
+  },
+  "sticky": [
+    {
+      "tag": "DIV",
+      "cls": "framer-5h7nbp-container",
+      "pos": "fixed",
+      "top": "729px",
+      "z": "10",
+      "w": 142,
+      "h": 110
+    },
+    {
+      "tag": "DIV",
+      "cls": "",
+      "pos": "fixed",
+      "top": "822px",
+      "z": "2147483647",
+      "w": 1440,
+      "h": 78
+    },
+    {
+      "tag": "SPAN",
+      "cls": "",
+      "pos": "fixed",
+      "top": "3.5px",
+      "z": "auto",
+      "w": 87,
+      "h": 23
+    },
+    {
+      "tag": "IFRAME",
+      "cls": "status_visually_hidden",
+      "pos": "fixed",
+      "top": "0px",
+      "z": "2147483646",
+      "w": 1440,
+      "h": 900
+    }
+  ],
+  "pinned": [],
+  "marquees": [
+    {
+      "tag": "UL",
+      "cls": "",
+      "iter": null,
+      "dur": 90480,
+      "easing": "linear",
+      "playState": "paused"
+    },
+    {
+      "tag": "UL",
+      "cls": "",
+      "iter": null,
+      "dur": 77960,
+      "easing": "linear",
+      "playState": "paused"
+    }
+  ],
+  "textMutations": [],
+  "transformSamples": [],
+  "scrollClassChanges": [],
+  "hoverEffects": [],
+  "timedAnimations": [
+    {
+      "tag": "DIV",
+      "cls": "framer-1n7k6km",
+      "iter": 1,
+      "dur": 1000,
+      "easing": "cubic-bezier(0.44, 0, 0.56, 1)",
+      "playState": "finished"
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-a5uolk",
+      "iter": 1,
+      "dur": 1000,
+      "easing": "cubic-bezier(0.44, 0, 0.56, 1)",
+      "playState": "finished"
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-15v2ar2",
+      "iter": 1,
+      "dur": 500,
+      "easing": "cubic-bezier(0.44, 0, 0.34, 0.98)",
+      "playState": "finished"
+    }
+  ],
+  "scrollDrivenTransforms": [
+    {
+      "tag": "DIV",
+      "cls": "framer-126vhz2",
+      "transforms": [
+        "none"
+      ],
+      "opacities": [
+        "0",
+        "0.0916701",
+        "0.501564",
+        "0.838904",
+        "0.976889",
+        "1"
+      ]
+    },
+    {
+      "tag": "SPAN",
+      "cls": "",
+      "transforms": [
+        "matrix(1, 0, 0, 1, 0, 70)",
+        "matrix(1, 0, 0, 1, 0, 47.3876)",
+        "matrix(1, 0, 0, 1, 0, 5.94289)",
+        "none"
+      ],
+      "opacities": [
+        "1"
+      ]
+    },
+    {
+      "tag": "SPAN",
+      "cls": "",
+      "transforms": [
+        "matrix(1, 0, 0, 1, 0, 70)",
+        "matrix(1, 0, 0, 1, 0, 69.6013)",
+        "matrix(1, 0, 0, 1, 0, 32.7598)",
+        "matrix(1, 0, 0, 1, 0, 3.12101)"
+      ],
+      "opacities": [
+        "1"
+      ]
+    },
+    {
+      "tag": "SPAN",
+      "cls": "",
+      "transforms": [
+        "matrix(1, 0, 0, 1, 0, 70)",
+        "matrix(1, 0, 0, 1, 0, 66.6764)",
+        "matrix(1, 0, 0, 1, 0, 22.8835)",
+        "matrix(1, 0, 0, 1, 0, 0.956595)"
+      ],
+      "opacities": [
+        "0.5"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-o6wmak",
+      "transforms": [
+        "matrix(1, 0, 0, 1, 30, 0)",
+        "matrix(1, 0, 0, 1, 28.5416, 0)",
+        "matrix(1, 0, 0, 1, 10.3273, 0)",
+        "matrix(1, 0, 0, 1, 1.08172, 0)"
+      ],
+      "opacities": [
+        "0",
+        "0.048613",
+        "0.655757",
+        "0.963943",
+        "1"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-quCWX framer-eFK0X framer-1onn2f9",
+      "transforms": [
+        "none"
+      ],
+      "opacities": [
+        "0",
+        "0.532191",
+        "0.820531",
+        "0.935027",
+        "0.976567",
+        "0.990982",
+        "0.996723"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-6qbthf",
+      "transforms": [
+        "none"
+      ],
+      "opacities": [
+        "0",
+        "0.0907906",
+        "0.47257",
+        "0.838354",
+        "0.976889",
+        "1"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-rfdj4r-container",
+      "transforms": [
+        "matrix(1, 0, 0, 1, 0, 250)",
+        "matrix(1, 0, 0, 1, 0, 30.1019)",
+        "matrix(1, 0, 0, 1, 0, 2.07156)",
+        "matrix(1, 0, 0, 1, 0, 0.142801)"
+      ],
+      "opacities": [
+        "1"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-1oxsrxo-container",
+      "transforms": [
+        "matrix(1, 0, 0, 1, 0, 300)",
+        "matrix(1, 0, 0, 1, 0, 36.1222)",
+        "matrix(1, 0, 0, 1, 0, 2.48588)",
+        "matrix(1, 0, 0, 1, 0, 0.171362)"
+      ],
+      "opacities": [
+        "1"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-1vtgzzc-container",
+      "transforms": [
+        "matrix(1, 0, 0, 1, 0, 350)",
+        "matrix(1, 0, 0, 1, 0, 42.1426)",
+        "matrix(1, 0, 0, 1, 0, 2.90019)",
+        "matrix(1, 0, 0, 1, 0, 0.199922)"
+      ],
+      "opacities": [
+        "1"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-quCWX framer-eFK0X framer-1onn2f9",
+      "transforms": [
+        "none"
+      ],
+      "opacities": [
+        "0",
+        "0.51774",
+        "0.825932",
+        "0.933011",
+        "0.975748"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-1jpxszr",
+      "transforms": [
+        "none"
+      ],
+      "opacities": [
+        "0",
+        "0.0847335",
+        "0.488512",
+        "0.832251",
+        "0.974429"
+      ]
+    },
+    {
+      "tag": "UL",
+      "cls": "",
+      "transforms": [
+        "matrix(1, 0, 0, 1, -14.066, 0)",
+        "matrix(1, 0, 0, 1, -9.948, 0)",
+        "matrix(1, 0, 0, 1, -5.98, 0)",
+        "matrix(1, 0, 0, 1, -1.934, 0)"
+      ],
+      "opacities": [
+        "0",
+        "1"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-145b4qt",
+      "transforms": [
+        "none"
+      ],
+      "opacities": [
+        "0",
+        "0.0899146",
+        "0.470398",
+        "0.836697"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-58rzoq",
+      "transforms": [
+        "none"
+      ],
+      "opacities": [
+        "0",
+        "0.0772054",
+        "0.468226"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-vzhew2-container",
+      "transforms": [
+        "matrix(0.998615, 0.0526194, -0.0526194, 0.998615, 0.673102, -0.143213)",
+        "matrix(0.998628, 0.052369, -0.052369, 0.998628, 0.078005, -0.0165968)",
+        "matrix(0.99863, 0.052336, -0.052336, 0.99863, 0, 0)",
+        "matrix(0.998988, 0.0449872, -0.0449872, 0.998988, 37.4999, -18.3449)"
+      ],
+      "opacities": [
+        "1"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-m0q9nq-container",
+      "transforms": [
+        "matrix(0.997643, 0.0686239, -0.0686239, 0.997643, -1.34643, 0.472603)",
+        "matrix(0.997573, 0.0696245, -0.0696245, 0.997573, -0.156036, 0.0547695)",
+        "matrix(0.997564, 0.0697565, -0.0697565, 0.997564, 0, 0)",
+        "matrix(0.997732, 0.0673097, -0.0673097, 0.997732, 37.4875, -7.97606)"
+      ],
+      "opacities": [
+        "1"
+      ]
+    },
+    {
+      "tag": "DIV",
+      "cls": "framer-16ff8o7-container",
+      "transforms": [
+        "matrix(1, 0.000851466, -0.000851466, 1, 0.673326, -0.32939)",
+        "matrix(1, 9.91958e-05, -9.91958e-05, 1, 0.078031, -0.0381727)",
+        "none",
+        "matrix(0.999952, 0.00980986, -0.00980986, 0.999952, -74.9874, 26.321)"
+      ],
+      "opacities": [
+        "1"
+      ]
+    }
+  ]
+}

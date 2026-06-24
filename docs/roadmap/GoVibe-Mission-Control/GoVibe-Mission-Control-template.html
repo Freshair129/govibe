@@ -1,0 +1,2400 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoDev - Agent Command Center</title>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <!-- Stylesheets & Libraries -->
+    <script>
+        (function () {
+            const originalWarn = console.warn;
+            console.warn = function (...args) {
+                if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) {
+                    return;
+                }
+                originalWarn.apply(console, args);
+            };
+        })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.26.0/cytoscape.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        glass: {
+                            100: 'var(--glass-bg-100)',
+                            200: 'var(--glass-bg-200)',
+                            300: 'var(--glass-bg-300)',
+                        },
+                        neon: {
+                            green: 'var(--neon-green)',
+                            blue: 'var(--neon-blue)',
+                            purple: 'var(--neon-purple)'
+                        },
+                        cyber: {
+                            bg: '#08090c',
+                            card: 'rgba(18, 20, 28, 0.65)',
+                            border: 'rgba(255, 255, 255, 0.08)',
+                            text: '#f3f4f6',
+                            muted: '#9ca3af',
+                            emerald: '#10b981',
+                            indigo: '#6366f1',
+                            orange: '#f59e0b',
+                            cyan: '#06b6d4',
+                            purple: '#a855f7'
+                        },
+                        dark: 'var(--bg-body)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Core UI & Glassmorphism Design Tokens -->
+    <link rel="stylesheet" href="./GoVibe-Mission-Control-style.css">
+</head>
+
+<body class="h-screen flex flex-col antialiased">
+    <!-- Glowing background elements -->
+    <div class="ambient-orb bg-emerald-600/30 w-[40vw] h-[40vw] top-[-10%] left-[-10%]"></div>
+    <div class="ambient-orb bg-indigo-600/20 w-[35vw] h-[35vw] bottom-[-5%] right-[10%]"></div>
+    <div class="ambient-orb bg-purple-600/20 w-[20vw] h-[20vw] top-[40%] left-[50%]"></div>
+    <div id="orb-left" class="glow-orb w-[45vw] h-[45vw] top-[-10%] left-[-10%] bg-emerald-600/20"></div>
+
+    <!-- SECTOR 1: HEADER (Top Nav Area) -->
+    <header
+        class="h-[64px] shrink-0 glass-panel border-b border-cyber-border flex items-center justify-between px-6 z-50 relative">
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-500 to-indigo-600 flex items-center justify-center font-black text-white shadow-lg text-sm">
+                    CV
+                </div>
+                <span class="font-extrabold text-lg tracking-wider text-white">
+                    CoVibe CoDev
+                    <span
+                        class="text-xs px-2 py-0.5 rounded-full bg-white/10 text-white/60 font-mono tracking-normal ml-1">v2.5</span>
+                </span>
+            </div>
+            <!-- WebSocket connection state marker -->
+            <div class="flex items-center gap-2 bg-black/20 px-2.5 py-1 rounded-md border border-white/5 shadow-inner">
+                <span id="connection-status" class="w-2 h-2 rounded-full bg-red-500 transition-colors duration-300"
+                    title="Disconnected"></span>
+                <span class="text-[10px] font-bold text-cyber-muted tracking-wider uppercase">WS REACTOR</span>
+            </div>
+        </div>
+
+        <!-- Parent Domain View Switcher buttons -->
+        <nav class="flex gap-1 bg-black/40 p-1 rounded-xl border border-white/5">
+            <button onclick="switchDomain('A')" id="domain-tab-A"
+                class="domain-tab-btn px-4 py-1.5 rounded-lg text-sm font-semibold tracking-wide flex items-center gap-2 transition-all duration-300 bg-white/10 text-emerald-400 border border-emerald-500/20 shadow-lg">
+                <i class="fa-solid fa-compass"></i> Project Overview
+            </button>
+        </nav>
+
+        <!-- Right action hooks & Theme Toggler -->
+        <div class="flex items-center gap-4">
+            <button onclick="startWorkflow()"
+                class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold shadow-lg transition-all duration-300">
+                <i class="fa-solid fa-play"></i> Test Run
+            </button>
+            <span class="text-xs text-cyber-muted font-mono hidden sm:inline">
+                <i class="fa-solid fa-circle text-emerald-500 animate-pulse text-[8px] mr-1.5"></i> STABLE RUN
+            </span>
+            <button onclick="toggleTheme()"
+                class="w-9 h-9 rounded-lg flex items-center justify-center border border-white/10 hover:bg-white/10 text-emerald-400 transition-all duration-300"
+                id="theme-toggle-btn">
+                <i class="fa-solid fa-sun text-sm hidden" id="sun-icon"></i>
+                <i class="fa-solid fa-moon text-sm" id="moon-icon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- SECTOR 2: WORKSPACE (Sidebar & Main content viewport) -->
+    <div class="flex-1 flex overflow-hidden relative z-40">
+        <!-- SECTOR 2.1: Collapsible Sidebar -->
+        <aside id="app-sidebar"
+            class="sidebar glass-panel border-r border-cyber-border flex flex-col justify-between py-6 px-4 z-30 relative shrink-0">
+            <div>
+                <div class="flex items-center gap-3 mb-6 px-2">
+                    <div id="sidebar-context-icon"
+                        class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg shadow-inner shrink-0 transition-all duration-300">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div class="sidebar-expand-content">
+                        <h3 class="text-xs text-cyber-muted uppercase tracking-widest font-black leading-none">ACTIVE
+                            DOMAIN</h3>
+                        <span id="sidebar-context-title"
+                            class="text-sm font-bold text-white tracking-wide">Overview</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/5 my-4"></div>
+
+                <ul class="flex flex-col gap-1.5" id="sidebar-sub-nav">
+                    <!-- Dynamic rendering via switchDomain() -->
+                </ul>
+            </div>
+
+            <!-- Lock and Collapse Switcher -->
+            <div>
+                <button onclick="toggleSidebar()"
+                    class="w-full flex items-center gap-3 text-cyber-muted hover:text-white py-2 px-3 rounded-lg hover:bg-white/5 transition-all text-left">
+                    <i id="sidebar-toggle-icon" class="fa-solid fa-chevron-right text-center w-5"></i>
+                    <span class="sidebar-expand-content text-xs font-semibold tracking-wide">Expand Sidebar</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- SECTOR 2.2: MAIN CONTENT CONTAINER -->
+        <main class="flex-1 overflow-y-auto scroll-custom p-6 md:p-8 relative" id="main-scroll-container">
+            <div id="main-wrapper" class="max-w-7xl mx-auto space-y-8 fade-in">
+
+                <!-- DOMAIN A: PROJECT OVERVIEW -->
+
+                <!-- [A1] Dashboard View -->
+                <div id="view-A1" class="space-y-6 hidden view-block">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE
+                                OVERVIEW</span>
+                            <h2 class="text-3xl font-extrabold shimmer-title mt-1">Command Control Center</h2>
+                        </div>
+                        <div class="flex gap-2">
+                            <div
+                                class="px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 font-mono text-xs">
+                                ROI: <span class="font-bold text-white">+142.8%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistics grid row -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-xs font-semibold">LLM Cost Spend</span>
+                                <i class="fa-solid fa-coins text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-white mt-2 relative z-10" id="tel-cost">$0.0490</h3>
+                        </div>
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-xs font-semibold">Total LLM Calls</span>
+                                <i class="fa-solid fa-robot text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-white mt-2 relative z-10" id="tel-calls">14</h3>
+                        </div>
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-xs font-semibold">Active Tools Calls</span>
+                                <i class="fa-solid fa-wrench text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-white mt-2 relative z-10" id="tel-tools">28</h3>
+                        </div>
+                        <div class="glass-panel p-5 rounded-2xl interactive-card">
+                            <div class="card-glare"></div>
+                            <div class="flex justify-between items-center relative z-10">
+                                <span class="text-cyber-muted text-xs font-semibold">Forecast cost</span>
+                                <i class="fa-solid fa-chart-line text-emerald-400"></i>
+                            </div>
+                            <h3 class="text-2xl font-black text-white mt-2 relative z-10" id="tel-forecast">$1.24</h3>
+                        </div>
+                    </div>
+
+                    <!-- Performance Chart and live terminal output -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl lg:col-span-2">
+                            <h4 class="font-bold text-white mb-4">Token Performance Analytics</h4>
+                            <div class="chart-container h-80 relative w-full">
+                                <canvas id="dashboardChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- System metrics card list -->
+                        <div class="glass-panel p-6 rounded-2xl space-y-4">
+                            <h4 class="font-bold text-white border-b border-white/5 pb-2">Reactor Telemetry</h4>
+                            <div class="space-y-3.5 text-xs">
+                                <div class="flex justify-between">
+                                    <span class="text-cyber-muted">Input Tokens</span>
+                                    <span class="font-bold text-white font-mono" id="tel-in">37.2k</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-cyber-muted">Output Tokens</span>
+                                    <span class="font-bold text-white font-mono" id="tel-out">4.4k</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-cyber-muted">Execution Time</span>
+                                    <span class="font-bold text-white font-mono" id="tel-time">1m 24s</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-cyber-muted">Thermal Headroom</span>
+                                    <div class="px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/20"
+                                        id="tel-thermal-container">
+                                        <span class="font-bold font-mono text-emerald-400"
+                                            id="tel-thermal">+36.0°C</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [A2] Roadmap Tracker View (Detailed accordion checklist) -->
+                <div id="view-A2" class="space-y-6 hidden view-block">
+                    <!-- GoVibe Development Roadmap Header Card -->
+                    <div class="relative glass-panel rounded-2xl p-6 border-l-4 border-l-cyan-500"
+                        id="roadmap-header-card">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                            <div>
+                                <h2 class="text-2xl font-extrabold text-white tracking-tight">GoVibe Development Roadmap
+                                </h2>
+                                <p class="text-xs text-cyber-muted mt-1">แผนการพัฒนาและติดตามผลความคืบหน้าของฟีเจอร์</p>
+                            </div>
+                            <div class="text-left sm:text-right shrink-0">
+                                <span
+                                    class="text-[10px] text-cyber-muted font-bold uppercase tracking-wider block">ความคืบหน้ารวมโครงการ</span>
+                                <span class="text-3xl font-black text-emerald-400 leading-none"
+                                    id="global-percent-text">81%</span>
+                            </div>
+                        </div>
+
+                        <!-- Progress bar container -->
+                        <div class="w-full bg-white/5 h-2.5 rounded-full overflow-hidden mt-4">
+                            <div class="bg-gradient-to-r from-cyan-500 via-emerald-500 to-indigo-500 h-full w-[81%]"
+                                id="global-progress-fill"></div>
+                        </div>
+
+                        <hr class="border-t border-white/5 my-5">
+
+                        <!-- Footer stats and control row -->
+                        <div class="flex flex-wrap items-center justify-between gap-4">
+                            <div class="flex items-center gap-8 font-mono">
+                                <div>
+                                    <div class="text-xl font-bold text-cyber-muted" id="stats-total-tasks">27</div>
+                                    <div class="text-[10px] text-cyber-muted font-sans font-semibold">Feature ทั้งหมด</div>
+                                </div>
+                                <div>
+                                    <div class="text-xl font-bold text-emerald-400" id="stats-completed-tasks">22</div>
+                                    <div class="text-[10px] text-cyber-muted font-sans font-semibold">พร้อมใช้งาน / IMP แล้ว</div>
+                                </div>
+                                <div>
+                                    <div class="text-xl font-bold text-amber-500" id="stats-pending-tasks">4</div>
+                                    <div class="text-[10px] text-cyber-muted font-sans font-semibold">Task ใน Backlog</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <!-- Roadmap Export Dropdown -->
+                                <div class="relative inline-block text-left" id="export-roadmap-dropdown">
+                                    <button onclick="event.stopPropagation(); toggleExportMenu('roadmap')"
+                                        class="px-3 py-1.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5">
+                                        <i class="fa-solid fa-download"></i> Export <i
+                                            class="fa-solid fa-chevron-down text-[9px] text-cyber-muted"></i>
+                                    </button>
+                                    <div id="export-menu-roadmap"
+                                        class="hidden absolute right-0 mt-2 w-32 rounded-xl bg-neutral-900 border border-white/10 shadow-2xl py-1 z-50 font-mono text-[10px]">
+                                        <button
+                                            class="w-full text-left px-3.5 py-2 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('roadmap', 'json')">JSON</button>
+                                        <button
+                                            class="w-full text-left px-3.5 py-2 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('roadmap', 'yaml')">YAML</button>
+                                        <button
+                                            class="w-full text-left px-3.5 py-2 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            onclick="event.stopPropagation(); exportData('roadmap', 'md')">Markdown</button>
+                                    </div>
+                                </div>
+                                <button id="reset-btn"
+                                    class="px-3 py-1.5 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-lg text-xs font-bold transition-all">
+                                    <i class="fa-solid fa-rotate-right mr-1.5"></i> Reset Board
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start mt-6">
+                        <!-- Left Panel: Agent Roster (col-span-1) -->
+                        <div class="glass-panel p-5 rounded-2xl col-span-1 space-y-4">
+                            <div class="border-b border-white/5 pb-2">
+                                <h3 class="font-bold text-white text-sm tracking-wide">AI Assist Roster</h3>
+                                <p class="text-[10px] text-cyber-muted">Drag a card to assign an agent to a task</p>
+                            </div>
+                            <div class="flex flex-col gap-4">
+                                <!-- EVA Agent -->
+                                <div class="raycast-perspective-container relative w-full h-[280px]">
+                                    <div class="flipper-wrapper w-full h-full duration-700 transform-style-3d relative rounded-2xl shadow-lg"
+                                        id="eva-flipper">
+                                        <!-- FRONT FACE -->
+                                        <div class="absolute inset-0 backface-hidden raycast-agent-card eva-card p-4 flex flex-col justify-between h-full select-none bg-neutral-950/80 border border-white/10 rounded-2xl"
+                                            data-agent="eva" style="cursor: grab;">
+                                            <div class="shine-overlay"></div>
+                                            <!-- Card Header -->
+                                            <div class="flex justify-between items-start mb-2 z-10">
+                                                <div class="flex items-center gap-2">
+                                                    <div
+                                                        class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-800 to-black border border-white/10 flex items-center justify-center relative">
+                                                        <i class="fa-solid fa-planet text-raycast-coral text-sm"></i>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-xs font-bold text-white leading-none">EVA
+                                                            Agent</span>
+                                                        <span
+                                                            class="text-[9px] text-cyber-muted font-mono mt-0.5">GPT-4.5
+                                                            Turbo</span>
+                                                    </div>
+                                                </div>
+                                                <span
+                                                    class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono font-bold uppercase text-[9px] flex items-center gap-1">
+                                                    <span
+                                                        class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                                    Active
+                                                </span>
+                                            </div>
+
+                                            <!-- Stats Grid -->
+                                            <div class="grid grid-cols-2 gap-2 my-1 z-10">
+                                                <div
+                                                    class="p-2 rounded-xl bg-white/[0.02] border border-white/5 text-left">
+                                                    <span
+                                                        class="text-[8px] text-cyber-muted uppercase tracking-wider block">Tasks</span>
+                                                    <span class="text-xs font-semibold text-white">12.4k</span>
+                                                </div>
+                                                <div
+                                                    class="p-2 rounded-xl bg-white/[0.02] border border-white/5 text-left">
+                                                    <span
+                                                        class="text-[8px] text-cyber-muted uppercase tracking-wider block">Accuracy</span>
+                                                    <span class="text-xs font-semibold text-white">99.8%</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Token Limit Section -->
+                                            <div class="token-limit-sec flex flex-col gap-1 w-full z-10">
+                                                <div
+                                                    class="flex justify-between items-center text-[9px] text-cyber-muted font-mono">
+                                                    <span>Session Quota</span>
+                                                    <span class="text-raycast-coral font-bold">78k/100k</span>
+                                                </div>
+                                                <div
+                                                    class="w-full bg-black/40 h-1 rounded-full overflow-hidden border border-white/5">
+                                                    <div class="bg-gradient-to-r from-raycast-coral/60 to-raycast-coral h-full rounded-full"
+                                                        style="width: 78%;"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Capability Badges -->
+                                            <div class="flex flex-wrap gap-1 my-1 z-10">
+                                                <span
+                                                    class="px-2 py-0.5 text-[8px] rounded-full bg-white/5 border border-white/10 text-cyber-muted flex items-center gap-1">
+                                                    <i class="fa-solid fa-globe"></i> Web
+                                                </span>
+                                                <span
+                                                    class="px-2 py-0.5 text-[8px] rounded-full bg-white/5 border border-white/10 text-cyber-muted flex items-center gap-1">
+                                                    <i class="fa-solid fa-eye"></i> Vision
+                                                </span>
+                                                <span
+                                                    class="px-2 py-0.5 text-[8px] rounded-full bg-white/5 border border-white/10 text-cyber-muted flex items-center gap-1">
+                                                    <i class="fa-solid fa-code"></i> Code
+                                                </span>
+                                            </div>
+
+                                            <!-- Card Footer -->
+                                            <div
+                                                class="border-t border-white/5 pt-2 flex justify-between items-center z-10">
+                                                <button
+                                                    class="config-btn flex items-center gap-1 text-[10px] text-cyber-muted hover:text-white transition-colors"
+                                                    data-agent="eva">
+                                                    <i class="fa-solid fa-sliders"></i> Configure
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- BACK FACE -->
+                                        <div
+                                            class="absolute inset-0 backface-hidden rotate-y-180 bg-neutral-950 border border-white/10 rounded-2xl p-4 flex flex-col justify-between h-full select-none text-xs">
+                                            <div class="flex flex-col gap-2 h-full justify-between">
+                                                <div
+                                                    class="flex justify-between items-center border-b border-white/5 pb-1.5 shrink-0">
+                                                    <span
+                                                        class="font-bold text-white font-mono text-[10px] uppercase flex items-center gap-1">
+                                                        <i class="fa-solid fa-sliders text-raycast-coral"></i> CONFIG —
+                                                        EVA
+                                                    </span>
+                                                    <button
+                                                        class="flip-back-btn text-[10px] text-cyber-muted hover:text-white transition-colors"
+                                                        data-agent="eva">
+                                                        <i class="fa-solid fa-xmark"></i>
+                                                    </button>
+                                                </div>
+                                                <div
+                                                    class="flex-1 overflow-y-auto space-y-3.5 pr-1 scroll-custom text-[10px]">
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">System
+                                                            Prompt</label>
+                                                        <textarea
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white/80 focus:outline-none focus:border-raycast-coral/50 resize-none h-12"
+                                                            placeholder="You are EVA, an autonomous assistant..."></textarea>
+                                                    </div>
+
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">Model
+                                                            Source</label>
+                                                        <div
+                                                            class="flex rounded-lg bg-black/40 p-0.5 border border-white/10">
+                                                            <button type="button" class="tab-btn active"
+                                                                data-agent="eva" data-source="cloud">Cloud API</button>
+                                                            <button type="button" class="tab-btn inactive"
+                                                                data-agent="eva" data-source="local">Local
+                                                                Server</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">Select Model</label>
+                                                         <select id="eva-model-select" name="eva-model-select"
+                                                            class="w-full bg-black/50 border border-white/10 rounded-lg px-2 py-1.5 text-white/85 focus:outline-none model-select">
+                                                            <option>Gemini 2.5 Flash</option>
+                                                            <option>GPT-4o Base</option>
+                                                            <option>Claude 3.5 Sonnet</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="cloud-cred-sec">
+                                                        <div class="flex justify-between items-center mb-1">
+                                                            <label for="eva-api-key"
+                                                                class="text-cyber-muted uppercase tracking-wider text-[8px] font-bold">API
+                                                                Credentials</span>API Credentials</label>
+                                                            <button type="button"
+                                                                class="text-[8px] text-cyber-muted hover:text-white flex items-center gap-0.5 key-toggle-btn"><i
+                                                                    class="fa-solid fa-eye"></i> Show</button>
+                                                        </div>
+                                                        <input type="password" id="eva-api-key" name="eva-api-key"
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-white/80 focus:outline-none"
+                                                            value="xai-**********************">
+                                                    </div>
+
+                                                    <div class="local-cred-sec hidden">
+                                                        <label for="eva-local-url"
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold mb-1">Local
+                                                            Endpoint URL</span>Local Endpoint URL</label>
+                                                        <input type="text" id="eva-local-url" name="eva-local-url"
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-white/80 focus:outline-none"
+                                                            value="http://localhost:11434">
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="flex justify-between text-cyber-muted mb-1">
+                                                            <label for="eva-context-window"
+                                                                class="uppercase tracking-wider text-[8px] font-bold">Context
+                                                                Window</span>Context Window</label>
+                                                            <span class="text-raycast-coral font-bold slider-val">128k
+                                                                Tokens</span>
+                                                        </div>
+                                                        <input type="range" id="eva-context-window" name="eva-context-window"
+                                                            class="w-full h-1 bg-white/10 rounded appearance-none cursor-pointer accent-raycast-coral context-slider"
+                                                            min="8" max="256" value="128">
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="flex justify-between text-cyber-muted mb-1">
+                                                            <span
+                                                                class="uppercase tracking-wider text-[8px] font-bold">Creativity
+                                                                (Temp)</span>
+                                                            <span
+                                                                class="text-raycast-coral font-bold slider-val">0.7</span>
+                                                        </div>
+                                                        <input type="range"
+                                                            class="w-full h-1 bg-white/10 rounded appearance-none cursor-pointer accent-raycast-coral temp-slider"
+                                                            min="0" max="1" step="0.1" value="0.7">
+                                                    </div>
+
+                                                    <!-- Genesis Knowledge Box -->
+                                                    <div
+                                                        class="p-2.5 rounded-lg bg-black/40 border border-white/10 relative overflow-hidden">
+                                                        <div class="flex justify-between items-center mb-2">
+                                                            <div
+                                                                class="flex items-center gap-1 font-bold text-white uppercase text-[8px]">
+                                                                <i class="fa-solid fa-database text-raycast-coral"></i>
+                                                                Genesis Knowledge
+                                                            </div>
+                                                            <span
+                                                                class="px-1 py-0.5 rounded bg-raycast-coral/10 text-raycast-coral text-[8px] font-mono">GenesisDB</span>
+                                                        </div>
+                                                        <button type="button"
+                                                            class="w-full py-1.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-[9px] text-white/80 flex items-center justify-center gap-1">
+                                                            <i class="fa-solid fa-file-circle-plus"></i> Add File to
+                                                            Knowledge
+                                                        </button>
+                                                        <div
+                                                            class="flex justify-between text-[8px] text-cyber-muted font-mono mt-2">
+                                                            <span>Indexed: 1.2M Vectors</span>
+                                                            <span>Auto-Sync: ON</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="space-y-1.5">
+                                                        <label
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold">Agent
+                                                            Behaviors</label>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-brain text-white/50 text-[10px]"></i>
+                                                                Plan Mode</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" checked class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-bolt text-white/50 text-[10px]"></i>
+                                                                Auto-Execute Tasks</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="space-y-1.5">
+                                                        <label
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold">System
+                                                            Access</label>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-folder text-white/50 text-[10px]"></i>
+                                                                Local File Access</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" checked class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-terminal text-white/50 text-[10px]"></i>
+                                                                Shell Command Runner</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="flex justify-end gap-2 border-t border-white/5 pt-2 shrink-0">
+                                                    <button
+                                                        class="px-2.5 py-1 text-cyber-muted hover:text-white transition-colors text-[9px] font-bold"
+                                                        type="button">Reset</button>
+                                                    <button
+                                                        class="px-3 py-1 bg-raycast-coral hover:bg-raycast-coral/80 text-white rounded-md transition-colors text-[9px] font-bold"
+                                                        type="button">Save Changes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Qwen Coder -->
+                                <div class="raycast-perspective-container relative w-full h-[280px]">
+                                    <div class="flipper-wrapper w-full h-full duration-700 transform-style-3d relative rounded-2xl shadow-lg"
+                                        id="qwen-flipper">
+                                        <!-- FRONT FACE -->
+                                        <div class="absolute inset-0 backface-hidden raycast-agent-card qwen-card p-4 flex flex-col justify-between h-full select-none bg-neutral-950/80 border border-white/10 rounded-2xl"
+                                            data-agent="qwen" style="cursor: grab;">
+                                            <div class="shine-overlay"></div>
+                                            <!-- Card Header -->
+                                            <div class="flex justify-between items-start mb-2 z-10">
+                                                <div class="flex items-center gap-2">
+                                                    <div
+                                                        class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-800 to-black border border-white/10 flex items-center justify-center relative">
+                                                        <i class="fa-solid fa-code text-amber-400 text-sm"></i>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-xs font-bold text-white leading-none">Qwen
+                                                            Coder</span>
+                                                        <span
+                                                            class="text-[9px] text-cyber-muted font-mono mt-0.5">Qwen2.5-Coder</span>
+                                                    </div>
+                                                </div>
+                                                <span
+                                                    class="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-mono font-bold uppercase text-[9px] flex items-center gap-1">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Ready
+                                                </span>
+                                            </div>
+
+                                            <!-- Stats Grid -->
+                                            <div class="grid grid-cols-2 gap-2 my-1 z-10">
+                                                <div
+                                                    class="p-2 rounded-xl bg-white/[0.02] border border-white/5 text-left">
+                                                    <span
+                                                        class="text-[8px] text-cyber-muted uppercase tracking-wider block">Tasks</span>
+                                                    <span class="text-xs font-semibold text-white">8.2k</span>
+                                                </div>
+                                                <div
+                                                    class="p-2 rounded-xl bg-white/[0.02] border border-white/5 text-left">
+                                                    <span
+                                                        class="text-[8px] text-cyber-muted uppercase tracking-wider block">Accuracy</span>
+                                                    <span class="text-xs font-semibold text-white">99.5%</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Token Limit Section -->
+                                            <div class="token-limit-sec flex flex-col gap-1 w-full z-10">
+                                                <div
+                                                    class="flex justify-between items-center text-[9px] text-cyber-muted font-mono">
+                                                    <span>Session Quota</span>
+                                                    <span class="text-raycast-coral font-bold">17.6k/100k</span>
+                                                </div>
+                                                <div
+                                                    class="w-full bg-black/40 h-1 rounded-full overflow-hidden border border-white/5">
+                                                    <div class="bg-gradient-to-r from-amber-400 to-orange-500 h-full rounded-full"
+                                                        style="width: 17.6%;"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Capability Badges -->
+                                            <div class="flex flex-wrap gap-1 my-1 z-10">
+                                                <span
+                                                    class="px-2 py-0.5 text-[8px] rounded-full bg-white/5 border border-white/10 text-cyber-muted flex items-center gap-1">
+                                                    <i class="fa-solid fa-code"></i> Code
+                                                </span>
+                                                <span
+                                                    class="px-2 py-0.5 text-[8px] rounded-full bg-white/5 border border-white/10 text-cyber-muted flex items-center gap-1">
+                                                    <i class="fa-solid fa-terminal"></i> Bash
+                                                </span>
+                                            </div>
+
+                                            <!-- Card Footer -->
+                                            <div
+                                                class="border-t border-white/5 pt-2 flex justify-between items-center z-10">
+                                                <button
+                                                    class="config-btn flex items-center gap-1 text-[10px] text-cyber-muted hover:text-white transition-colors"
+                                                    data-agent="qwen">
+                                                    <i class="fa-solid fa-sliders"></i> Configure
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- BACK FACE -->
+                                        <div
+                                            class="absolute inset-0 backface-hidden rotate-y-180 bg-neutral-950 border border-white/10 rounded-2xl p-4 flex flex-col justify-between h-full select-none text-xs">
+                                            <div class="flex flex-col gap-2 h-full justify-between">
+                                                <div
+                                                    class="flex justify-between items-center border-b border-white/5 pb-1.5 shrink-0">
+                                                    <span
+                                                        class="font-bold text-white font-mono text-[10px] uppercase flex items-center gap-1">
+                                                        <i class="fa-solid fa-sliders text-raycast-coral"></i> CONFIG —
+                                                        QWEN
+                                                    </span>
+                                                    <button
+                                                        class="flip-back-btn text-[10px] text-cyber-muted hover:text-white transition-colors"
+                                                        data-agent="qwen">
+                                                        <i class="fa-solid fa-xmark"></i>
+                                                    </button>
+                                                </div>
+                                                <div
+                                                    class="flex-1 overflow-y-auto space-y-3.5 pr-1 scroll-custom text-[10px]">
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">System
+                                                            Prompt</label>
+                                                        <textarea
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white/80 focus:outline-none focus:border-raycast-coral/50 resize-none h-12"
+                                                            placeholder="You are Qwen Coder, a specialized coding AI assistant..."></textarea>
+                                                    </div>
+
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">Model
+                                                            Source</label>
+                                                        <div
+                                                            class="flex rounded-lg bg-black/40 p-0.5 border border-white/10">
+                                                            <button type="button" class="tab-btn active"
+                                                                data-agent="qwen" data-source="cloud">Cloud API</button>
+                                                            <button type="button" class="tab-btn inactive"
+                                                                data-agent="qwen" data-source="local">Local
+                                                                Server</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">Select Model</label>
+                                                         <select id="qwen-model-select" name="qwen-model-select"
+                                                            class="w-full bg-black/50 border border-white/10 rounded-lg px-2 py-1.5 text-white/85 focus:outline-none model-select">
+                                                            <option>GPT-4o</option>
+                                                            <option>Claude 3.5 Sonnet</option>
+                                                            <option>Gemini 2.5 Flash</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="cloud-cred-sec">
+                                                        <div class="flex justify-between items-center mb-1">
+                                                            <label for="qwen-api-key"
+                                                                class="text-cyber-muted uppercase tracking-wider text-[8px] font-bold">API
+                                                                Credentials</span>API Credentials</label>
+                                                            <button type="button"
+                                                                class="text-[8px] text-cyber-muted hover:text-white flex items-center gap-0.5 key-toggle-btn"><i
+                                                                    class="fa-solid fa-eye"></i> Show</button>
+                                                        </div>
+                                                        <input type="password" id="qwen-api-key" name="qwen-api-key"
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-white/80 focus:outline-none"
+                                                            value="xai-**********************">
+                                                    </div>
+
+                                                    <div class="local-cred-sec hidden">
+                                                        <label for="qwen-local-url"
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold mb-1">Local
+                                                            Endpoint URL</span>Local Endpoint URL</label>
+                                                        <input type="text" id="qwen-local-url" name="qwen-local-url"
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-white/80 focus:outline-none"
+                                                            value="http://localhost:11434">
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="flex justify-between text-cyber-muted mb-1">
+                                                            <label for="qwen-context-window"
+                                                                class="uppercase tracking-wider text-[8px] font-bold">Context
+                                                                Window</span>Context Window</label>
+                                                            <span class="text-raycast-coral font-bold slider-val">96k
+                                                                Tokens</span>
+                                                        </div>
+                                                        <input type="range" id="qwen-context-window" name="qwen-context-window"
+                                                            class="w-full h-1 bg-white/10 rounded appearance-none cursor-pointer accent-raycast-coral context-slider"
+                                                            min="8" max="256" value="96">
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="flex justify-between text-cyber-muted mb-1">
+                                                            <span
+                                                                class="uppercase tracking-wider text-[8px] font-bold">Creativity
+                                                                (Temp)</span>
+                                                            <span
+                                                                class="text-raycast-coral font-bold slider-val">0.2</span>
+                                                        </div>
+                                                        <input type="range"
+                                                            class="w-full h-1 bg-white/10 rounded appearance-none cursor-pointer accent-raycast-coral temp-slider"
+                                                            min="0" max="1" step="0.1" value="0.2">
+                                                    </div>
+
+                                                    <!-- Genesis Knowledge Box -->
+                                                    <div
+                                                        class="p-2.5 rounded-lg bg-black/40 border border-white/10 relative overflow-hidden">
+                                                        <div class="flex justify-between items-center mb-2">
+                                                            <div
+                                                                class="flex items-center gap-1 font-bold text-white uppercase text-[8px]">
+                                                                <i class="fa-solid fa-database text-raycast-coral"></i>
+                                                                Genesis Knowledge
+                                                            </div>
+                                                            <span
+                                                                class="px-1 py-0.5 rounded bg-raycast-coral/10 text-raycast-coral text-[8px] font-mono">GenesisDB</span>
+                                                        </div>
+                                                        <button type="button"
+                                                            class="w-full py-1.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-[9px] text-white/80 flex items-center justify-center gap-1">
+                                                            <i class="fa-solid fa-file-circle-plus"></i> Add File to
+                                                            Knowledge
+                                                        </button>
+                                                        <div
+                                                            class="flex justify-between text-[8px] text-cyber-muted font-mono mt-2">
+                                                            <span>Indexed: 1.2M Vectors</span>
+                                                            <span>Auto-Sync: ON</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="space-y-1.5">
+                                                        <label
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold">Agent
+                                                            Behaviors</label>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-brain text-white/50 text-[10px]"></i>
+                                                                Plan Mode</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" checked class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-bolt text-white/50 text-[10px]"></i>
+                                                                Auto-Execute Tasks</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="space-y-1.5">
+                                                        <label
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold">System
+                                                            Access</label>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-folder text-white/50 text-[10px]"></i>
+                                                                Local File Access</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" checked class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-terminal text-white/50 text-[10px]"></i>
+                                                                Shell Command Runner</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" checked class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="flex justify-end gap-2 border-t border-white/5 pt-2 shrink-0">
+                                                    <button
+                                                        class="px-2.5 py-1 text-cyber-muted hover:text-white transition-colors text-[9px] font-bold"
+                                                        type="button">Reset</button>
+                                                    <button
+                                                        class="px-3 py-1 bg-raycast-coral hover:bg-raycast-coral/80 text-white rounded-md transition-colors text-[9px] font-bold"
+                                                        type="button">Save Changes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- UAT Agent -->
+                                <div class="raycast-perspective-container relative w-full h-[280px]">
+                                    <div class="flipper-wrapper w-full h-full duration-700 transform-style-3d relative rounded-2xl shadow-lg"
+                                        id="uat-flipper">
+                                        <!-- FRONT FACE -->
+                                        <div class="absolute inset-0 backface-hidden raycast-agent-card uat-card p-4 flex flex-col justify-between h-full select-none bg-neutral-950/80 border border-white/10 rounded-2xl"
+                                            data-agent="uat" style="cursor: grab;">
+                                            <div class="shine-overlay"></div>
+                                            <!-- Card Header -->
+                                            <div class="flex justify-between items-start mb-2 z-10">
+                                                <div class="flex items-center gap-2">
+                                                    <div
+                                                        class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-800 to-black border border-white/10 flex items-center justify-center relative">
+                                                        <i
+                                                            class="fa-solid fa-shield-halved text-indigo-400 text-sm"></i>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-xs font-bold text-white leading-none">UAT
+                                                            Agent</span>
+                                                        <span
+                                                            class="text-[9px] text-cyber-muted font-mono mt-0.5">GPT-4o</span>
+                                                    </div>
+                                                </div>
+                                                <span
+                                                    class="px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-mono font-bold uppercase text-[9px] flex items-center gap-1">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-400"></span> Ready
+                                                </span>
+                                            </div>
+
+                                            <!-- Stats Grid -->
+                                            <div class="grid grid-cols-2 gap-2 my-1 z-10">
+                                                <div
+                                                    class="p-2 rounded-xl bg-white/[0.02] border border-white/5 text-left">
+                                                    <span
+                                                        class="text-[8px] text-cyber-muted uppercase tracking-wider block">Tasks</span>
+                                                    <span class="text-xs font-semibold text-white">4.1k</span>
+                                                </div>
+                                                <div
+                                                    class="p-2 rounded-xl bg-white/[0.02] border border-white/5 text-left">
+                                                    <span
+                                                        class="text-[8px] text-cyber-muted uppercase tracking-wider block">Accuracy</span>
+                                                    <span class="text-xs font-semibold text-white">99.9%</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Token Limit Section -->
+                                            <div class="token-limit-sec flex flex-col gap-1 w-full z-10">
+                                                <div
+                                                    class="flex justify-between items-center text-[9px] text-cyber-muted font-mono">
+                                                    <span>Session Quota</span>
+                                                    <span class="text-raycast-coral font-bold">85k/100k</span>
+                                                </div>
+                                                <div
+                                                    class="w-full bg-black/40 h-1 rounded-full overflow-hidden border border-white/5">
+                                                    <div class="bg-gradient-to-r from-indigo-400 to-purple-500 h-full rounded-full"
+                                                        style="width: 85%;"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Capability Badges -->
+                                            <div class="flex flex-wrap gap-1 my-1 z-10">
+                                                <span
+                                                    class="px-2 py-0.5 text-[8px] rounded-full bg-white/5 border border-white/10 text-cyber-muted flex items-center gap-1">
+                                                    <i class="fa-solid fa-flask"></i> Testing
+                                                </span>
+                                                <span
+                                                    class="px-2 py-0.5 text-[8px] rounded-full bg-white/5 border border-white/10 text-cyber-muted flex items-center gap-1">
+                                                    <i class="fa-solid fa-code"></i> Code
+                                                </span>
+                                            </div>
+
+                                            <!-- Card Footer -->
+                                            <div
+                                                class="border-t border-white/5 pt-2 flex justify-between items-center z-10">
+                                                <button
+                                                    class="config-btn flex items-center gap-1 text-[10px] text-cyber-muted hover:text-white transition-colors"
+                                                    data-agent="uat">
+                                                    <i class="fa-solid fa-sliders"></i> Configure
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- BACK FACE -->
+                                        <div
+                                            class="absolute inset-0 backface-hidden rotate-y-180 bg-neutral-950 border border-white/10 rounded-2xl p-4 flex flex-col justify-between h-full select-none text-xs">
+                                            <div class="flex flex-col gap-2 h-full justify-between">
+                                                <div
+                                                    class="flex justify-between items-center border-b border-white/5 pb-1.5 shrink-0">
+                                                    <span
+                                                        class="font-bold text-white font-mono text-[10px] uppercase flex items-center gap-1">
+                                                        <i class="fa-solid fa-sliders text-raycast-coral"></i> CONFIG —
+                                                        UAT
+                                                    </span>
+                                                    <button
+                                                        class="flip-back-btn text-[10px] text-cyber-muted hover:text-white transition-colors"
+                                                        data-agent="uat">
+                                                        <i class="fa-solid fa-xmark"></i>
+                                                    </button>
+                                                </div>
+                                                <div
+                                                    class="flex-1 overflow-y-auto space-y-3.5 pr-1 scroll-custom text-[10px]">
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">System
+                                                            Prompt</label>
+                                                        <textarea
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white/80 focus:outline-none focus:border-raycast-coral/50 resize-none h-12"
+                                                            placeholder="You are UAT Agent, validating features and tests..."></textarea>
+                                                    </div>
+
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">Model
+                                                            Source</label>
+                                                        <div
+                                                            class="flex rounded-lg bg-black/40 p-0.5 border border-white/10">
+                                                            <button type="button" class="tab-btn active"
+                                                                data-agent="uat" data-source="cloud">Cloud API</button>
+                                                            <button type="button" class="tab-btn inactive"
+                                                                data-agent="uat" data-source="local">Local
+                                                                Server</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">Select Model</label>
+                                                         <select id="atlas-model-select" name="atlas-model-select"
+                                                            class="w-full bg-black/50 border border-white/10 rounded-lg px-2 py-1.5 text-white/85 focus:outline-none model-select">
+                                                            <option>GPT-4o</option>
+                                                            <option>Claude 3.5 Sonnet</option>
+                                                            <option>Gemini 2.5 Flash</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="cloud-cred-sec">
+                                                        <div class="flex justify-between items-center mb-1">
+                                                            <label for="atlas-api-key"
+                                                                class="text-cyber-muted uppercase tracking-wider text-[8px] font-bold">API
+                                                                Credentials</span>API Credentials</label>
+                                                            <button type="button"
+                                                                class="text-[8px] text-cyber-muted hover:text-white flex items-center gap-0.5 key-toggle-btn"><i
+                                                                    class="fa-solid fa-eye"></i> Show</button>
+                                                        </div>
+                                                        <input type="password" id="atlas-api-key" name="atlas-api-key"
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-white/80 focus:outline-none"
+                                                            value="xai-**********************">
+                                                    </div>
+
+                                                    <div class="local-cred-sec hidden">
+                                                        <label for="atlas-local-url"
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold mb-1">Local
+                                                            Endpoint URL</span>Local Endpoint URL</label>
+                                                        <input type="text" id="atlas-local-url" name="atlas-local-url"
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-white/80 focus:outline-none"
+                                                            value="http://localhost:11434">
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="flex justify-between text-cyber-muted mb-1">
+                                                            <label for="atlas-context-window"
+                                                                class="uppercase tracking-wider text-[8px] font-bold">Context
+                                                                Window</span>Context Window</label>
+                                                            <span class="text-raycast-coral font-bold slider-val">128k
+                                                                Tokens</span>
+                                                        </div>
+                                                        <input type="range" id="atlas-context-window" name="atlas-context-window"
+                                                            class="w-full h-1 bg-white/10 rounded appearance-none cursor-pointer accent-raycast-coral context-slider"
+                                                            min="8" max="256" value="128">
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="flex justify-between text-cyber-muted mb-1">
+                                                            <span
+                                                                class="uppercase tracking-wider text-[8px] font-bold">Creativity
+                                                                (Temp)</span>
+                                                            <span
+                                                                class="text-raycast-coral font-bold slider-val">0.5</span>
+                                                        </div>
+                                                        <input type="range"
+                                                            class="w-full h-1 bg-white/10 rounded appearance-none cursor-pointer accent-raycast-coral temp-slider"
+                                                            min="0" max="1" step="0.1" value="0.5">
+                                                    </div>
+
+                                                    <!-- Genesis Knowledge Box -->
+                                                    <div
+                                                        class="p-2.5 rounded-lg bg-black/40 border border-white/10 relative overflow-hidden">
+                                                        <div class="flex justify-between items-center mb-2">
+                                                            <div
+                                                                class="flex items-center gap-1 font-bold text-white uppercase text-[8px]">
+                                                                <i class="fa-solid fa-database text-raycast-coral"></i>
+                                                                Genesis Knowledge
+                                                            </div>
+                                                            <span
+                                                                class="px-1 py-0.5 rounded bg-raycast-coral/10 text-raycast-coral text-[8px] font-mono">GenesisDB</span>
+                                                        </div>
+                                                        <button type="button"
+                                                            class="w-full py-1.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-[9px] text-white/80 flex items-center justify-center gap-1">
+                                                            <i class="fa-solid fa-file-circle-plus"></i> Add File to
+                                                            Knowledge
+                                                        </button>
+                                                        <div
+                                                            class="flex justify-between text-[8px] text-cyber-muted font-mono mt-2">
+                                                            <span>Indexed: 1.2M Vectors</span>
+                                                            <span>Auto-Sync: ON</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="space-y-1.5">
+                                                        <label
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold">Agent
+                                                            Behaviors</label>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-brain text-white/50 text-[10px]"></i>
+                                                                Plan Mode</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" checked class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-bolt text-white/50 text-[10px]"></i>
+                                                                Auto-Execute Tasks</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" checked class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="space-y-1.5">
+                                                        <label
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold">System
+                                                            Access</label>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-folder text-white/50 text-[10px]"></i>
+                                                                Local File Access</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" checked class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-terminal text-white/50 text-[10px]"></i>
+                                                                Shell Command Runner</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="flex justify-end gap-2 border-t border-white/5 pt-2 shrink-0">
+                                                    <button
+                                                        class="px-2.5 py-1 text-cyber-muted hover:text-white transition-colors text-[9px] font-bold"
+                                                        type="button">Reset</button>
+                                                    <button
+                                                        class="px-3 py-1 bg-raycast-coral hover:bg-raycast-coral/80 text-white rounded-md transition-colors text-[9px] font-bold"
+                                                        type="button">Save Changes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Local Dev -->
+                                <div class="raycast-perspective-container relative w-full h-[280px]">
+                                    <div class="flipper-wrapper w-full h-full duration-700 transform-style-3d relative rounded-2xl shadow-lg"
+                                        id="local-flipper">
+                                        <!-- FRONT FACE -->
+                                        <div class="absolute inset-0 backface-hidden raycast-agent-card local-card p-4 flex flex-col justify-between h-full select-none bg-neutral-950/80 border border-white/10 rounded-2xl"
+                                            data-agent="local" style="cursor: grab;">
+                                            <div class="shine-overlay"></div>
+                                            <!-- Card Header -->
+                                            <div class="flex justify-between items-start mb-2 z-10">
+                                                <div class="flex items-center gap-2">
+                                                    <div
+                                                        class="w-8 h-8 rounded-full bg-gradient-to-br from-gray-800 to-black border border-white/10 flex items-center justify-center relative">
+                                                        <i class="fa-solid fa-cube text-sky-400 text-sm"></i>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-xs font-bold text-white leading-none">Local
+                                                            Dev</span>
+                                                        <span class="text-[9px] text-cyber-muted font-mono mt-0.5">Human
+                                                            User</span>
+                                                    </div>
+                                                </div>
+                                                <span
+                                                    class="px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 font-mono font-bold uppercase text-[9px] flex items-center gap-1">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span> Idle
+                                                </span>
+                                            </div>
+
+                                            <!-- Stats Grid -->
+                                            <div class="grid grid-cols-2 gap-2 my-1 z-10">
+                                                <div
+                                                    class="p-2 rounded-xl bg-white/[0.02] border border-white/5 text-left">
+                                                    <span
+                                                        class="text-[8px] text-cyber-muted uppercase tracking-wider block">Tasks</span>
+                                                    <span class="text-xs font-semibold text-white">2.5k</span>
+                                                </div>
+                                                <div
+                                                    class="p-2 rounded-xl bg-white/[0.02] border border-white/5 text-left">
+                                                    <span
+                                                        class="text-[8px] text-cyber-muted uppercase tracking-wider block">Accuracy</span>
+                                                    <span class="text-xs font-semibold text-white">98.2%</span>
+                                                </div>
+                                            </div>
+
+                                            <!-- Token Limit Section -->
+                                            <div class="token-limit-sec flex flex-col gap-1 w-full z-10">
+                                                <div
+                                                    class="flex justify-between items-center text-[9px] text-cyber-muted font-mono">
+                                                    <span>Session Quota</span>
+                                                    <span class="text-raycast-coral font-bold">100k/100k</span>
+                                                </div>
+                                                <div
+                                                    class="w-full bg-black/40 h-1 rounded-full overflow-hidden border border-white/5">
+                                                    <div class="bg-gradient-to-r from-sky-400 to-blue-500 h-full rounded-full"
+                                                        style="width: 100%;"></div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Capability Badges -->
+                                            <div class="flex flex-wrap gap-1 my-1 z-10">
+                                                <span
+                                                    class="px-2 py-0.5 text-[8px] rounded-full bg-white/5 border border-white/10 text-cyber-muted flex items-center gap-1">
+                                                    <i class="fa-solid fa-user"></i> Manual
+                                                </span>
+                                            </div>
+
+                                            <!-- Card Footer -->
+                                            <div
+                                                class="border-t border-white/5 pt-2 flex justify-between items-center z-10">
+                                                <button
+                                                    class="config-btn flex items-center gap-1 text-[10px] text-cyber-muted hover:text-white transition-colors"
+                                                    data-agent="local">
+                                                    <i class="fa-solid fa-sliders"></i> Configure
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <!-- BACK FACE -->
+                                        <div
+                                            class="absolute inset-0 backface-hidden rotate-y-180 bg-neutral-950 border border-white/10 rounded-2xl p-4 flex flex-col justify-between h-full select-none text-xs">
+                                            <div class="flex flex-col gap-2 h-full justify-between">
+                                                <div
+                                                    class="flex justify-between items-center border-b border-white/5 pb-1.5 shrink-0">
+                                                    <span
+                                                        class="font-bold text-white font-mono text-[10px] uppercase flex items-center gap-1">
+                                                        <i class="fa-solid fa-sliders text-raycast-coral"></i> CONFIG —
+                                                        LOCAL
+                                                    </span>
+                                                    <button
+                                                        class="flip-back-btn text-[10px] text-cyber-muted hover:text-white transition-colors"
+                                                        data-agent="local">
+                                                        <i class="fa-solid fa-xmark"></i>
+                                                    </button>
+                                                </div>
+                                                <div
+                                                    class="flex-1 overflow-y-auto space-y-3.5 pr-1 scroll-custom text-[10px]">
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">System
+                                                            Prompt</label>
+                                                        <textarea
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg p-2 text-white/80 focus:outline-none focus:border-raycast-coral/50 resize-none h-12"
+                                                            placeholder="You are Local Dev, executing tasks locally..."></textarea>
+                                                    </div>
+
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">Model
+                                                            Source</label>
+                                                        <div
+                                                            class="flex rounded-lg bg-black/40 p-0.5 border border-white/10">
+                                                            <button type="button" class="tab-btn inactive"
+                                                                data-agent="local" data-source="cloud">Cloud
+                                                                API</button>
+                                                            <button type="button" class="tab-btn active"
+                                                                data-agent="local" data-source="local">Local
+                                                                Server</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label
+                                                            class="block text-cyber-muted mb-1 uppercase tracking-wider text-[8px] font-bold">Select Model</label>
+                                                         <select id="nova-model-select" name="nova-model-select"
+                                                            class="w-full bg-black/50 border border-white/10 rounded-lg px-2 py-1.5 text-white/85 focus:outline-none model-select">
+                                                            <option>Llama 3 (Ollama)</option>
+                                                            <option>Mistral 7B (LM Studio)</option>
+                                                            <option>Phi-3 Medium</option>
+                                                        </select>
+                                                    </div>
+
+                                                    <div class="cloud-cred-sec hidden">
+                                                        <div class="flex justify-between items-center mb-1">
+                                                            <span
+                                                                class="text-cyber-muted uppercase tracking-wider text-[8px] font-bold">API
+                                                                Credentials</span>
+                                                            <button type="button"
+                                                                class="text-[8px] text-cyber-muted hover:text-white flex items-center gap-0.5 key-toggle-btn"><i
+                                                                    class="fa-solid fa-eye"></i> Show</button>
+                                                        </div>
+                                                        <input type="password"
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-white/80 focus:outline-none"
+                                                            value="xai-**********************">
+                                                    </div>
+
+                                                    <div class="local-cred-sec">
+                                                        <span
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold mb-1">Local
+                                                            Endpoint URL</span>
+                                                        <input type="text"
+                                                            class="w-full bg-black/40 border border-white/10 rounded-lg px-2 py-1.5 text-white/80 focus:outline-none"
+                                                            value="http://localhost:11434">
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="flex justify-between text-cyber-muted mb-1">
+                                                            <span
+                                                                class="uppercase tracking-wider text-[8px] font-bold">Keyboard
+                                                                Latency</span>
+                                                            <span
+                                                                class="text-raycast-coral font-bold slider-val">150ms</span>
+                                                        </div>
+                                                        <input type="range"
+                                                            class="w-full h-1 bg-white/10 rounded appearance-none cursor-pointer accent-raycast-coral latency-slider"
+                                                            min="50" max="500" step="50" value="150">
+                                                    </div>
+
+                                                    <div>
+                                                        <div class="flex justify-between text-cyber-muted mb-1">
+                                                            <span
+                                                                class="uppercase tracking-wider text-[8px] font-bold">Creativity
+                                                                (Temp)</span>
+                                                            <span
+                                                                class="text-raycast-coral font-bold slider-val">0.7</span>
+                                                        </div>
+                                                        <input type="range"
+                                                            class="w-full h-1 bg-white/10 rounded appearance-none cursor-pointer accent-raycast-coral temp-slider"
+                                                            min="0" max="1" step="0.1" value="0.7">
+                                                    </div>
+
+                                                    <!-- Genesis Knowledge Box -->
+                                                    <div
+                                                        class="p-2.5 rounded-lg bg-black/40 border border-white/10 relative overflow-hidden">
+                                                        <div class="flex justify-between items-center mb-2">
+                                                            <div
+                                                                class="flex items-center gap-1 font-bold text-white uppercase text-[8px]">
+                                                                <i class="fa-solid fa-database text-raycast-coral"></i>
+                                                                Genesis Knowledge
+                                                            </div>
+                                                            <span
+                                                                class="px-1 py-0.5 rounded bg-raycast-coral/10 text-raycast-coral text-[8px] font-mono">GenesisDB</span>
+                                                        </div>
+                                                        <button type="button"
+                                                            class="w-full py-1.5 rounded bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-[9px] text-white/80 flex items-center justify-center gap-1">
+                                                            <i class="fa-solid fa-file-circle-plus"></i> Add File to
+                                                            Knowledge
+                                                        </button>
+                                                        <div
+                                                            class="flex justify-between text-[8px] text-cyber-muted font-mono mt-2">
+                                                            <span>Indexed: 1.2M Vectors</span>
+                                                            <span>Auto-Sync: ON</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="space-y-1.5">
+                                                        <label
+                                                            class="block text-cyber-muted uppercase tracking-wider text-[8px] font-bold">Agent
+                                                            Behaviors</label>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-brain text-white/50 text-[10px]"></i>
+                                                                Workspace Sync</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" checked class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                        <div
+                                                            class="flex items-center justify-between p-2 rounded-lg bg-black/30 border border-white/5">
+                                                            <span class="text-white flex items-center gap-1"><i
+                                                                    class="fa-solid fa-bolt text-white/50 text-[10px]"></i>
+                                                                Local Server Run</span>
+                                                            <label class="switch-container">
+                                                                <input type="checkbox" checked class="switch-input">
+                                                                <span class="switch-track"><span
+                                                                        class="switch-handle"></span></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="flex justify-end gap-2 border-t border-white/5 pt-2 shrink-0">
+                                                    <button
+                                                        class="px-2.5 py-1 text-cyber-muted hover:text-white transition-colors text-[9px] font-bold"
+                                                        type="button">Reset</button>
+                                                    <button
+                                                        class="px-3 py-1 bg-raycast-coral hover:bg-raycast-coral/80 text-white rounded-md transition-colors text-[9px] font-bold"
+                                                        type="button">Save Changes</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Accordion Lists (col-span-3) -->
+                        <div class="space-y-4 lg:col-span-3 w-full" id="roadmap-container">
+                            <!-- Dynamic rendered checklist in accordion format -->
+                            <!-- Phase 0 -->
+                            <div class="glass-panel rounded-2xl" id="p0">
+                                <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none"
+                                    onclick="togglePhase('p0')">
+                                    <div class="flex items-center gap-4">
+                                        <span
+                                            class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase
+                                            0</span>
+                                        <h3 class="font-bold text-white text-base">Feasibility Spike — พิสูจน์ความเสถียร
+                                        </h3>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration:
+                                            1 week</span>
+                                        <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                            <div id="p0-mini-fill"
+                                                class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-[0%]"
+                                                style="width: 0%;"></div>
+                                        </div>
+                                        <span class="text-xs text-cyber-muted font-mono" id="p0-progress-lbl">0%</span>
+                                        <!-- Phase Export Dropdown -->
+                                        <div class="relative inline-block text-left" onclick="event.stopPropagation()">
+                                            <button
+                                                class="p-1.5 text-cyber-muted hover:text-white transition-colors rounded-lg hover:bg-white/5 flex items-center justify-center"
+                                                onclick="event.stopPropagation(); toggleExportMenu('p0')">
+                                                <i class="fa-solid fa-download text-[10px]"></i>
+                                            </button>
+                                            <div id="export-menu-p0"
+                                                class="hidden absolute right-0 mt-1 w-24 rounded-lg bg-neutral-900 border border-white/10 shadow-lg py-1 z-50 text-[10px] font-mono">
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'json', 'p0')">JSON</button>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'yaml', 'p0')">YAML</button>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'md', 'p0')">Markdown</button>
+                                            </div>
+                                        </div>
+                                        <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"
+                                            id="p0-ch"></i>
+                                    </div>
+                                </div>
+                                <div class="phase-body p-6 border-t border-white/5 hidden space-y-4" id="p0-body">
+                                    <p class="text-sm text-cyber-muted leading-relaxed">ก่อนเริ่ม Sprint จริง
+                                        ต้องพิสูจน์ให้ได้ว่าระบบ YouTube IFrame API ทำงานร่วมกับ WebSocket sync
+                                        ในการดึงพิกัดเวลาของเพลงได้เสถียรบนมือถือ 2 เครื่อง และหาข้อจำกัดระบบ</p>
+                                    <div class="tasks space-y-3" data-sprint="p0-s0">
+                                        <!-- Dynamic tasks lists with inputs -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Phase 1 -->
+                            <div class="glass-panel rounded-2xl" id="p1">
+                                <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none"
+                                    onclick="togglePhase('p1')">
+                                    <div class="flex items-center gap-4">
+                                        <span
+                                            class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase
+                                            1</span>
+                                        <h3 class="font-bold text-white text-base">MVP Core — ฟังก์ชันห้องและการแชร์เพลง
+                                        </h3>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration:
+                                            4 weeks</span>
+                                        <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                            <div id="p1-mini-fill"
+                                                class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-[0%]"
+                                                style="width: 0%;"></div>
+                                        </div>
+                                        <span class="text-xs text-cyber-muted font-mono" id="p1-progress-lbl">0%</span>
+                                        <!-- Phase Export Dropdown -->
+                                        <div class="relative inline-block text-left" onclick="event.stopPropagation()">
+                                            <button
+                                                class="p-1.5 text-cyber-muted hover:text-white transition-colors rounded-lg hover:bg-white/5 flex items-center justify-center"
+                                                onclick="event.stopPropagation(); toggleExportMenu('p1')">
+                                                <i class="fa-solid fa-download text-[10px]"></i>
+                                            </button>
+                                            <div id="export-menu-p1"
+                                                class="hidden absolute right-0 mt-1 w-24 rounded-lg bg-neutral-900 border border-white/10 shadow-lg py-1 z-50 text-[10px] font-mono">
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'json', 'p1')">JSON</button>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'yaml', 'p1')">YAML</button>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'md', 'p1')">Markdown</button>
+                                            </div>
+                                        </div>
+                                        <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"
+                                            id="p1-ch"></i>
+                                    </div>
+                                </div>
+                                <div class="phase-body p-6 border-t border-white/5 hidden space-y-4" id="p1-body">
+                                    <p class="text-sm text-cyber-muted leading-relaxed">วางรากฐานโครงสร้างระบบ Client
+                                        และ Server ให้ Rider สามารถเปิดห้องและส่งต่อลิงก์ห้องให้ Passenger
+                                        ร่วมใช้งานได้จริงบนระบบ Production</p>
+                                    <div class="tasks space-y-3" data-sprint="p1-s1"></div>
+                                </div>
+                            </div>
+
+                            <!-- Phase 2 -->
+                            <div class="glass-panel rounded-2xl" id="p2">
+                                <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none"
+                                    onclick="togglePhase('p2')">
+                                    <div class="flex items-center gap-4">
+                                        <span
+                                            class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase
+                                            2</span>
+                                        <h3 class="font-bold text-white text-base">Sync Calibration —
+                                            จูนนิ่งความตรงระดับเสี้ยววิ</h3>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration:
+                                            3 weeks</span>
+                                        <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                            <div id="p2-mini-fill"
+                                                class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-[0%]"
+                                                style="width: 0%;"></div>
+                                        </div>
+                                        <span class="text-xs text-cyber-muted font-mono" id="p2-progress-lbl">0%</span>
+                                        <!-- Phase Export Dropdown -->
+                                        <div class="relative inline-block text-left" onclick="event.stopPropagation()">
+                                            <button
+                                                class="p-1.5 text-cyber-muted hover:text-white transition-colors rounded-lg hover:bg-white/5 flex items-center justify-center"
+                                                onclick="event.stopPropagation(); toggleExportMenu('p2')">
+                                                <i class="fa-solid fa-download text-[10px]"></i>
+                                            </button>
+                                            <div id="export-menu-p2"
+                                                class="hidden absolute right-0 mt-1 w-24 rounded-lg bg-neutral-900 border border-white/10 shadow-lg py-1 z-50 text-[10px] font-mono">
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'json', 'p2')">JSON</button>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'yaml', 'p2')">YAML</button>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'md', 'p2')">Markdown</button>
+                                            </div>
+                                        </div>
+                                        <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"
+                                            id="p2-ch"></i>
+                                    </div>
+                                </div>
+                                <div class="phase-body p-6 border-t border-white/5 hidden space-y-4" id="p2-body">
+                                    <p class="text-sm text-cyber-muted leading-relaxed">จูนนิ่งระดับความเสถียรระหว่าง
+                                        Rider-Passenger และแก้สภาวะ Autoplay บล็อก หรือแอปหลับขณะปิดหน้าจอขับขี่จริง</p>
+                                    <div class="tasks space-y-3" data-sprint="p2-s2"></div>
+                                </div>
+                            </div>
+
+                            <!-- Phase 3 -->
+                            <div class="glass-panel rounded-2xl" id="p3">
+                                <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none"
+                                    onclick="togglePhase('p3')">
+                                    <div class="flex items-center gap-4">
+                                        <span
+                                            class="px-2.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider">Phase
+                                            3</span>
+                                        <h3 class="font-bold text-white text-base">Beta Test & rider feedback —
+                                            นำทางจริงบนบอร์ด</h3>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration:
+                                            2 weeks</span>
+                                        <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                            <div id="p3-mini-fill"
+                                                class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-[0%]"
+                                                style="width: 0%;"></div>
+                                        </div>
+                                        <span class="text-xs text-cyber-muted font-mono" id="p3-progress-lbl">0%</span>
+                                        <!-- Phase Export Dropdown -->
+                                        <div class="relative inline-block text-left" onclick="event.stopPropagation()">
+                                            <button
+                                                class="p-1.5 text-cyber-muted hover:text-white transition-colors rounded-lg hover:bg-white/5 flex items-center justify-center"
+                                                onclick="event.stopPropagation(); toggleExportMenu('p3')">
+                                                <i class="fa-solid fa-download text-[10px]"></i>
+                                            </button>
+                                            <div id="export-menu-p3"
+                                                class="hidden absolute right-0 mt-1 w-24 rounded-lg bg-neutral-900 border border-white/10 shadow-lg py-1 z-50 text-[10px] font-mono">
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'json', 'p3')">JSON</button>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'yaml', 'p3')">YAML</button>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'md', 'p3')">Markdown</button>
+                                            </div>
+                                        </div>
+                                        <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"
+                                            id="p3-ch"></i>
+                                    </div>
+                                </div>
+                                <div class="phase-body p-6 border-t border-white/5 hidden space-y-4" id="p3-body">
+                                    <p class="text-sm text-cyber-muted leading-relaxed">รวบรวม Bugs และดึง Feedback
+                                        จริงมาประเมินผลความเสถียรของเครื่องเล่น YouTube ซิงค์ และระบบเสียง</p>
+                                    <div class="tasks space-y-3" data-sprint="p3-s3"></div>
+                                </div>
+                            </div>
+
+                            <!-- Phase 4 -->
+                            <div class="glass-panel rounded-2xl" id="p4">
+                                <div class="phase-header px-6 py-4 flex items-center justify-between cursor-pointer hover:bg-white/5 select-none"
+                                    onclick="togglePhase('p4')">
+                                    <div class="flex items-center gap-4">
+                                        <span
+                                            class="px-2.5 py-0.5 rounded bg-white/5 text-cyber-muted text-xs font-bold uppercase tracking-wider">Phase
+                                            4</span>
+                                        <h3 class="font-bold text-cyber-muted text-base">Future Backlog — ส่วนเสริมอนาคต
+                                        </h3>
+                                    </div>
+                                    <div class="flex items-center gap-3">
+                                        <span
+                                            class="px-1.5 py-0.5 rounded border border-white/10 bg-white/5 text-cyber-muted font-mono font-bold text-[9px] hidden sm:inline-block">Duration:
+                                            Future</span>
+                                        <div class="w-16 bg-white/5 h-1.5 rounded-full overflow-hidden hidden sm:block">
+                                            <div id="p4-mini-fill"
+                                                class="bg-gradient-to-r from-emerald-500 to-indigo-500 h-full w-[0%]"
+                                                style="width: 0%;"></div>
+                                        </div>
+                                        <span class="text-xs text-cyber-muted font-mono" id="p4-progress-lbl">0%</span>
+                                        <!-- Phase Export Dropdown -->
+                                        <div class="relative inline-block text-left" onclick="event.stopPropagation()">
+                                            <button
+                                                class="p-1.5 text-cyber-muted hover:text-white transition-colors rounded-lg hover:bg-white/5 flex items-center justify-center"
+                                                onclick="event.stopPropagation(); toggleExportMenu('p4')">
+                                                <i class="fa-solid fa-download text-[10px]"></i>
+                                            </button>
+                                            <div id="export-menu-p4"
+                                                class="hidden absolute right-0 mt-1 w-24 rounded-lg bg-neutral-900 border border-white/10 shadow-lg py-1 z-50 text-[10px] font-mono">
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'json', 'p4')">JSON</button>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'yaml', 'p4')">YAML</button>
+                                                <button
+                                                    class="w-full text-left px-3 py-1 text-stone-300 hover:bg-white/5 hover:text-white transition-colors"
+                                                    onclick="event.stopPropagation(); exportData('phase', 'md', 'p4')">Markdown</button>
+                                            </div>
+                                        </div>
+                                        <i class="fa-solid fa-chevron-down phase-chevron text-xs text-cyber-muted"
+                                            id="p4-ch"></i>
+                                    </div>
+                                </div>
+                                <div class="phase-body p-6 border-t border-white/5 hidden space-y-4" id="p4-body">
+                                    <p class="text-sm text-cyber-muted leading-relaxed">
+                                        รายการฟีเจอร์ย่อยที่อยู่นอกขอบเขตของ MVP Roadmap แรก เช่น
+                                        การซิงค์ตรงโดยไม่พึ่งเน็ต หรือคุยอินเตอร์คอมแชร์ GPS</p>
+                                    <div class="tasks space-y-3" data-sprint="p4-s4"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [A3] Plugins View -->
+                <div id="view-A3" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE
+                            OVERVIEW</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Extension Capabilities</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-white">Tree-Sitter AST Parsing</h4>
+                                <p class="text-xs text-cyber-muted mt-1">Real-time parser indexing</p>
+                            </div>
+                            <span
+                                class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-bold">ACTIVE</span>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-white">Jina Vector Embedding</h4>
+                                <p class="text-xs text-cyber-muted mt-1">External API parser model</p>
+                            </div>
+                            <span
+                                class="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-bold">ACTIVE</span>
+                        </div>
+                        <div class="glass-panel p-5 rounded-xl flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-white">Nvidia Thermal Monitor</h4>
+                                <p class="text-xs text-cyber-muted mt-1">GPU Telemetry hook-in</p>
+                            </div>
+                            <span
+                                class="px-2.5 py-1 rounded bg-red-500/10 text-red-400 text-xs font-bold">OFFLINE</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [A4] Brain Settings View -->
+                <div id="view-A4" class="space-y-6 hidden view-block">
+                    <div>
+                        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE
+                            OVERVIEW</span>
+                        <h2 class="text-3xl font-extrabold text-white mt-1">Brain & Config Adjustments</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-6 rounded-2xl space-y-4">
+                            <h3 class="font-bold text-white text-lg">💡 EVA Agent configuration</h3>
+                            <div class="space-y-4 text-xs">
+                                <div>
+                                    <label for="system-prompt" class="block text-cyber-muted mb-1">System Prompt</label>
+                                    <textarea id="system-prompt" name="system-prompt"
+                                        class="w-full h-24 bg-black/40 border border-cyber-border rounded-lg p-2.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-white font-mono">You are an autonomous AI pairing assistant helping configure YouTube room states...</textarea>
+                                </div>
+                                <div>
+                                    <label for="workspace-path" class="block text-cyber-muted mb-1">Workspace
+                                        Path</label>
+                                    <input type="text" id="workspace-path" name="workspace-path"
+                                        class="w-full bg-black/40 border border-cyber-border rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-emerald-500 text-white font-mono"
+                                        value="/workspace/covibe-app">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-6 rounded-2xl space-y-4">
+                            <h3 class="font-bold text-white text-lg">⚙️ Dashboard Adjustments</h3>
+                            <div class="space-y-4 text-xs">
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label for="setting-refresh-interval" class="text-cyber-muted">Telemetry Poll
+                                            Interval</label>
+                                        <span class="text-emerald-400 font-mono" id="setting-refresh-val">2s</span>
+                                    </div>
+                                    <input type="range" id="setting-refresh-interval" name="setting-refresh-interval"
+                                        min="2" max="30" step="1" value="2" class="w-full accent-cyber-emerald"
+                                        oninput="updateRefreshInterval(this.value)">
+                                </div>
+                                <div>
+                                    <label for="setting-thermal-limit" class="block text-cyber-muted mb-1">Thermal
+                                        Caution Limit (°C)</label>
+                                    <input type="number" id="setting-thermal-limit" name="setting-thermal-limit"
+                                        min="50" max="90" value="71"
+                                        class="w-full bg-black/40 border border-cyber-border rounded-lg p-2 focus:outline-none text-white font-mono"
+                                        onchange="updateThermalLimit(this.value)">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <label for="setting-synth-vol" class="text-cyber-muted">Synthesizer
+                                            Volume</label>
+                                        <span class="text-emerald-400 font-mono" id="setting-synth-val">40%</span>
+                                    </div>
+                                    <input type="range" id="setting-synth-vol" name="setting-synth-vol" min="0"
+                                        max="100" step="5" value="40" class="w-full accent-cyber-emerald"
+                                        oninput="updateSynthVolume(this.value)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- [A5] Agent Management Carousel -->
+                <div id="view-A5" class="space-y-6 hidden view-block">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest">COVIBE
+                                OVERVIEW</span>
+                            <h2 class="text-3xl font-extrabold text-white mt-1">Agent Management</h2>
+                            <p class="text-xs text-cyber-muted mt-1">Manage, configure and monitor your AI agent fleet
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span
+                                class="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs text-white/70 font-bold">
+                                <i class="fa-solid fa-robot mr-1"></i> 4 Agents
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="select-screen">
+
+                        <!-- ===== LEFT SECTOR — Selection Panel ===== -->
+                        <div class="selection-sector">
+
+                            <!-- Top Bar -->
+                            <div class="top-bar">
+                                <span class="top-bar-title">Agent Select</span>
+                                <span class="top-bar-count" id="agentCount">1 / 7</span>
+                            </div>
+
+                            <!-- Stats Panel -->
+                            <div class="stats-panel" id="statsPanel">
+                                <div class="stat-card">
+                                    <div class="stat-label"><i class="ph ph-check-square-offset"></i> Tasks</div>
+                                    <div class="stat-value" id="statTasks">12.4k</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label"><i class="ph ph-target"></i> Accuracy</div>
+                                    <div class="stat-value glow" id="statAccuracy">99.8%</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label"><i class="ph ph-lightning"></i> Speed</div>
+                                    <div class="stat-value" id="statSpeed">1.2s</div>
+                                </div>
+                            </div>
+
+                            <!-- Ability Tags -->
+                            <div class="ability-bar" id="abilityBar">
+                                <!-- Populated by JS -->
+                            </div>
+
+                            <!-- Agent Carousel -->
+                            <div class="carousel-section">
+                                <span class="carousel-label">Roster</span>
+                                <div class="carousel-nav-arrows">
+                                    <button class="carousel-arrow" id="carouselUp">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round">
+                                            <path d="M18 15l-6-6-6 6" />
+                                        </svg>
+                                    </button>
+                                    <button class="carousel-arrow" id="carouselDown">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round">
+                                            <path d="M6 9l6 6 6-6" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="agent-carousel-viewport" id="agentViewport">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Bottom Bar -->
+                            <div class="bottom-bar">
+                                <div class="key-hint">
+                                    <span><kbd>↑</kbd><kbd>↓</kbd> Navigate</span>
+                                    <span><kbd>Enter</kbd> Deploy</span>
+                                </div>
+                                <div style="display: flex; gap: 0.75rem;">
+                                    <button id="btnConfig"
+                                        style="background: transparent; border: 1px solid var(--accent); color: var(--accent); border-radius: 14px; padding: 0.65rem 1.25rem; font-family: 'Orbitron', sans-serif; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="ph ph-sliders-horizontal"></i>
+                                        Configure
+                                    </button>
+                                    <button class="btn-select" id="btnDeploy">
+                                        <i class="ph ph-rocket-launch"></i>
+                                        Deploy Agent
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ===== RIGHT SECTOR — Character Portrait ===== -->
+                        <div class="character-sector">
+                            <div class="character-perspective" id="charPerspective">
+                                <div class="character-tilt" id="charTilt">
+                                    <div class="character-flipper" id="charFlipper">
+
+                                        <!-- Front Face -->
+                                        <div class="character-front">
+                                            <div class="scanlines"></div>
+                                            <div class="corner-bracket tl"></div>
+                                            <div class="corner-bracket br"></div>
+
+                                            <!-- Video Switcher Overlay -->
+                                            <div class="vdo-switcher" id="vdoSwitcher"></div>
+
+                                            <div class="char-portrait" id="charPortrait">
+                                                <div id="mediaContainer" style="width: 100%; height: 100%;"></div>
+                                            </div>
+
+                                            <div class="char-identity">
+                                                <div class="char-codename" id="charName">EVA</div>
+                                                <div class="char-role" id="charRole">Senior Developer</div>
+                                                <div class="char-class-badge" id="charBadge"
+                                                    style="color: var(--accent); border-color: rgba(255,99,99,0.3); background: rgba(255,99,99,0.06);">
+                                                    <i class="ph ph-cpu"></i>
+                                                    <span id="charModel">Gemini 3.1 Pro</span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Back Face (Configuration Panel) -->
+                                        <div class="character-back">
+                                            <div class="scanlines"></div>
+
+                                            <div style="position: absolute; inset: 0; z-index: 1; opacity: 0.15; pointer-events: none;"
+                                                id="configBgMedia">
+                                                <!-- Background portrait/image blurred -->
+                                            </div>
+
+                                            <div
+                                                style="position: relative; z-index: 10; display: flex; flex-direction: column; height: 100%;">
+                                                <div class="config-header">
+                                                    <span>Agent Settings</span>
+                                                    <button id="btnCloseConfig"
+                                                        style="background: transparent; border: none; color: #fff; cursor: pointer; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;"><i
+                                                            class="ph ph-x"></i></button>
+                                                </div>
+
+                                                <div class="config-grid">
+                                                    <div class="config-group">
+                                                        <label class="config-label" for="cfgPrompt">System
+                                                            Prompt</label>
+                                                        <textarea class="config-textarea" id="cfgPrompt"
+                                                            placeholder="You are an expert AI agent..."></textarea>
+                                                    </div>
+
+                                                    <!-- Model Source Pill Switcher -->
+                                                    <div class="config-group">
+                                                        <label class="config-label">Model Source</label>
+                                                        <div class="model-src-pill" id="modelSrcPill">
+                                                            <button id="pillCloud" class="pill-active"
+                                                                onclick="switchModelSrc('cloud')">Cloud API</button>
+                                                            <button id="pillLocal"
+                                                                onclick="switchModelSrc('local')">Local Server</button>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Cloud Configuration Group -->
+                                                    <div id="groupCloudConfig" class="config-group"
+                                                        style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                                        <div class="config-group">
+                                                            <label class="config-label">API Key</label>
+                                                            <div style="position:relative;">
+                                                                <input type="password" class="config-input"
+                                                                    id="cfgApiKey" placeholder="Enter API Key..."
+                                                                    style="padding-right:2.5rem;width:100%;">
+                                                                <button id="btnToggleApiKey"
+                                                                    onclick="toggleApiKeyVisibility()"
+                                                                    style="position:absolute;right:0.6rem;top:50%;transform:translateY(-50%);background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;font-size:1rem;display:flex;align-items:center;">
+                                                                    <i class="ph ph-eye" id="apiKeyEyeIcon"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="config-group">
+                                                            <label class="config-label">Model Engine</label>
+                                                            <select class="config-select" id="cfgModel">
+                                                                <option value="Gemini 3.1 Pro">Gemini 3.1 Pro</option>
+                                                                <option value="Qwen 3 235B-A22B">Qwen 3 235B-A22B
+                                                                </option>
+                                                                <option value="Claude 4 Opus">Claude 4 Opus</option>
+                                                                <option value="GPT-4o Vision">GPT-4o Vision</option>
+                                                                <option value="Llama 4 Maverick">Llama 4 Maverick
+                                                                </option>
+                                                                <option value="DeepSeek R2">DeepSeek R2</option>
+                                                                <option value="Mistral Large 3">Mistral Large 3</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Local Configuration Group -->
+                                                    <div id="groupLocalConfig" class="config-group"
+                                                        style="display: none; flex-direction: column; gap: 0.75rem;">
+                                                        <div class="config-group">
+                                                            <label class="config-label">Backend</label>
+                                                            <select class="config-select" id="cfgLocalBackend">
+                                                                <option value="ollama">Ollama</option>
+                                                                <option value="LM Studio">LM Studio</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="config-group">
+                                                            <label class="config-label">Endpoint URL</label>
+                                                            <input type="text" class="config-input" id="cfgLocalUrl"
+                                                                placeholder="e.g. http://localhost:11434">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="config-group">
+                                                        <div class="config-slider-group">
+                                                            <label class="config-label" for="cfgTemp">Creativity
+                                                                (Temp)</label>
+                                                            <span id="cfgTempVal"
+                                                                style="font-size: 0.75rem; font-weight: 600; color: var(--current-accent, var(--accent));">0.7</span>
+                                                        </div>
+                                                        <input type="range" class="config-slider" id="cfgTemp" min="0"
+                                                            max="1" step="0.1" value="0.7">
+                                                    </div>
+
+                                                    <div class="config-group">
+                                                        <div class="config-slider-group">
+                                                            <label class="config-label" for="cfgContext">Context
+                                                                Limit</label>
+                                                            <span id="cfgContextVal"
+                                                                style="font-size: 0.75rem; font-weight: 600; color: var(--current-accent, var(--accent));">128k</span>
+                                                        </div>
+                                                        <input type="range" class="config-slider" id="cfgContext"
+                                                            min="8" max="256" step="8" value="128">
+                                                    </div>
+
+                                                    <!-- Genesis Knowledge Panel -->
+                                                    <div class="config-group">
+                                                        <label class="config-label">Genesis Knowledge</label>
+                                                        <div class="genesis-panel">
+                                                            <div class="genesis-panel-header">
+                                                                <div class="genesis-panel-title">
+                                                                    <i class="ph ph-brain"
+                                                                        style="font-size:0.85rem;color:var(--current-accent,var(--accent));"></i>
+                                                                    Genesis Knowledge
+                                                                </div>
+                                                                <span class="genesis-db-badge">GenesisDB</span>
+                                                            </div>
+                                                            <button class="genesis-add-btn" id="btnAddKnowledge"
+                                                                onclick="triggerKnowledgeUpload()">
+                                                                <i class="ph ph-file-plus" style="font-size:1rem;"></i>
+                                                                Add File to Knowledge
+                                                            </button>
+                                                            <input type="file" id="knowledgeFileInput"
+                                                                style="display:none;" multiple
+                                                                accept=".txt,.md,.pdf,.json,.csv,.yaml,.yml">
+                                                            <div class="genesis-footer">
+                                                                <span>Indexed: <b id="cfgVectorCount">1.2M</b>
+                                                                    Vectors</span>
+                                                                <span>Auto-Sync: <b style="color:#22c55e;">ON</b></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Agent Behaviors -->
+                                                    <div class="config-group" style="gap: 0.5rem;">
+                                                        <label class="config-label">Agent Behaviors</label>
+                                                        <div class="config-toggle-item">
+                                                            <div style="display:flex;align-items:center;gap:0.55rem;">
+                                                                <i class="ph ph-graph"
+                                                                    style="font-size:1rem;color:var(--current-accent,var(--accent));"></i>
+                                                                <div>
+                                                                    <div
+                                                                        style="font-size:0.75rem;font-weight:600;color:#fff;">
+                                                                        Plan Mode</div>
+                                                                    <div
+                                                                        style="font-size:0.58rem;color:var(--text-dim);">
+                                                                        Enable DDD Planning Mode</div>
+                                                                </div>
+                                                            </div>
+                                                            <label class="toggle-switch">
+                                                                <input type="checkbox" id="cfgPlanMode" checked>
+                                                                <span class="toggle-slider"></span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="config-toggle-item">
+                                                            <div style="display:flex;align-items:center;gap:0.55rem;">
+                                                                <i class="ph ph-lightning"
+                                                                    style="font-size:1rem;color:var(--current-accent,var(--accent));"></i>
+                                                                <div>
+                                                                    <div
+                                                                        style="font-size:0.75rem;font-weight:600;color:#fff;">
+                                                                        Auto-Execute Tasks</div>
+                                                                    <div
+                                                                        style="font-size:0.58rem;color:var(--text-dim);">
+                                                                        Run tasks without confirmation</div>
+                                                                </div>
+                                                            </div>
+                                                            <label class="toggle-switch">
+                                                                <input type="checkbox" id="cfgAutoExecute">
+                                                                <span class="toggle-slider"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Save / Cancel action bar -->
+                                                <div class="config-action-bar">
+                                                    <button class="btn-save-cfg" id="btnSaveConfig">Save
+                                                        Changes</button>
+                                                    <button class="btn-cancel-cfg" id="btnCancelConfig">Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- /view-A5 -->
+
+                
+
+            </div>
+        </main>
+    </div>
+
+    <!-- SECTOR 3: FOOTER -->
+    <footer
+        class="h-8 shrink-0 glass-panel border-t border-cyber-border flex items-center justify-between px-6 text-[10px] text-cyber-muted z-40 relative font-mono">
+        <div>COVIBE COMMAND REACTOR v2.5 | STABLE BUILD</div>
+        <div>STABLE CONTEXT: <span id="footer-context" class="text-emerald-400 font-bold uppercase">Overview</span>
+        </div>
+    </footer>
+
+    <!-- SECTOR 4: Floating Overlays (HITL & Terminal window) -->
+
+    <!-- Human-In-The-Loop Approval Modal -->
+    <div id="hitl-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="bg-zinc-900/95 border border-indigo-500/40 rounded-2xl shadow-2xl max-w-md w-full p-6 transform translate-y-4 transition-transform duration-300"
+            id="hitl-card">
+            <div class="flex items-center gap-3 mb-4">
+                <div
+                    class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl animate-pulse shrink-0">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="min-w-0">
+                    <h3 class="font-bold text-white text-base leading-tight">AST Verification Requested</h3>
+                    <p class="text-xs text-indigo-400">Node: BinaryExpression Verification</p>
+                </div>
+            </div>
+            <p class="text-sm text-stone-300 mb-4">Agent <span class="font-mono text-emerald-400">eva-cli</span> is
+                requesting verification for the conditional code execution path:</p>
+            <div
+                class="bg-black/40 border border-white/5 rounded-xl p-3 font-mono text-xs text-gray-300 mb-6 overflow-x-auto">
+                if (latency &gt; 250) { ... }
+            </div>
+            <div class="flex gap-3">
+                <button onclick="resolveHitl(false)"
+                    class="flex-1 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-sm font-semibold text-white transition">Halt</button>
+                <button onclick="resolveHitl(true)"
+                    class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white transition shadow-lg">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAB Terminal button -->
+    <button id="fab-terminal" class="fab-terminal-btn" onclick="toggleTerminal()" title="Toggle Terminal">
+        <i class="fa-solid fa-terminal text-lg"></i>
+    </button>
+
+    <!-- Floating draggable terminal log console -->
+    <div id="floating-terminal" class="floating-terminal-window">
+        <div class="p-3 bg-white/5 border-b border-white/10 flex items-center justify-between cursor-move"
+            id="terminal-drag-header">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 cursor-pointer" onclick="toggleTerminal()"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                <span class="text-[10px] text-cyber-muted font-mono ml-2">covibe-agent-pipeline ~ sh</span>
+            </div>
+            <select
+                class="bg-black/40 border border-cyber-border rounded px-1.5 py-0.5 text-[9px] text-cyber-muted focus:outline-none"
+                id="terminal-shell-selector">
+                <option value="gemini">Gemini CLI</option>
+                <option value="eva" selected>EVA Agent (eva-cli)</option>
+                <option value="qwen">Qwen Coder</option>
+            </select>
+        </div>
+        <!-- Logs body -->
+        <div class="flex-1 overflow-y-auto p-3 bg-black/80 font-mono text-[10px] text-emerald-400 space-y-1 scroll-custom"
+            id="terminal-output">
+            <div class="text-cyber-muted">[System] Dashboard Standby. Ready for signal simulation...</div>
+        </div>
+        <!-- Input line -->
+        <div class="p-2 border-t border-cyber-border bg-[#06080a] flex items-center">
+            <span class="text-emerald-500 font-mono text-xs mr-2 font-bold">$</span>
+            <input type="text" id="terminal-input" placeholder="Enter shell command here..."
+                                                        </div>
+                                                        <div class="config-group">
+                                                            <label class="config-label">Endpoint URL</label>
+                                                            <input type="text" class="config-input" id="cfgLocalUrl"
+                                                                placeholder="e.g. http://localhost:11434">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="config-group">
+                                                        <div class="config-slider-group">
+                                                            <label class="config-label" for="cfgTemp">Creativity
+                                                                (Temp)</label>
+                                                            <span id="cfgTempVal"
+                                                                style="font-size: 0.75rem; font-weight: 600; color: var(--current-accent, var(--accent));">0.7</span>
+                                                        </div>
+                                                        <input type="range" class="config-slider" id="cfgTemp" min="0"
+                                                            max="1" step="0.1" value="0.7">
+                                                    </div>
+
+                                                    <div class="config-group">
+                                                        <div class="config-slider-group">
+                                                            <label class="config-label" for="cfgContext">Context
+                                                                Limit</label>
+                                                            <span id="cfgContextVal"
+                                                                style="font-size: 0.75rem; font-weight: 600; color: var(--current-accent, var(--accent));">128k</span>
+                                                        </div>
+                                                        <input type="range" class="config-slider" id="cfgContext"
+                                                            min="8" max="256" step="8" value="128">
+                                                    </div>
+
+                                                    <!-- Genesis Knowledge Panel -->
+                                                    <div class="config-group">
+                                                        <label class="config-label">Genesis Knowledge</label>
+                                                        <div class="genesis-panel">
+                                                            <div class="genesis-panel-header">
+                                                                <div class="genesis-panel-title">
+                                                                    <i class="ph ph-brain"
+                                                                        style="font-size:0.85rem;color:var(--current-accent,var(--accent));"></i>
+                                                                    Genesis Knowledge
+                                                                </div>
+                                                                <span class="genesis-db-badge">GenesisDB</span>
+                                                            </div>
+                                                            <button class="genesis-add-btn" id="btnAddKnowledge"
+                                                                onclick="triggerKnowledgeUpload()">
+                                                                <i class="ph ph-file-plus" style="font-size:1rem;"></i>
+                                                                Add File to Knowledge
+                                                            </button>
+                                                            <input type="file" id="knowledgeFileInput"
+                                                                style="display:none;" multiple
+                                                                accept=".txt,.md,.pdf,.json,.csv,.yaml,.yml">
+                                                            <div class="genesis-footer">
+                                                                <span>Indexed: <b id="cfgVectorCount">1.2M</b>
+                                                                    Vectors</span>
+                                                                <span>Auto-Sync: <b style="color:#22c55e;">ON</b></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Agent Behaviors -->
+                                                    <div class="config-group" style="gap: 0.5rem;">
+                                                        <label class="config-label">Agent Behaviors</label>
+                                                        <div class="config-toggle-item">
+                                                            <div style="display:flex;align-items:center;gap:0.55rem;">
+                                                                <i class="ph ph-graph"
+                                                                    style="font-size:1rem;color:var(--current-accent,var(--accent));"></i>
+                                                                <div>
+                                                                    <div
+                                                                        style="font-size:0.75rem;font-weight:600;color:#fff;">
+                                                                        Plan Mode</div>
+                                                                    <div
+                                                                        style="font-size:0.58rem;color:var(--text-dim);">
+                                                                        Enable DDD Planning Mode</div>
+                                                                </div>
+                                                            </div>
+                                                            <label class="toggle-switch">
+                                                                <input type="checkbox" id="cfgPlanMode" checked>
+                                                                <span class="toggle-slider"></span>
+                                                            </label>
+                                                        </div>
+                                                        <div class="config-toggle-item">
+                                                            <div style="display:flex;align-items:center;gap:0.55rem;">
+                                                                <i class="ph ph-lightning"
+                                                                    style="font-size:1rem;color:var(--current-accent,var(--accent));"></i>
+                                                                <div>
+                                                                    <div
+                                                                        style="font-size:0.75rem;font-weight:600;color:#fff;">
+                                                                        Auto-Execute Tasks</div>
+                                                                    <div
+                                                                        style="font-size:0.58rem;color:var(--text-dim);">
+                                                                        Run tasks without confirmation</div>
+                                                                </div>
+                                                            </div>
+                                                            <label class="toggle-switch">
+                                                                <input type="checkbox" id="cfgAutoExecute">
+                                                                <span class="toggle-slider"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Save / Cancel action bar -->
+                                                <div class="config-action-bar">
+                                                    <button class="btn-save-cfg" id="btnSaveConfig">Save
+                                                        Changes</button>
+                                                    <button class="btn-cancel-cfg" id="btnCancelConfig">Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div> <!-- /view-A5 -->
+
+                
+
+            </div>
+        </main>
+    </div>
+
+    <!-- SECTOR 3: FOOTER -->
+    <footer
+        class="h-8 shrink-0 glass-panel border-t border-cyber-border flex items-center justify-between px-6 text-[10px] text-cyber-muted z-40 relative font-mono">
+        <div>COVIBE COMMAND REACTOR v2.5 | STABLE BUILD</div>
+        <div>STABLE CONTEXT: <span id="footer-context" class="text-emerald-400 font-bold uppercase">Overview</span>
+        </div>
+    </footer>
+
+    <!-- SECTOR 4: Floating Overlays (HITL & Terminal window) -->
+
+    <!-- Human-In-The-Loop Approval Modal -->
+    <div id="hitl-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 px-4">
+        <div class="bg-zinc-900/95 border border-indigo-500/40 rounded-2xl shadow-2xl max-w-md w-full p-6 transform translate-y-4 transition-transform duration-300"
+            id="hitl-card">
+            <div class="flex items-center gap-3 mb-4">
+                <div
+                    class="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-xl animate-pulse shrink-0">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div class="min-w-0">
+                    <h3 class="font-bold text-white text-base leading-tight">AST Verification Requested</h3>
+                    <p class="text-xs text-indigo-400">Node: BinaryExpression Verification</p>
+                </div>
+            </div>
+            <p class="text-sm text-stone-300 mb-4">Agent <span class="font-mono text-emerald-400">eva-cli</span> is
+                requesting verification for the conditional code execution path:</p>
+            <div
+                class="bg-black/40 border border-white/5 rounded-xl p-3 font-mono text-xs text-gray-300 mb-6 overflow-x-auto">
+                if (latency &gt; 250) { ... }
+            </div>
+            <div class="flex gap-3">
+                <button onclick="resolveHitl(false)"
+                    class="flex-1 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-sm font-semibold text-white transition">Halt</button>
+                <button onclick="resolveHitl(true)"
+                    class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white transition shadow-lg">Verify</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FAB Terminal button -->
+    <button id="fab-terminal" class="fab-terminal-btn" onclick="toggleTerminal()" title="Toggle Terminal">
+        <i class="fa-solid fa-terminal text-lg"></i>
+    </button>
+
+    <!-- Floating draggable terminal log console -->
+    <div id="floating-terminal" class="floating-terminal-window">
+        <div class="p-3 bg-white/5 border-b border-white/10 flex items-center justify-between cursor-move"
+            id="terminal-drag-header">
+            <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 cursor-pointer" onclick="toggleTerminal()"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                <span class="text-[10px] text-cyber-muted font-mono ml-2">covibe-agent-pipeline ~ sh</span>
+            </div>
+            <select
+                class="bg-black/40 border border-cyber-border rounded px-1.5 py-0.5 text-[9px] text-cyber-muted focus:outline-none"
+                id="terminal-shell-selector">
+                <option value="gemini">Gemini CLI</option>
+                <option value="eva" selected>EVA Agent (eva-cli)</option>
+                <option value="qwen">Qwen Coder</option>
+            </select>
+        </div>
+        <!-- Logs body -->
+        <div class="flex-1 overflow-y-auto p-3 bg-black/80 font-mono text-[10px] text-emerald-400 space-y-1 scroll-custom"
+            id="terminal-output">
+            <div class="text-cyber-muted">[System] Dashboard Standby. Ready for signal simulation...</div>
+        </div>
+        <!-- Input line -->
+        <div class="p-2 border-t border-cyber-border bg-[#06080a] flex items-center">
+            <span class="text-emerald-500 font-mono text-xs mr-2 font-bold">$</span>
+            <input type="text" id="terminal-input" placeholder="Enter shell command here..."
+                class="flex-1 bg-transparent border-none text-[11px] font-mono text-white focus:outline-none"
+                onkeypress="handleTerminalInput(event)">
+        </div>
+    </div>
+
+    <!-- Script integrations -->
+    <script src="./GoVibe-Mission-Control-script.js"></script>
+
+</body>
+
+</html>
