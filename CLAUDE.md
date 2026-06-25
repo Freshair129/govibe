@@ -91,6 +91,21 @@ The **roadmap is document-driven**: the board's data originates from Markdown/HT
 - Live-data-only is a product rule (`PRODUCT.md`): do not introduce fake telemetry or mock values
   presented as backend state; use empty states that explain the missing feed.
 
+## Subtrees & scope (don't mistake them for what they look like)
+
+These look like things they aren't — clarifying so future reviewers don't re-flag them:
+
+- **`.agents/`** — governance documentation, per-role contracts (`AGENT.md` per folder), context
+  packets, and session traceability. **Not a custom agent framework / not runtime.** No LLM SDK
+  is loaded, no agent loop runs. The role-named folders mirror an org chart for documentation
+  only. Session logs (`session_logs/*.jsonl`) are gitignored as runtime traceability.
+- **`scripts/mcp/`** — MCP JSON-RPC server (a standard open protocol). It exposes the
+  `govibe.*` tool catalog; it is not an LLM agent.
+- **`ref/`** — reference subtree of code used for comparison only. **Not live GoVibe source.**
+  Its tests do not run under `npm test`.
+- **`engine/`** — the forked, GoVibe-owned G-orchestra engine published to npm as `hybrid-meter`
+  (see `engine/PROVENANCE.md`). Outside `tsc` and `vitest` by design (uses `node --test`).
+
 ## Working agreement (from AGENTS.md / AGENT.md)
 
 This repo runs under a documented agent operating contract — the canonical file is `AGENTS.md`

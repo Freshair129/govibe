@@ -29,3 +29,7 @@ ref/
 playwright-report/
 test-results/
 .playwright-cli/
+
+# AI-firstify Rec #2: runtime session logs are traceability artifacts, not source
+.agents/**/session_logs/
+*.log
