@@ -11,15 +11,17 @@
     "orchestration",
     "hybrid-meter",
     "PROVENANCE.md",
-    "README.md"
+    "README.md",
+    "LICENSE"
   ],
   "engines": {
     "node": ">=18"
   },
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0-or-later",
   "keywords": ["llm", "ai-coding", "hybrid", "ollama", "cost", "local-first", "orchestration"],
   "publishConfig": {
     "access": "public"
   },
-  "_publishNote": "PUBLISH-READY, NOT PUBLISHED. Before `npm publish`: (1) choose a real license (UNLICENSED = proprietary placeholder), (2) confirm the @govibe scope/name is registered to you, (3) `npm login`, (4) `npm publish`. The engine bundles the orchestration runtime + hybrid-meter CLI; node-only, no build step."
+  "_license": "Open source under AGPL-3.0-or-later (SaaS use must share source). A separate commercial license is available from the copyright holder for closed/SaaS use — dual licensing.",
+  "_publishNote": "PUBLISH-READY, NOT PUBLISHED. Before `npm publish`: (1) confirm the @govibe scope is registered to your npm account, (2) set the real copyright holder name in LICENSE/README, (3) `npm login`, (4) `npm publish`. Node-only, no build step; bundles the orchestration runtime + hybrid-meter CLI."
 }

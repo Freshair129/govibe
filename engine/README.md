@@ -36,8 +36,18 @@ frontier provider (e.g. the `claude` CLI) for planning + the L2 review tier.
 - Web meter: open `hybrid-meter/web/index.html` in a browser; load your own `usage.jsonl` via the
   file picker. Shows saved %, on-device %, review tax, and L0-averted review.
 
+## License
+
+**AGPL-3.0-or-later** (see `LICENSE`). You may use, modify, and redistribute this freely; if you
+run a modified version as a network service, the AGPL requires you to offer your source to its
+users. A separate **commercial license** (for closed-source / SaaS use without the AGPL
+obligations) is available from the copyright holder — i.e. this is dual-licensed.
+
+> Copyright (C) 2026 GoVibe. Set the real copyright holder's legal name here and in `LICENSE`
+> before publishing.
+
 ## Publishing
 
-This package is **publish-ready but not published**. Before `npm publish`: choose a real license
-(the manifest uses `UNLICENSED` as a placeholder), confirm the `@govibe` scope is yours, then
-`npm login` and `npm publish`. See `_publishNote` in `package.json`.
+This package is **publish-ready but not published**. Before `npm publish`: confirm the `@govibe`
+scope is registered to your npm account, set the real copyright holder name, then `npm login` and
+`npm publish`. See `_publishNote` in `package.json`.
