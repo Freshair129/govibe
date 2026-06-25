@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "_comment": "Claude Code project settings for GoVibe — created by AI-firstify (audit/ai-firstify-report-2026-06-25.md rec #6). Permission allow-list is conservative: governance scripts + read-only inspection; mutating tools still prompt. Hooks pin the pre-commit governance gate so it can't be bypassed.",
+  "permissions": {
+    "allow": [
+      "Bash(npm run docs:validate)",
+      "Bash(npm run roadmap:validate)",
+      "Bash(npm run baseline:check)",
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(npm test:*)",
+      "Bash(npm run mcp:smoke)",
+      "Bash(node scripts/docs/validate-docs.mjs:*)",
+      "Bash(node scripts/docs/validate-roadmap-containers.mjs:*)",
+      "Bash(node scripts/docs/bump-doc.mjs:*)",
+      "Bash(node scripts/docs/create-doc.mjs:*)",
+      "Bash(node scripts/docs/hash-docs.mjs:*)",
+      "Bash(node scripts/docs/derive-crosslinks.mjs:*)",
+      "Bash(node scripts/docs/diff-check.mjs:*)",
+      "Bash(node scripts/docs/ratify-doc.mjs:*)",
+      "Bash(node scripts/docs/register-doc.mjs:*)",
+      "Bash(node --test engine/orchestration/*.test.mjs)",
+      "Bash(node engine/orchestration/orchestrator.mjs status)",
+      "Bash(node engine/orchestration/orchestrator.mjs doctor)",
+      "Bash(node engine/orchestration/orchestrator.mjs distill:*)",
+      "Bash(node engine/orchestration/orchestrator.mjs graph:*)",
+      "Bash(node engine/orchestration/savings-report.mjs)",
+      "Bash(node engine/hybrid-meter/cli.mjs report:*)",
+      "Bash(node engine/hybrid-meter/cli.mjs --fast)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch:*)",
+      "Bash(git ls-files:*)",
+      "Bash(git check-ignore:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(wc:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)"
+    ],
+    "deny": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(rm -rf /:*)",
+      "Bash(npm publish:*)"
+    ]
+  }
+}
