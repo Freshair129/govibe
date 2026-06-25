@@ -32,7 +32,7 @@ function failureRows(rec) {
   const issues = rec.issues?.length ? rec.issues : [{ severity: rec.status === "failed" ? "blocked" : "major", area: "produce", detail: rec.summary || rec.status, fix: "" }];
   return issues.map((is) => ({
     taskId: rec.taskId, title: rec.taskTitle, type: rec.type, status: rec.status,
-    model: rec.model, worker: rec.worker, at: rec.at,
+    model: rec.model, worker: rec.worker, tier: rec.tier || "T0", at: rec.at,
     issue: is.detail || "", fix: is.fix || "", severity: is.severity || "", area: is.area || "",
   }));
 }

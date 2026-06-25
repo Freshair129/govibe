@@ -3,8 +3,8 @@ title: "ROADMAP: GoVibe Hybrid MVP"
 doc_id: "ROADMAP-HYBRID-MVP"
 uid: "01KVXGFW5MNW1D402AH0ZQBSFS"
 status: "draft"
-version: "0.5.0+draft"
-content_hash: "atom:4f42ddb1c9c56f3c"
+version: "0.6.0+draft"
+content_hash: "atom:c9c4374322b6fdc7"
 updated: "2026-06-25"
 owner: "LYRA"
 auditor: "ATHER"
@@ -44,7 +44,7 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
 | PHASE-HYB-01 | Checkpoint: governed architecture (memory + tiered review) + V0 wow surface | SYSTEM-05 | ADR-020, FEAT x2, SDD, PRD | ADR/FEAT registered + docs:validate PASS; `npx hybrid-meter` demo runs | done | 100 |
 | PHASE-HYB-02 | NOW: V1 — real hybrid loop on a user repo (frontier plan -> local execute -> verify -> live meter) | SYSTEM-05 | this roadmap, engine audit | `hybrid-meter run "task"` produces a real diff + usage.jsonl + meter on one repo | done | 100 |
 | PHASE-HYB-03 | NEXT: sharpen savings (L0 deterministic review; steady-state measurement) | SYSTEM-05 | FEAT-Tiered-Review | L0 gate cuts the review tax; measured steady-state savings recorded | done | 100 |
-| PHASE-HYB-04 | NEXT/LATER: memory moat (T0 failure-log -> T1/T2 Diamond/8-8-8) | SYSTEM-05 | FEAT-Per-Agent-Memory-Unit, ADR-020 | agent stops repeating failures (T0); promotion gate live (T1/T2) | in_progress | 30 |
+| PHASE-HYB-04 | NEXT/LATER: memory moat (T0 failure-log -> T1/T2 Diamond/8-8-8) | SYSTEM-05 | FEAT-Per-Agent-Memory-Unit, ADR-020 | agent stops repeating failures (T0); promotion gate live (T1/T2) | in_progress | 80 |
 | PHASE-HYB-05 | LATER: distribution + GTM (npm, web meter, Thai/SEA) | SYSTEM-05 | landing, CR | published; web cost-meter view; first Thai/SEA motion | in_progress | 40 |
 
 ## Sprints
@@ -115,13 +115,21 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
 - [x] PHASE-HYB-03 lever 2 — RM-009 T0 per-agent failure memory landed (FEAT-Per-Agent-Memory-Unit, T0 slice): a failure (including an L0 deterministic failure, now persisted with its real tool output) enters the failure-log, is retrieved for a similar future task, and is injected into the worker prompt as a "❌ ห้ามทำซ้ำ" anti-error block so the same error is not produced again. Proven deterministically: `anti-error-loop.test.mjs` 4/4 (log round-trip + prompt injection + L0-lesson capture). T1/T2 promotion + 8-8-8 distillation remain (PHASE-HYB-04).
 - [x] Steady-state savings measured (FR-005 telemetry): `engine/orchestration/review-tax.mjs` (`analyzeReviewTax`) + a new `— L0 GATE —` section in `savings-report.mjs` compute the review tax % and the savings the L0 gate produced. Measured on a real multi-task run: L0 caught **3** deterministic failures → averted **~$2.22** of frontier review (@ $0.74/review reference), dropping the review tax from a counterfactual **~100%** to a measured **0%** on that run. Deterministic tests: `review-tax.test.mjs` 5/5. The live cost meter now surfaces an `L0 gate averted ~$X` line.
 - [x] FEAT-Tiered-Review complete (all 3 tiers): L0 deterministic (RM-008) + L1 local-SLM escalate-only (FR-002, `l1Route`/`runL1`, opt-in `config.review.l1`, `l1-route.test.mjs` 5/5 — L1 can only pass-or-escalate, high-stakes always reaches L2 per FR-003) + L2 frontier (existing) + FR-005 per-tier telemetry on the meter.
-- [~] PHASE-HYB-04 promotion gate (FEAT-Per-Agent-Memory-Unit FR-005 core, **in progress**): `engine/orchestration/promotion.mjs` `classifyLessons` promotes a failure-log lesson Hypothesis -> Confirmed only after **≥2 independent** confirmations (distinct task/worker — repetition by the same source does not promote); `queryContext` ranks Confirmed lessons above one-off Hypotheses and the prompt marks them "(ยืนยันแล้ว)". `promotion.test.mjs` 5/5. Remaining for PHASE-HYB-04: full T1/T2 Diamond (Episodic/Observation/Semantic) + 8-8-8 distillation + LCA conflict resolution + MSP/GKS promotion to shared truth.
+- [~] PHASE-HYB-04 memory moat (FEAT-Per-Agent-Memory-Unit, **80% — all FR contracts implemented + tested; core live**):
+  - FR-005 promotion gate: `promotion.mjs` `classifyLessons` promotes Hypothesis -> Confirmed after **≥2 independent** confirmations; `queryContext` ranks Confirmed above one-off Hypotheses; prompt marks them "(ยืนยันแล้ว)". **Live.**
+  - FR-001 tiers: `memory.mjs` `resolveTier` (worker -> T0, role -> T1, named -> T2); recordOutcome now tags each failure-log lesson with its tier. **Live (T0).**
+  - FR-002/003/004 Diamond entry: `memory.mjs` 3-file unit (Episodic/Observation/Semantic) + epistemic_state (Hypothesis|Confirmed|Contested|Deprecated) + bitemporal fields (mirrors FEAT-Bi-Temporal-Versioning, kept local so the engine stays standalone).
+  - FR-006 LCA: `lca.mjs` `resolveConflict` — temporal -> evidence -> granularity -> recency; loser Deprecated + retained.
+  - FR-007 8-8-8 distillation: `distill.mjs` folds a ≥8 corroborated-episode window into one semantic role-core atom (T1/T2 only); composes the promotion gate.
+  - FR-008 composition: no new storage engine; reuses the file store + promotion gate.
+  - Tests: `promotion.test.mjs` 5/5 + `memory.test.mjs` 9/9. Remaining (live integration, not contracts): auto-scheduling 8-8-8 distillation on a cadence, named-agent **T2** lifecycle (binds to the agent-registry, which lives outside the standalone engine), and MSP/GKS shared-truth promotion wiring.
 - [~] PHASE-HYB-05 distribution (RM-010, **in progress**): shareable **web cost-meter** at `engine/hybrid-meter/web/index.html` (loads your own `usage.jsonl`; shows saved %, on-device %, review tax, and L0-averted; rendering verified via DOM — saved ~$2/≈43%, 50% on-device, review tax 75%, L0 averted $1.48). The engine is **publish-ready** as `@govibe/hybrid-meter` (`bin: hybrid-meter`; `npm pack --dry-run` = 79 kB). **Not published** — remaining needs the owner's action: pick a license, `npm login`, `npm publish`; plus the Thai/SEA GTM motion.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.6.0+draft | 2026-06-25 | LYRA | PHASE-HYB-04 memory moat to 80%: all FEAT-Per-Agent-Memory-Unit contracts implemented + tested — tiers (FR-001), Diamond entry + epistemic + bitemporal (FR-002/003/004), LCA (FR-006), 8-8-8 distillation (FR-007), composition (FR-008); tier-tagging wired live. memory.test.mjs 9/9 (33 engine tests total). |
 | 0.5.0+draft | 2026-06-25 | LYRA | PHASE-HYB-05 distribution (in progress): shareable web cost-meter (engine/hybrid-meter/web, rendering verified) + engine publish-ready as @govibe/hybrid-meter (bin, npm pack 79kB). Not published — npm publish + Thai/SEA GTM need the owner. |
 | 0.4.3+draft | 2026-06-25 | LYRA | PHASE-HYB-04 promotion gate (FR-005 core, in progress): classifyLessons promotes failure-log lessons Hypothesis->Confirmed after >=2 independent confirmations; queryContext ranks Confirmed above Hypotheses. promotion.test.mjs 5/5. |
 | 0.4.2+draft | 2026-06-25 | LYRA | FEAT-Tiered-Review complete: L1 local-SLM escalate-only tier (FR-002, l1Route/runL1, opt-in) + L0-averted line on the live cost meter (FR-005). l1-route.test.mjs 5/5; 19 engine tests green. |

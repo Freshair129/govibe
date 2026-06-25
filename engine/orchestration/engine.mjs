@@ -8,6 +8,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { getStore } from "./store/knowledge.mjs";
+import { resolveTier } from "./memory.mjs";
 import { parseModel, resolveForRole, runProvider, listProviders, checkHealth, childEnvFor } from "./providers.mjs";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
@@ -587,6 +588,7 @@ function recordOutcome(t, model, worker, status, review) {
   Promise.resolve().then(() =>
     getStore(CONFIG).recordOutcome({
       taskId: t.id, taskTitle: t.title, type: t.type, model, worker, status,
+      tier: resolveTier(worker, CONFIG),   // FR-001: tag the lesson's memory tier (pool worker -> T0)
       at: new Date().toISOString(), issues: review?.issues || [], summary: review?.summary || "",
     })
   ).catch(() => { /* knowledge store ล้ม -> เงียบ ไม่กระทบ execution */ });
