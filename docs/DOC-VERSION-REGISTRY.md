@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.72+draft"
+version: "0.1.73+draft"
 updated: "2026-06-25"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.72+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.73+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -109,7 +109,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | LLD | `LLD-GOVIBE-MCP-TOOLS` | `0.2.1` | approved | GoVibe | `docs/lld/LLD-GoVibe-MCP-Tools.md` |
 | LLD | `LLD-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/lld/LLD-Translator-Core-Slice.md` |
 | LLD | `LLD-AGENT-LAUNCHER-EXECUTION-ROUTER` | `0.1.2` | approved | THESEUS | `docs/lld/LLD-Agent-Launcher-Execution-Router.md` |
-| Context | `AGENT-BRIDGE-QWEN-COMPAT` | `1.2.1+draft` | draft | ATHER / THESEUS | `AGENT.md` |
+| Context | `AGENT-BRIDGE-QWEN-COMPAT` | `1.3.0+draft` | draft | ATHER / THESEUS | `AGENT.md` |
 | Context | `CONTEXT-BOUNDED-EXTERNAL-EXECUTOR` | `0.2.3` | draft | THESEUS | `.agents/context/CONTEXT-Bounded-External-Executor.md` |
 | Context | `CONTEXT-GOVIBE-SHARED-EXTERNAL-AGENT` | `0.1.2+draft` | draft | ATHER / THESEUS | `.agents/context/shared/CONTEXT-GoVibe-Shared-External-Agent.md` |
 | Context | `CONTEXT-GOVIBE-GIT-HYGIENE` | `0.1.0+draft` | draft | JANUS / ATHER | `.agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md` |
@@ -190,6 +190,7 @@ Docs registered deterministically by `npm run docs:register` (ADR-007). Re-file 
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|| 0.1.58+draft | 2026-06-24 | GoVibe | Synced PRD-GOVIBE-MCP-ORCHESTRATION to 0.2.3+draft. |
+| 0.1.73+draft | 2026-06-25 | ATHER / THESEUS | Synced AGENT-BRIDGE-QWEN-COMPAT to 1.3.0+draft. |
 | 0.1.72+draft | 2026-06-25 | LYRA | Synced ROADMAP-HYBRID-MVP to 0.8.0+draft. |
 | 0.1.71+draft | 2026-06-25 | LYRA | Synced ROADMAP-HYBRID-MVP to 0.7.3+draft. |
 | 0.1.70+draft | 2026-06-25 | LYRA | Synced ROADMAP-HYBRID-MVP to 0.7.2+draft. |

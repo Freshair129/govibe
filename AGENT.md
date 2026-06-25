@@ -1,64 +1,32 @@
 ---
-title: "GoVibe Agent Bridge"
+title: "GoVibe Agent Bridge (singular)"
 doc_id: "AGENT-BRIDGE-QWEN-COMPAT"
+uid: "01KVZGHVKS655M90JP2KBW39XP"
 status: "draft"
-version: "1.2.1+draft"
-updated: "2026-06-22"
+version: "1.3.0+draft"
+content_hash: "atom:cf3499b15f930d49"
+updated: "2026-06-25"
 owner: "ATHER / THESEUS"
 source_of_truth: false
 attributes:
-  domain: "agent-governance"
-  scope: "G:/govibe"
-  purpose: "Compatibility bridge for tools that auto-load the singular AGENT.md (e.g. qwen-cli); AGENTS.md is the standard contract used by codex/gpt"
+  purpose: "Compatibility bridge for tools that auto-load the singular AGENT.md (qwen-cli)"
 ---
 
-# GoVibe Agent Bridge
+# GoVibe Agent Bridge (singular filename)
 
-**`AGENTS.md` is the standard GoVibe operating contract** — the file auto-loaded by `codex`, GPT-based tools, and the `AGENTS.md` convention. Always prefer `AGENTS.md`.
+This file exists **only** because some tools auto-load the singular filename `AGENT.md`. The
+**canonical operating contract is `AGENTS.md`** (plural) — read it before doing anything in this
+repo. This file carries no rules of its own and defers entirely to `AGENTS.md`.
 
-This `AGENT.md` (singular) is only a thin compatibility bridge for tools that auto-load the singular filename (e.g. `qwen-cli`). It is **not** the full contract and carries no rules of its own — it defers entirely to `AGENTS.md`.
+If your tool can load either, prefer `AGENTS.md`.
 
-## Required Context Load Order
-
-Before making project claims or recommendations, load and obey:
-
-1. `AGENTS.md`
-2. `.agents/context/shared/CONTEXT-GoVibe-Shared-External-Agent.md`
-3. `.agents/context/CONTEXT-Bounded-External-Executor.md`
-4. Any role-specific, system-specific, or task-specific packet supplied by the caller
-
-If a required context file cannot be read, respond with `blocked_by_missing_context` and list the missing file.
-
-## Non-Negotiable Rules
-
-- Real project state beats prompt memory.
-- Do not claim a feature, command, document, integration, or git state exists unless checked from current evidence.
-- Do not expand scope or create architecture when the task asks for review, triage, or git hygiene.
-- Prefer no-code, config, documentation, or process fixes before new implementation.
-- External executor output is draft evidence only. It is not final approval.
-
-## Required Evidence Fields
-
-Every external-agent response must include:
-
-```yaml
-repo_root_checked:
-git_status_summary:
-context_files_read:
-context_source_used:
-model_name:
-model_route:
-claims_checked:
-mismatches_or_unknowns:
-recommended_decision:
-confidence:
-```
+Historical bridge content (an external-agent evidence-fields schema and a context load order) was
+moved to `docs/archive/snapshots-2026-06/agent-bridge-content-preserved.md` on 2026-06-25 to
+eliminate triplicated content; see `audit/ai-firstify-report-2026-06-25.md` rec #4.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
-| 1.2.1+draft | 2026-06-22 | ATHER / THESEUS | Reframed as a singular-filename compat bridge only; affirmed `AGENTS.md` as the standard contract for codex/gpt and that this file defers entirely to it. |
-| 1.2.0+draft | 2026-06-17 | ATHER / THESEUS | Converted root AGENT.md into a thin compatibility bridge for qwen-cli and shared external-agent context loading. |
-| 1.1.0 | 2026-06-13 | THESEUS | ID-based agent references, MemoryOS V3 alignment, traceability headers. |
-| 0.1.0 | 2026-06-12 | ATHER | Added root agent operating contract aligned with GoVibe PRD, C4, execution governance, PM roadmap source, QA, and auditor workflows. |
+| 1.3.0+draft | 2026-06-25 | ATHER / THESEUS | AI-firstify Phase B: trimmed to real thin bridge; unique evidence-schema + context-load-order content preserved at docs/archive/snapshots-2026-06/agent-bridge-content-preserved.md. |
+| 1.2.1+draft | 2026-06-22 | ATHER / THESEUS | Reframed as a singular-filename compat bridge only; affirmed `AGENTS.md` as the standard contract. |
