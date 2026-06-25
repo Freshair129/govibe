@@ -1,0 +1,3 @@
+
+# never commit npm credentials
+.npmrc

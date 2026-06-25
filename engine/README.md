@@ -44,8 +44,7 @@ users. A separate **commercial license** (for closed-source / SaaS use without t
 obligations) is available from the copyright holder — i.e. this is dual-licensed. See
 `LICENSE-COMMERCIAL.md` for the commercial-license template (fill in the bracketed fields).
 
-> Copyright (C) 2026 GoVibe. Set the real copyright holder's legal name here and in `LICENSE`
-> before publishing.
+> Copyright (C) 2026 GoVibe. Commercial-license inquiries: suanranger129@gmail.com.
 
 ## Publishing
 

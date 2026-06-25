@@ -3,8 +3,8 @@ title: "ROADMAP: GoVibe Hybrid MVP"
 doc_id: "ROADMAP-HYBRID-MVP"
 uid: "01KVXGFW5MNW1D402AH0ZQBSFS"
 status: "draft"
-version: "0.7.3+draft"
-content_hash: "atom:d157be24a54946de"
+version: "0.8.0+draft"
+content_hash: "atom:bfa735ce6c7dae74"
 updated: "2026-06-25"
 owner: "LYRA"
 auditor: "ATHER"
@@ -45,7 +45,7 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
 | PHASE-HYB-02 | NOW: V1 — real hybrid loop on a user repo (frontier plan -> local execute -> verify -> live meter) | SYSTEM-05 | this roadmap, engine audit | `hybrid-meter run "task"` produces a real diff + usage.jsonl + meter on one repo | done | 100 |
 | PHASE-HYB-03 | NEXT: sharpen savings (L0 deterministic review; steady-state measurement) | SYSTEM-05 | FEAT-Tiered-Review | L0 gate cuts the review tax; measured steady-state savings recorded | done | 100 |
 | PHASE-HYB-04 | NEXT/LATER: memory moat (T0 failure-log -> T1/T2 Diamond/8-8-8) | SYSTEM-05 | FEAT-Per-Agent-Memory-Unit, ADR-020 | agent stops repeating failures (T0); promotion gate live (T1/T2) | done | 100 |
-| PHASE-HYB-05 | LATER: distribution + GTM (npm, web meter, Thai/SEA) | SYSTEM-05 | landing, CR | published; web cost-meter view; first Thai/SEA motion | in_progress | 50 |
+| PHASE-HYB-05 | LATER: distribution + GTM (npm, web meter, Thai/SEA) | SYSTEM-05 | landing, CR | published; web cost-meter view; first Thai/SEA motion | in_progress | 80 |
 
 ## Sprints
 
@@ -69,7 +69,7 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
 | TASK-HYB-RM-007 | SPR-HYB-03 | feature | Cross-platform + per-language local model routing (current benchmark is Rust-only) | SYSTEM-05 | P1 | ARCHON | V1 breadth | TASK-HYB-RM-006 | runs on win/mac/linux; routes a local model per detected language | done | 100 |
 | TASK-HYB-RM-008 | SPR-HYB-04 | feature | L0 deterministic gate (compile/lint/test before any LLM review) per FEAT-Tiered-Review | SYSTEM-05 | P1 | ATHER | Savings lever | TASK-HYB-RM-003 | non-compiling output is caught at $0 before any LLM review | done | 100 |
 | TASK-HYB-RM-009 | SPR-HYB-04 | feature | T0 per-agent failure memory (anti-error loop) per FEAT-Per-Agent-Memory-Unit | SYSTEM-05 | P1 | ARCHON | Memory lever | TASK-HYB-RM-003 | repeated failures drop after a lesson enters the failure-log | done | 100 |
-| TASK-HYB-RM-010 | PHASE-HYB-05 | epic | Distribution: npm publish + web cost-meter view (V0.5) + Thai/SEA beachhead | SYSTEM-05 | P2 | LYRA | GTM | TASK-HYB-RM-005 | published; shareable web meter; first Thai/SEA motion | in_progress | 50 |
+| TASK-HYB-RM-010 | PHASE-HYB-05 | epic | Distribution: npm publish + web cost-meter view (V0.5) + Thai/SEA beachhead | SYSTEM-05 | P2 | LYRA | GTM | TASK-HYB-RM-005 | published; shareable web meter; first Thai/SEA motion | in_progress | 80 |
 
 ## Task Breakdown
 
@@ -127,11 +127,13 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
 - [x] SPR-HYB-03 V1 hardening done: **RM-006 onboarding** (`preflight.mjs` `probeReadiness`/`summarizePreflight` + `orchestrator doctor` — probes Ollama/local-model/frontier and degrades gracefully with actionable guidance; `preflight.test.mjs` 5/5) + **RM-007 per-language routing** (`routing.mjs` `detectPrimaryLang`/`pickLocalModel` + `config.localModelByLang`; `run --repo` auto-selects the on-device coder model for the detected language; `routing.test.mjs` 3/3). Cross-platform is inherent (plain Node, `shell:true` spawns).
 - [x] **Full test gate green** (2026-06-25): engine `node --test` **42/42** (l0-gate·l1-route·anti-error·review-tax·promotion·memory·routing·preflight·distill-store) + GoVibe `vitest` **92/92** (12 files) + `tsc --noEmit` 0 errors + `vite build` ✓ + `docs:validate`/`roadmap:validate` PASS (`npm run baseline:check` exit 0).
 - [~] PHASE-HYB-05 distribution (RM-010, **in progress**): shareable **web cost-meter** at `engine/hybrid-meter/web/index.html` (loads your own `usage.jsonl`; shows saved %, on-device %, review tax, and L0-averted; rendering verified via DOM — saved ~$2/≈43%, 50% on-device, review tax 75%, L0 averted $1.48). The engine is **publish-ready** as `hybrid-meter` (`bin: hybrid-meter`; **license chosen: AGPL-3.0-or-later** + dual commercial; `LICENSE` added; `npm pack --dry-run` = 99 kB). **Not published** — remaining needs the owner's action only: set the real copyright-holder name, `npm login`, `npm publish`; plus the Thai/SEA GTM motion. Name availability checked 2026-06-25 — `hybrid-meter`, `hybrid-meter`, `govibe`, `hybrid-coder` are all free on npm (scoped name needs the `@govibe` org created first; unscoped `hybrid-meter` needs no setup). A dual-licensing commercial-license template is ready at `engine/LICENSE-COMMERCIAL.md`.
+- [x] **PUBLISHED 2026-06-25**: `hybrid-meter@0.1.0` is live on the npm registry under maintainer `suanranger` — `npm install -g hybrid-meter` / `npx hybrid-meter run "task"` works for anyone. Tarball: https://registry.npmjs.org/hybrid-meter/-/hybrid-meter-0.1.0.tgz (100.4 kB). Remaining for RM-010 = Thai/SEA GTM motion (non-code).
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.8.0+draft | 2026-06-25 | LYRA | PUBLISHED: hybrid-meter@0.1.0 live on npm registry (maintainer suanranger). RM-010 now blocks only on Thai/SEA GTM motion (non-code). |
 | 0.7.3+draft | 2026-06-25 | LYRA | Renamed engine npm package to unscoped 'hybrid-meter' (free on npm, no scope/org setup needed) — final form before publish. |
 | 0.7.2+draft | 2026-06-25 | LYRA | Distribution prep: npm names checked (all candidates free; @govibe/hybrid-meter + unscoped hybrid-meter available) + dual-licensing commercial-license template added (engine/LICENSE-COMMERCIAL.md). Publish still owner-gated. |
 | 0.7.1+draft | 2026-06-25 | LYRA | Distribution license decided: AGPL-3.0-or-later (open + SaaS-loophole-closed) with a dual commercial option; LICENSE added to the engine package (npm pack 99kB). RM-010 now blocks only on the owner's npm login + publish. |

@@ -23,15 +23,15 @@ use, or contribute back — the AGPL already covers those.
 
 ## What the commercial license grants (summary)
 
-Subject to a signed agreement and payment of the agreed fee, **[LICENSOR LEGAL NAME]** ("Licensor")
+Subject to a signed agreement and payment of the agreed fee, **GoVibe** ("Licensor")
 grants **[LICENSEE]** a non-exclusive, non-transferable, worldwide license to use, modify, and
 distribute `hybrid-meter` **without** the obligations of AGPL-3.0 §13 (network use) and the
 copyleft requirements, for the term and scope set out in the agreement.
 
 | Term | Value |
 |---|---|
-| Licensor | [LEGAL NAME / ENTITY] |
-| Contact | [email@example.com] |
+| Licensor | GoVibe |
+| Contact | suanranger129@gmail.com |
 | Scope | [e.g. per-product / per-seat / per-deployment] |
 | Term | [e.g. perpetual / annual] |
 | Fee | [to be negotiated] |
@@ -40,9 +40,9 @@ copyleft requirements, for the term and scope set out in the agreement.
 
 ## How to obtain one
 
-Contact **[email@example.com]** with your company name, intended use, and deployment scale.
+Contact **suanranger129@gmail.com** with your company name, intended use, and deployment scale.
 
 ---
 
-Copyright (C) 2026 [LICENSOR LEGAL NAME]. All rights reserved except as granted under AGPL-3.0 or a
+Copyright (C) 2026 GoVibe. All rights reserved except as granted under AGPL-3.0 or a
 separate commercial agreement.
