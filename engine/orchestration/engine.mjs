@@ -538,6 +538,12 @@ function formatL0Note(l0, attempt) {
   const lines = l0.failures.map((f) => `- \`${f.cmd}\` exited ${f.code}:\n${f.output || "(no output)"}`);
   return `## ROUND ${attempt} — L0 deterministic gate ตีกลับ (compile/lint/test ไม่ผ่าน) แก้ให้ผ่านก่อน ห้ามส่งโค้ดที่ build ไม่ขึ้น:\n${lines.join("\n\n")}`;
 }
+// T0 lesson text from an L0 failure — keep the real tool-output tail (the actual cause, e.g.
+// "pnpm exec clippy: not found") so the failure-log entry is a retrievable, reusable lesson.
+export function l0Lesson(f) {
+  const tail = (f.output || "").split("\n").map((s) => s.trim()).filter(Boolean).slice(-3).join(" ").slice(0, 240);
+  return `L0 \`${f.cmd}\` exited ${f.code}${tail ? " — " + tail : ""}`;
+}
 
 // L0 (ADR-O-003 / SPEC--LOCAL-MODEL-ANTI-ERROR-LOOP) — เก็บความผิดที่ Verify Gate ตีกลับ
 // write-only, fire-and-forget, best-effort: ห้ามทำ Verify Gate/pool ช้าหรือพัง
@@ -572,15 +578,21 @@ export async function executeWithReview(t, model, worker) {
     const l0 = runL0(t);
     if (l0.ran) recordUsage({ id: t.id + "#l0", model: "deterministic:l0", mode: "l0", cost: 0 });
     if (l0.ran && !l0.pass) {
+      // T0 anti-error loop (RM-009 / FEAT-PER-AGENT-MEMORY-UNIT): persist the deterministic lesson
+      // (with the real tool output, not just an exit code) so queryPastMistakes injects it as
+      // "❌ ห้ามทำซ้ำ" into a future similar task — the same error stops being produced.
+      recordOutcome(t, model, worker, "needs-rework", {
+        issues: l0.failures.map((f) => ({
+          severity: "critical", area: "compile", detail: l0Lesson(f),
+          fix: `ทำให้ \`${f.cmd}\` ผ่านก่อนส่ง (ห้ามใช้เครื่องมือที่ไม่มีจริง / โค้ดที่ build ไม่ขึ้น / stub)`,
+        })),
+        summary: "L0 deterministic gate failed",
+      });
       if (CONFIG.review?.autoRework && round < (CONFIG.review?.maxReworkRounds || 0)) {
         round++; reworkNote = formatL0Note(l0, round + 1);
         setStatus(t.id, "running", { worker, claimedAt: now() }); continue;        // back to worker, no LLM spent
       }
       setStatus(t.id, "needs-rework");
-      recordOutcome(t, model, worker, "needs-rework", {
-        issues: l0.failures.map((f) => ({ severity: "critical", area: "compile", detail: `${f.cmd} exited ${f.code}` })),
-        summary: "L0 deterministic gate failed",
-      });
       return "needs-rework";
     }
     setStatus(t.id, "reviewing");
