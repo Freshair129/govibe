@@ -1,4 +1,4 @@
-# @govibe/hybrid-meter
+# hybrid-meter
 
 A hybrid AI coding engine: a **frontier model plans + reviews** while **local SLMs execute
 on-device**, with a **live cost meter** showing what ran free and what was saved. Forked from the

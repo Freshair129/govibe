@@ -1,6 +1,6 @@
 # Commercial License (template)
 
-`@govibe/hybrid-meter` is **dual-licensed**:
+`hybrid-meter` is **dual-licensed**:
 
 1. **Open source — GNU AGPL-3.0-or-later** (see `LICENSE`). Free to use, modify, and
    redistribute. If you run a modified version as a network service, the AGPL requires you to
@@ -25,7 +25,7 @@ use, or contribute back — the AGPL already covers those.
 
 Subject to a signed agreement and payment of the agreed fee, **[LICENSOR LEGAL NAME]** ("Licensor")
 grants **[LICENSEE]** a non-exclusive, non-transferable, worldwide license to use, modify, and
-distribute `@govibe/hybrid-meter` **without** the obligations of AGPL-3.0 §13 (network use) and the
+distribute `hybrid-meter` **without** the obligations of AGPL-3.0 §13 (network use) and the
 copyleft requirements, for the term and scope set out in the agreement.
 
 | Term | Value |

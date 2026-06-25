@@ -3,8 +3,8 @@ title: "ROADMAP: GoVibe Hybrid MVP"
 doc_id: "ROADMAP-HYBRID-MVP"
 uid: "01KVXGFW5MNW1D402AH0ZQBSFS"
 status: "draft"
-version: "0.7.2+draft"
-content_hash: "atom:e58f4f90cbd7e5f2"
+version: "0.7.3+draft"
+content_hash: "atom:d157be24a54946de"
 updated: "2026-06-25"
 owner: "LYRA"
 auditor: "ATHER"
@@ -126,12 +126,13 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
   - Out of the standalone engine (GoVibe-app integration, not engine contracts): named-agent **T2** lifecycle (binds the agent-registry), MSP/GKS shared-truth promotion, and optional auto-cron scheduling of the 8-8-8 cadence.
 - [x] SPR-HYB-03 V1 hardening done: **RM-006 onboarding** (`preflight.mjs` `probeReadiness`/`summarizePreflight` + `orchestrator doctor` — probes Ollama/local-model/frontier and degrades gracefully with actionable guidance; `preflight.test.mjs` 5/5) + **RM-007 per-language routing** (`routing.mjs` `detectPrimaryLang`/`pickLocalModel` + `config.localModelByLang`; `run --repo` auto-selects the on-device coder model for the detected language; `routing.test.mjs` 3/3). Cross-platform is inherent (plain Node, `shell:true` spawns).
 - [x] **Full test gate green** (2026-06-25): engine `node --test` **42/42** (l0-gate·l1-route·anti-error·review-tax·promotion·memory·routing·preflight·distill-store) + GoVibe `vitest` **92/92** (12 files) + `tsc --noEmit` 0 errors + `vite build` ✓ + `docs:validate`/`roadmap:validate` PASS (`npm run baseline:check` exit 0).
-- [~] PHASE-HYB-05 distribution (RM-010, **in progress**): shareable **web cost-meter** at `engine/hybrid-meter/web/index.html` (loads your own `usage.jsonl`; shows saved %, on-device %, review tax, and L0-averted; rendering verified via DOM — saved ~$2/≈43%, 50% on-device, review tax 75%, L0 averted $1.48). The engine is **publish-ready** as `@govibe/hybrid-meter` (`bin: hybrid-meter`; **license chosen: AGPL-3.0-or-later** + dual commercial; `LICENSE` added; `npm pack --dry-run` = 99 kB). **Not published** — remaining needs the owner's action only: set the real copyright-holder name, `npm login`, `npm publish`; plus the Thai/SEA GTM motion. Name availability checked 2026-06-25 — `@govibe/hybrid-meter`, `hybrid-meter`, `govibe`, `hybrid-coder` are all free on npm (scoped name needs the `@govibe` org created first; unscoped `hybrid-meter` needs no setup). A dual-licensing commercial-license template is ready at `engine/LICENSE-COMMERCIAL.md`.
+- [~] PHASE-HYB-05 distribution (RM-010, **in progress**): shareable **web cost-meter** at `engine/hybrid-meter/web/index.html` (loads your own `usage.jsonl`; shows saved %, on-device %, review tax, and L0-averted; rendering verified via DOM — saved ~$2/≈43%, 50% on-device, review tax 75%, L0 averted $1.48). The engine is **publish-ready** as `hybrid-meter` (`bin: hybrid-meter`; **license chosen: AGPL-3.0-or-later** + dual commercial; `LICENSE` added; `npm pack --dry-run` = 99 kB). **Not published** — remaining needs the owner's action only: set the real copyright-holder name, `npm login`, `npm publish`; plus the Thai/SEA GTM motion. Name availability checked 2026-06-25 — `hybrid-meter`, `hybrid-meter`, `govibe`, `hybrid-coder` are all free on npm (scoped name needs the `@govibe` org created first; unscoped `hybrid-meter` needs no setup). A dual-licensing commercial-license template is ready at `engine/LICENSE-COMMERCIAL.md`.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.7.3+draft | 2026-06-25 | LYRA | Renamed engine npm package to unscoped 'hybrid-meter' (free on npm, no scope/org setup needed) — final form before publish. |
 | 0.7.2+draft | 2026-06-25 | LYRA | Distribution prep: npm names checked (all candidates free; @govibe/hybrid-meter + unscoped hybrid-meter available) + dual-licensing commercial-license template added (engine/LICENSE-COMMERCIAL.md). Publish still owner-gated. |
 | 0.7.1+draft | 2026-06-25 | LYRA | Distribution license decided: AGPL-3.0-or-later (open + SaaS-loophole-closed) with a dual commercial option; LICENSE added to the engine package (npm pack 99kB). RM-010 now blocks only on the owner's npm login + publish. |
 | 0.7.0+draft | 2026-06-25 | LYRA | Finish the engine roadmap: RM-006 onboarding preflight (doctor) + RM-007 per-language local routing (SPR-HYB-03 done); PHASE-HYB-04 done (distillation invokable via store.distillRole + distill CLI). Full test gate green: 42 engine + 92 vitest + lint + build + governance. Only owner-gated npm publish + Thai/SEA GTM remain (RM-010). |
