@@ -12,6 +12,7 @@ import { appendFileSync, mkdirSync, existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
+import { classifyLessons } from "../promotion.mjs";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const BRAIN = join(__dir, "..", "brain");
@@ -47,9 +48,12 @@ function fileStore() {
       const terms = tokenize(`${task.title} ${task.type}`);
       const rows = readFileSync(FAILLOG, "utf8").split("\n").filter(Boolean)
         .map((j) => { try { return JSON.parse(j); } catch { return null; } }).filter(Boolean);
-      const scored = rows.map((r) => ({ r, s: overlap(terms, tokenize(`${r.title} ${r.issue} ${r.type}`)) }))
-        .filter((x) => x.s > 0).sort((a, b) => b.s - a.s);
-      return dedupe(scored.map((x) => x.r)).slice(0, k).map(toMistake);
+      const matched = rows.map((r) => ({ r, s: overlap(terms, tokenize(`${r.title} ${r.issue} ${r.type}`)) }))
+        .filter((x) => x.s > 0).map((x) => x.r);
+      // promotion gate (FEAT-PER-AGENT-MEMORY-UNIT FR-005): group + promote, so a lesson confirmed
+      // across independent runs (Confirmed) ranks above an unverified one-off (Hypothesis).
+      return classifyLessons(matched).slice(0, k)
+        .map((l) => ({ issue: l.issue, fix: l.fix, epistemic_state: l.epistemic_state, confidence: l.confidence }));
     },
     async groundContext() { return null; },   // L2 ต้องใช้ GRL ของ GenesisDB — file mode degrade เป็น static scope.docs
     async close() {},

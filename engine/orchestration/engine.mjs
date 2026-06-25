@@ -239,7 +239,8 @@ function pastMistakesBlock(pastMistakes, budgetTokens) {
   const lines = [];
   for (const m of pastMistakes) {
     if (!m.issue) continue;
-    const line = `- ❌ ${m.issue}${m.fix ? `  →  ✅ ${m.fix}` : ""}`;
+    const tag = m.epistemic_state === "Confirmed" ? " (ยืนยันแล้วหลายครั้ง)" : "";
+    const line = `- ❌ ${m.issue}${tag}${m.fix ? `  →  ✅ ${m.fix}` : ""}`;
     if (lines.join("\n").length + line.length + 1 > cap) break;
     lines.push(line);
   }
