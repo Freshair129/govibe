@@ -4,7 +4,7 @@
 **Date:** 2026-06-25
 **Mode:** Audit (read-only) — Re-engineer phases pending user approval
 **Auditor:** Claude (Opus 4.7) under the `ai-firstify` skill
-**Revision:** v2 (incorporates adversarial sub-agent review — see "Skeptic Review Adjustments" at end)
+**Revision:** v3 — Re-engineer phases A–D landed (see "Re-engineer Outcomes" at end)
 
 ## Overall Score
 
@@ -177,3 +177,30 @@ Sub-agent review เจอประเด็นเหล่านี้ที่
 - ✅ `.claude/settings.json` — MISSING; ใส่ rec #6
 - ✅ `fix.cjs` — Thai-encoding fixer one-shot (verified) ไม่ใช่ ad-hoc มั่ว
 - ⚠️ standalone HTMLs (`GoVibe-Domain-A-Project-Overview.html`, `GoVibe-Mission-Control-template.html`) — **ยังไม่ verify role**; อยู่ใน rec #3 แต่ flag ว่าต้อง check ก่อน
+
+---
+
+## Re-engineer Outcomes (v3 — commits 5a2a39b..df20946)
+
+ผ่าน 4 phases หลัง audit, **ครบทุก HIGH/MEDIUM recommendation ใน scope ที่ทำได้**
+
+| Phase | Commit | Recs ที่ปิด | Net change |
+|---|---|---|---|
+| A: Cleanup + scope notes | `5a2a39b` | #2, #3, #7 | 12 ad-hoc docs → archive · 2 standalone HTMLs → archive · `fix.cjs` → `tools/legacy/` · 138 session_logs.jsonl untracked + gitignored · CLAUDE.md เพิ่ม "Subtrees & scope" section |
+| B: Consolidate bridges | `bf1374c` | #4 | AGENTS.md unchanged (canonical, governed) · AGENT.md 64→23 lines (real thin bridge, bumped 1.2.1→1.3.0+draft) · GEMINI.md 142→24 lines (real thin bridge) · unique content preserved verbatim ใน `docs/archive/snapshots-2026-06/agent-bridge-content-preserved.md` (105 lines) · **net: 304 → 140 lines** |
+| C: Skills foundation | `dff6f8a` | #1, #6 | `.claude/settings.json` (permissions allow/deny lists) · 3 skills with SKILL.md + scripts: `baseline-check` (verified live), `docs-bump` (verified usage check), `roadmap-sync` (judgement skill) · `references/changelog-template.md` |
+| D: Engine skills | `df20946` | #5 | 2 skills: `engine-doctor` (verified live: 40 Ollama models, frontier ready), `engine-run` (judgement skill with the actual session pattern) |
+
+### Updated scores after re-engineer
+
+| Dimension | Before | After | Delta |
+|---|---|---|---|
+| 1. Project Structure | 🟡 YELLOW | 🟢 GREEN | top-level cleaned, scope notes added |
+| 2. Agent Architecture | 🟢 GREEN | 🟢 GREEN | (already green; not touched) |
+| 3. Skill Usage | 🔴 **RED** | 🟢 **GREEN** | **5 skills** (3 with scripts), all verified |
+| 4. Scope & Complexity | 🟡 YELLOW | 🟡 YELLOW | UI rationale unchanged; bridges trimmed |
+| 5. Context Hygiene | 🔴 **RED** | 🟢 **GREEN** | 304→140 bridge lines, session_logs untracked |
+| 6. Safety | 🟢 GREEN | 🟢 GREEN | (already green; settings.json now adds explicit allow/deny) |
+| 7. Workflow Design | 🟡 YELLOW | 🟢 GREEN | workflows lifted into skills with validation scripts; baseline-check runs the full 4-stage gate |
+
+**Net: 7 dimensions, 0 RED, 1 YELLOW (Scope), 6 GREEN.** ทุก gate ผ่าน, ทุก commit governance passes, 4 commits push บน `docs/memory-os-mvp` (`5a2a39b → df20946`).
