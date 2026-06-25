@@ -589,6 +589,7 @@ function recordOutcome(t, model, worker, status, review) {
     getStore(CONFIG).recordOutcome({
       taskId: t.id, taskTitle: t.title, type: t.type, model, worker, status,
       tier: resolveTier(worker, CONFIG),   // FR-001: tag the lesson's memory tier (pool worker -> T0)
+      role: roleFor(t),                    // FR-007: which role unit this lesson distils into
       at: new Date().toISOString(), issues: review?.issues || [], summary: review?.summary || "",
     })
   ).catch(() => { /* knowledge store ล้ม -> เงียบ ไม่กระทบ execution */ });

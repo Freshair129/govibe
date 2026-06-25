@@ -12,6 +12,7 @@ import { join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { CONFIG, PATHS, reload, loadState, saveState, freshState, readyTasks, byId, executeWithReview, modelFor } from "./engine.mjs";
 import { planTasks, summarizeRepo } from "./planner.mjs";
+import { detectPrimaryLang, pickLocalModel } from "./routing.mjs";
 
 // L0 (RM-008): pick deterministic compile/lint checks for the target stack. $0, runs before review.
 function detectL0(root) {
@@ -41,7 +42,7 @@ for (let i = 0; i < argv.length; i++) {
 }
 const taskText = taskParts.join(" ").trim();
 const max = Number(opts.max) || 0;
-const execModel = opts["exec-model"] || null;
+let execModel = opts["exec-model"] || null;
 if (!taskText) { console.error('usage: node run.mjs "<task>" [--repo PATH] [--max N] [--exec-model provider:model]'); process.exit(1); }
 
 // ── 0. optional external target repo (TASK-HYB-RM-005 / RM-008) ──
@@ -84,6 +85,12 @@ console.log(`=== hybrid run ===\ntask : ${taskText}\nrepo : ${repo.replace(/\n/g
 const plan = await planTasks(taskText, repo, CONFIG, PATHS, process.env.PLAN_MODEL ? { model: process.env.PLAN_MODEL } : {});
 if (!plan.ok) { console.error("plan failed:", plan.error, plan.sample || ""); process.exit(1); }
 let tasks = plan.tasks;
+// RM-007: if no execution model was pinned, route to a local model by the repo's detected language.
+if (!execModel) {
+  const lang = detectPrimaryLang(repo);
+  const m = pickLocalModel(lang, CONFIG);
+  if (m) { execModel = m; console.log(`local model  : ${lang} -> ${m} (per-language routing)`); }
+}
 if (execModel) tasks = tasks.map((t) => ({ ...t, model: execModel }));
 console.log(`planned ${tasks.length} tasks via ${plan.model} ($${(plan.usage?.cost || 0).toFixed(4)})`);
 for (const t of tasks) console.log(`  ${t.id} [${t.type}] ${t.title}`);

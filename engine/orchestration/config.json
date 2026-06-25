@@ -10,6 +10,15 @@
     "exclusions": []
   },
 
+  "localModelByLang": {
+    "rust": "ollama:gemma4-rust-coder:latest",
+    "typescript": "ollama:qwen3:latest",
+    "javascript": "ollama:qwen3:latest",
+    "python": "ollama:qwen3:latest",
+    "go": "ollama:qwen3:latest",
+    "default": "ollama:qwen3:latest"
+  },
+
   "providers": {
     "claude": {
       "enabled": true,

@@ -13,6 +13,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { classifyLessons } from "../promotion.mjs";
+import { distill } from "../distill.mjs";
 
 const __dir = dirname(fileURLToPath(import.meta.url));
 const BRAIN = join(__dir, "..", "brain");
@@ -27,12 +28,23 @@ const overlap = (a, b) => { const sb = new Set(b); return a.filter((w) => sb.has
 const toMistake = (r) => ({ issue: r.issue || r.detail || "", fix: r.fix || "", task: r.taskId || r.task || "", severity: r.severity || "" });
 const dedupe = (rows) => { const seen = new Set(); return rows.filter((r) => { const k = (r.issue || r.detail || "").slice(0, 80); if (!k || seen.has(k)) return false; seen.add(k); return true; }); };
 
+// 8-8-8 distillation over the failure-log (FR-007): fold a role's >= cadence corroborated lessons
+// into one semantic role-core atom. Shared by both stores (the jsonl log is written in both modes).
+function distillFromLog(role, { cadence = 8, minConfirmations = 2 } = {}) {
+  if (!existsSync(FAILLOG)) return null;
+  const rows = readFileSync(FAILLOG, "utf8").split("\n").filter(Boolean)
+    .map((j) => { try { return JSON.parse(j); } catch { return null; } }).filter(Boolean);
+  const entries = rows.filter((r) => !role || r.role === role)
+    .map((r) => ({ content: r.issue, fix: r.fix, agentId: `${r.taskId}|${r.worker}`, recordedAt: r.at }));
+  return distill(entries, { tier: "T1", cadence, minConfirmations });
+}
+
 // แตก outcome 1 ตัว -> หลาย "failure rows" (1 row ต่อ 1 issue) เพื่อให้ค้นได้ราย issue ใน L1
 function failureRows(rec) {
   const issues = rec.issues?.length ? rec.issues : [{ severity: rec.status === "failed" ? "blocked" : "major", area: "produce", detail: rec.summary || rec.status, fix: "" }];
   return issues.map((is) => ({
     taskId: rec.taskId, title: rec.taskTitle, type: rec.type, status: rec.status,
-    model: rec.model, worker: rec.worker, tier: rec.tier || "T0", at: rec.at,
+    model: rec.model, worker: rec.worker, tier: rec.tier || "T0", role: rec.role || "", at: rec.at,
     issue: is.detail || "", fix: is.fix || "", severity: is.severity || "", area: is.area || "",
   }));
 }
@@ -56,6 +68,7 @@ function fileStore() {
         .map((l) => ({ issue: l.issue, fix: l.fix, epistemic_state: l.epistemic_state, confidence: l.confidence }));
     },
     async groundContext() { return null; },   // L2 ต้องใช้ GRL ของ GenesisDB — file mode degrade เป็น static scope.docs
+    async distillRole(role, opts) { return distillFromLog(role, opts); },   // FR-007 8-8-8
     async close() {},
   };
 }
@@ -126,6 +139,7 @@ function genesisStore(g = {}) {
         return { tokenEstimate, reasoningPath, lines: titles.slice(0, 6) };
       } catch { return null; }
     },
+    async distillRole(role, opts) { return distillFromLog(role, opts); },   // FR-007 8-8-8 (shared jsonl)
     async close() { try { await db?.saveState?.(); } catch { /* */ } },
   };
 }

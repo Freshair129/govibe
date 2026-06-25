@@ -10,6 +10,8 @@
  */
 import * as E from "./engine.mjs";
 import { runAutonomous, stopAutonomous } from "./auto-wave.mjs";
+import { getStore } from "./store/knowledge.mjs";
+import { probeReadiness } from "./preflight.mjs";
 
 const ACTIVE = E.ACTIVE;
 
@@ -122,6 +124,35 @@ async function cmdAutoWave({ maxWaves, supervisorModel, concurrency, dryRun }) {
   console.log(`  report: ${res.reportFile}\n`);
 }
 
+// RM-006: onboarding preflight — probe Ollama / local models / frontier provider, guide gracefully.
+async function cmdDoctor() {
+  const C = E.CONFIG;
+  const host = C.providers?.ollama?.host || "http://127.0.0.1:11434";
+  const deps = {
+    ollamaTags: async () => {
+      const r = await fetch(`${host}/api/tags`, { signal: AbortSignal.timeout(4000) });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return ((await r.json()).models || []).map((m) => m.name);
+    },
+    frontierEnabled: (cfg) => ["claude", "codex", "openrouter", "antigravity"].some((p) => cfg.providers?.[p]?.enabled),
+  };
+  const pf = await probeReadiness(C, deps);
+  console.log(`\n  hybrid-meter doctor`);
+  console.log(`  Ollama   : ${pf.ollama ? "reachable" : "NOT reachable"}  (${pf.localModels.length} local models)`);
+  console.log(`  Frontier : ${pf.frontier ? "enabled" : "none enabled"}`);
+  console.log(`  Ready    : ${pf.ready ? "yes" : pf.canRunDegraded ? "degraded (frontier-only, paid)" : "no"}`);
+  if (pf.issues.length) { console.log("\n  To fix:"); for (const i of pf.issues) console.log(`   - ${i}`); }
+  console.log("");
+}
+// FR-007: print the distilled role-core (>= 8 corroborated lessons folded into one semantic atom).
+async function cmdDistill(role) {
+  const atom = await getStore(E.CONFIG).distillRole(role || undefined);
+  if (!atom) { console.log(`no distilled role-core yet (need >= 8 corroborated lessons${role ? ` for role '${role}'` : ""})`); return; }
+  console.log(`\n  role-core (${role || "all"}) — distilled from ${atom.distilledFrom} episodes, ${atom.atoms.length} confirmed lesson(s):`);
+  for (const a of atom.atoms) console.log(`   • ${a.lesson}${a.fix ? `  -> ${a.fix}` : ""}  (x${a.confirmations})`);
+  console.log("");
+}
+
 const [cmd, a1, a2] = process.argv.slice(2);
 try {
   switch (cmd) {
@@ -142,6 +173,8 @@ try {
       dryRun: process.argv.includes("--dry-run"),
     }); break;
     case "stop": stopAutonomous(); console.log("→ pool stop requested"); break;
-    default: console.log("commands: status | next | graph [--mermaid] | claim <id> [-w name] | release|done|fail <id> | assign <id> <model> | run [--max N] [--execute] | auto-wave [--max-waves N] [--supervisor MODEL] [--max N] [--dry-run] | stop | reset");
+    case "doctor": await cmdDoctor(); break;
+    case "distill": await cmdDistill(a1); break;
+    default: console.log("commands: status | next | graph [--mermaid] | claim <id> [-w name] | release|done|fail <id> | assign <id> <model> | run [--max N] [--execute] | auto-wave [--max-waves N] [--supervisor MODEL] [--max N] [--dry-run] | doctor | distill [role] | stop | reset");
   }
 } catch (e) { console.error("ERROR: " + e.message); process.exitCode = 1; }

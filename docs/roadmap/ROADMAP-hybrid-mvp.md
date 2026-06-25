@@ -3,8 +3,8 @@ title: "ROADMAP: GoVibe Hybrid MVP"
 doc_id: "ROADMAP-HYBRID-MVP"
 uid: "01KVXGFW5MNW1D402AH0ZQBSFS"
 status: "draft"
-version: "0.6.0+draft"
-content_hash: "atom:c9c4374322b6fdc7"
+version: "0.7.0+draft"
+content_hash: "atom:b0f5f23ffe9742db"
 updated: "2026-06-25"
 owner: "LYRA"
 auditor: "ATHER"
@@ -44,7 +44,7 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
 | PHASE-HYB-01 | Checkpoint: governed architecture (memory + tiered review) + V0 wow surface | SYSTEM-05 | ADR-020, FEAT x2, SDD, PRD | ADR/FEAT registered + docs:validate PASS; `npx hybrid-meter` demo runs | done | 100 |
 | PHASE-HYB-02 | NOW: V1 — real hybrid loop on a user repo (frontier plan -> local execute -> verify -> live meter) | SYSTEM-05 | this roadmap, engine audit | `hybrid-meter run "task"` produces a real diff + usage.jsonl + meter on one repo | done | 100 |
 | PHASE-HYB-03 | NEXT: sharpen savings (L0 deterministic review; steady-state measurement) | SYSTEM-05 | FEAT-Tiered-Review | L0 gate cuts the review tax; measured steady-state savings recorded | done | 100 |
-| PHASE-HYB-04 | NEXT/LATER: memory moat (T0 failure-log -> T1/T2 Diamond/8-8-8) | SYSTEM-05 | FEAT-Per-Agent-Memory-Unit, ADR-020 | agent stops repeating failures (T0); promotion gate live (T1/T2) | in_progress | 80 |
+| PHASE-HYB-04 | NEXT/LATER: memory moat (T0 failure-log -> T1/T2 Diamond/8-8-8) | SYSTEM-05 | FEAT-Per-Agent-Memory-Unit, ADR-020 | agent stops repeating failures (T0); promotion gate live (T1/T2) | done | 100 |
 | PHASE-HYB-05 | LATER: distribution + GTM (npm, web meter, Thai/SEA) | SYSTEM-05 | landing, CR | published; web cost-meter view; first Thai/SEA motion | in_progress | 40 |
 
 ## Sprints
@@ -53,7 +53,7 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
 |---|---|---|---:|---|---|---:|
 | SPR-HYB-01 | PHASE-HYB-01 | Land architecture + V0 meter | 1 | ADR/FEAT + npx meter shipped, validate PASS | done | 100 |
 | SPR-HYB-02 | PHASE-HYB-02 | V1 happy-path: planner + run CLI + repo-agnostic scope + proof | 4 | `run "task"` runs end-to-end on one repo | done | 100 |
-| SPR-HYB-03 | PHASE-HYB-02 | V1 hardening: onboarding + cross-platform + per-language routing | 2 | a stranger can run it on their own repo | planned | 0 |
+| SPR-HYB-03 | PHASE-HYB-02 | V1 hardening: onboarding + cross-platform + per-language routing | 2 | a stranger can run it on their own repo | done | 100 |
 | SPR-HYB-04 | PHASE-HYB-03 | Savings + memory levers | 2 | L0 gate + T0 failure memory landed | done | 100 |
 
 ## Backlog Items
@@ -65,8 +65,8 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
 | TASK-HYB-RM-003 | SPR-HYB-02 | feature | `hybrid-meter run "task"` CLI: planner -> engine.runPool -> Verify Gate -> usage.jsonl -> live meter | SYSTEM-05 | P0 | ARCHON | V1 run | TASK-HYB-RM-002 | one command runs the loop and shows the meter over a real diff | done | 100 |
 | TASK-HYB-RM-004 | SPR-HYB-02 | feature | Repo-agnostic scope: generalize the engine's hardcoded G-Maiden/Rust prompt hints to a detected/config stack | SYSTEM-05 | P1 | ARCHON | V1 portability | TASK-HYB-RM-001 | engine prompts adapt to the target repo's language/stack | done | 100 |
 | TASK-HYB-RM-005 | SPR-HYB-02 | feature | Happy-path proof: run on one sample repo, produce a real diff + meter, record an honest savings figure | SYSTEM-05 | P0 | ATHER | V1 proof | TASK-HYB-RM-003, TASK-HYB-RM-004 | end-to-end run produces a working change and an honest meter | done | 100 |
-| TASK-HYB-RM-006 | SPR-HYB-03 | feature | Onboarding: detect/install Ollama, pull a default general coding model, accept a frontier key/subscription | SYSTEM-05 | P0 | KIN | V1 onboarding | TASK-HYB-RM-005 | first run sets up deps or degrades gracefully with a clear message | planned | 0 |
-| TASK-HYB-RM-007 | SPR-HYB-03 | feature | Cross-platform + per-language local model routing (current benchmark is Rust-only) | SYSTEM-05 | P1 | ARCHON | V1 breadth | TASK-HYB-RM-006 | runs on win/mac/linux; routes a local model per detected language | planned | 0 |
+| TASK-HYB-RM-006 | SPR-HYB-03 | feature | Onboarding: detect/install Ollama, pull a default general coding model, accept a frontier key/subscription | SYSTEM-05 | P0 | KIN | V1 onboarding | TASK-HYB-RM-005 | first run sets up deps or degrades gracefully with a clear message | done | 100 |
+| TASK-HYB-RM-007 | SPR-HYB-03 | feature | Cross-platform + per-language local model routing (current benchmark is Rust-only) | SYSTEM-05 | P1 | ARCHON | V1 breadth | TASK-HYB-RM-006 | runs on win/mac/linux; routes a local model per detected language | done | 100 |
 | TASK-HYB-RM-008 | SPR-HYB-04 | feature | L0 deterministic gate (compile/lint/test before any LLM review) per FEAT-Tiered-Review | SYSTEM-05 | P1 | ATHER | Savings lever | TASK-HYB-RM-003 | non-compiling output is caught at $0 before any LLM review | done | 100 |
 | TASK-HYB-RM-009 | SPR-HYB-04 | feature | T0 per-agent failure memory (anti-error loop) per FEAT-Per-Agent-Memory-Unit | SYSTEM-05 | P1 | ARCHON | Memory lever | TASK-HYB-RM-003 | repeated failures drop after a lesson enters the failure-log | done | 100 |
 | TASK-HYB-RM-010 | PHASE-HYB-05 | epic | Distribution: npm publish + web cost-meter view (V0.5) + Thai/SEA beachhead | SYSTEM-05 | P2 | LYRA | GTM | TASK-HYB-RM-005 | published; shareable web meter; first Thai/SEA motion | in_progress | 40 |
@@ -115,20 +115,24 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
 - [x] PHASE-HYB-03 lever 2 — RM-009 T0 per-agent failure memory landed (FEAT-Per-Agent-Memory-Unit, T0 slice): a failure (including an L0 deterministic failure, now persisted with its real tool output) enters the failure-log, is retrieved for a similar future task, and is injected into the worker prompt as a "❌ ห้ามทำซ้ำ" anti-error block so the same error is not produced again. Proven deterministically: `anti-error-loop.test.mjs` 4/4 (log round-trip + prompt injection + L0-lesson capture). T1/T2 promotion + 8-8-8 distillation remain (PHASE-HYB-04).
 - [x] Steady-state savings measured (FR-005 telemetry): `engine/orchestration/review-tax.mjs` (`analyzeReviewTax`) + a new `— L0 GATE —` section in `savings-report.mjs` compute the review tax % and the savings the L0 gate produced. Measured on a real multi-task run: L0 caught **3** deterministic failures → averted **~$2.22** of frontier review (@ $0.74/review reference), dropping the review tax from a counterfactual **~100%** to a measured **0%** on that run. Deterministic tests: `review-tax.test.mjs` 5/5. The live cost meter now surfaces an `L0 gate averted ~$X` line.
 - [x] FEAT-Tiered-Review complete (all 3 tiers): L0 deterministic (RM-008) + L1 local-SLM escalate-only (FR-002, `l1Route`/`runL1`, opt-in `config.review.l1`, `l1-route.test.mjs` 5/5 — L1 can only pass-or-escalate, high-stakes always reaches L2 per FR-003) + L2 frontier (existing) + FR-005 per-tier telemetry on the meter.
-- [~] PHASE-HYB-04 memory moat (FEAT-Per-Agent-Memory-Unit, **80% — all FR contracts implemented + tested; core live**):
+- [x] PHASE-HYB-04 memory moat (FEAT-Per-Agent-Memory-Unit — **all FR contracts implemented + tested; T0/T1 live, T1 distillation invokable**):
   - FR-005 promotion gate: `promotion.mjs` `classifyLessons` promotes Hypothesis -> Confirmed after **≥2 independent** confirmations; `queryContext` ranks Confirmed above one-off Hypotheses; prompt marks them "(ยืนยันแล้ว)". **Live.**
   - FR-001 tiers: `memory.mjs` `resolveTier` (worker -> T0, role -> T1, named -> T2); recordOutcome now tags each failure-log lesson with its tier. **Live (T0).**
   - FR-002/003/004 Diamond entry: `memory.mjs` 3-file unit (Episodic/Observation/Semantic) + epistemic_state (Hypothesis|Confirmed|Contested|Deprecated) + bitemporal fields (mirrors FEAT-Bi-Temporal-Versioning, kept local so the engine stays standalone).
   - FR-006 LCA: `lca.mjs` `resolveConflict` — temporal -> evidence -> granularity -> recency; loser Deprecated + retained.
   - FR-007 8-8-8 distillation: `distill.mjs` folds a ≥8 corroborated-episode window into one semantic role-core atom (T1/T2 only); composes the promotion gate.
   - FR-008 composition: no new storage engine; reuses the file store + promotion gate.
-  - Tests: `promotion.test.mjs` 5/5 + `memory.test.mjs` 9/9. Remaining (live integration, not contracts): auto-scheduling 8-8-8 distillation on a cadence, named-agent **T2** lifecycle (binds to the agent-registry, which lives outside the standalone engine), and MSP/GKS shared-truth promotion wiring.
+  - Live: `recordOutcome` tags each lesson with tier + role; `distill` is invokable on the real failure-log via `store.distillRole(role)` and the `orchestrator distill [role]` CLI. Tests: `promotion.test.mjs` 5/5 + `memory.test.mjs` 9/9 + `distill-store.test.mjs` 1/1.
+  - Out of the standalone engine (GoVibe-app integration, not engine contracts): named-agent **T2** lifecycle (binds the agent-registry), MSP/GKS shared-truth promotion, and optional auto-cron scheduling of the 8-8-8 cadence.
+- [x] SPR-HYB-03 V1 hardening done: **RM-006 onboarding** (`preflight.mjs` `probeReadiness`/`summarizePreflight` + `orchestrator doctor` — probes Ollama/local-model/frontier and degrades gracefully with actionable guidance; `preflight.test.mjs` 5/5) + **RM-007 per-language routing** (`routing.mjs` `detectPrimaryLang`/`pickLocalModel` + `config.localModelByLang`; `run --repo` auto-selects the on-device coder model for the detected language; `routing.test.mjs` 3/3). Cross-platform is inherent (plain Node, `shell:true` spawns).
+- [x] **Full test gate green** (2026-06-25): engine `node --test` **42/42** (l0-gate·l1-route·anti-error·review-tax·promotion·memory·routing·preflight·distill-store) + GoVibe `vitest` **92/92** (12 files) + `tsc --noEmit` 0 errors + `vite build` ✓ + `docs:validate`/`roadmap:validate` PASS (`npm run baseline:check` exit 0).
 - [~] PHASE-HYB-05 distribution (RM-010, **in progress**): shareable **web cost-meter** at `engine/hybrid-meter/web/index.html` (loads your own `usage.jsonl`; shows saved %, on-device %, review tax, and L0-averted; rendering verified via DOM — saved ~$2/≈43%, 50% on-device, review tax 75%, L0 averted $1.48). The engine is **publish-ready** as `@govibe/hybrid-meter` (`bin: hybrid-meter`; `npm pack --dry-run` = 79 kB). **Not published** — remaining needs the owner's action: pick a license, `npm login`, `npm publish`; plus the Thai/SEA GTM motion.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.7.0+draft | 2026-06-25 | LYRA | Finish the engine roadmap: RM-006 onboarding preflight (doctor) + RM-007 per-language local routing (SPR-HYB-03 done); PHASE-HYB-04 done (distillation invokable via store.distillRole + distill CLI). Full test gate green: 42 engine + 92 vitest + lint + build + governance. Only owner-gated npm publish + Thai/SEA GTM remain (RM-010). |
 | 0.6.0+draft | 2026-06-25 | LYRA | PHASE-HYB-04 memory moat to 80%: all FEAT-Per-Agent-Memory-Unit contracts implemented + tested — tiers (FR-001), Diamond entry + epistemic + bitemporal (FR-002/003/004), LCA (FR-006), 8-8-8 distillation (FR-007), composition (FR-008); tier-tagging wired live. memory.test.mjs 9/9 (33 engine tests total). |
 | 0.5.0+draft | 2026-06-25 | LYRA | PHASE-HYB-05 distribution (in progress): shareable web cost-meter (engine/hybrid-meter/web, rendering verified) + engine publish-ready as @govibe/hybrid-meter (bin, npm pack 79kB). Not published — npm publish + Thai/SEA GTM need the owner. |
 | 0.4.3+draft | 2026-06-25 | LYRA | PHASE-HYB-04 promotion gate (FR-005 core, in progress): classifyLessons promotes failure-log lessons Hypothesis->Confirmed after >=2 independent confirmations; queryContext ranks Confirmed above Hypotheses. promotion.test.mjs 5/5. |
