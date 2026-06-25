@@ -137,6 +137,12 @@
       "timeoutMs": 120000,
       "_comment": "L0 deterministic gate (FEAT-TIERED-REVIEW FR-001 / RM-008): shell checks run in the target repo BEFORE any paid LLM review; any non-zero exit routes to rework at $0. Empty = no-op (back-compat); auto-detected per stack when --repo is used."
     },
+    "l1": {
+      "enabled": false,
+      "model": "ollama:qwen3:latest",
+      "lowStakesTypes": ["docs", "scaffold", "config"],
+      "_comment": "L1 local-SLM escalate-only pre-filter (FEAT-TIERED-REVIEW FR-002): after L0 passes, a free local model pre-reviews low-stakes output -> 'pass' clears it (skip the paid L2 reviewer) or 'escalate' sends it up. L1 can NEVER reject/rework on its own. enabled=false by default (opt-in). High-stakes types (code/test) always go to L2 (FR-003)."
+    },
     "_comment": "Verify Gate (ADR-O-001). reviewerRole à¸à¸³à¸«à¸™à¸”à¸§à¹ˆà¸²à¹ƒà¸Šà¹‰ role à¹„à¸«à¸™à¸£à¸µà¸§à¸´à¸§ â€” resolve à¸œà¹ˆà¸²à¸™ roles[reviewerRole].preferred."
   },
 

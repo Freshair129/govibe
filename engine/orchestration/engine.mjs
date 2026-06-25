@@ -538,6 +538,41 @@ function formatL0Note(l0, attempt) {
   const lines = l0.failures.map((f) => `- \`${f.cmd}\` exited ${f.code}:\n${f.output || "(no output)"}`);
   return `## ROUND ${attempt} — L0 deterministic gate ตีกลับ (compile/lint/test ไม่ผ่าน) แก้ให้ผ่านก่อน ห้ามส่งโค้ดที่ build ไม่ขึ้น:\n${lines.join("\n\n")}`;
 }
+// L1 — local-SLM escalate-only pre-filter (FEAT-TIERED-REVIEW FR-002). Pure routing decision so it
+// is unit-tested without an LLM: given config-enabled + task stakes + the L1 verdict, is the work
+// cleared ("done") or must it escalate to the paid L2 reviewer ("l2")?
+export function l1Route({ enabled, lowStakes, verdict }) {
+  if (!enabled || !lowStakes) return "l2";        // disabled, or high-stakes -> always frontier L2 (FR-003)
+  return verdict === "pass" ? "done" : "l2";      // low-stakes: L1 may clear; anything else escalates (FR-002)
+}
+function isLowStakes(t) {
+  if (t.requireReview === true) return false;      // explicitly forced high-stakes
+  return (CONFIG.review?.l1?.lowStakesTypes || []).includes(t.type);
+}
+function buildL1Prompt(t, output) {
+  return [
+    `คุณคือ pre-reviewer ท้องถิ่นที่เร็ว ตรวจคร่าว ๆ ว่า output ผ่าน acceptance แบบไม่มีความเสี่ยงชัดเจนหรือไม่.`,
+    `กฎ: คุณ "ปฏิเสธ/สั่งแก้เองไม่ได้" — ตอบได้แค่ pass (สะอาด ชัดเจน ผ่าน) หรือ escalate (มีข้อสงสัย/ความเสี่ยง/ไม่แน่ใจ -> ส่งต่อ reviewer ใหญ่). ไม่แน่ใจให้ escalate.`, ``,
+    `# Task ${t.id}: ${t.title}`,
+    `## Acceptance`, t.accept, ``,
+    `## OUTPUT ที่ตรวจ`, "```", String(output || "(ว่าง)").slice(-4000), "```", ``,
+    `ตอบเป็น JSON ล้วน: {"verdict":"pass|escalate"}`,
+  ].join("\n");
+}
+async function runL1(t, worker) {
+  const full = CONFIG.review?.l1?.model;
+  const parsed = full ? parseModel(full) : null;
+  if (!parsed) return { ran: false };
+  const output = readLog(t.id)?.text || "";
+  const r = await runProvider(parsed.provider, { ...t, id: `${t.id}#l1` }, parsed.model, `${worker}.l1`, buildL1Prompt(t, output), CONFIG, PATHS);
+  const u = r.usage || {};
+  recordUsage({ id: t.id + "#l1", model: full, mode: r.provider || parsed.provider, cost: u.cost || 0, inTok: u.inTok || 0, outTok: u.outTok || 0, cache: u.cache || 0 });
+  if (!r.ok && !r.logFile) return { ran: false };
+  const text = r.logFile ? readFileSync(r.logFile, "utf8") : "";
+  const v = parseVerdict(text) || {};
+  return { ran: true, verdict: v.verdict === "pass" ? "pass" : "escalate" };   // escalate-only & safe default
+}
+
 // T0 lesson text from an L0 failure — keep the real tool-output tail (the actual cause, e.g.
 // "pnpm exec clippy: not found") so the failure-log entry is a retrievable, reusable lesson.
 export function l0Lesson(f) {
@@ -594,6 +629,15 @@ export async function executeWithReview(t, model, worker) {
       }
       setStatus(t.id, "needs-rework");
       return "needs-rework";
+    }
+    // L1 — local-SLM escalate-only pre-filter (FR-002): a free local model may clear low-stakes
+    // work, skipping the paid L2 reviewer; anything uncertain escalates. L1 never rejects on its own.
+    if (CONFIG.review?.l1?.enabled && isLowStakes(t)) {
+      const l1 = await runL1(t, worker);
+      if (l1.ran && l1Route({ enabled: true, lowStakes: true, verdict: l1.verdict }) === "done") {
+        setStatus(t.id, "done"); return "done";          // cleared at $0 by local review; L2 skipped (logged as #l1)
+      }
+      // escalate -> fall through to L2
     }
     setStatus(t.id, "reviewing");
     const review = await runReview(t, model, worker);

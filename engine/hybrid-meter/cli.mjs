@@ -11,6 +11,7 @@ import { readFileSync, watchFile } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve } from 'node:path'
 import { spawnSync } from 'node:child_process'
+import { analyzeReviewTax } from '../orchestration/review-tax.mjs'
 
 const DIR = dirname(fileURLToPath(import.meta.url))
 const argv = process.argv.slice(2)
@@ -35,7 +36,8 @@ function compute(rows) {
   }
   const avg = produce.reduce((a, b) => a + b, 0) / (produce.length || 1)
   const cfReal = localRuns * avg
-  return { total: rows.length, localRuns, actual, review, cfReal, cfFloor, allFrontier: actual + cfReal }
+  const rt = analyzeReviewTax(rows)   // L0 review-tax lever (FR-005)
+  return { total: rows.length, localRuns, actual, review, cfReal, cfFloor, allFrontier: actual + cfReal, l0Fails: rt.l0Fails, averted: rt.avertedEst }
 }
 const bar = (f, w) => '█'.repeat(Math.round(f * w)) + C.dim + '·'.repeat(w - Math.round(f * w)) + C.reset
 
@@ -52,6 +54,7 @@ function frame(d, clear) {
   L.push(`  ${C.bold}hybrid  $${d.actual.toFixed(2)}${C.reset}      ${C.green}${bar(d.allFrontier ? d.actual / d.allFrontier : 0, 28)}${C.reset}`)
   L.push('')
   L.push(`  ${C.gray}produce/plan $${(d.actual - d.review).toFixed(2)}  ·  ${C.yellow}review $${d.review.toFixed(2)} (${reviewPct.toFixed(0)}% = next lever)${C.reset}`)
+  if (d.l0Fails) L.push(`  ${C.teal}L0 gate averted ~$${d.averted.toFixed(2)} review (${d.l0Fails} caught at $0 before any reviewer)${C.reset}`)
   return (clear ? '\x1b[2J\x1b[H' : '') + L.join('\n') + '\n'
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms))
