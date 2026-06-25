@@ -576,7 +576,7 @@ export async function executeWithReview(t, model, worker) {
     if (!requireReviewFor(t)) { setStatus(t.id, "done"); return "done"; }
     // L0 deterministic gate (RM-008 / FEAT-TIERED-REVIEW FR-001): $0, before any paid LLM review.
     const l0 = runL0(t);
-    if (l0.ran) recordUsage({ id: t.id + "#l0", model: "deterministic:l0", mode: "l0", cost: 0 });
+    if (l0.ran) recordUsage({ id: t.id + "#l0", model: `deterministic:l0:${l0.pass ? "pass" : "fail"}`, mode: "l0", cost: 0 });
     if (l0.ran && !l0.pass) {
       // T0 anti-error loop (RM-009 / FEAT-PER-AGENT-MEMORY-UNIT): persist the deterministic lesson
       // (with the real tool output, not just an exit code) so queryPastMistakes injects it as

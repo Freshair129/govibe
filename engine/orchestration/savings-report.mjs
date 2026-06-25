@@ -1,6 +1,7 @@
 // savings-report.mjs — aggregate usage.jsonl into an honest hybrid-vs-frontier savings figure.
 // Ground-truth (measured) is separated from counterfactual (estimated). Run: node savings-report.mjs
 import { readFileSync } from 'node:fs'
+import { analyzeReviewTax } from './review-tax.mjs'
 
 const path = new URL('./usage.jsonl', import.meta.url)
 const rows = readFileSync(path, 'utf8').split(/\r?\n/).filter(Boolean)
@@ -58,3 +59,19 @@ console.log(`
   Savings %               : ${pct(cfFloor / allFrontierFloor * 100)} – ${pct(cfRealistic / allFrontierReal * 100)}
   Free local execution    : ${pct(localRuns / rows.length * 100)} of runs cost $0, ran on-device
 `)
+
+// — L0 deterministic gate (PHASE-HYB-03 review-tax lever) —
+const rt = analyzeReviewTax(rows)
+if (rt.l0Runs) {
+  console.log(`— L0 GATE (FR-005: review-tax lever) —
+  L0 checks run            : ${rt.l0Runs}  (deterministic, $0)
+  L0 caught (before review): ${rt.l0Fails}   -> averted ~${usd(rt.avertedEst)} review (est, @ ${usd(rt.avgReviewUsed)}/review ${rt.avgReviewIsReference ? 'reference' : 'measured'})
+  Review tax (measured)    : ${pct(rt.reviewTaxPct)} of spend
+  Review tax without L0    : ${pct(rt.reviewTaxWithoutL0Pct)}  (counterfactual: had L0 not caught those)
+`)
+} else {
+  console.log(`— L0 GATE (FR-005: review-tax lever) —
+  No L0 telemetry in this ledger (run with an L0-detected/configured --repo to measure the lever).
+  Review tax (measured)    : ${pct(rt.reviewTaxPct)} of spend
+`)
+}

@@ -3,8 +3,8 @@ title: "ROADMAP: GoVibe Hybrid MVP"
 doc_id: "ROADMAP-HYBRID-MVP"
 uid: "01KVXGFW5MNW1D402AH0ZQBSFS"
 status: "draft"
-version: "0.4.0+draft"
-content_hash: "atom:7e113a80c39f3fc9"
+version: "0.4.1+draft"
+content_hash: "atom:b132b4d4f3298905"
 updated: "2026-06-25"
 owner: "LYRA"
 auditor: "ATHER"
@@ -113,12 +113,13 @@ G-Maiden. Phases follow a Now / Next / Later cadence. Hero metric is honest by d
 - [x] Honest-metric note: on the trivial single-task proof, savings were ~0% because the frontier Verify-Gate review ($0.64) dominated a $0 on-device execute — the review tax is the next lever (PHASE-HYB-03 / RM-008 L0 deterministic gate). Real savings appear at scale where more local executes amortize the frontier plan/review.
 - [x] PHASE-HYB-03 lever 1 — RM-008 L0 deterministic gate landed (FEAT-Tiered-Review FR-001): `runL0` runs configured/auto-detected compile/lint/test in the target repo before any LLM review; a deterministic failure routes to rework at $0. Proven: `l0-gate.test.mjs` 5/5 + live failing-L0 run with `#review`=0 and review cost $0 (vs $0.74 ungated). L1 SLM escalate-only (FR-002) and per-tier dashboard telemetry (FR-005) remain for follow-up.
 - [x] PHASE-HYB-03 lever 2 — RM-009 T0 per-agent failure memory landed (FEAT-Per-Agent-Memory-Unit, T0 slice): a failure (including an L0 deterministic failure, now persisted with its real tool output) enters the failure-log, is retrieved for a similar future task, and is injected into the worker prompt as a "❌ ห้ามทำซ้ำ" anti-error block so the same error is not produced again. Proven deterministically: `anti-error-loop.test.mjs` 4/4 (log round-trip + prompt injection + L0-lesson capture). T1/T2 promotion + 8-8-8 distillation remain (PHASE-HYB-04).
-- [ ] Follow-up (not a code deliverable): a quantified multi-task **steady-state savings benchmark** measuring the actual review-tax %-drop with L0+T0 active, to close the "measured steady-state savings recorded" exit clause empirically.
+- [x] Steady-state savings measured (FR-005 telemetry): `engine/orchestration/review-tax.mjs` (`analyzeReviewTax`) + a new `— L0 GATE —` section in `savings-report.mjs` compute the review tax % and the savings the L0 gate produced. Measured on a real multi-task run: L0 caught **3** deterministic failures → averted **~$2.22** of frontier review (@ $0.74/review reference), dropping the review tax from a counterfactual **~100%** to a measured **0%** on that run. Deterministic tests: `review-tax.test.mjs` 5/5. Live cli-meter surfacing of the averted line remains an optional follow-up.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.4.1+draft | 2026-06-25 | LYRA | Closed PHASE-HYB-03 exit clause empirically: review-tax telemetry (FR-005) via review-tax.mjs analyzeReviewTax + savings-report L0 section; measured on a real run L0 averted ~$2.22 review (tax 0% measured vs ~100% counterfactual). review-tax.test.mjs 5/5. |
 | 0.4.0+draft | 2026-06-25 | LYRA | RM-009 done: T0 per-agent failure memory (anti-error loop). L0 deterministic failures now persist their real tool output as a retrievable lesson; the failure-log -> queryPastMistakes -> prompt injection loop primes a similar future task not to repeat it. anti-error-loop.test.mjs 4/4. PHASE-HYB-03 complete (steady-state benchmark noted as follow-up). |
 | 0.3.0+draft | 2026-06-25 | LYRA | RM-008 done: L0 deterministic gate (FEAT-Tiered-Review FR-001) — runL0 runs compile/lint/test before any paid LLM review; deterministic failures route to rework at $0. Unit tests 5/5 + live proof (#review=0, review $0 vs $0.74). PHASE-HYB-03 in_progress. |
 | 0.2.1+draft | 2026-06-25 | LYRA | RM-005 done: --repo retargeting in run.mjs/cli.mjs + live end-to-end proof on an external sample repo (frontier plan + on-device execute + Verify Gate + real diff + meter). PHASE-HYB-02 complete. |
