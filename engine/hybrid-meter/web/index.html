@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>GoVibe · Hybrid Cost Meter</title>
+<style>
+  :root { --bg:#0b0f14; --fg:#e6edf3; --dim:#8b98a5; --teal:#2dd4bf; --green:#34d399; --yellow:#fbbf24; --line:#1c2530; --card:#10161e; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:15px/1.5 ui-monospace,"SF Mono",Menlo,Consolas,monospace; padding:32px 20px; }
+  .wrap { max-width:720px; margin:0 auto; }
+  h1 { font-size:18px; font-weight:700; margin:0 0 2px; }
+  .sub { color:var(--dim); font-size:13px; margin-bottom:24px; }
+  .hero { display:flex; flex-wrap:wrap; gap:18px; align-items:baseline; margin:18px 0 22px; }
+  .saved { color:var(--green); font-weight:700; font-size:26px; }
+  .chip { color:var(--teal); font-size:13px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:14px; }
+  .row { margin:10px 0; }
+  .lbl { color:var(--dim); font-size:12px; margin-bottom:4px; display:flex; justify-content:space-between; }
+  .bar { height:14px; border-radius:7px; background:#0d1117; overflow:hidden; border:1px solid var(--line); }
+  .fill { height:100%; }
+  .fill.frontier { background:#33404d; }
+  .fill.hybrid { background:linear-gradient(90deg,var(--green),var(--teal)); }
+  .tax { color:var(--yellow); }
+  .averted { color:var(--teal); }
+  .foot { color:var(--dim); font-size:12px; margin-top:18px; }
+  input[type=file]{ color:var(--dim); font:inherit; font-size:12px; margin-top:10px; }
+  a { color:var(--teal); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>GoVibe · Hybrid Cost Meter</h1>
+  <div class="sub">frontier plans + reviews · local SLMs execute on-device · <span id="runs"></span></div>
+
+  <div class="hero">
+    <div class="saved" id="saved">~$0</div>
+    <div class="chip" id="ondevice">0% on-device · $0</div>
+    <div class="chip">100% code local</div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div class="lbl"><span>all-frontier (counterfactual)</span><span id="afNum">$0</span></div>
+      <div class="bar"><div class="fill frontier" style="width:100%"></div></div>
+    </div>
+    <div class="row">
+      <div class="lbl"><span>hybrid (actual spend)</span><span id="hyNum">$0</span></div>
+      <div class="bar"><div class="fill hybrid" id="hyBar" style="width:0%"></div></div>
+    </div>
+    <div class="row" style="margin-top:14px; font-size:13px;">
+      <span class="dim">produce/plan <span id="produce">$0</span></span> ·
+      <span class="tax">review <span id="review">$0</span> (<span id="taxPct">0</span>% — review tax)</span>
+    </div>
+    <div class="row averted" id="avertedRow" style="font-size:13px; display:none;">
+      L0 gate averted ~<span id="averted">$0</span> review (<span id="l0n">0</span> caught at $0 before any reviewer)
+    </div>
+  </div>
+
+  <div class="foot">
+    Hero number is an estimate (run-replacement counterfactual); local execution cost is measured ($0).
+    Load your own ledger: <input type="file" id="file" accept=".jsonl,.json,.txt" />
+    <div style="margin-top:8px">CLI: <code>hybrid-meter watch path/to/usage.jsonl</code></div>
+  </div>
+</div>
+
+<script>
+// Embedded sample (a small, representative measured-style ledger). Replace by loading your own
+// usage.jsonl via the file picker below, or point the CLI: hybrid-meter watch path/to/usage.jsonl
+const SAMPLE = [
+  {id:"P1",model:"claude:opus",cost:0.26,out:720},      // frontier plan
+  {id:"T1",model:"ollama:qwen3:latest",cost:0,out:900},  // local execute ($0)
+  {id:"T1#review",model:"claude:opus",cost:0.74,out:210},
+  {id:"T2",model:"ollama:qwen3:latest",cost:0,out:680},
+  {id:"T2#l0",model:"deterministic:l0:fail",cost:0},     // L0 caught -> no paid review
+  {id:"T3",model:"ollama:qwen3:latest",cost:0,out:820},
+  {id:"T3#review",model:"claude:opus",cost:0.74,out:190},
+  {id:"P2",model:"claude:opus",cost:0.24,out:640},       // frontier plan (2nd wave)
+  {id:"T4",model:"ollama:qwen3:latest",cost:0,out:760},
+  {id:"T5",model:"ollama:qwen3:latest",cost:0,out:910},
+  {id:"T5#l0",model:"deterministic:l0:fail",cost:0},     // L0 caught
+  {id:"T6",model:"ollama:qwen3:latest",cost:0,out:700},
+];
+const SONNET = { in:3, out:15 }, REF_REVIEW = 0.74;
+const isLocal = r => String(r.model||"").toLowerCase().includes("ollama");
+const isReview = r => String(r.id||"").includes("#review");
+const isL0 = r => String(r.model||"").startsWith("deterministic:l0") || String(r.id||"").includes("#l0");
+
+function compute(rows){
+  let actual=0, review=0, reviewRuns=0, localRuns=0, l0Fails=0; const produce=[];
+  for(const r of rows){
+    if(isL0(r)){ if(String(r.model||"").includes("l0:fail")) l0Fails++; continue; }
+    if(isLocal(r)){ localRuns++; continue; }
+    actual += r.cost||0;
+    if(isReview(r)){ review += r.cost||0; reviewRuns++; }
+    else if((r.out||0)>500) produce.push(r.cost||0);
+  }
+  const avgProduce = produce.reduce((a,b)=>a+b,0)/(produce.length||1);
+  const cfReal = localRuns*avgProduce;
+  const allFrontier = actual+cfReal;
+  const avgReview = reviewRuns ? review/reviewRuns : REF_REVIEW;
+  return {
+    total:rows.length, localRuns, actual, review, cfReal, allFrontier,
+    savedPct: allFrontier ? cfReal/allFrontier*100 : 0,
+    localPct: rows.length ? localRuns/rows.length*100 : 0,
+    taxPct: actual ? review/actual*100 : 0,
+    l0Fails, averted: l0Fails*avgReview,
+  };
+}
+const usd = n => "$"+(n||0).toFixed(2);
+function render(rows){
+  const d = compute(rows);
+  document.getElementById("runs").textContent = d.total+" runs";
+  document.getElementById("saved").textContent = "~$"+d.cfReal.toFixed(0)+" saved (≈"+d.savedPct.toFixed(0)+"%)";
+  document.getElementById("ondevice").textContent = d.localPct.toFixed(0)+"% on-device · $0";
+  document.getElementById("afNum").textContent = usd(d.allFrontier);
+  document.getElementById("hyNum").textContent = usd(d.actual);
+  document.getElementById("hyBar").style.width = (d.allFrontier ? d.actual/d.allFrontier*100 : 0)+"%";
+  document.getElementById("produce").textContent = usd(d.actual-d.review);
+  document.getElementById("review").textContent = usd(d.review);
+  document.getElementById("taxPct").textContent = d.taxPct.toFixed(0);
+  if(d.l0Fails){
+    document.getElementById("avertedRow").style.display="block";
+    document.getElementById("averted").textContent = usd(d.averted);
+    document.getElementById("l0n").textContent = d.l0Fails;
+  }
+}
+function parseLedger(text){
+  return text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean)
+    .map(l=>{ try { return JSON.parse(l); } catch { return null; } }).filter(Boolean);
+}
+document.getElementById("file").addEventListener("change", e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const rd = new FileReader();
+  rd.onload = () => { const rows = parseLedger(String(rd.result)); if(rows.length) render(rows); };
+  rd.readAsText(f);
+});
+render(SAMPLE);
+</script>
+</body>
+</html>

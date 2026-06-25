@@ -1,0 +1,25 @@
+{
+  "name": "@govibe/hybrid-meter",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "description": "Hybrid AI coding engine: a frontier model plans + reviews while local SLMs execute on-device, with a live cost meter showing what ran free and what was saved.",
+  "bin": {
+    "hybrid-meter": "hybrid-meter/cli.mjs"
+  },
+  "files": [
+    "orchestration",
+    "hybrid-meter",
+    "PROVENANCE.md",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED",
+  "keywords": ["llm", "ai-coding", "hybrid", "ollama", "cost", "local-first", "orchestration"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "_publishNote": "PUBLISH-READY, NOT PUBLISHED. Before `npm publish`: (1) choose a real license (UNLICENSED = proprietary placeholder), (2) confirm the @govibe scope/name is registered to you, (3) `npm login`, (4) `npm publish`. The engine bundles the orchestration runtime + hybrid-meter CLI; node-only, no build step."
+}
