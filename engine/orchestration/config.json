@@ -131,6 +131,12 @@
     "maxReworkRounds": 1,
     "skipForDraft": false,
     "reviewerRole": "reviewer",
+    "l0": {
+      "enabled": true,
+      "commands": [],
+      "timeoutMs": 120000,
+      "_comment": "L0 deterministic gate (FEAT-TIERED-REVIEW FR-001 / RM-008): shell checks run in the target repo BEFORE any paid LLM review; any non-zero exit routes to rework at $0. Empty = no-op (back-compat); auto-detected per stack when --repo is used."
+    },
     "_comment": "Verify Gate (ADR-O-001). reviewerRole à¸à¸³à¸«à¸™à¸”à¸§à¹ˆà¸²à¹ƒà¸Šà¹‰ role à¹„à¸«à¸™à¸£à¸µà¸§à¸´à¸§ â€” resolve à¸œà¹ˆà¸²à¸™ roles[reviewerRole].preferred."
   },
 

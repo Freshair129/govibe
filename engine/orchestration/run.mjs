@@ -13,6 +13,22 @@ import { spawnSync } from "node:child_process";
 import { CONFIG, PATHS, reload, loadState, saveState, freshState, readyTasks, byId, executeWithReview, modelFor } from "./engine.mjs";
 import { planTasks, summarizeRepo } from "./planner.mjs";
 
+// L0 (RM-008): pick deterministic compile/lint checks for the target stack. $0, runs before review.
+function detectL0(root) {
+  const has = (f) => existsSync(join(root, f));
+  if (has("Cargo.toml")) return ["cargo build --quiet"];
+  if (has("tsconfig.json")) return ["npx --no-install tsc --noEmit"];
+  try {
+    if (has("package.json")) {
+      const p = JSON.parse(readFileSync(join(root, "package.json"), "utf8").replace(/^﻿/, ""));
+      if (p.scripts?.lint) return ["npm run -s lint"];
+      if (p.scripts?.typecheck) return ["npm run -s typecheck"];
+      if (p.scripts?.build) return ["npm run -s build"];
+    }
+  } catch { /* unreadable package.json -> no L0 */ }
+  return [];
+}
+
 const BACKLOG_PATH = join(PATHS.__dir, "backlog.json");
 const USAGE_PATH = join(PATHS.__dir, "usage.jsonl");
 
@@ -28,22 +44,32 @@ const max = Number(opts.max) || 0;
 const execModel = opts["exec-model"] || null;
 if (!taskText) { console.error('usage: node run.mjs "<task>" [--repo PATH] [--max N] [--exec-model provider:model]'); process.exit(1); }
 
-// ── 0. optional external target repo (TASK-HYB-RM-005) ──
-// Override only PATHS.ROOT (agent cwd + file ops + diff) and CONFIG.project (prompt facts).
-// The engine board/state/usage stay anchored to PATHS.__dir, so bookkeeping never leaks into
-// the target repo — only the actual code changes land there.
+// ── 0. optional external target repo (TASK-HYB-RM-005 / RM-008) ──
+// Override PATHS.ROOT (agent cwd + file ops + diff), CONFIG.project (prompt facts), and the L0
+// gate commands. applyRepoTarget() is re-applied after reload() because reload() re-reads
+// config.json from disk and would otherwise wipe these in-memory overrides. Engine board/state/
+// usage stay anchored to PATHS.__dir, so bookkeeping never leaks into the target.
+let repoTarget = null;
 if (opts.repo && opts.repo !== true) {
-  const target = resolve(String(opts.repo));
-  if (!existsSync(target) || !statSync(target).isDirectory()) {
-    console.error(`--repo path is not an existing directory: ${target}`); process.exit(1);
+  repoTarget = resolve(String(opts.repo));
+  if (!existsSync(repoTarget) || !statSync(repoTarget).isDirectory()) {
+    console.error(`--repo path is not an existing directory: ${repoTarget}`); process.exit(1);
   }
-  PATHS.ROOT = target;
-  const name = target.split(/[\\/]/).filter(Boolean).pop() || "target";
-  CONFIG.project = { ...(CONFIG.project || {}), name, repoRoot: target.replace(/\\/g, "/") };
-  // don't point workers at GoVibe-specific docs inside a foreign repo
-  if (CONFIG.scope?.default) CONFIG.scope.default = { ...CONFIG.scope.default, docs: [] };
+}
+const l0cmds = repoTarget ? detectL0(repoTarget) : [];
+function applyRepoTarget() {
+  if (!repoTarget) return;
+  PATHS.ROOT = repoTarget;
+  const name = repoTarget.split(/[\\/]/).filter(Boolean).pop() || "target";
+  CONFIG.project = { ...(CONFIG.project || {}), name, repoRoot: repoTarget.replace(/\\/g, "/") };
+  if (CONFIG.scope?.default) CONFIG.scope.default = { ...CONFIG.scope.default, docs: [] };   // no GoVibe docs in a foreign repo
   CONFIG.docsForContext = [];
-  console.log(`target repo : ${target}`);
+  if (CONFIG.review?.l0 && !(CONFIG.review.l0.commands || []).length) CONFIG.review.l0.commands = l0cmds;
+}
+if (repoTarget) {
+  applyRepoTarget();
+  console.log(`target repo : ${repoTarget}`);
+  if (l0cmds.length) console.log(`L0 gate     : ${l0cmds.join(" && ")}`);
 }
 
 const usageSince = (t0) => {
@@ -70,6 +96,7 @@ const runStart = Date.now();
 try {
   writeFileSync(BACKLOG_PATH, JSON.stringify({ $run: taskText, tasks }, null, 2));
   reload();                       // engine BACKLOG now = planned tasks
+  applyRepoTarget();              // re-apply --repo overrides (reload re-read config.json from disk)
   saveState(freshState());        // fresh todo state for them
 
   // ── 3. run via the full engine (route -> produce -> Verify Gate -> usage) ──

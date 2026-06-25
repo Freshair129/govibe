@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.60+draft"
+version: "0.1.61+draft"
 updated: "2026-06-25"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.60+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.61+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -50,7 +50,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
-| Roadmap | `ROADMAP-HYBRID-MVP` | `0.2.1+draft` | draft | LYRA | `docs/roadmap/ROADMAP-hybrid-mvp.md` |
+| Roadmap | `ROADMAP-HYBRID-MVP` | `0.3.0+draft` | draft | LYRA | `docs/roadmap/ROADMAP-hybrid-mvp.md` |
 | Backlog | `BACKLOG-P1-MVP-CORE` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/BACKLOG-p1-mvp-core.md` |
 | Backlog | `BACKLOG-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/BACKLOG-task-scoped-context-injection.md` |
 | Implementation Plan | `IMP-SYSTEM05-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.2` | approved | LYRA / ARCHON / ATHER | `docs/roadmap/IMP-SYSTEM05-Task-Scoped-Context-Injection.md` |
@@ -190,6 +190,7 @@ Docs registered deterministically by `npm run docs:register` (ADR-007). Re-file 
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|| 0.1.58+draft | 2026-06-24 | GoVibe | Synced PRD-GOVIBE-MCP-ORCHESTRATION to 0.2.3+draft. |
+| 0.1.61+draft | 2026-06-25 | LYRA | Synced ROADMAP-HYBRID-MVP to 0.3.0+draft. |
 | 0.1.60+draft | 2026-06-25 | LYRA | Synced ROADMAP-HYBRID-MVP to 0.2.1+draft. |
 | 0.1.59+draft | 2026-06-25 | LYRA | Synced ROADMAP-HYBRID-MVP to 0.2.0+draft. |
 | 0.1.57+draft | 2026-06-24 | GoVibe | Governance-coverage sweep: backfilled frontmatter into 40 legacy docs (docs:backfill) and registered all 50 previously-orphan canonical docs (ADR/API/C4/SDD/SRS/RCA/RUNBOOK/FEAT) into §8. Enforced going forward by new validate gates (canonical-location lock + must-be-registered) and the ADR-007 pre-commit hook. |

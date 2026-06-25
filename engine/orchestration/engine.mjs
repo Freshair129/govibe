@@ -4,7 +4,7 @@
  * ฟังก์ชันทั้งหมด return ค่าแบบ structured (ไม่ print) เพื่อให้ทั้ง CLI/HTTP ใช้ได้.
  */
 import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync, openSync, closeSync, unlinkSync, readdirSync, createWriteStream, statSync, readSync } from "node:fs";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { getStore } from "./store/knowledge.mjs";
@@ -512,6 +512,33 @@ function formatReworkNote(review, attempt) {
   return `## ROUND ${attempt} — reviewer ตีกลับ แก้ตาม issues ให้ครบ:\n${lines.join("\n")}\n(reviewer summary: ${review.summary || ""})`;
 }
 
+// L0 — Deterministic gate (FEAT-TIERED-REVIEW FR-001 / TASK-HYB-RM-008).
+// Run configured shell checks (compile / lint / typecheck / test) in the TARGET repo BEFORE any
+// paid LLM review. Any non-zero exit = deterministic failure -> route to rework at $0; the worker
+// never reaches the frontier (L2) reviewer until its output at least compiles. Empty commands =
+// no-op (back-compat) so the existing flow is unchanged unless L0 is configured/detected.
+export function runL0(t) {
+  const l0 = CONFIG.review?.l0;
+  const cmds = (l0?.enabled !== false && Array.isArray(l0?.commands)) ? l0.commands.filter(Boolean) : [];
+  if (!cmds.length) return { ran: false, pass: true, failures: [] };
+  const timeout = l0?.timeoutMs || 120000;
+  const failures = [];
+  for (const cmd of cmds) {
+    let r;
+    try { r = spawnSync(cmd, { cwd: PATHS.ROOT, shell: true, timeout, encoding: "utf8" }); }
+    catch (e) { failures.push({ cmd, code: -1, output: String(e).slice(-1500) }); continue; }
+    if (r.status !== 0) {
+      const out = ((r.stdout || "") + (r.stderr || "")).trim().slice(-1500);
+      failures.push({ cmd, code: r.status ?? -1, output: out });
+    }
+  }
+  return { ran: true, pass: failures.length === 0, failures };
+}
+function formatL0Note(l0, attempt) {
+  const lines = l0.failures.map((f) => `- \`${f.cmd}\` exited ${f.code}:\n${f.output || "(no output)"}`);
+  return `## ROUND ${attempt} — L0 deterministic gate ตีกลับ (compile/lint/test ไม่ผ่าน) แก้ให้ผ่านก่อน ห้ามส่งโค้ดที่ build ไม่ขึ้น:\n${lines.join("\n\n")}`;
+}
+
 // L0 (ADR-O-003 / SPEC--LOCAL-MODEL-ANTI-ERROR-LOOP) — เก็บความผิดที่ Verify Gate ตีกลับ
 // write-only, fire-and-forget, best-effort: ห้ามทำ Verify Gate/pool ช้าหรือพัง
 function recordOutcome(t, model, worker, status, review) {
@@ -541,6 +568,21 @@ export async function executeWithReview(t, model, worker) {
     const r = await runAgent(t, model, worker, { reworkNote, pastMistakes, grounded });
     if (!r.ok) { setStatus(t.id, "failed"); recordOutcome(t, model, worker, "failed", null); return "failed"; } // empty/blocked/exit≠0
     if (!requireReviewFor(t)) { setStatus(t.id, "done"); return "done"; }
+    // L0 deterministic gate (RM-008 / FEAT-TIERED-REVIEW FR-001): $0, before any paid LLM review.
+    const l0 = runL0(t);
+    if (l0.ran) recordUsage({ id: t.id + "#l0", model: "deterministic:l0", mode: "l0", cost: 0 });
+    if (l0.ran && !l0.pass) {
+      if (CONFIG.review?.autoRework && round < (CONFIG.review?.maxReworkRounds || 0)) {
+        round++; reworkNote = formatL0Note(l0, round + 1);
+        setStatus(t.id, "running", { worker, claimedAt: now() }); continue;        // back to worker, no LLM spent
+      }
+      setStatus(t.id, "needs-rework");
+      recordOutcome(t, model, worker, "needs-rework", {
+        issues: l0.failures.map((f) => ({ severity: "critical", area: "compile", detail: `${f.cmd} exited ${f.code}` })),
+        summary: "L0 deterministic gate failed",
+      });
+      return "needs-rework";
+    }
     setStatus(t.id, "reviewing");
     const review = await runReview(t, model, worker);
     if (!review.ran) return "reviewing";                                    // reviewer ใช้ไม่ได้ -> ค้าง (lease reclaim ภายหลัง)
