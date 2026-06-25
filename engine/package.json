@@ -12,7 +12,8 @@
     "hybrid-meter",
     "PROVENANCE.md",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "LICENSE-COMMERCIAL.md"
   ],
   "engines": {
     "node": ">=18"

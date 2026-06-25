@@ -41,7 +41,8 @@ frontier provider (e.g. the `claude` CLI) for planning + the L2 review tier.
 **AGPL-3.0-or-later** (see `LICENSE`). You may use, modify, and redistribute this freely; if you
 run a modified version as a network service, the AGPL requires you to offer your source to its
 users. A separate **commercial license** (for closed-source / SaaS use without the AGPL
-obligations) is available from the copyright holder — i.e. this is dual-licensed.
+obligations) is available from the copyright holder — i.e. this is dual-licensed. See
+`LICENSE-COMMERCIAL.md` for the commercial-license template (fill in the bracketed fields).
 
 > Copyright (C) 2026 GoVibe. Set the real copyright holder's legal name here and in `LICENSE`
 > before publishing.
