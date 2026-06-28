@@ -84,16 +84,18 @@ Agent Runtime ต้องบังคับใช้ข้อจำกัดก
 | **H5** | 5 | Access to all GKS-indexed documentation and metadata. |
 | **H6** | 6 | Full network traversal (Requires architectural override). |
 
-## 3. Compaction Height Mapping (Layer Resolution)
-| Height | Layer Range | Mapping Example | Purpose |
+## 3. Compaction Height (D) Mapping (Layer Resolution)
+> **D = Compaction Height (D1–D5)**, distinct from the Context-Hop scale **H0–H6** (§2). Renamed per **ADR-022** to end the "H" collision. The `Purpose` column shows the typical WBS/hop band each compaction depth serves.
+
+| D-Height | Layer Range | Mapping Example | Typical Purpose (WBS/hop band) |
 |---|---|---|---|
-| **H6** | **N/A** | **Full Network / Vault** | **Enterprise Ceiling** |
-| **H5** | L2 - L0 | System -> Module -> Function | Masterplan / Roadmap |
-| **H4** | L3 - L0 | System -> Module -> Feat -> Function | System Architecture |
-| **H3** | L4 - L0 | System -> Module -> Feat -> Comp -> Method | Module Integration |
-| **H2** | L5 - L0 | System -> Mod -> Sub-Mod -> Feat -> Comp -> Method | Story / Spec |
-| **H1** | L7 - L0 | System -> Sub-Sys -> Mod -> Sub-Mod -> Feat -> Comp -> Class -> Method | Implementation |
-| **H0** | **1 Layer** | **Atomic (Single Node)** | **Subtask / PR** |
+| **(hop ceiling H6)** | **N/A** | **Full Network / Vault** | **Enterprise Ceiling — not a compaction level** |
+| **D5** | L2 - L0 | System -> Module -> Function | Masterplan / Roadmap |
+| **D4** | L3 - L0 | System -> Module -> Feat -> Function | System Architecture |
+| **D3** | L4 - L0 | System -> Module -> Feat -> Comp -> Method | Module Integration |
+| **D2** | L5 - L0 | System -> Mod -> Sub-Mod -> Feat -> Comp -> Method | Story / Spec |
+| **D1** | L7 - L0 | System -> Sub-Sys -> Mod -> Sub-Mod -> Feat -> Comp -> Class -> Method | Implementation |
+| **(uncompacted)** | **1 Layer** | **Atomic (Single Node)** | **Subtask / PR (Hop H0) — no compaction** |
 
 ## 4. Parser Protocol: Block Overwrite
 เมื่อ Agent มีความรับผิดชอบระดับ `L0` และต้องการแก้ไขโค้ด:

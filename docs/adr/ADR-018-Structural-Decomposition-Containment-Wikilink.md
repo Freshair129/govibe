@@ -3,9 +3,9 @@ doc_id: "ADR-018-STRUCTURAL-DECOMPOSITION-CONTAINMENT-WIKILINK"
 uid: "01KVXGFSJJS266CQDJ62AWA3JE"
 title: "ADR-018: Structural decomposition = single containment tree + wikilink cross-link graph"
 status: "accepted"
-version: "0.1.0"
-content_hash: "atom:0c0e272bfb8a4f69"
-updated: "2026-06-22"
+version: "0.1.1"
+content_hash: "atom:fc39957e4ae3cb6e"
+updated: "2026-06-29"
 owner: "Boss (CEO)"
 type: adr
 related_docs:
@@ -25,7 +25,7 @@ How to catalog systems/modules/features. Textbook enterprise-architecture keeps 
 Adopt a **single COMPOSITIONAL containment tree**:
 `PLAT → SYS → SUBSYS → MOD → SUBMOD → FEAT → COMP → CLASS → METH`
 - The **prefix is the stable type**; the `L0–L7` numbers are **relative depth** within a Hector-compacted chain (a prefix appears at different L-levels by height).
-- **Hector Height (H1–H5)** controls how many levels compact into one physical `.md` (Storage Layer).
+- **Compaction Height (D1–D5)** controls how many levels compact into one physical `.md` (Storage Layer). *(Renamed from "Hector Height H1–H5"; "H" is reserved for the Context-Hop scale H0–H6 — see [[ADR-022-Compaction-Height-Rename-H-to-D]].)*
 - **Cross-cutting / cross-system links use wikilink edges `[[TYPE::Name]]`** (an atom has one physical containment "primary owner" but N inbound references), constrained by the **Acyclic Backlink Invariant** (crosslinks flow upward; no cycles).
 - **Relationship criticality is auto-derived** from the dependency graph — *support* (reached only via a parent), *core* (shared + remove ⇒ system dead), *central* (shared + remove ⇒ feature loss only) — computed via GenesisBlockDB K-Impact `R(n)=0.5·DD+0.3·AS+0.2·SC`, not hand-labeled.
 
@@ -42,3 +42,4 @@ Adopt a **single COMPOSITIONAL containment tree**:
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.0 | 2026-06-22 | Boss (CEO) | Decided single containment tree + wikilink cross-link graph; criticality auto-derived. |
+| 0.1.1 | 2026-06-29 | Boss (CEO) | Body reference "Hector Height H1–H5" → "Compaction Height D1–D5"; the H→D rename is owned by ADR-022. |

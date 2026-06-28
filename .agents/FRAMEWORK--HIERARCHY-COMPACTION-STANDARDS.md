@@ -4,7 +4,7 @@ summary: มาตรฐานการบีบอัดไฟล์กาย�
 doc_id: GVDOC-1003
 created: "2026-06-02T19:40:00+07:00,Boss(CEO)"
 updated: "2026-06-07T12:20:00+07:00,Boss(CEO),98db9a5"
-version: "1.3.0b"
+version: "1.4.0b"
 state: active
 type: framework
 vault_id: default
@@ -43,17 +43,17 @@ crosslink:
 
 ---
 
-## **2. มาตรฐานระดับความลึกการบีบอัดไฟล์ (Compaction Heights: H5 - H1)**
+## **2. มาตรฐานระดับความลึกการบีบอัดไฟล์ (Compaction Heights: D5 - D1)**
 
-> **[ADR-018] Naming:** "Compaction Height" is renamed **`D` (D1–D5)** to disambiguate from the **Context Hop** scale (`H0–H6`, §3) — the same letter "H" was meaning two inverted things. `D` = how many structural levels pack into one physical `.md`; `H` = retrieval hop radius. Map to SWE doc abstraction: **D5 ≈ HLD/Architecture · D4 ≈ SDD · D3 ≈ SDD↔LLD · D2 ≈ LLD · D1 ≈ LLD/Code**. (Body below still says "H#" historically — read as "D#".)
+> **[ADR-022] Naming:** "Compaction Height" is renamed **`D` (D1–D5)** to disambiguate from the **Context Hop** scale (`H0–H6`, §3) — the same letter "H" was meaning two inverted things. `D` = how many structural levels pack into one physical `.md`; `H` = retrieval hop radius. Map to SWE doc abstraction: **D5 ≈ HLD/Architecture · D4 ≈ SDD · D3 ≈ SDD↔LLD · D2 ≈ LLD · D1 ≈ LLD/Code**. *(Decided 2026-06-22 in [[CHECKPOINT-2026-06-22-Architecture-Session]]; formalized as [[ADR-022-Compaction-Height-Rename-H-to-D]]. Body below now uses "D#".)*
 การเลือกใช้งานความสูง (Height) จะเป็นตัวกำหนดว่าใน 1 ไฟล์จะมีการซ้อนทับกันกี่ระดับชั้น โดยแบ่งออกตามความซับซ้อนของแต่ละ System ดังนี้:
 
 ### **📊 สรุปความสัมพันธ์ (Hierarchy Resolution Map)**
-* **H5 (3 Layers)**  ➔ `[L2-System] ➔ [L1-Module] ➔ [L0-Function]`
-* **H4 (4 Layers)**  ➔ `[L3-System] ➔ [L2-Module] ➔ [L1-Feat] ➔ [L0-Function]`
-* **H3 (5 Layers)**  ➔ `[L4-System] ➔ [L3-Module] ➔ [L2-Feat] ➔ [L1-Component] ➔ [L0-Method]`
-* **H2 (6 Layers)**  ➔ `[L5-System] ➔ [L4-Module] ➔ [L3-Sub-Module] ➔ [L2-Feat] ➔ [L1-Component] ➔ [L0-Method]`
-* **H1 (8 Layers)**  ➔ `[L7-System] ➔ [L6-Sub-System] ➔ [L5-Module] ➔ [L4-Sub-Module] ➔ [L3-Feat] ➔ [L2-Component] ➔ [L1-Class] ➔ [L0-Method]`
+* **D5 (3 Layers)**  ➔ `[L2-System] ➔ [L1-Module] ➔ [L0-Function]`
+* **D4 (4 Layers)**  ➔ `[L3-System] ➔ [L2-Module] ➔ [L1-Feat] ➔ [L0-Function]`
+* **D3 (5 Layers)**  ➔ `[L4-System] ➔ [L3-Module] ➔ [L2-Feat] ➔ [L1-Component] ➔ [L0-Method]`
+* **D2 (6 Layers)**  ➔ `[L5-System] ➔ [L4-Module] ➔ [L3-Sub-Module] ➔ [L2-Feat] ➔ [L1-Component] ➔ [L0-Method]`
+* **D1 (8 Layers)**  ➔ `[L7-System] ➔ [L6-Sub-System] ➔ [L5-Module] ➔ [L4-Sub-Module] ➔ [L3-Feat] ➔ [L2-Component] ➔ [L1-Class] ➔ [L0-Method]`
 
 ---
 
@@ -125,6 +125,7 @@ crosslink:
 
 | Version | Date | Time | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|---|
+| 1.4.0b | 2026-06-29 | 00:00 | active | Renamed Compaction Height H1-H5 → D1-D5 (§2 heading + Hierarchy Resolution Map); fixed citation ADR-018 → ADR-022. Ends the H-label collision with Context-Hop H0-H6. |
 | 1.3.0b | 2026-06-07 | 00:00 | active | ทำการวิเคราะห์และแยกแกนเนื้องาน (WBS) ออกจากแกนเวลา (Sprint/Cycle) และปรับการแมป H0-H6 ให้ตรงตามมาตรฐาน Agile |
 | 1.2.0b | 2026-06-07 | 00:00 | active | เพิ่มการเชื่อมโยงระบบแกนเวลา (Sprint/Cycle) เข้ากับ Hop H0-H6 และปรับโครงสร้างหัวข้อย่อย |
 | 1.0.0b | 2026-06-02 | 00:00 | active | ร่างโครงสร้างมาตรฐานการบีบอัดข้อมูลระบบและ Hierarchy Compaction รุ่นแรก |

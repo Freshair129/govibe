@@ -82,7 +82,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | ADR | `ADR-015-MASTER-ESSENCE-VS-GOV-POLICY` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-015-Master-Essence-vs-GOV-Policy.md` |
 | ADR | `ADR-016-FULL-STACK-MANDATORY-SWAPPABLE-BACKEND` | `0.2.0` | accepted | Boss (CEO) | `docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md` |
 | ADR | `ADR-017-GOVIBE-GOVERNANCE-TRANSLATOR-GKS-INTERLINGUA` | `0.1.1` | accepted | Boss (CEO) | `docs/adr/ADR-017-GoVibe-Governance-Translator-GKS-Interlingua.md` |
-| ADR | `ADR-018-STRUCTURAL-DECOMPOSITION-CONTAINMENT-WIKILINK` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md` |
+| ADR | `ADR-018-STRUCTURAL-DECOMPOSITION-CONTAINMENT-WIKILINK` | `0.1.1` | accepted | Boss (CEO) | `docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md` |
 | ADR | `ADR-019-UNIVERSAL-CODE-IN-MCP-OUT` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-019-Universal-Code-In-MCP-Out.md` |
 | ADR | `ADR-020-PER-AGENT-MEMORY-UNIT` | `0.1.0+draft` | proposed | ARCHON / ATHER | `docs/adr/ADR-020-Per-Agent-Memory-Unit.md` |
 | Architecture | `BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.1` | approved | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md` |
@@ -132,6 +132,7 @@ Docs registered deterministically by `npm run docs:register` (ADR-007). Re-file 
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
+| ADR | `ADR-022-COMPACTION-HEIGHT-RENAME-H-TO-D` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-022-Compaction-Height-Rename-H-to-D.md` |
 | FEAT | `FEAT-DOC-CONTENT-INTEGRITY` | `0.1.0+draft` | approved | ATHER | `docs/features/execution-governance/FEAT-Doc-Content-Integrity.md` |
 | FEAT | `FEAT-GKS-NODE-IDENTITY` | `0.1.0+draft` | approved | ARCHON | `docs/features/genesis-knowledge-system/FEAT-GKS-Node-Identity.md` |
 | ADR | `ADR-021-DOC-IDENTITY-MODEL` | `0.1.0+draft` | accepted | ARCHON / Boss (CEO) | `docs/adr/ADR-021-doc-identity-model.md` |

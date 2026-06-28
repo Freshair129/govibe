@@ -4,7 +4,7 @@ doc_id: "SDD-GKS-001"
 uid: "01KVXGFT191NNK249QPY7C00TQ"
 status: "candidate"
 version: "1.2.0"
-content_hash: "atom:00c04c36d57f9854"
+content_hash: "atom:f6e53caa7939b329"
 updated: "2026-06-13"
 owner: "THESEUS"
 source_of_truth: true
@@ -62,7 +62,7 @@ graph LR
     H2 --> H1[H1: Implementation]
     H1 --> H0[H0: Atomic/Subtask]
     
-    subgraph "Compaction Range (H5-H1)"
+    subgraph "Compaction Range (D5-D1, packs Hop levels H5-H1)"
     H5
     H4
     H3

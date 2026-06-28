@@ -22,7 +22,7 @@ Genesis Block คือ "จุดกำเนิดทางปัญญา" �
 
 ## 3. High-Level Requirements
 - **R-01: Context Scaling (H0-H6):** ต้องสามารถจำกัดวงการเข้าถึงกราฟข้อมูลของ Agent ได้ตามระดับชั้นของงาน
-- **R-02: Atom Compaction (H1-H5 Heights):** รองรับการบีบอัดข้อมูลหลายระดับชั้น (Layers) ลงใน GenesisBlockDB เพื่อประสิทธิภาพสูงสุด
+- **R-02: Atom Compaction (D1-D5 Heights):** รองรับการบีบอัดข้อมูลหลายระดับชั้น (Layers) ลงใน GenesisBlockDB เพื่อประสิทธิภาพสูงสุด *(เดิมเรียก H1-H5 — เปลี่ยนเป็น D ตาม ADR-022 กัน collision กับ Context-Hop H0-H6)*
 - **R-03: Deterministic Relinking:** ระบบต้องสามารถฉีดพ่น (Inject) ความสัมพันธ์ Backlinks ย้อนกลับสายโซ่ (Chain) ได้อัตโนมัติโดยไม่มี Loop (Acyclic Invariant)
 - **R-04: Multi-Agent Synchronization:** รองรับการทำงานร่วมกันของหลาย Agent ผ่านระบบ File Lock และ State Partitioning ในระดับ Atom ภายใน GenesisBlockDB
 
