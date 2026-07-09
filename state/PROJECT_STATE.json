@@ -1,0 +1,10 @@
+{
+  "project": "GoVibe Mission Control",
+  "mode": "overlay",
+  "current_phase": 0,
+  "phase_status": "approved",
+  "approved_phases": [],
+  "operating_agreement": "ratified",
+  "updated_at": "2026-07-09T07:51:21+07:00",
+  "notes": "Owner ratified RWANG Option A (thin overlay) on 2026-07-09. RWANG does NOT drive phases 1-7 for this mature repo and will NOT generate a competing MASTER_PLAN.md. Native governance (docs/DOC-VERSION-REGISTRY.md + docs:validate/baseline:check) remains SSOT for docs/. RWANG scope = root owner-material versioning + .githooks write-gate + state/queue orchestration. See .rwang/OPERATING_AGREEMENT.md."
+}

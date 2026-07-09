@@ -1,0 +1,43 @@
+#!/bin/sh
+# RWANG:Version write-gate (Layer 1).
+# Installed at .githooks/pre-commit because this repo sets core.hooksPath=.githooks
+# (the RWANG default .git/hooks/pre-commit would be ignored by git here).
+#
+# For every staged file that is registered in the RWANG sidecar (.rwang/meta/<path>.json):
+#   - its sidecar must be staged in the SAME commit, and
+#   - the sidecar's sha256 must match the staged content of the original.
+# Otherwise the commit is rejected with the exact bump command to run.
+# Bypassing with --no-verify is forbidden by RWANG rules.
+
+set -e
+fail=0
+staged=$(git diff --cached --name-only --diff-filter=ACM)
+
+for f in $staged; do
+  case "$f" in
+    .rwang/*) continue ;;
+  esac
+  sidecar=".rwang/meta/$f.json"
+  [ -f "$sidecar" ] || continue   # not registered -> not gated
+
+  recorded=$(grep -oE '"sha256"[[:space:]]*:[[:space:]]*"[a-f0-9]{64}"' "$sidecar" | grep -oE '[a-f0-9]{64}')
+  actual=$(git show ":$f" | sha256sum | cut -d' ' -f1)
+
+  if [ "$recorded" != "$actual" ]; then
+    if git diff --cached --name-only | grep -qx "$sidecar"; then
+      : # source changed AND sidecar re-staged with it -> allowed (a bump)
+    else
+      echo "RWANG:Version — BLOCKED: '$f' changed but its version was not bumped."
+      echo "  recorded sha256: $recorded"
+      echo "  staged   sha256: $actual"
+      echo "  Run:  RWANG:Version bump $f patch \"<reason>\"   (then re-stage $sidecar)"
+      fail=1
+    fi
+  fi
+done
+
+if [ "$fail" -ne 0 ]; then
+  echo "Commit rejected by RWANG write-gate. Do not use --no-verify."
+  exit 1
+fi
+exit 0

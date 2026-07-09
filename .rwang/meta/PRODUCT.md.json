@@ -1,0 +1,16 @@
+{
+  "id": "DOC-0001",
+  "points_to": "PRODUCT.md",
+  "type": "doc",
+  "version": "0.1.0",
+  "status": "draft",
+  "superseded_by": null,
+  "sha256": "68234a55937110810731a4246d5da0e11e1fc72ac2b4465f386a66c25f2fcabb",
+  "relations": { "depends_on": [], "referenced_by": [] },
+  "attributes": { "doc_type": "product-spec", "domain": "govibe", "role": "owner-material" },
+  "created_at": "2026-07-09T07:44:57+07:00",
+  "updated_at": "2026-07-09T07:44:57+07:00",
+  "changelog": [
+    { "version": "0.1.0", "date": "2026-07-09T07:44:57+07:00", "kind": "register", "change": "registered owner product spec into RWANG sidecar registry (drift detection active)", "ref": "RWANG:QuickStart", "agent": "claude-fable-5", "commit": null }
+  ]
+}
