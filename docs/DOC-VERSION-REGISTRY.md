@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.54+draft"
-updated: "2026-06-23"
+version: "0.1.56+draft"
+updated: "2026-07-10"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -27,9 +27,9 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
-| Standard | `STD-EXECUTION-GOVERNANCE` | `2.2.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
+| Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.54+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.56+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -71,7 +71,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Feature | `FEAT-QWEN-CLI-MODEL-ROUTING` | `0.1.3` | approved | KIN / LYRA / ATHER | `docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md` |
 | Audit | `AUDIT-COGNITIVE-SYSTEM-INBOUND-TRIAGE-2026-06-16` | `0.1.1` | approved | ATHER / LYRA | `docs/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md` |
 | Audit | `POC-5-AXIS-COVERAGE` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/POC-5-Axis-Coverage.md` |
-| Audit | `POC-H6-BUDGET-SUFFICIENCY` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/POC-H6-Budget-Sufficiency.md` |
+| Audit | `POC-H6-BUDGET-SUFFICIENCY` | `0.1.1` | approved | Boss (CEO) | `docs/audit/POC-H6-Budget-Sufficiency.md` |
 | Audit | `AUDIT-USER-FLOW-RUNTIME-GAPS-2026-06-22` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md` |
 | Feature | `FEAT-ROADMAP-PROMOTION-CONTRACT` | `0.1.0` | approved | LYRA | `docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md` |
 | Feature | `FEAT-VISUAL-AGENT-FLEET-SYSTEM` | `0.1.0` | approved | THESEUS | `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md` |
@@ -137,6 +137,8 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | 0.1.46+draft | 2026-06-22 | Boss (CEO) | Synced AGENT.md (1.2.1+draft, AGENTS.md-standard refactor), PRD-MCP-Orchestration (0.2.1+draft, +`orchestrate.step`), ADR-017 (0.1.1, GKS-not-hidden + language-pack=doc-format-template); registered new `FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION` (format-adaptive JIT). |
 | 0.1.45+draft | 2026-06-22 | Boss (CEO) | Drained §8 Auto-Registered into curated sections (BRD→§3; ADR-015..019, PoC-1/2, SDD-Integration→§5; SRS-Retrieval→§6); dropped `+draft` from the 5 accepted ADRs per STD §6 (frontmatter + footer) to match the ADR-013/014 precedent. |
 | 0.1.44+draft | 2026-06-22 | Boss (CEO) | Added §8 Auto-Registered (ADR-015..019 accepted, BRD, PoC-1/2, SRS-Retrieval, SDD-Integration); operationalized ADR-007 via `docs:register` + `docs:ratify`; added governance CI + H→D rename note. |
+| 0.1.56+draft | 2026-07-10 | Boss (CEO) | Sign-off sync: STD-EXECUTION-GOVERNANCE 2.3.0+ga (stable), POC-H6-BUDGET-SUFFICIENCY 0.1.1 (approved). |
+| 0.1.55+draft | 2026-07-10 | ClaudeFable (pending Boss sign-off) | Registered STD-EXECUTION-GOVERNANCE 2.3.0+draft (Access Scope H0-H4 proposal per RWANG RFC--H-AXIS-0.6.0) and POC-H6-BUDGET-SUFFICIENCY 0.1.1+draft (terminology cross-reference). |
 | 0.1.43+draft | 2026-06-21 | ATHER / THESEUS | Closed CR-2026-06-14 via accepted ADR-014 (MSP/GKS adapter as traceability gate) and signed off the now-unblocked MSP/governance cluster: FEAT-MSP, SDD-MSP, SDD-Symbol-Graph, AUDIT, MSP-GKS-Taxonomy (0.1.1/0.1.0), plus FEAT-Document-Version-Governance and FEAT-Roadmap-Promotion-Contract (0.1.0); registered ADR-014; synced PRD-GoVibe-MCP-Orchestration to 0.2.0+draft after authoring its body (held draft for owner review). |
 | 0.1.42+draft | 2026-06-20 | ATHER / THESEUS | Recorded sign-off: promoted three conflict-free chains to approved — TSCI (FEAT/SRS 0.1.0, BLUEPRINT/LLD 0.1.1, API-004 0.1.0, IMP 0.1.2), agent-team (Terminology/Quota 0.1.1, CoDev/CoVibe/Visual-Fleet FEAT 0.1.0, Qwen 0.1.3, SDD-Visual-Fleet 0.1.0), and runtime/MCP as-built (SRS-MCP/SRS-Ollama/LLD-Tools 0.2.1, SEQ/LLD-Launcher 0.1.2, RUNBOOK 0.2.4). MSP/GKS + governance-feature cluster held draft pending CR-2026-06-14. |
 | 0.1.41+draft | 2026-06-20 | ATHER / THESEUS | Synced registry after the draft-document conflict-refinement pass: bumped TSCI, MSP/governance, agent-team, and product rows; resolved both Visual Agent Fleet docs from migration-needed to draft with normalized uppercase doc_ids; registered SRS-GoVibe-MCP-Server, SRS-Ollama-Sidecar-Execution, SEQ-Ollama-Sidecar-Flow, LLD-GoVibe-MCP-Tools, LLD-Agent-Launcher-Execution-Router; normalized the IMP-GVMP01P05EP01 version cell to n/a. |

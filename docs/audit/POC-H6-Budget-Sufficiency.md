@@ -1,14 +1,16 @@
 ---
 doc_id: "POC-H6-BUDGET-SUFFICIENCY"
 title: "PoC-2: H0–H6 + budget is sufficient & complete as agent context"
-status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-22"
+status: "approved"
+version: "0.1.1"
+updated: "2026-07-10"
 owner: "Boss (CEO)"
 type: audit
 ---
 
 # PoC-2: H0–H6 + Budget Sufficiency
+
+> **Terminology note (2026-07-10):** the "H0–H6" analyzed here is the *retrieval-radius* scale — renamed **R0–R6** in `FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS` v1.4. It is distinct from the enforcement-side **Access Scope H0–H4** of `STD-Execution-Governance` v2.3. This PoC's two-dimensional split (reach × budget) and its measurable precondition (diameter ≤ 6 via ADR-018 cross-linking, checkable as `avg_path_length`) are the evidence base the v1.4/v2.3 redesign builds on — the analysis stands unchanged under the rename.
 
 ## 1. Claim
 The hop tiers **H0–H6**, **combined with a budget axis**, are **sufficient and complete** to supply any agent task the context it needs — reaching everything required while always staying within the token budget.
@@ -56,4 +58,5 @@ Both conditions reduce to **measurable invariants**, not faith:
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1 | 2026-07-10 | ClaudeFable / Boss (CEO) sign-off | Added rename cross-reference: this doc's H0–H6 = Retrieval Radius R0–R6 (GVDOC-1003 v1.4), distinct from Access Scope H0–H4 (STD v2.3). Analysis untouched. |
 | 0.1.0+draft | 2026-06-22 | Boss (CEO) | PoC-2: H0–H6 + budget sufficiency via reach(diameter≤6) × volume(always-fits-or-kickback). |
