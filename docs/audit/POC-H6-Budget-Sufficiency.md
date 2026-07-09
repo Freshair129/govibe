@@ -1,8 +1,8 @@
 ---
 doc_id: "POC-H6-BUDGET-SUFFICIENCY"
 title: "PoC-2: H0–H6 + budget is sufficient & complete as agent context"
-status: "draft"
-version: "0.1.1+draft"
+status: "approved"
+version: "0.1.1"
 updated: "2026-07-10"
 owner: "Boss (CEO)"
 type: audit
@@ -58,5 +58,5 @@ Both conditions reduce to **measurable invariants**, not faith:
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
-| 0.1.1+draft | 2026-07-10 | ClaudeFable (terminology note only) | Added rename cross-reference: this doc's H0–H6 = Retrieval Radius R0–R6 (GVDOC-1003 v1.4), distinct from Access Scope H0–H4 (STD v2.3). Analysis untouched. |
+| 0.1.1 | 2026-07-10 | ClaudeFable / Boss (CEO) sign-off | Added rename cross-reference: this doc's H0–H6 = Retrieval Radius R0–R6 (GVDOC-1003 v1.4), distinct from Access Scope H0–H4 (STD v2.3). Analysis untouched. |
 | 0.1.0+draft | 2026-06-22 | Boss (CEO) | PoC-2: H0–H6 + budget sufficiency via reach(diameter≤6) × volume(always-fits-or-kickback). |

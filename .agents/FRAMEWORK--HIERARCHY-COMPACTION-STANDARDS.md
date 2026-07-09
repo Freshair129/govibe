@@ -3,9 +3,9 @@ title: FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS
 summary: มาตรฐานการบีบอัดไฟล์กายภาพ (Chain-Driven Atom Compaction, CH1-CH5) และรัศมีบริบทบนกราฟของ AI Agent (Retrieval Radius R0-R6, เพดานแบบ derive)
 doc_id: GVDOC-1003
 created: "2026-06-02T19:40:00+07:00,Boss(CEO)"
-updated: "2026-07-10T00:00:00+07:00,ClaudeFable(draft),pending"
-version: "1.4.0+draft"
-state: draft
+updated: "2026-07-10T00:00:00+07:00,Boss(CEO),pending"
+version: "1.4.0"
+state: active
 type: framework
 vault_id: default
 source_type: axiomatic
@@ -127,7 +127,7 @@ Small World Phenomenon เป็น*แรงบันดาลใจ*ของ�
 
 | Version | Date | Time | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|---|
-| 1.4.0+draft | 2026-07-10 | 00:00 | draft | แยกสัญลักษณ์สามแกนให้เลิกชนกัน: Compaction Heights → CH1-CH5, Context Scaling → Retrieval Radius R0-R6 (คืนตัวอักษร H ให้ Access Scope ใน STD-Execution-Governance v2.3); เพดาน hop เป็นค่า derive จากความลึก hierarchy (2×(ชั้น−1); แก้เลขเส้นทางสูงสุด 6 nodes → 7 nodes รวมตัวเอง); แก้ทิศ TIP — spaghetti วัดด้วย fan-out (W) ไม่ใช่ path ยาว; เพิ่มศัพท์มาตรฐาน Rk = k-hop ego graph; เปลี่ยนรูปเวอร์ชันจากฟอร์ม `b` (ต้องห้ามตาม STD-Document-Versioning-Governance) เป็น `+draft` — รอ Boss sign-off จึงถอด `+draft` | pending | ClaudeFable |
+| 1.4.0 | 2026-07-10 | 00:00 | active | แยกสัญลักษณ์สามแกนให้เลิกชนกัน: Compaction Heights → CH1-CH5, Context Scaling → Retrieval Radius R0-R6 (คืนตัวอักษร H ให้ Access Scope ใน STD-Execution-Governance v2.3); เพดาน hop เป็นค่า derive จากความลึก hierarchy (2×(ชั้น−1); แก้เลขเส้นทางสูงสุด 6 nodes → 7 nodes รวมตัวเอง); แก้ทิศ TIP — spaghetti วัดด้วย fan-out (W) ไม่ใช่ path ยาว; เพิ่มศัพท์มาตรฐาน Rk = k-hop ego graph; เปลี่ยนรูปเวอร์ชันจากฟอร์ม `b` (ต้องห้ามตาม STD-Document-Versioning-Governance) เป็นรูปมาตรฐาน — sign-off โดย Boss (CEO) 2026-07-10 | pending | ClaudeFable / Boss (approver) |
 | 1.3.0b | 2026-06-07 | 00:00 | active | ทำการวิเคราะห์และแยกแกนเนื้องาน (WBS) ออกจากแกนเวลา (Sprint/Cycle) และปรับการแมป H0-H6 ให้ตรงตามมาตรฐาน Agile |
 | 1.2.0b | 2026-06-07 | 00:00 | active | เพิ่มการเชื่อมโยงระบบแกนเวลา (Sprint/Cycle) เข้ากับ Hop H0-H6 และปรับโครงสร้างหัวข้อย่อย |
 | 1.0.0b | 2026-06-02 | 00:00 | active | ร่างโครงสร้างมาตรฐานการบีบอัดข้อมูลระบบและ Hierarchy Compaction รุ่นแรก |

@@ -1,8 +1,8 @@
 ---
 title: "STD: Execution Governance Standard"
 doc_id: "STD-EXECUTION-GOVERNANCE"
-status: "draft"
-version: "2.3.0+draft"
+status: "stable"
+version: "2.3.0+ga"
 updated: "2026-07-10"
 owner: "GoVibe"
 source_of_truth: true
@@ -13,7 +13,7 @@ related_adrs: ["ADR-015", "ADR-018", "ADR-019"]
 
 **Title:** Execution Governance Standard
 **Summary:** Minimum viable process selection for safe work execution, mapped to Access Scope H0-H4 (enforceable capability tiers) and W-Scale fan-out control.
-**Version:** 2.3.0+draft
+**Version:** 2.3.0+ga
 **Updated:** 2026-07-10
 **Role:** Governance / Process Framework
 **Legacy Alias:** R10, Complexity-Based Execution Path
@@ -182,7 +182,7 @@ Every non-trivial task response should include:
 ## 12. Changelog
 | Version | Date | Summary |
 |---|---|---|
-| **2.3.0+draft** | 2026-07-10 | H-scale redefined as Access Scope: five enforceable capability tiers H0-H4; H5/H6 removed (granted nothing H4 does not; platform-level work is C-3 at H4); H defaults from complexity with upward-only override; H4 approval grantor derives from complexity; hop/radius language delegated to FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS (measured concern); W confirmed as the coupling detector. Upstream alignment with RWANG RFC--H-AXIS-0.6.0 (approved 2026-07-10). Pending owner sign-off — restore `+ga` and `stable` on approval. |
+| **2.3.0+ga** | 2026-07-10 | H-scale redefined as Access Scope: five enforceable capability tiers H0-H4; H5/H6 removed (granted nothing H4 does not; platform-level work is C-3 at H4); H defaults from complexity with upward-only override; H4 approval grantor derives from complexity; hop/radius language delegated to FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS (measured concern); W confirmed as the coupling detector. Upstream alignment with RWANG RFC--H-AXIS-0.6.0 (approved 2026-07-10). Signed off by Boss (CEO) 2026-07-10 — `+ga`/`stable` restored. |
 | **2.2.0+ga** | 2026-06-15 | Added canonical doc_id/version metadata and aligned the standard with the document versioning governance policy. |
 | **2.2** | 2026-06-12 | Expanded H-scale to H6, formalized W-Scale fan-out control, aligned C-to-H mapping with GVDOC-1004 handover normalization, and updated required output format. |
 | **2.1** | 2026-06-12 | Rewritten into readable UTF-8, added human-first artifacts, Docs to Code gate, Diagram to Doc gate, canonical source rule, and SDD/LLD naming guidance. |
@@ -193,5 +193,5 @@ Every non-trivial task response should include:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
-| 2.3.0+draft | 2026-07-10 | GoVibe (drafted by ClaudeFable, pending Boss sign-off) | Access Scope H0-H4 alignment per RWANG RFC--H-AXIS-0.6.0 — see section 12 row for detail. |
+| 2.3.0+ga | 2026-07-10 | GoVibe / Boss (CEO) sign-off | Access Scope H0-H4 alignment per RWANG RFC--H-AXIS-0.6.0 — see section 12 row for detail. |
 | 2.2.0+ga | 2026-06-20 | GoVibe | Normalized frontmatter (added title) and added changelog footer per STD-Document-Versioning-Governance. |
