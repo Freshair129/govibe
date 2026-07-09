@@ -1,0 +1,16 @@
+{
+  "id": "DOC-0002",
+  "points_to": "GoVibe_Implementation_Plan.md",
+  "type": "doc",
+  "version": "0.1.0",
+  "status": "draft",
+  "superseded_by": null,
+  "sha256": "9a42be4b45492e200bfe5258effeef23e36850cbbe647bac750562a79a3bedf2",
+  "relations": { "depends_on": ["DOC-0001"], "referenced_by": [] },
+  "attributes": { "doc_type": "implementation-plan", "domain": "govibe", "role": "owner-material" },
+  "created_at": "2026-07-09T07:44:57+07:00",
+  "updated_at": "2026-07-09T07:44:57+07:00",
+  "changelog": [
+    { "version": "0.1.0", "date": "2026-07-09T07:44:57+07:00", "kind": "register", "change": "registered owner migration roadmap/plan into RWANG sidecar registry", "ref": "RWANG:QuickStart", "agent": "claude-fable-5", "commit": null }
+  ]
+}

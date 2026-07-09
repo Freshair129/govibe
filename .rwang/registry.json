@@ -1,0 +1,9 @@
+{
+  "schema": "rwang.registry/1.0",
+  "generated_at": "2026-07-09T07:44:57+07:00",
+  "note": "Sidecar SemVer registry. Originals are never modified. GoVibe also runs its native doc governance (docs/DOC-VERSION-REGISTRY.md, docs:validate); RWANG scope here is deliberately narrow to root owner materials to avoid dueling registries — see state/events.jsonl.",
+  "items": [
+    { "id": "DOC-0001", "path": "PRODUCT.md", "type": "doc", "version": "0.1.0", "status": "draft" },
+    { "id": "DOC-0002", "path": "GoVibe_Implementation_Plan.md", "type": "doc", "version": "0.1.0", "status": "draft" }
+  ]
+}
