@@ -1,7 +1,12 @@
 # Feature Spec: GoVibe Mission Control Center (React Migration)
 
-**Version:** 1.0.0
-**Status:** `DRAFT`
+> **Superseded implementation topology (2026-07-19, design-doc audit).** เอกสารนี้ target
+> `apps/desktop` / `@govibe/ui` ซึ่งไม่มีอยู่จริง — สถาปัตยกรรมปัจจุบันคือ root-`src/`
+> (`src/App.tsx`, `src/features/dashboard/RealTimeDashboard.tsx`, `src/styles/shell.css`).
+> ก่อนงาน Mission Control UI ใหม่ ให้ใช้โค้ดปัจจุบันเป็น baseline + ขอ spec ที่ approve ใหม่.
+
+**Version:** 1.0.1
+**Status:** `SUPERSEDED-TOPOLOGY`
 **Document Type:** `feature-spec`
 **Target Path:** `apps/desktop/src/features/mission-control/`
 

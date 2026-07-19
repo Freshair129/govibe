@@ -1,5 +1,9 @@
 # FEAT-UI-MIGRATION: Layout & Dashboard Migration Spec
 
+> **Historical migration task — not current source of truth (2026-07-19, design-doc audit).**
+> path `packages/ui` / `apps/desktop` / `DashboardView.tsx` ที่อ้างในนี้ไม่ตรงกับแอปปัจจุบัน —
+> ใช้ `src/app/`, `src/features/dashboard/`, `src/styles/` ของจริงแทน.
+
 **Status:** `APPROVED`
 **Date:** 2026-06-06
 **Approved By:** User (Boss)

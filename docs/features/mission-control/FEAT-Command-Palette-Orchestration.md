@@ -1,5 +1,9 @@
 # FEAT-COMMAND-PALETTE: Global Command Palette & Terminal FX
 
+> **Historical proposal — not the current UI contract (2026-07-19, design-doc audit).**
+> งาน Command Palette ใด ๆ ต้อง validate กับ root-`src/` app ปัจจุบัน + spec ที่ approve ใหม่ —
+> ห้ามใช้ path `packages/ui` / `apps/desktop` ที่ obsolete.
+
 **Task ID:** GV-S410
 **Status:** APPROVED
 **Date:** 2026-06-07
