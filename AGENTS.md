@@ -2,7 +2,7 @@
 title: "GoVibe Universal Agent Operating Contract"
 summary: "สัญญาการทำงานสากลและการควบคุมจริยธรรมของ AI Agents ในโครงการ GoVibe"
 doc_id: "AGENTS-CORE-001"
-version: "1.3.1"
+version: "1.4.0"
 updated: "2026-06-22"
 owner: "THESEUS"
 type: "agents"
@@ -48,14 +48,21 @@ block_manifest:
 
 ---
 
-## 🛡️ 3. CONTEXT SCALING TIERS (H0-H6) [L3-Governance] AGENTS::SCALING
+## 🛡️ 3. ACCESS SCOPE (H0-H4) [L3-Governance] AGENTS::SCALING
 > 👁️ **Visual Node: SCALING_GOVERNANCE**
-> metadata: { "color": "#F44336", "icon": "shield-lock", "link_to": "[[AGENTS::UNIVERSAL_HUB]]", "label": "Scaling Tier" }
+> metadata: { "color": "#F44336", "icon": "shield-lock", "link_to": "[[AGENTS::UNIVERSAL_HUB]]", "label": "Access Scope" }
 
-Agent ต้องจำกัดวงการเรียกใช้เครื่องมือ (`grep_search`, `read_file`, `glob`) ตามระดับที่ได้รับมอบหมาย:
-- **H0/H1 (Worker):** จำกัดที่ไฟล์เดี่ยวและ Direct Dependencies
-- **H2/H3 (Lead/Planner):** เข้าถึง Feature/Module Context
-- **H4/H5 (Architect/Human):** เข้าถึงระดับ System/Enterprise Architecture
+H = **เพดาน capability ของ executor** ตาม `docs/STD-Execution-Governance.md` 2.3.x (canonical:
+RWANG PROMAX `references/EXECUTION-GOVERNANCE.md`) — **ไม่ใช่** context-hop radius อีกต่อไป
+(radius แยกเป็นแกน **R0-R6**, compaction แยกเป็น **CH1-CH5** — ดู GVDOC-1003):
+- **H0:** read ไฟล์เดี่ยว (glob/grep forbidden)
+- **H1:** + search (glob/grep)
+- **H2:** + write / multi-file edit
+- **H3:** + shell execution
+- **H4:** + network **และต้องได้ approval ก่อนลงมือ** (grantor ตาม complexity: C-2=lead, C-3=owner)
+
+Default map จาก Complexity: C-0→H0 · C-1→H1 · C-2→H2 · C-3→H3 (H4 by declaration);
+declare เฉพาะ override ขาขึ้น. **H5/H6 ถูกยกเลิก** (RWANG `RFC--H-AXIS-0.6.0`, sign-off 2026-07-10).
 
 ---
 
@@ -92,5 +99,6 @@ Agent ต้องจำกัดวงการเรียกใช้เค�
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.4.0 | 2026-07-19 | ClaudeFable | §3 synced to STD-Execution-Governance 2.3.x: Context Scaling Tiers H0-H6 → Access Scope H0-H4 (capability ceiling; radius→R, compaction→CH; H5/H6 abolished per RWANG RFC--H-AXIS-0.6.0). |
 | 1.3.1 | 2026-06-22 | THESEUS | Affirmed `AGENTS.md` as the standard contract auto-loaded by codex/gpt (with `AGENT.md`/`GEMINI.md` as compatibility bridges); fixed the stale Full-Scale Hub reference (`agent.md` → `AGENTS.md`). |
 | 1.3.0 | 2026-06-16 | THESEUS | Universal agent operating contract: hub-and-spoke metadata, unified handover, context scaling tiers, role directory, execution rules. |

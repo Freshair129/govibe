@@ -90,6 +90,18 @@ The **roadmap is document-driven**: the board's data originates from Markdown/HT
 - Live-data-only is a product rule (`PRODUCT.md`): do not introduce fake telemetry or mock values
   presented as backend state; use empty states that explain the missing feed.
 
+## Session memory (.brain/) — revived 2026-07-19
+
+Working memory lives in `.brain/` (git-tracked). **Start of session:** read
+`.brain/memory/todo-next.md` (rolling self-note — ranked next work + hard-won facts), then the
+newest file in `.brain/session/` if you need the full story. **End of session:** run the
+`end-session` skill (`.claude/skills/end-session/SKILL.md`) — session summary + todo-next
+refresh + CLAUDE/AGENTS drift check + validate-before-commit.
+
+Canonical Execution Governance (C/H/W, Access Scope H0-H4) lives in RWANG PROMAX
+(`D:/rwang/RWANG-PROMAX-skills/skills/rwang/references/EXECUTION-GOVERNANCE.md`);
+`docs/STD-Execution-Governance.md` here is a mirror.
+
 ## Working agreement (from AGENTS.md / AGENT.md)
 
 This repo runs under a documented agent operating contract — the canonical file is `AGENTS.md`

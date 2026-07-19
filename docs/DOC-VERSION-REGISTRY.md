@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.56+draft"
+version: "0.1.57+draft"
 updated: "2026-07-10"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -27,9 +27,9 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
-| Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
+| Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.1+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.56+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.57+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -129,6 +129,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.57+draft | 2026-07-19 | ClaudeFable (per Boss unification order) | STD-EXECUTION-GOVERNANCE 2.3.0+ga -> 2.3.1+ga: canonical home relocated to RWANG PROMAX references; GoVibe copy marked mirror (unification Mechanical #1). |
 | 0.1.51+draft | 2026-06-22 | LYRA | Promoted `ROADMAP-TRANSLATOR-CORE` draft → approved (0.1.0, dropped +draft per STD §6). |
 | 0.1.50+draft | 2026-06-22 | LYRA | Registered `ROADMAP-TRANSLATOR-CORE` (draft) — Now/Next/Later phases for the translator-core epic mapped to audit findings #1–#8. |
 | 0.1.49+draft | 2026-06-22 | Boss (CEO) | Resolved SRS-Translator-Core open questions (0.1.1+draft); registered `BLUEPRINT-TRANSLATOR-CORE-SLICE` + `LLD-TRANSLATOR-CORE-SLICE` (govibe.ingest.code/render tool contracts, both-metric fidelity, local-jsonl provenance). |
