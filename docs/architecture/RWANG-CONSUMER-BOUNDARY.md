@@ -19,9 +19,11 @@ owns the user-facing experience, GoVibe domain workflows, MCP presentation, and
 product-specific policy translation.
 
 RWANG is the canonical, headless execution kernel and governance/runtime
-boundary. GoVibe consumes RWANG through published SDK, service/API, and adapter
-contracts. GoVibe must not embed RWANG source code, copy its runtime modules, or
-make the RWANG repository a nested checkout.
+boundary. After an approved cutover, GoVibe may consume RWANG through an SDK,
+service/API, or adapter contract that has actually been published and versioned.
+No such integration is claimed by this document. GoVibe must not embed RWANG
+source code, copy its runtime modules, or make the RWANG repository a nested
+checkout.
 
 The historical `Rwang-orchestrator` identity is not an active GoVibe dependency.
 Future GoVibe work must target the canonical RWANG source and a released or
