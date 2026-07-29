@@ -1,44 +1,17 @@
-import fs from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-function initWorkspace() {
-  const root = process.cwd();
-  console.log("Initializing GoVibe Agent Infrastructure (Native)...");
+import { createMspClientFromEnvironment, initializeWorkspace, readSkillDefinition } from "../src/index.mjs";
 
-  // Directories
-  const dirs = [
-    ".agents/devops/handoff",
-    "scripts/agents",
-    "docs/adr",
-    "docs/architecture"
-  ];
+const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+const builtInPath = path.join(packageRoot, ".govibe", "skills", "block-decomposition", "1.0.0", "SKILL.md");
+const builtInSkill = await readSkillDefinition(builtInPath);
+const workspacePath = process.argv[2] ? path.resolve(process.argv[2]) : process.cwd();
+const result = await initializeWorkspace({
+  workspacePath,
+  builtInSkill,
+  mspClient: createMspClientFromEnvironment(),
+  actor: process.env.USERNAME ?? "govibe-cli",
+});
 
-  dirs.forEach(dir => {
-    const fullPath = path.join(root, dir);
-    if (!fs.existsSync(fullPath)) {
-      fs.mkdirSync(fullPath, { recursive: true });
-      console.log(`[Info] Created: ${dir}`);
-    }
-  });
-
-  // Handoff Log
-  const logPath = path.join(root, ".agents/devops/handoff/log.jsonl");
-  if (!fs.existsSync(logPath)) {
-    fs.writeFileSync(logPath, "");
-    console.log(`[Info] Created: .agents/devops/handoff/log.jsonl`);
-  }
-
-  // Base Contracts — AGENTS.md is the standard contract (codex/gpt auto-load); agent.md is a singular-name bridge.
-  const contracts = ["AGENTS.md", "GEMINI.md", "agent.md"];
-  contracts.forEach(c => {
-    const p = path.join(root, c);
-    if (!fs.existsSync(p)) {
-      fs.writeFileSync(p, `# Placeholder for ${c}\n`);
-      console.log(`[Info] Created: ${c}`);
-    }
-  });
-
-  console.log("\nSetup Complete. GoVibe Native Runtime ready.");
-}
-
-initWorkspace();
+console.log(JSON.stringify(result, null, 2));

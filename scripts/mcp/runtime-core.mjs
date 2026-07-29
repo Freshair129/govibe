@@ -1,5 +1,5 @@
 import { spawn } from "node:child_process";
-import { readFile } from "node:fs/promises";
+import { readFile, realpath } from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -19,6 +19,13 @@ import { render as renderFromTemplate, selectScope } from "./translator/renderer
 import { evaluate as evaluateFidelity } from "./translator/fidelity.mjs";
 import { buildRecord as buildProvenance, appendRecord as appendProvenance } from "./translator/provenance.mjs";
 import { atomizeCode, CODE_LANGS } from "./translator/code-atomizer.mjs";
+import {
+  continueWorkflow,
+  createMspClientFromEnvironment,
+  initializeWorkspace as prepareWorkspace,
+  readSkillDefinition,
+  scanWorkspace,
+} from "../../packages/govibe-core/src/index.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const roadmapDir = path.join(workspaceRoot, "docs", "roadmap");
@@ -376,8 +383,33 @@ function formatAgentRunResult(stdout, stderr, exitCode) {
   };
 }
 
+function configuredWorkspaceRoots() {
+  if (!process.env.GOVIBE_ALLOWED_WORKSPACE_ROOTS) return [workspaceRoot];
+  const roots = JSON.parse(process.env.GOVIBE_ALLOWED_WORKSPACE_ROOTS);
+  if (!Array.isArray(roots) || roots.length === 0 || roots.some((root) => typeof root !== "string" || !path.isAbsolute(root))) {
+    throw new Error("GOVIBE_ALLOWED_WORKSPACE_ROOTS must be a non-empty JSON array of absolute paths.");
+  }
+  return roots;
+}
+
+async function resolveDeclaredWorkspace(workspacePath, allowedRoots) {
+  if (!workspacePath || !path.isAbsolute(workspacePath)) {
+    throw new Error("workspacePath must be an absolute caller-declared root.");
+  }
+  const target = await realpath(path.normalize(workspacePath));
+  const roots = await Promise.all(allowedRoots.map((root) => realpath(path.normalize(root))));
+  const targetKey = process.platform === "win32" ? target.toLowerCase() : target;
+  const allowed = roots.some((root) => {
+    const rootKey = process.platform === "win32" ? root.toLowerCase() : root;
+    const relative = path.relative(rootKey, targetKey);
+    return relative === "" || (!relative.startsWith("..") && !path.isAbsolute(relative));
+  });
+  if (!allowed) throw new Error(`workspacePath is outside configured GoVibe roots: ${target}`);
+  return target;
+}
+
 export class GovibeRuntime {
-  constructor() {
+  constructor(options = {}) {
     this.snapshot = createEmptySnapshot();
     this.sessionTracker = new SessionTracker(workspaceRoot);
     this.listeners = new Set();
@@ -397,6 +429,8 @@ export class GovibeRuntime {
     };
     this.activeRoadmapSource = undefined;
     this.availableSources = [];
+    this.mspClient = options.mspClient ?? createMspClientFromEnvironment();
+    this.allowedWorkspaceRoots = options.allowedWorkspaceRoots ?? configuredWorkspaceRoots();
   }
 
   async initialize() {
@@ -408,6 +442,49 @@ export class GovibeRuntime {
       `GoVibe runtime initialized with ${registryAgents.length} registered agents. Session ID: ${this.sessionTracker.sessionId}`,
     );
     return this.snapshot;
+  }
+
+  async initializeWorkspace(args = {}) {
+    const target = await resolveDeclaredWorkspace(args.workspacePath, this.allowedWorkspaceRoots);
+    const builtInSkill = await readSkillDefinition(
+      path.join(workspaceRoot, ".govibe", "skills", "block-decomposition", "1.0.0", "SKILL.md"),
+    );
+    const result = await prepareWorkspace({
+      workspacePath: target,
+      builtInSkill,
+      mspClient: this.mspClient,
+      actor: args.actor ?? "unknown",
+    });
+    this.appendTerminal("sys", `GoVibe workspace prepared at ${target}.`);
+    return result;
+  }
+
+  async continueWorkflow(args = {}) {
+    const builtInSkill = await readSkillDefinition(
+      path.join(workspaceRoot, ".govibe", "skills", "block-decomposition", "1.0.0", "SKILL.md"),
+    );
+    const result = await continueWorkflow({
+      workspacePath: await resolveDeclaredWorkspace(args.workspacePath, this.allowedWorkspaceRoots),
+      mspClient: this.mspClient,
+      actor: args.actor ?? "unknown",
+      executor: args.executor ?? "codex",
+      trustedWorkspaceHashes: [builtInSkill.contentHash],
+    });
+    this.appendTerminal(result.status === "ready" ? "sys" : "warn", `GoVibe continue ${result.status}.`);
+    return result;
+  }
+
+  async scanWorkspace(args = {}) {
+    const result = await scanWorkspace({
+      workspacePath: await resolveDeclaredWorkspace(args.workspacePath, this.allowedWorkspaceRoots),
+      deep: args.deep === true,
+      mspClient: this.mspClient,
+      actor: args.actor ?? "unknown",
+      runId: args.runId,
+      resume: args.resume === true,
+    });
+    this.appendTerminal(result.status === "complete" ? "sys" : "warn", `GoVibe ${result.level} scan ${result.status}.`);
+    return result;
   }
 
   subscribe(listener) {

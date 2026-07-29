@@ -127,13 +127,42 @@ export const toolCatalog = [
   },
   {
     name: "govibe.workspace.initialize",
-    description: "Initialize the GoVibe agent workspace infrastructure.",
+    description: "Prepare .govibe state, pin the built-in scan skill, and register the workspace without scanning.",
     inputSchema: {
       type: "object",
       properties: {
         actor: { type: "string" },
+        workspacePath: { type: "string" },
       },
-      required: ["actor"],
+      required: ["actor", "workspacePath"],
+    },
+  },
+  {
+    name: "govibe.workflow.continue",
+    description: "Resolve pinned skill, Two-Brain state, and GKS references into an executor-neutral context packet.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+        workspacePath: { type: "string" },
+        executor: { type: "string", enum: ["claude-code", "codex", "crewai"] },
+      },
+      required: ["actor", "workspacePath", "executor"],
+    },
+  },
+  {
+    name: "govibe.workspace.scan",
+    description: "Run an L1 inventory or the canonical twelve-stage deep scan through MSP/GKS writers.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+        workspacePath: { type: "string" },
+        deep: { type: "boolean" },
+        runId: { type: "string" },
+        resume: { type: "boolean" },
+      },
+      required: ["actor", "workspacePath"],
     },
   },
   {

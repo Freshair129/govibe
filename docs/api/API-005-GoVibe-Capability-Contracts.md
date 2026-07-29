@@ -2,7 +2,7 @@
 title: "API: GoVibe Capability Contracts"
 doc_id: "API-005-GOVIBE-CAPABILITY-CONTRACTS"
 status: "approved"
-version: "1.0.0"
+version: "1.0.2"
 updated: "2026-07-29"
 owner: "Boss / ATHER"
 source_of_truth: true
@@ -34,6 +34,8 @@ type GoVibeSkillDefinition = {
 ```
 
 Definitions live at `.govibe/skills/<id>/<version>/SKILL.md`. A workspace lock at `.govibe/skill-lock.json` selects exact versions and hashes. Global policy may allow workspace-local additions, but an existing `(id, version)` cannot resolve to different content.
+
+Global trust policy lives at `%USERPROFILE%\.govibe\trust-policy.json` with schema `govibe-skill-trust-policy/v1`. Workspace config cannot self-authorize local skills; only the Global policy or a hash embedded by the installed GoVibe runtime may trust workspace content.
 
 ## Stage Run
 
@@ -84,9 +86,14 @@ L2 completion requires all stages to be `complete` or evidenced `not_applicable`
 - MSP proof rejects symbol/graph payloads.
 - P0-P6 Block Assembly is not part of this contract.
 
+## Runtime Transport
+
+GoVibe connects to MSP through MCP stdio without binding to a local checkout. `GOVIBE_MSP_COMMAND` selects the executable, `GOVIBE_MSP_ARGS` is a JSON array of arguments, and optional `GOVIBE_MSP_CWD` selects its working directory. `GOVIBE_ALLOWED_WORKSPACE_ROOTS` is a non-empty JSON array of absolute server-owned roots; MCP workspace operations reject targets outside those roots. When the MSP command is absent or the transport fails, context and deep-scan operations fail closed; GoVibe does not create a private fallback store.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.0.2 | 2026-07-29 | ATHER | Added the server-owned workspace allowlist and fail-closed path boundary. |
+| 1.0.1 | 2026-07-29 | ATHER | Documented the transport-neutral MSP stdio binding and fail-closed fallback rule. |
 | 1.0.0 | 2026-07-29 | Boss / ATHER | Approved contracts for the first GoVibe capability-absorption vertical slice. |
-

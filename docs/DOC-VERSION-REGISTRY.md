@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.58+draft"
+version: "0.1.60+draft"
 updated: "2026-07-29"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.1+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.58+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.60+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -37,7 +37,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | BRD | `BRD-GOVIBE-PLATFORM` | `0.1.1+draft` | draft | Boss (CEO) | `docs/BRD-GoVibe-Platform.md` |
 | API | `API-004-TASK-SCOPED-CONTEXT-PACKET-SCHEMA` | `0.2.0` | approved | ARCHON / ATHER | `docs/api/API-004-Task-Scoped-Context-Packet-Schema.md` |
-| API | `API-005-GOVIBE-CAPABILITY-CONTRACTS` | `1.0.0` | approved | Boss / ATHER | `docs/api/API-005-GoVibe-Capability-Contracts.md` |
+| API | `API-005-GOVIBE-CAPABILITY-CONTRACTS` | `1.0.2` | approved | Boss / ATHER | `docs/api/API-005-GoVibe-Capability-Contracts.md` |
 | Change Request | `CR-2026-07-26-govibe-rwang-capability-absorption` | `0.2.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md` |
 | PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.4.3+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
 | PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.1+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
@@ -132,6 +132,8 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.60+draft | 2026-07-29 | ATHER | Synced API-005 v1.0.2 workspace allowlist security boundary. |
+| 0.1.59+draft | 2026-07-29 | ATHER | Synced API-005 v1.0.1 transport-neutral MSP binding clarification. |
 | 0.1.58+draft | 2026-07-29 | Boss / ATHER | Registered the approved GoVibe capability contracts, vertical-slice blueprint, API-004 v0.2.0, and capability-absorption CR. |
 | 0.1.57+draft | 2026-07-19 | ClaudeFable (per Boss unification order) | STD-EXECUTION-GOVERNANCE 2.3.0+ga -> 2.3.1+ga: canonical home relocated to RWANG PROMAX references; GoVibe copy marked mirror (unification Mechanical #1). |
 | 0.1.51+draft | 2026-06-22 | LYRA | Promoted `ROADMAP-TRANSLATOR-CORE` draft → approved (0.1.0, dropped +draft per STD §6). |

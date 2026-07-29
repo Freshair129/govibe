@@ -2,6 +2,7 @@ import { spawn } from "node:child_process";
 import { unlink } from "node:fs/promises";
 
 import { GovibeRuntime } from "./runtime-core.mjs";
+import { toolCatalog } from "./registry.mjs";
 
 const requiredTools = [
   "govibe.agent.run",
@@ -10,6 +11,9 @@ const requiredTools = [
   "govibe.roadmap.update",
   "govibe.roadmap.export",
   "govibe.deploy.vercel",
+  "govibe.workspace.initialize",
+  "govibe.workflow.continue",
+  "govibe.workspace.scan",
 ];
 
 const smokeExportPath = "docs/roadmap/ROADMAP-smoke-export.md";
@@ -142,7 +146,7 @@ async function main() {
     registrySnapshot.agents.every((agent) => agent.fleet?.sourceRefs?.length > 0),
     "registry-derived agents are missing source references.",
   );
-  assert(registrySnapshot.capabilities.length === 12, "runtime capability records do not match the MCP tool catalog.");
+  assert(registrySnapshot.capabilities.length === toolCatalog.length, "runtime capability records do not match the MCP tool catalog.");
   assert(
     registrySnapshot.capabilities.every(
       (capability) => capability.status === "registered" && capability.sourcePath === "scripts/mcp/registry.mjs",
