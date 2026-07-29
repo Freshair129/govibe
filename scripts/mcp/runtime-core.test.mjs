@@ -1,4 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
+import path from "node:path";
 
 import { GovibeRuntime } from "./runtime-core.mjs";
 
@@ -13,6 +14,16 @@ afterEach(() => {
 });
 
 describe("GovibeRuntime roadmap source scoring", () => {
+  it("rejects ambiguous relative roots for workspace capabilities", async () => {
+    const runtime = new GovibeRuntime();
+    await expect(runtime.initializeWorkspace({ actor: "test", workspacePath: "../other" })).rejects.toThrow(/absolute caller-declared root/);
+  });
+
+  it("rejects an absolute workspace outside configured server roots", async () => {
+    const runtime = new GovibeRuntime({ allowedWorkspaceRoots: [process.cwd()] });
+    await expect(runtime.initializeWorkspace({ actor: "test", workspacePath: path.parse(process.cwd()).root })).rejects.toThrow(/outside configured GoVibe roots/);
+  });
+
   it("discovers masterplan sources while keeping approved sources rankable", async () => {
     delete process.env.GOVIBE_ROADMAP_SOURCE;
 

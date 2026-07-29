@@ -17,6 +17,13 @@ Thumbs.db
 
 .vercel
 
+# Local GoVibe execution evidence. Committed Skill Definitions remain tracked.
+.govibe/config.json
+.govibe/project-state.json
+.govibe/skill-lock.json
+.govibe/runs/
+.agents/devops/session_logs/
+
 # GoVibe inbound governance
 # Keep raw cognitive-system exports out of commits; derive approved packets through docs/audit first.
 .brain/cognitive-system-knowledge-block/

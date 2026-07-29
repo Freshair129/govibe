@@ -171,7 +171,7 @@ export async function handleToolCall(name, args = {}) {
         },
       };
     case "govibe.workspace.initialize": {
-      const { stdout, stderr } = await execAsync("node scripts/agents/govibe-init.mjs", { cwd: workspaceRoot });
+      const result = await govibeRuntime.initializeWorkspace(args);
       return {
         content: asTextContent(
           [
@@ -179,14 +179,30 @@ export async function handleToolCall(name, args = {}) {
             "",
             `actor: ${args.actor ?? "unknown"}`,
             "",
-            stdout || stderr || "No output returned.",
+            `workspace: ${result.workspacePath}`,
+            `warnings: ${result.warnings.length}`,
           ].join("\n"),
         ),
         structuredContent: {
           capability: name,
-          success: true,
+          success: result.status === "prepared",
+          ...result,
           auditRef: buildAuditRef(name),
         },
+      };
+    }
+    case "govibe.workflow.continue": {
+      const result = await govibeRuntime.continueWorkflow(args);
+      return {
+        content: asTextContent(`GoVibe workflow continue: ${result.status}.`),
+        structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) },
+      };
+    }
+    case "govibe.workspace.scan": {
+      const result = await govibeRuntime.scanWorkspace(args);
+      return {
+        content: asTextContent(`GoVibe ${result.level} workspace scan: ${result.status}.`),
+        structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) },
       };
     }
     case "govibe.workspace.validate": {

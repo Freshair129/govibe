@@ -2,8 +2,8 @@
 title: "API: Task-Scoped Context Packet Schema"
 doc_id: "API-004-TASK-SCOPED-CONTEXT-PACKET-SCHEMA"
 status: "approved"
-version: "0.1.0"
-updated: "2026-06-19"
+version: "0.2.0"
+updated: "2026-07-29"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -159,6 +159,19 @@ type TaskScopedContextPacket = {
   criticalKnownIssues: CriticalKnownIssue[];
   promotedPriorLearnings?: string[];
   debugHistoryRefs?: string[];
+  skillRef?: {
+    id: string;
+    version: string;
+    contentHash: string;
+  };
+  globalStateRefs?: Array<{ ref: string; sourceHash: string }>;
+  workspaceStateRefs?: Array<{ ref: string; sourceHash: string }>;
+  knowledgeRefs?: Array<{ ref: string; sourceHash: string }>;
+  policyDecisions?: Array<{
+    decision: "allow" | "deny" | "shadow";
+    ref: string;
+    reason: string;
+  }>;
 };
 ```
 
@@ -176,6 +189,9 @@ Field rules:
 - `criticalKnownIssues` may be empty
 - `promotedPriorLearnings` is optional and must contain only already approved durable knowledge
 - `debugHistoryRefs` is optional and must not be included by default
+- `skillRef` is required for GoVibe workflow resume and identifies the immutable resolved Skill Definition
+- Brain and knowledge fields contain references and source hashes, never unredacted private payloads
+- `policyDecisions` records effective MSP decisions, including denied or shadowed state
 
 ## 5. Result Payload Contract
 
@@ -351,5 +367,6 @@ Rules:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-07-29 | ATHER | Added Skill Registry, Two-Brain state, GKS knowledge, policy-decision, and source-hash references for GoVibe continue packets. |
 | 0.1.0 | 2026-06-20 | ARCHON / ATHER | Signed off; promoted draft -> approved. |
 | 0.1.0+draft | 2026-06-19 | ARCHON / ATHER | Added canonical packet and result payload schema for task-scoped context injection. |
