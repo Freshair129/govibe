@@ -1,6 +1,6 @@
 # Legacy P1 MVP Import Reference
 
-> **Source**: Archived from legacy `.agents/pm/asset/PLAN_Template.md`
+> **Source**: Archived from the former PM asset plan template, which is no longer retained in this repository.
 > **Date**: 2026-06-14
 > **Status**: Reference Only
 

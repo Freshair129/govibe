@@ -6,6 +6,7 @@ created: "2026-06-02T19:40:00+07:00,Boss(CEO)"
 updated: "2026-06-13T10:15:00+07:00,Rwang (อาหวัง)"
 version: "1.3.1"
 state: active
+status: active
 type: example
 vault_id: default
 source_type: axiomatic

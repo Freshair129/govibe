@@ -34,7 +34,7 @@ Migrate โครงสร้าง Layout (Header/Sidebar) เข้าสู�
 1.  **Extract Header/Sidebar**: ย้าย logic จาก `App.tsx` ไปไว้ใน `@govibe/ui`
 2.  **Build StatCard**: สร้างคอมโพเนนต์การ์ดสถิติแบบ Glassmorphism
 3.  **Implement DashboardView**:
-    *   สร้างไฟล์ `src/views/DashboardView.tsx`
+    *   Create the dashboard view in the active dashboard feature structure; the historical `src/views` location is not part of the current app.
     *   ใช้ `useAppStore` ดึงข้อมูลสถิติ (Mock ไว้ก่อนใน core state)
 4.  **Chart.js Integration**: สร้าง hook `useEfficiencyChart` เพื่อจัดการ Canvas lifecycle
 

@@ -36,7 +36,7 @@ type: checkpoint
 - ADR-015 … ADR-019 (5 files under docs/adr/)
 - `docs/BRD-GoVibe-Platform.md` (+ §4.1 Translator Model)
 - `docs/audit/POC-5-Axis-Coverage.md` (PoC-1: 5-axis coverage, 0 docs outside)
-- `scripts/docs/register-doc.mjs` + npm `docs:register` (operationalizes ADR-007 deterministic registration)
+- Historical note: the former deterministic registration utility was later retired; current documentation tooling is limited to the scripts that remain under `scripts/docs/`.
 - All 7 registered under `DOC-VERSION-REGISTRY.md` §8 Auto-Registered · `docs:validate` PASS
 
 ## 4. Corrections / anti-hallucination anchors (things easy to get WRONG)
@@ -55,7 +55,7 @@ type: checkpoint
 2. Registry version ✓ bumped (0.1.44). **TODO:** re-file §8 Auto-Registered rows into curated sections (curatorial).
 3. ~~PoC-2~~ ✓ DONE (`docs/audit/POC-H6-Budget-Sufficiency.md`).
 4. ~~Doc impact~~ ✓ DONE: new `SRS-GKS-Retrieval-Layer` + `SDD-GoVibe-MSP-GKS-Integration` + H→D note in `FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS`; C4/CTX Decision-Alignment sections; PRD×2/STD `related_adrs` citations. (Deeper PRD *body* rewrites to the new positioning = optional later, with version bumps.)
-5. ~~Doc-create~~ ✓ DONE: `scripts/docs/create-doc.mjs` + npm `docs:create` (deterministic id-gen + template scaffold; chains to `docs:register`).
+5. ~~Doc-create~~ ✓ DONE historically; the original command utilities were later retired and are not available in the current repository.
 6. ~~Close audit #1~~ ✓ DONE (`.github/workflows/governance.yml` — enforced docs+roadmap gate, no continue-on-error).
 7. ~~Re-file §8 Auto-Registered~~ ✓ DONE (drained into §2/§5/§6; dropped `+draft` from the 5 accepted ADRs per STD §6).
 8. ~~Doc-format mismatch / positioning sync~~ ✓ DONE: **AGENTS.md = standard** (codex/gpt) refactor — `AGENT.md`/`GEMINI.md` = compat bridges, fixed stale `agent.md` hub ref, registry global_context + init.mjs reordered; PRD-MCP `nine→ten` + added `orchestrate.step` (§7.7); ADR-017 0.1.1 (**GKS not hidden** — not *communicated* to user but inspectable in full-eco UI; **language pack = vocab map + doc-format template**); CONCEPT--HYBRID-JIT §4 **Format-Adaptive Rendering** (render = scope × format); new `FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION`. **CoDev (inter-team) vs CoVibe (solo) = 2 distinct approved modules under SYSTEM-05, not a contradiction.**
