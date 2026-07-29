@@ -6,6 +6,7 @@ created: "2026-06-02T19:40:00+07:00,Boss(CEO)"
 updated: "2026-07-10T00:00:00+07:00,Boss(CEO),pending"
 version: "1.4.0"
 state: active
+status: active
 type: framework
 vault_id: default
 source_type: axiomatic

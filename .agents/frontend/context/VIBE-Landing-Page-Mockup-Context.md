@@ -118,5 +118,5 @@ Never invent numbers, testimonials, or prices to fill these. Wait for product ow
 
 - Source HTML: `docs/design/LANDING-GoVibe-Mockup.html`
 - Copy template: `docs/design/LANDING-Copy-Template-GoVibe-Draft1.md`
-- Motion probe (one-off, internal): `scripts/one-off/probe-framer-motion.mjs` + `framer-motion-report.json`
+- Motion probe: the former one-off Framer Motion probe was retired and is not part of the current repository.
 - Deployed mirror: `G:\govibe-landing\` (separate git repo → GitHub `Freshair129/landinggovibe` → Vercel)

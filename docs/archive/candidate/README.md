@@ -11,8 +11,8 @@ This folder stores the three files that used to live in `G:\govibe\candidate\`. 
 | Archived file | Classification | Current SSOT counterpart | Decision |
 |---|---|---|---|
 | `hector-compaction-explorer.html` | Legacy concept/demo | `docs/CONCEPT--HYBRID-JIT-CONTEXT.md`, `docs/STD-Execution-Governance.md`, `docs/features/genesis-knowledge-hcs/*` | Archive only |
-| `data-architecture-hnsw-explorer.html` | Legacy explainer/demo | `docs/features/genesis-knowledge-hcs/FEAT-HNSW-Vector-Space.md`, `docs/features/genesis-knowledge-hcs/FEAT-GenesisBlockDB-Core.md` | Archive only |
-| `genesisdb-obsidian-production-workflow.html` | Workflow prototype | `docs/CONCEPT--HYBRID-JIT-CONTEXT.md`, `docs/CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER.md`, `docs/features/genesis-knowledge-hcs/FEAT-Markdown-Renderer.md` | Archive + retain as reference |
+| `data-architecture-hnsw-explorer.html` | Legacy explainer/demo | `docs/features/genesis-knowledge-system/FEAT-HNSW-Vector-Space.md`, `docs/features/genesis-knowledge-system/FEAT-GenesisBlockDB-Core.md` | Archive only |
+| `genesisdb-obsidian-production-workflow.html` | Workflow prototype | `docs/CONCEPT--HYBRID-JIT-CONTEXT.md`, `docs/CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER.md`; the former Markdown Renderer feature spec was retired | Archive + retain as reference |
 
 ## Notes
 

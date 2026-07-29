@@ -4,11 +4,13 @@ doc_id: GENESIS::GoVibe-CoDev-Standard-FRAMEWORK
 type: genesis
 block_id: GB-3A-G001
 status: deprecated
+version: "3.0.0"
 vault_id: default
 source_type: axiomatic
 summary: Legacy framework vision reference. Superseded by STD-Execution-Governance (MemoryOS V3). Not the current execution contract.
 created_at: "2026-06-02T19:40:00+07:00"
 updated_at: "2026-06-13T10:00:00+07:00"
+updated: "2026-06-13"
 manifest_version: "3.0"
 ---
 

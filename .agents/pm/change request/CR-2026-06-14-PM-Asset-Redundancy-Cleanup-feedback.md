@@ -2,6 +2,7 @@
 title: "Feedback: CR-2026-06-14-PM-Asset-Redundancy-Cleanup"
 doc_id: "CR-2026-06-14-pm-asset-redundancy-cleanup-feedback"
 status: "review_completed"
+version: "0.1.0"
 updated: "2026-06-14"
 reviewer: "ATHER"
 target_cr: "CR-2026-06-14-pm-asset-redundancy-cleanup"
