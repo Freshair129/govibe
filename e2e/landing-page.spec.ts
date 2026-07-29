@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = 'file:///G:/govibe/docs/design/LANDING-GoVibe-Mockup.html';
+const BASE_URL = new URL('../docs/design/LANDING-GoVibe-Mockup.html', import.meta.url).href;
 const EXPECTED_SECTIONS = ['#top', '#approach', '#capabilities', '#cta', '#faq', '#pricing', '#usecases'];
 
 test.describe('Landing Page E2E Tests', () => {

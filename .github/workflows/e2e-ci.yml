@@ -29,8 +29,7 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: 🧪 Run Tests
-        run: npm run e2e:landing
-        continue-on-error: true
+        run: npm run e2e:landing -- --project=chromium
 
       - name: 📊 Generate Report
         if: always()
