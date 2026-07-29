@@ -11,6 +11,9 @@ jobs:
     name: Run E2E Tests
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    permissions:
+      contents: read
+      issues: write
 
     steps:
       - name: ✅ Checkout
