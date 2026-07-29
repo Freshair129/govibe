@@ -34,7 +34,7 @@ jobs:
 
       - name: 📊 Generate Report
         if: always()
-        run: npx playwright show-report playwright-report || true
+        run: test -f playwright-report/index.html && echo "Playwright report generated"
 
       - name: 📤 Upload Report
         if: always()
