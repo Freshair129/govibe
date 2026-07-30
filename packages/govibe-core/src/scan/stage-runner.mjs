@@ -11,12 +11,18 @@ function hash(value) {
 }
 
 function knowledgePayload(output) {
-  return Object.fromEntries(["symbols", "nodes", "edges", "communities", "processes"]
-    .filter((key) => Array.isArray(output[key]) && output[key].length > 0)
-    .map((key) => [key, output[key]]));
+  return {
+    atoms: output.nodes ?? [],
+    symbols: output.symbols ?? [],
+    relations: output.edges ?? [],
+    context_snapshots: [
+      ...(output.communities?.length ? [{ kind: "communities", value: output.communities }] : []),
+      ...(output.processes?.length ? [{ kind: "processes", value: output.processes }] : []),
+    ],
+  };
 }
 
-export async function runDeepScan({ workspacePath, inventory, mspClient, actor, adapters, runId = randomUUID(), resume = false }) {
+export async function runDeepScan({ workspacePath, inventory, mspClient, gksClient, actor, adapters, runId = randomUUID(), resume = false }) {
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(runId) || runId.includes("..")) {
     throw new Error(`Invalid scan runId: ${runId}`);
   }
@@ -93,14 +99,17 @@ export async function runDeepScan({ workspacePath, inventory, mspClient, actor, 
         });
         const provenanceProofRef = provenanceProof.proof_ref ?? provenanceProof.proofRef;
         if (!provenanceProofRef) throw new Error("MSP writer returned no provenance proof reference.");
-        const knowledge = await mspClient.writeKnowledge({
-          workspace_root: workspacePath,
-          record_id: recordId,
+        const knowledge = await gksClient.upsertCodeKnowledge({
+          schema_version: "govibe-knowledge-batch/v1",
+          idempotency_key: recordId,
+          run_id: runId,
+          stage,
+          source_snapshot_hash: inventoryHash,
           provenance_ref: provenanceProofRef,
           ...knowledgePayload(output),
         });
-        const knowledgeRef = knowledge.knowledge_ref ?? knowledge.knowledgeRef;
-        const knowledgeHash = knowledge.source_hash ?? knowledge.sourceHash;
+        const knowledgeRef = knowledge.knowledgeRef;
+        const knowledgeHash = knowledge.sourceHash;
         if (!knowledgeRef) throw new Error("GKS writer returned no knowledge reference.");
         if (typeof knowledgeHash !== "string" || !/^[a-f0-9]{64}$/i.test(knowledgeHash)) throw new Error("GKS writer returned no knowledge source hash.");
         const proof = await mspClient.appendProof({

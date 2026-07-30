@@ -21,6 +21,7 @@ import { buildRecord as buildProvenance, appendRecord as appendProvenance } from
 import { atomizeCode, CODE_LANGS } from "./translator/code-atomizer.mjs";
 import {
   continueWorkflow,
+  createGksClientFromEnvironment,
   createMspClientFromEnvironment,
   initializeWorkspace as prepareWorkspace,
   readSkillDefinition,
@@ -430,6 +431,7 @@ export class GovibeRuntime {
     this.activeRoadmapSource = undefined;
     this.availableSources = [];
     this.mspClient = options.mspClient ?? createMspClientFromEnvironment();
+    this.gksClient = options.gksClient ?? createGksClientFromEnvironment();
     this.allowedWorkspaceRoots = options.allowedWorkspaceRoots ?? configuredWorkspaceRoots();
   }
 
@@ -479,6 +481,7 @@ export class GovibeRuntime {
       workspacePath: await resolveDeclaredWorkspace(args.workspacePath, this.allowedWorkspaceRoots),
       deep: args.deep === true,
       mspClient: this.mspClient,
+      gksClient: this.gksClient,
       actor: args.actor ?? "unknown",
       runId: args.runId,
       resume: args.resume === true,

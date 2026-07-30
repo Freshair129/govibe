@@ -1,5 +1,6 @@
 export { buildContextPacket } from "./context-packet.mjs";
 export { continueWorkflow } from "./continue.mjs";
+export { createGksClientFromEnvironment, createUnavailableGksClient, GksClient, GksUnavailableError } from "./gks-client.mjs";
 export { createMspClientFromEnvironment, createUnavailableMspClient, MspClient, MspUnavailableError } from "./msp-client.mjs";
 export { createMspStdioCaller } from "./msp-stdio-transport.mjs";
 export { definitionHash, installSkillDefinition, loadGlobalTrustPolicy, loadSkillLock, readSkillDefinition, resolveSkill } from "./skill-registry.mjs";
