@@ -2,7 +2,7 @@
 title: "API: GoVibe Capability Contracts"
 doc_id: "API-005-GOVIBE-CAPABILITY-CONTRACTS"
 status: "approved"
-version: "2.0.0"
+version: "2.0.1"
 updated: "2026-07-30"
 owner: "Boss / ATHER"
 source_of_truth: true
@@ -97,7 +97,7 @@ L2 completion requires all stages to be `complete` or evidenced `not_applicable`
 ## Ownership Negatives
 
 - The Skill Registry never executes a stage.
-- GoVibe never writes GKS storage directly; it calls the MSP facade.
+- GoVibe never writes GKS storage directly; it calls the independent `gks_code_upsert` MCP port.
 - GKS rejects proof/evidence payloads.
 - MSP proof rejects symbol/graph payloads.
 - P0-P6 Block Assembly is not part of this contract.
@@ -116,6 +116,7 @@ does not create a private fallback store.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 2.0.1 | 2026-07-30 | ATHER | Corrected the ownership negative to match the approved independent GKS MCP port. |
 | 2.0.0 | 2026-07-30 | Boss / ATHER | Added full migration commands, workflow states, independent GKS/MSP writer envelopes, and degraded-state contracts. |
 | 1.0.2 | 2026-07-29 | ATHER | Added the server-owned workspace allowlist and fail-closed path boundary. |
 | 1.0.1 | 2026-07-29 | ATHER | Documented the transport-neutral MSP stdio binding and fail-closed fallback rule. |
