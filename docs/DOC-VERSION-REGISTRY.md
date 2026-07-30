@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.62+draft"
+version: "0.1.63+draft"
 updated: "2026-07-30"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.1+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.62+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.63+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -37,7 +37,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | BRD | `BRD-GOVIBE-PLATFORM` | `0.1.1+draft` | draft | Boss (CEO) | `docs/BRD-GoVibe-Platform.md` |
 | API | `API-004-TASK-SCOPED-CONTEXT-PACKET-SCHEMA` | `0.2.0` | approved | ARCHON / ATHER | `docs/api/API-004-Task-Scoped-Context-Packet-Schema.md` |
-| API | `API-005-GOVIBE-CAPABILITY-CONTRACTS` | `2.0.1` | approved | Boss / ATHER | `docs/api/API-005-GoVibe-Capability-Contracts.md` |
+| API | `API-005-GOVIBE-CAPABILITY-CONTRACTS` | `2.0.2` | approved | Boss / ATHER | `docs/api/API-005-GoVibe-Capability-Contracts.md` |
 | Change Request | `CR-2026-07-26-govibe-rwang-capability-absorption` | `1.0.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md` |
 | PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.4.3+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
 | PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.1+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
@@ -75,7 +75,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Audit | `POC-5-AXIS-COVERAGE` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/POC-5-Axis-Coverage.md` |
 | Audit | `POC-H6-BUDGET-SUFFICIENCY` | `0.1.1` | approved | Boss (CEO) | `docs/audit/POC-H6-Budget-Sufficiency.md` |
 | Audit | `AUDIT-USER-FLOW-RUNTIME-GAPS-2026-06-22` | `0.1.0+draft` | draft | Boss (CEO) | `docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md` |
-| Audit | `AUDIT-GOVIBE-RWANG-CUTOVER-READINESS-2026-07-30` | `1.0.0` | under review | ATHER | `docs/audit/AUDIT-GoVibe-RWANG-Cutover-Readiness-2026-07-30.md` |
+| Audit | `AUDIT-GOVIBE-RWANG-CUTOVER-READINESS-2026-07-30` | `1.0.1` | under review | ATHER | `docs/audit/AUDIT-GoVibe-RWANG-Cutover-Readiness-2026-07-30.md` |
 | Feature | `FEAT-ROADMAP-PROMOTION-CONTRACT` | `0.1.0` | approved | LYRA | `docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md` |
 | Feature | `FEAT-VISUAL-AGENT-FLEET-SYSTEM` | `0.1.0` | approved | THESEUS | `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md` |
 | Feature | `FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION` | `0.1.0+draft` | draft | Boss (CEO) | `docs/features/genesis-knowledge-system/FEAT-Doc-Format-Template-Extraction.md` |
@@ -133,6 +133,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.63+draft | 2026-07-30 | ATHER | Synced JSONL stdio transport contract and closed live clean-checkout cutover gates. |
 | 0.1.62+draft | 2026-07-30 | ATHER | Registered T13 cutover readiness and corrected API-005 independent GKS port wording. |
 | 0.1.61+draft | 2026-07-30 | ATHER | Synced the owner-approved full GoVibe capability migration CR, API contract, and blueprint versions. |
 | 0.1.60+draft | 2026-07-29 | ATHER | Synced API-005 v1.0.2 workspace allowlist security boundary. |

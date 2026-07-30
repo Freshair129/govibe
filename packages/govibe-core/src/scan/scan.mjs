@@ -5,7 +5,7 @@ import path from "node:path";
 import { createDefaultStageAdapters } from "./stage-adapters.mjs";
 import { runDeepScan } from "./stage-runner.mjs";
 
-const ignored = new Set([".git", "node_modules", "dist", ".govibe"]);
+const ignored = new Set([".git", "node_modules", "dist", ".govibe", "state"]);
 
 export async function inventoryWorkspace(workspacePath) {
   const files = [];
