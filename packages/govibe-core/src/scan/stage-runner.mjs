@@ -54,50 +54,56 @@ export async function runDeepScan({ workspacePath, inventory, mspClient, gksClie
       const output = await adapters[index]({ inventory, stageRuns, workspacePath });
       if (output.incomplete) {
         const recordId = `${runId}-stage-${String(stage).padStart(2, "0")}`;
-        const proof = await mspClient.appendProof({
-          workspace_root: workspacePath,
-          record_id: `proof-${recordId}`,
+        const proof = await mspClient.recordEvidence({
+          schema_version: "govibe-proof-batch/v1",
+          idempotency_key: `proof-${recordId}`,
           run_id: runId,
-          provenance: { type: "scan-stage-incomplete", source_ref: "inventory:l1" },
-          evidence: [{ ref: "inventory:l1", source_hash: inventoryHash }],
-          verification: { verdict: "inconclusive", method: output.method ?? "parser-coverage" },
+          stage,
+          source_snapshot_hash: inventoryHash,
+          findings: [{ kind: "incomplete", message: output.incomplete }],
+          stage_evidence: [{ ref: "inventory:l1", source_hash: inventoryHash, kind: "scan-stage-incomplete" }],
+          verification: { verdict: "blocked", method: output.method ?? "parser-coverage" },
+          artifact_lineage: [],
           actor,
-          timestamp: runMeta.createdAt,
-          source_hash: inventoryHash,
+          recorded_at: runMeta.createdAt,
         });
-        const proofRef = proof.proof_ref ?? proof.proofRef;
+        const proofRef = proof.proofRef;
         if (!proofRef) throw new Error("MSP writer returned no proof reference for incomplete stage.");
         record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "incomplete", inputRefs: ["inventory:l1"], outputRefs: [`incomplete:${output.incomplete}`, proofRef], method: output.method ?? "parser-coverage", confidence: 0, exclusions: [], error: output.incomplete };
       } else if (output.notApplicable) {
         const recordId = `${runId}-stage-${String(stage).padStart(2, "0")}`;
-        const proof = await mspClient.appendProof({
-          workspace_root: workspacePath,
-          record_id: `proof-${recordId}`,
+        const proof = await mspClient.recordEvidence({
+          schema_version: "govibe-proof-batch/v1",
+          idempotency_key: `proof-${recordId}`,
           run_id: runId,
-          provenance: { type: "scan-stage-exclusion", source_ref: "inventory:l1" },
-          evidence: [{ ref: "inventory:l1", source_hash: inventoryHash }],
-          verification: { verdict: "pass", method: "inventory-exclusion" },
+          stage,
+          source_snapshot_hash: inventoryHash,
+          findings: [],
+          stage_evidence: [{ ref: "inventory:l1", source_hash: inventoryHash, kind: "scan-stage-exclusion" }],
+          verification: { verdict: "passed", method: "inventory-exclusion" },
+          artifact_lineage: [],
           actor,
-          timestamp: runMeta.createdAt,
-          source_hash: inventoryHash,
+          recorded_at: runMeta.createdAt,
         });
-        const proofRef = proof.proof_ref ?? proof.proofRef;
+        const proofRef = proof.proofRef;
         if (!proofRef) throw new Error("MSP writer returned no proof reference for exclusion.");
         record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "not_applicable", inputRefs: ["inventory:l1"], outputRefs: [`exclusion:${output.notApplicable}`, proofRef], method: "inventory-exclusion", confidence: 1, exclusions: [output.notApplicable] };
       } else {
         const recordId = `${runId}-stage-${String(stage).padStart(2, "0")}`;
-        const provenanceProof = await mspClient.appendProof({
-          workspace_root: workspacePath,
-          record_id: `proof-${recordId}-provenance`,
+        const provenanceProof = await mspClient.recordEvidence({
+          schema_version: "govibe-proof-batch/v1",
+          idempotency_key: `proof-${recordId}-provenance`,
           run_id: runId,
-          provenance: { type: "scan-stage", source_ref: "inventory:l1" },
-          evidence: [{ ref: "inventory:l1", source_hash: inventoryHash }],
-          verification: { verdict: "pass", method: output.method },
+          stage,
+          source_snapshot_hash: inventoryHash,
+          findings: [],
+          stage_evidence: [{ ref: "inventory:l1", source_hash: inventoryHash, kind: "scan-stage" }],
+          verification: { verdict: "passed", method: output.method },
+          artifact_lineage: [],
           actor,
-          timestamp: runMeta.createdAt,
-          source_hash: inventoryHash,
+          recorded_at: runMeta.createdAt,
         });
-        const provenanceProofRef = provenanceProof.proof_ref ?? provenanceProof.proofRef;
+        const provenanceProofRef = provenanceProof.proofRef;
         if (!provenanceProofRef) throw new Error("MSP writer returned no provenance proof reference.");
         const knowledge = await gksClient.upsertCodeKnowledge({
           schema_version: "govibe-knowledge-batch/v1",
@@ -112,19 +118,21 @@ export async function runDeepScan({ workspacePath, inventory, mspClient, gksClie
         const knowledgeHash = knowledge.sourceHash;
         if (!knowledgeRef) throw new Error("GKS writer returned no knowledge reference.");
         if (typeof knowledgeHash !== "string" || !/^[a-f0-9]{64}$/i.test(knowledgeHash)) throw new Error("GKS writer returned no knowledge source hash.");
-        const proof = await mspClient.appendProof({
-          workspace_root: workspacePath,
-          record_id: `proof-${recordId}`,
+        const proof = await mspClient.recordEvidence({
+          schema_version: "govibe-proof-batch/v1",
+          idempotency_key: `proof-${recordId}`,
           run_id: runId,
-          provenance: { type: "knowledge-link", source_ref: provenanceProofRef },
-          evidence: [{ ref: knowledgeRef, source_hash: knowledgeHash }],
-          verification: { verdict: "pass", method: output.method },
+          stage,
+          source_snapshot_hash: knowledgeHash,
+          findings: [],
+          stage_evidence: [{ ref: knowledgeRef, source_hash: knowledgeHash, kind: "knowledge-link", provenance_ref: provenanceProofRef }],
+          verification: { verdict: "passed", method: output.method },
+          artifact_lineage: [],
           actor,
-          timestamp: runMeta.createdAt,
-          source_hash: knowledgeHash,
+          recorded_at: runMeta.createdAt,
           knowledge_ref: knowledgeRef,
         });
-        const proofRef = proof.proof_ref ?? proof.proofRef;
+        const proofRef = proof.proofRef;
         if (!proofRef) throw new Error("MSP writer returned no proof reference.");
         record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "complete", inputRefs: ["inventory:l1"], outputRefs: [knowledgeRef, provenanceProofRef, proofRef], method: output.method, confidence: 1, exclusions: [] };
       }

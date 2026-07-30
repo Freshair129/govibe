@@ -5,6 +5,20 @@ export class MspUnavailableError extends Error {
   }
 }
 
+const HASH = /^[a-f0-9]{64}$/i;
+const KNOWLEDGE_FIELDS = ["atoms", "symbols", "relations", "nodes", "edges", "communities", "processes", "context_snapshots"];
+
+function validateProofBatch(input) {
+  if (!input || typeof input !== "object") throw new TypeError("Proof batch is required.");
+  if (KNOWLEDGE_FIELDS.some((field) => field in input)) throw new TypeError("MSP proof batches cannot contain knowledge fields.");
+  if (input.schema_version !== "govibe-proof-batch/v1") throw new TypeError("Invalid proof batch schema version.");
+  if (typeof input.idempotency_key !== "string" || !input.idempotency_key) throw new TypeError("Proof batch idempotency key is required.");
+  if (typeof input.run_id !== "string" || !input.run_id) throw new TypeError("Proof batch run ID is required.");
+  if (!Number.isInteger(input.stage) || input.stage < 0 || input.stage > 12) throw new TypeError("Proof batch stage must be 0-12.");
+  if (!HASH.test(input.source_snapshot_hash ?? "")) throw new TypeError("Proof batch source snapshot hash is invalid.");
+  if (!["actual", "blocked", "failed", "passed"].includes(input.verification?.verdict)) throw new TypeError("Invalid verification verdict.");
+}
+
 export class MspClient {
   constructor(callTool) {
     this.callTool = callTool;
@@ -16,16 +30,18 @@ export class MspClient {
   }
 
   registerWorkspace(input) {
-    return this.appendProof({
-      workspace_root: input.workspacePath,
-      record_id: input.recordId,
+    return this.recordEvidence({
+      schema_version: "govibe-proof-batch/v1",
+      idempotency_key: input.recordId,
       run_id: input.runId,
-      provenance: { type: "workspace-registration", source_ref: `workspace:${input.workspaceId}` },
-      evidence: [{ ref: `workspace:${input.workspaceId}`, source_hash: input.sourceHash }],
-      verification: { verdict: "pass", method: "govibe-init" },
+      stage: 0,
+      source_snapshot_hash: input.sourceHash,
+      findings: [],
+      stage_evidence: [{ ref: `workspace:${input.workspaceId}`, source_hash: input.sourceHash, kind: "workspace-registration" }],
+      verification: { verdict: "passed", method: "govibe-init" },
+      artifact_lineage: [],
       actor: input.actor,
-      timestamp: input.timestamp,
-      source_hash: input.sourceHash,
+      recorded_at: input.timestamp,
     });
   }
   async resolveContext(input) {
@@ -58,8 +74,14 @@ export class MspClient {
       diagnostics: result.diagnostics ?? [],
     };
   }
-  writeKnowledge(input) { return this.call("msp_knowledge_write", input); }
-  appendProof(input) { return this.call("msp_proof_append", input); }
+  async recordEvidence(input) {
+    if (typeof this.callTool !== "function") throw new MspUnavailableError();
+    validateProofBatch(input);
+    const result = await this.call("msp_evidence_record", input);
+    const proofRef = result?.proof_ref ?? result?.proofRef;
+    if (typeof proofRef !== "string" || !proofRef.startsWith("msp:proof/")) throw new Error("MSP returned an invalid proof reference.");
+    return { proofRef };
+  }
 }
 
 export function createUnavailableMspClient() {
