@@ -7,6 +7,7 @@ import {
   CANONICAL_STAGES,
   continueWorkflow,
   createDefaultStageAdapters,
+  GksClient,
   createUnavailableMspClient,
   definitionHash,
   initializeWorkspace,
@@ -39,8 +40,17 @@ function mockMsp(options = {}) {
     calls.push({ name, input });
     if (options.fail === name) throw new Error(options.message ?? `${name} unavailable`);
     if (name === "msp_context_resolve") return { global_state_refs: [{ ref: "global:state/policy.json", source_hash: "a".repeat(64) }], workspace_state_refs: [{ ref: "workspace:state/project.json", source_hash: "b".repeat(64) }], knowledge_refs: [], policy_decisions: [{ decision: "allow", ref: "workspace:state/project.json", reason: "project_scope" }] };
-    if (name === "msp_knowledge_write") return { knowledge_ref: `gks:${input.record_id}`, source_hash: "c".repeat(64) };
-    if (name === "msp_proof_append") return { proof_ref: `msp:proof/${input.record_id}` };
+    if (name === "msp_evidence_record") return { proof_ref: `msp:proof/${input.idempotency_key}` };
+    throw new Error(`Unexpected tool ${name}`);
+  });
+  return { client, calls };
+}
+
+function mockGks() {
+  const calls = [];
+  const client = new GksClient(async (name, input) => {
+    calls.push({ name, input });
+    if (name === "gks_code_upsert") return { knowledge_ref: `gks:${input.idempotency_key}`, source_hash: "c".repeat(64) };
     throw new Error(`Unexpected tool ${name}`);
   });
   return { client, calls };
@@ -53,7 +63,7 @@ describe("GoVibe init and continue", () => {
     const result = await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: client, actor: "test" });
     expect(result.status).toBe("prepared");
     expect(result.deepScanRun).toBe(false);
-    expect(result.registration.proof_ref).toMatch(/^msp:proof\//);
+    expect(result.registration.proofRef).toMatch(/^msp:proof\//);
     await expect(access(path.join(root, ".govibe", "runs"))).rejects.toThrow();
   });
 
@@ -140,42 +150,46 @@ describe("GoVibe scan", () => {
   it("runs all twelve stages, records COBOL N/A, and uses ownership-safe writers", async () => {
     const root = await fixture();
     const { client, calls } = mockMsp();
-    const result = await scanWorkspace({ workspacePath: root, deep: true, mspClient: client, actor: "test", runId: "deep-1" });
+    const gks = mockGks();
+    const result = await scanWorkspace({ workspacePath: root, deep: true, mspClient: client, gksClient: gks.client, actor: "test", runId: "deep-1" });
     expect(result.status).toBe("complete");
     expect(result.stageRuns.map((stage) => stage.name)).toEqual(CANONICAL_STAGES);
     expect(result.stageRuns[3]).toMatchObject({ status: "not_applicable", exclusions: ["inventory_contains_no_cobol"] });
     expect(result.stageRuns[3].outputRefs.some((ref) => ref.startsWith("msp:proof/"))).toBe(true);
-    expect(calls.filter((call) => call.name === "msp_knowledge_write").every((call) => !("evidence" in call.input))).toBe(true);
-    expect(calls.filter((call) => call.name === "msp_proof_append").every((call) => !("symbols" in call.input))).toBe(true);
-    expect(calls.filter((call) => call.name === "msp_knowledge_write").every((call) => call.input.provenance_ref === `msp:proof/proof-${call.input.record_id}-provenance`)).toBe(true);
-    expect(calls.filter((call) => call.name === "msp_proof_append" && call.input.provenance.type === "knowledge-link").every((call) => call.input.evidence[0].ref.startsWith("gks:") && call.input.evidence[0].source_hash === "c".repeat(64))).toBe(true);
+    expect(gks.calls.filter((call) => call.name === "gks_code_upsert").every((call) => !("evidence" in call.input))).toBe(true);
+    expect(calls.filter((call) => call.name === "msp_evidence_record").every((call) => !("symbols" in call.input))).toBe(true);
+    expect(gks.calls.filter((call) => call.name === "gks_code_upsert").every((call) => call.input.provenance_ref.startsWith("msp:proof/"))).toBe(true);
+    expect(calls.filter((call) => call.name === "msp_evidence_record" && call.input.knowledge_ref).every((call) => call.input.stage_evidence[0].ref.startsWith("gks:") && call.input.stage_evidence[0].source_hash === "c".repeat(64))).toBe(true);
   });
 
   it("rejects false completion after parser failure and resumes persisted stages", async () => {
     const root = await fixture();
     const { client, calls } = mockMsp();
+    const gks = mockGks();
     const adapters = createDefaultStageAdapters();
     adapters[2] = async () => { throw new Error("parser failed"); };
-    const failed = await scanWorkspace({ workspacePath: root, deep: true, mspClient: client, actor: "test", adapters, runId: "resume-1" });
+    const failed = await scanWorkspace({ workspacePath: root, deep: true, mspClient: client, gksClient: gks.client, actor: "test", adapters, runId: "resume-1" });
     expect(failed.status).toBe("incomplete");
     expect(failed.stageRuns).toHaveLength(12);
     expect(failed.stageRuns[2].status).toBe("failed");
 
-    const resumed = await scanWorkspace({ workspacePath: root, deep: true, mspClient: client, actor: "test", runId: "resume-1", resume: true });
+    const resumed = await scanWorkspace({ workspacePath: root, deep: true, mspClient: client, gksClient: gks.client, actor: "test", runId: "resume-1", resume: true });
     expect(resumed.status).toBe("complete");
     expect(resumed.stageRuns).toHaveLength(12);
-    expect(new Set(calls.filter((call) => call.name === "msp_proof_append").map((call) => call.input.timestamp)).size).toBe(1);
-    expect(calls.filter((call) => call.name === "msp_knowledge_write").length).toBeGreaterThan(0);
+    expect(new Set(calls.filter((call) => call.name === "msp_evidence_record").map((call) => call.input.recorded_at)).size).toBe(1);
+    expect(gks.calls.filter((call) => call.name === "gks_code_upsert").length).toBeGreaterThan(0);
   });
 
   it("builds deterministic communities and fails graph validation for missing stages", async () => {
     const root = await fixture();
     const first = mockMsp();
     const second = mockMsp();
-    await scanWorkspace({ workspacePath: root, deep: true, mspClient: first.client, actor: "test", runId: "community-1" });
-    await scanWorkspace({ workspacePath: root, deep: true, mspClient: second.client, actor: "test", runId: "community-2" });
-    const communities = (calls) => calls.find((call) => call.name === "msp_knowledge_write" && call.input.communities)?.input.communities;
-    expect(communities(first.calls)).toEqual(communities(second.calls));
+    const firstGks = mockGks();
+    const secondGks = mockGks();
+    await scanWorkspace({ workspacePath: root, deep: true, mspClient: first.client, gksClient: firstGks.client, actor: "test", runId: "community-1" });
+    await scanWorkspace({ workspacePath: root, deep: true, mspClient: second.client, gksClient: secondGks.client, actor: "test", runId: "community-2" });
+    const communities = (calls) => calls.find((call) => call.name === "gks_code_upsert" && call.input.context_snapshots?.length)?.input.context_snapshots;
+    expect(communities(firstGks.calls)).toEqual(communities(secondGks.calls));
     expect(validateDeepScan([]).passed).toBe(false);
     const forged = CANONICAL_STAGES.map((name, index) => ({ schema: "govibe-stage-run/v1", runId: "forged", stage: index + 1, name, status: "not_applicable", inputRefs: [], outputRefs: ["exclusion:forged"], method: "forged", confidence: 1, exclusions: ["forged"] }));
     expect(validateDeepScan(forged).passed).toBe(false);

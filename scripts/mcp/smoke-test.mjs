@@ -5,6 +5,12 @@ import { GovibeRuntime } from "./runtime-core.mjs";
 import { toolCatalog } from "./registry.mjs";
 
 const requiredTools = [
+  "govibe.plan.create",
+  "govibe.workflow.status",
+  "govibe.workspace.impact",
+  "govibe.docs.version",
+  "govibe.review.run",
+  "govibe.optimize.run",
   "govibe.agent.run",
   "govibe.docs.resolve",
   "govibe.roadmap.load",

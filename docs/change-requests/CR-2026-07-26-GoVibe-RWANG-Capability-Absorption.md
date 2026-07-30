@@ -2,8 +2,8 @@
 title: "CR: Absorb RWANG Capabilities into GoVibe"
 doc_id: "CR-2026-07-26-govibe-rwang-capability-absorption"
 status: "approved"
-version: "0.2.0"
-updated: "2026-07-29"
+version: "1.0.0"
+updated: "2026-07-30"
 owner: "Boss (Product Authority)"
 decision_owner: "Boss (Product Authority)"
 auditor: "ATHER"
@@ -58,10 +58,10 @@ Definitions, execution, knowledge, and proof must not collapse into one module.
 - **Reason:** Cross-repository capability movement, public command rename,
   runtime ownership changes, governance reconciliation, storage boundaries,
   and eventual repository retirement.
-- **Current gate:** Approved by the human product authority on 2026-07-29.
-  Implementation is authorized through the vertical slice ending at
-  `GoVibe:init`, `GoVibe:continue`, and `GoVibe:scan`. `GoVibe:plan`, P0-P6,
-  UI cutover, and RWANG retirement remain separately gated.
+- **Current gate:** Full migration implementation approved by the human product
+  authority on 2026-07-30. This authorizes T01-T12 and T13 parity/cutover
+  preparation. Actual RWANG repository archival remains a separate manual
+  owner decision after the observation and rollback gates pass.
 
 ## 3. Current Capability Inventory
 
@@ -543,9 +543,10 @@ baseline pass. No PR may combine runtime movement with repository retirement.
 
 ## 13. Exit and Rollback Criteria
 
-Final Product Grade was approved by Boss through the explicit implementation
-instruction on 2026-07-29. Implementation may start within the vertical-slice
-boundary recorded above.
+Final Product Grade for the full migration implementation was approved by Boss
+through the explicit implementation instruction on 2026-07-30. T01-T12 and
+T13 parity/cutover preparation may proceed. Repository archival remains gated
+by the explicit final approval below.
 
 Retirement may start only when:
 
@@ -566,6 +567,7 @@ runtime layer.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 1.0.0 | 2026-07-30 | approved | Owner authorized the full T01-T13 implementation plan with external MCP adapters; RWANG archival remains separately gated. | pending | ATHER |
 | 0.2.0 | 2026-07-29 | approved | Owner approved the capability boundaries and authorized the init/continue/scan vertical slice; plan, P0-P6, UI cutover, and retirement remain gated. | pending | ATHER |
 | 0.2.0+draft | 2026-07-27 | candidate | Assigned skill definitions to the Central Skill Registry, 12-stage execution to GoVibe, symbol/graph/code knowledge to GKS, and provenance/evidence/verification to MSP; split migration into 13 atomic PR tasks. | pending | ATHER |
 | 0.1.0+draft | 2026-07-26 | candidate | Proposed GoVibe-owned capability absorption, command map, atomic tasks, PR sequence, test strategy, and RWANG retirement gates. | pending | ATHER |

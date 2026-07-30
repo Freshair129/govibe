@@ -146,9 +146,45 @@ export const toolCatalog = [
         actor: { type: "string" },
         workspacePath: { type: "string" },
         executor: { type: "string", enum: ["claude-code", "codex", "crewai"] },
+        runId: { type: "string" },
+        taskId: { type: "string" },
+        status: { type: "string", enum: ["pending", "running", "paused", "complete", "failed", "blocked"] },
+        idempotencyKey: { type: "string" },
+        verification: { type: "object" },
+        outputRefs: { type: "array", items: { type: "string" } },
       },
-      required: ["actor", "workspacePath", "executor"],
+      required: ["actor", "workspacePath"],
     },
+  },
+  {
+    name: "govibe.plan.create",
+    description: "Create a durable dependency-validated workflow plan under workspace state.",
+    inputSchema: { type: "object", properties: { actor: { type: "string" }, workspacePath: { type: "string" }, runId: { type: "string" }, tasks: { type: "array", items: { type: "object" } }, mode: { type: "string", enum: ["covibe", "codev"] } }, required: ["actor", "workspacePath", "tasks"] },
+  },
+  {
+    name: "govibe.workflow.status",
+    description: "Read the canonical GoVibe run snapshot without contacting an executor.",
+    inputSchema: { type: "object", properties: { actor: { type: "string" }, workspacePath: { type: "string" }, runId: { type: "string" } }, required: ["actor", "workspacePath", "runId"] },
+  },
+  {
+    name: "govibe.workspace.impact",
+    description: "Find workspace references to a bounded set of paths.",
+    inputSchema: { type: "object", properties: { actor: { type: "string" }, workspacePath: { type: "string" }, paths: { type: "array", items: { type: "string" } } }, required: ["actor", "workspacePath", "paths"] },
+  },
+  {
+    name: "govibe.docs.version",
+    description: "Read the declared version of a workspace document.",
+    inputSchema: { type: "object", properties: { actor: { type: "string" }, workspacePath: { type: "string" }, path: { type: "string" } }, required: ["actor", "workspacePath", "path"] },
+  },
+  {
+    name: "govibe.review.run",
+    description: "Run a read-only bounded workspace review.",
+    inputSchema: { type: "object", properties: { actor: { type: "string" }, workspacePath: { type: "string" } }, required: ["actor", "workspacePath"] },
+  },
+  {
+    name: "govibe.optimize.run",
+    description: "Apply a deterministic optimization and return before/after measurements.",
+    inputSchema: { type: "object", properties: { actor: { type: "string" }, mode: { type: "string", enum: ["covibe", "codev"] }, values: { type: "array", items: { type: "string" } }, strategy: { type: "string", enum: ["deduplicate_strings"] } }, required: ["actor", "values", "strategy"] },
   },
   {
     name: "govibe.workspace.scan",
@@ -222,6 +258,35 @@ export const toolCatalog = [
     },
   },
 ];
+
+export const legacyAliasCatalog = [
+  ["GoVibe:init", "govibe.workspace.initialize"],
+  ["GoVibe:scan", "govibe.workspace.scan"],
+  ["GoVibe:plan", "govibe.plan.create"],
+  ["GoVibe:continue", "govibe.workflow.continue"],
+  ["GoVibe:status", "govibe.workflow.status"],
+  ["GoVibe:impact", "govibe.workspace.impact"],
+  ["GoVibe:version", "govibe.docs.version"],
+  ["RWANG:init", "govibe.workspace.initialize"],
+  ["RWANG:scan", "govibe.workspace.scan"],
+  ["RWANG:plan", "govibe.plan.create"],
+  ["RWANG:continue", "govibe.workflow.continue"],
+  ["RWANG:status", "govibe.workflow.status"],
+  ["RWANG:impact", "govibe.workspace.impact"],
+  ["RWANG:version", "govibe.docs.version"],
+].map(([name, canonicalName]) => ({
+  name,
+  canonicalName,
+  deprecated: true,
+  description: `Deprecated compatibility alias for ${canonicalName}.`,
+  inputSchema: toolCatalog.find((tool) => tool.name === canonicalName).inputSchema,
+}));
+
+toolCatalog.push(...legacyAliasCatalog);
+
+export function resolveToolName(name) {
+  return legacyAliasCatalog.find((tool) => tool.name === name)?.canonicalName ?? name;
+}
 
 export const resourceCatalog = [
   {
