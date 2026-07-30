@@ -2,8 +2,8 @@
 title: "API: GoVibe Capability Contracts"
 doc_id: "API-005-GOVIBE-CAPABILITY-CONTRACTS"
 status: "approved"
-version: "1.0.2"
-updated: "2026-07-29"
+version: "2.0.0"
+updated: "2026-07-30"
 owner: "Boss / ATHER"
 source_of_truth: true
 related_docs:
@@ -55,6 +55,16 @@ type GoVibeStageRun = {
 };
 ```
 
+Workflow snapshots use `pending | running | paused | blocked | failed |
+completed | cancelled`. Stage records additionally expose transient `pending`
+and `running` states while persisted terminal records retain the states above.
+
+`KnowledgeBatch` contains only atoms, symbols, relations, context snapshots,
+and `provenance_ref`. `ProofBatch` contains findings, stage evidence,
+verification, artifact lineage, and optional `knowledge_ref`. Both envelopes
+require `schema_version`, `idempotency_key`, `run_id`, `stage`, and
+`source_snapshot_hash`.
+
 Canonical deep-scan order is:
 
 1. Scan
@@ -77,6 +87,12 @@ L2 completion requires all stages to be `complete` or evidenced `not_applicable`
 - `govibe.workspace.initialize`: prepares `.govibe`, pins the built-in scan skill, registers the workspace through MSP, and does not run a deep scan.
 - `govibe.workflow.continue`: resolves the pinned skill, project state, MSP Two-Brain context, and GKS knowledge into `govibe-context-packet/v2`.
 - `govibe.workspace.scan`: defaults to L1; `deep: true` runs all twelve canonical stages in order.
+- `govibe.plan.create`: validates a dependency DAG and creates persisted workflow state.
+- `govibe.workflow.status`: returns one run snapshot without executing work.
+- `govibe.workspace.impact`: performs read-only impact inspection through the approved adapter.
+- `govibe.docs.version`: audits governed artifact versions without implicit repair.
+- `govibe.review.run`: executes under a read-only filesystem guard.
+- `govibe.optimize.run`: requires baseline and post-change measurements.
 
 ## Ownership Negatives
 
@@ -88,12 +104,19 @@ L2 completion requires all stages to be `complete` or evidenced `not_applicable`
 
 ## Runtime Transport
 
-GoVibe connects to MSP through MCP stdio without binding to a local checkout. `GOVIBE_MSP_COMMAND` selects the executable, `GOVIBE_MSP_ARGS` is a JSON array of arguments, and optional `GOVIBE_MSP_CWD` selects its working directory. `GOVIBE_ALLOWED_WORKSPACE_ROOTS` is a non-empty JSON array of absolute server-owned roots; MCP workspace operations reject targets outside those roots. When the MSP command is absent or the transport fails, context and deep-scan operations fail closed; GoVibe does not create a private fallback store.
+GoVibe connects to MSP and GKS through independent MCP stdio adapters without
+binding to local checkouts. `GOVIBE_MSP_*` configures context/proof and
+`GOVIBE_GKS_*` configures knowledge writes. External writer tools are
+`msp_evidence_record` and `gks_code_upsert`. `GOVIBE_ALLOWED_WORKSPACE_ROOTS`
+is a non-empty JSON array of absolute server-owned roots. Missing transports,
+schema mismatch, or storage failure returns a typed degraded state; GoVibe
+does not create a private fallback store.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 2.0.0 | 2026-07-30 | Boss / ATHER | Added full migration commands, workflow states, independent GKS/MSP writer envelopes, and degraded-state contracts. |
 | 1.0.2 | 2026-07-29 | ATHER | Added the server-owned workspace allowlist and fail-closed path boundary. |
 | 1.0.1 | 2026-07-29 | ATHER | Documented the transport-neutral MSP stdio binding and fail-closed fallback rule. |
 | 1.0.0 | 2026-07-29 | Boss / ATHER | Approved contracts for the first GoVibe capability-absorption vertical slice. |
