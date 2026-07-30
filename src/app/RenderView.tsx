@@ -30,7 +30,7 @@ export function RenderView({
   send: (command: MissionCommand) => void;
   ingest: (json: string) => void;
 }) {
-  if (activeView === "A1") return <RealTimeDashboard snapshot={snapshot} theme={theme} />;
+  if (activeView === "A1") return <RealTimeDashboard snapshot={snapshot} theme={theme} send={send} />;
   if (activeView === "A2") return <RoadmapBoard snapshot={snapshot} send={send} />;
   if (activeView === "A3") return <CapabilityPlugins snapshot={snapshot} />;
   if (activeView === "A4") return <BrainConfig />;

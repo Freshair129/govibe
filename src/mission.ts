@@ -248,9 +248,31 @@ export type MissionSnapshot = {
   };
   campaignLogs: string[];
   roadmap?: RoadmapSnapshot;
+  masterPlanPreview?: RoadmapSnapshot;
   roadmapSources?: RoadmapSourceRecord[];
-  workflowRuns?: Array<{ runId: string; status: string; currentTask: string | null; tasks: Array<{ id: string; status: string; outputRefs?: string[] }> }>;
+  workflowRuns?: MissionWorkflowRun[];
   providers?: Array<{ id: string; available: boolean; capabilities: string[] }>;
+};
+
+export type MissionScanStage = {
+  stage: number;
+  name: string;
+  status: string;
+  method?: string;
+  confidence?: number;
+  outputRefs?: string[];
+  error?: string;
+};
+
+export type MissionWorkflowRun = {
+  runId: string;
+  status: string;
+  currentTask: string | null;
+  tasks: Array<{ id: string; status: string; outputRefs?: string[] }>;
+  kind?: "workflow" | "scan";
+  level?: "L1" | "L2";
+  stageRuns?: MissionScanStage[];
+  graphValidation?: { passed: boolean; errors?: string[] };
 };
 
 export type MissionEvent =
@@ -266,12 +288,14 @@ export type MissionEvent =
   | { type: "roadmap.assignment"; assignment: WorkflowAssignment }
   | { type: "roadmap.handoff"; handoff: WorkflowHandoff }
   | { type: "roadmap.verification"; verification: WorkflowVerification }
-  | { type: "workflow.run"; run: NonNullable<MissionSnapshot["workflowRuns"]>[number] };
+  | { type: "workflow.run"; run: MissionWorkflowRun };
 
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
   | { type: "agent.select"; agentId: string }
   | { type: "roadmap.select"; sourcePath: string }
+  | { type: "masterplan.preview"; sourcePath: string }
+  | { type: "workspace.scan"; workspacePath: string; deep: boolean; runId?: string }
   | { type: "reactor.run"; profile: string }
   | { type: "file.save"; hash: string; data: ArrayBuffer; meta: Record<string, unknown> };
 

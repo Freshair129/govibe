@@ -146,11 +146,13 @@ function collectSectionTables(body) {
     if (!headingMatch) continue;
 
     const sectionName = headingMatch[1].trim();
+    const normalizedSectionName = sectionName.replace(/^\d+(?:\.\d+)*\.?\s+/, "");
     for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
       if (lines[cursor].trim().startsWith("|")) {
         const parsed = parseMarkdownTable(lines, cursor);
         if (parsed) {
           sections.set(sectionName, parsed.rows);
+          sections.set(normalizedSectionName, parsed.rows);
           index = parsed.nextIndex - 1;
         }
         break;
