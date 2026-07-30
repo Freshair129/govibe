@@ -52,7 +52,7 @@ describe("GovibeRuntime roadmap source scoring", () => {
     await expect(runtime.initializeWorkspace({ actor: "test", workspacePath: path.parse(process.cwd()).root })).rejects.toThrow(/outside configured GoVibe roots/);
   });
 
-  it("discovers masterplan sources while keeping approved sources rankable", async () => {
+  it("discovers and activates an approved Master Plan through the roadmap source gate", async () => {
     delete process.env.GOVIBE_ROADMAP_SOURCE;
 
     const runtime = new GovibeRuntime();
@@ -61,7 +61,15 @@ describe("GovibeRuntime roadmap source scoring", () => {
 
     expect(sources.some((source) => source.path === "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md")).toBe(true);
     expect(sources.some((source) => source.path === "docs/roadmap/ROADMAP-task-scoped-context-injection.md")).toBe(true);
-    expect(sources.find((source) => source.active)?.approvalStatus).toBe("approved");
+    const response = await runtime.handleMissionCommand({ type: "roadmap.select", sourcePath: "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md" });
+
+    expect(response).toMatchObject({ ok: true, action: "roadmap.select" });
+    expect(runtime.getSnapshot().roadmap).toMatchObject({
+      sourcePath: "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md",
+      planningType: "masterplan",
+      approvalStatus: "approved",
+    });
+    expect(runtime.getSnapshot().roadmap?.nodes.filter((node) => node.type === "phase")).toHaveLength(5);
   });
 
   it("honors GOVIBE_ROADMAP_SOURCE when the selected source is approved", async () => {
@@ -116,14 +124,14 @@ describe("Mission Control workspace scan command", () => {
     expect(events.some((event) => event.type === "workflow.run" && event.run.runId === "mission-scan-1")).toBe(true);
   });
 
-  it("loads an unapproved Master Plan as review-only state", async () => {
+  it("loads an approved Master Plan as review-only state without changing the active source", async () => {
     const runtime = new GovibeRuntime({ mspClient: mspClient(), gksClient: gksClient() });
     const response = await runtime.handleMissionCommand({ type: "masterplan.preview", sourcePath: "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md" });
 
     expect(response).toMatchObject({ ok: true, action: "masterplan.preview" });
     expect(runtime.getSnapshot().masterPlanPreview).toMatchObject({
       sourcePath: "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md",
-      approvalStatus: "draft",
+      approvalStatus: "approved",
       planningType: "masterplan",
     });
     expect(runtime.getSnapshot().masterPlanPreview.nodes.filter((node) => node.type === "phase")).toHaveLength(5);
