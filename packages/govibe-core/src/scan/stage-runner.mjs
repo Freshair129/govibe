@@ -26,7 +26,7 @@ export async function runDeepScan({ workspacePath, inventory, mspClient, gksClie
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(runId) || runId.includes("..")) {
     throw new Error(`Invalid scan runId: ${runId}`);
   }
-  const runDirectory = path.join(workspacePath, ".govibe", "runs", runId);
+  const runDirectory = path.join(workspacePath, "state", "runs", runId);
   const runRoot = path.join(runDirectory, "stages");
   await mkdirSafe(workspacePath, runRoot);
   const runMetaPath = path.join(runDirectory, "run.json");
