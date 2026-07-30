@@ -18,6 +18,24 @@ export function RealTimeDashboard({ snapshot, theme }: { snapshot: MissionSnapsh
         )) : <EmptyState title="No telemetry connected" body="Send a snapshot or metrics.update event through WebSocket, HTTP, or window govibe:mission-event." />}
       </div>
       <div className="dashboard-grid">
+        <section className="panel">
+          <h2>Workflow Runs</h2>
+          {(snapshot.workflowRuns ?? []).length > 0 ? snapshot.workflowRuns?.map((run) => (
+            <div className="kv-row" key={run.runId}>
+              <span>{run.runId}</span>
+              <strong>{run.status} · {run.currentTask ?? "complete"}</strong>
+            </div>
+          )) : <EmptyState title="No workflow runs" body="Create a GoVibe plan to populate evidence-backed run state." />}
+        </section>
+        <section className="panel">
+          <h2>Executor Providers</h2>
+          {(snapshot.providers ?? []).map((provider) => (
+            <div className="kv-row" key={provider.id}>
+              <span>{provider.id}</span>
+              <strong>{provider.available ? "available" : "degraded"}</strong>
+            </div>
+          ))}
+        </section>
         <section className="panel chart-panel">
           <h2>Token Performance Analytics</h2>
           <canvas ref={chartRef} />

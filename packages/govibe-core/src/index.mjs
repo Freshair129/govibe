@@ -9,3 +9,7 @@ export { createDefaultStageAdapters } from "./scan/stage-adapters.mjs";
 export { CANONICAL_STAGES, validateStageRun } from "./scan/stage-contract.mjs";
 export { validateDeepScan } from "./scan/graph-validation.mjs";
 export { initializeWorkspace } from "./workspace.mjs";
+export { createWorkflowPlan, getWorkflowStatus, transitionWorkflow } from "./workflow-engine.mjs";
+export { createExecutorRegistry, ProviderUnavailableError } from "./executor-adapter.mjs";
+export { createPolicyEnvelope, assertPolicyAllows } from "./policy-envelope.mjs";
+export { reviewWorkspace, optimizeMeasured, workspaceImpact, docsVersion } from "./governance-operations.mjs";

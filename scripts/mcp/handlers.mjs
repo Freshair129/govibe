@@ -7,7 +7,7 @@ import { promisify } from "node:util";
 const execAsync = promisify(exec);
 
 import { govibeRuntime } from "./runtime-core.mjs";
-import { getResourceByUri } from "./registry.mjs";
+import { getResourceByUri, resolveToolName } from "./registry.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -25,6 +25,15 @@ function buildAuditRef(capability) {
 }
 
 export async function handleToolCall(name, args = {}) {
+  const canonicalName = resolveToolName(name);
+  if (canonicalName !== name) {
+    const result = await handleToolCall(canonicalName, args);
+    return {
+      ...result,
+      content: asTextContent(`DEPRECATED: ${name} routes to ${canonicalName}.\n\n${result.content?.[0]?.text ?? ""}`),
+      structuredContent: { ...result.structuredContent, legacyAlias: name, canonicalName, deprecated: true },
+    };
+  }
   switch (name) {
     case "govibe.agent.run": {
       // Map agent_id to the agent field expected by the runtime
@@ -197,6 +206,30 @@ export async function handleToolCall(name, args = {}) {
         content: asTextContent(`GoVibe workflow continue: ${result.status}.`),
         structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) },
       };
+    }
+    case "govibe.plan.create": {
+      const result = await govibeRuntime.createPlan(args);
+      return { content: asTextContent(`GoVibe plan created: ${result.runId}.`), structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) } };
+    }
+    case "govibe.workflow.status": {
+      const result = await govibeRuntime.workflowStatus(args);
+      return { content: asTextContent(`GoVibe workflow status: ${result.status}.`), structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) } };
+    }
+    case "govibe.workspace.impact": {
+      const result = await govibeRuntime.workspaceImpact(args);
+      return { content: asTextContent(`GoVibe impact references: ${result.references.length}.`), structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) } };
+    }
+    case "govibe.docs.version": {
+      const result = await govibeRuntime.docsVersion(args);
+      return { content: asTextContent(`GoVibe document version: ${result.version ?? "undeclared"}.`), structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) } };
+    }
+    case "govibe.review.run": {
+      const result = await govibeRuntime.reviewWorkspace(args);
+      return { content: asTextContent(`GoVibe read-only review inspected ${result.filesInspected} files.`), structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) } };
+    }
+    case "govibe.optimize.run": {
+      const result = await govibeRuntime.optimize(args);
+      return { content: asTextContent(`GoVibe optimize delta: ${result.delta}.`), structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) } };
     }
     case "govibe.workspace.scan": {
       const result = await govibeRuntime.scanWorkspace(args);

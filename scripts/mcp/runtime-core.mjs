@@ -20,12 +20,22 @@ import { evaluate as evaluateFidelity } from "./translator/fidelity.mjs";
 import { buildRecord as buildProvenance, appendRecord as appendProvenance } from "./translator/provenance.mjs";
 import { atomizeCode, CODE_LANGS } from "./translator/code-atomizer.mjs";
 import {
+  assertPolicyAllows,
   continueWorkflow,
+  createPolicyEnvelope,
+  createExecutorRegistry,
+  createWorkflowPlan,
   createGksClientFromEnvironment,
   createMspClientFromEnvironment,
   initializeWorkspace as prepareWorkspace,
+  docsVersion,
+  getWorkflowStatus,
+  optimizeMeasured,
   readSkillDefinition,
+  reviewWorkspace,
   scanWorkspace,
+  transitionWorkflow,
+  workspaceImpact,
 } from "../../packages/govibe-core/src/index.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -76,6 +86,8 @@ function createEmptySnapshot() {
     symbols: [],
     campaignLogs: [],
     orchestration: createEmptyOrchestration(),
+    workflowRuns: [],
+    providers: [],
   };
 }
 
@@ -432,7 +444,9 @@ export class GovibeRuntime {
     this.availableSources = [];
     this.mspClient = options.mspClient ?? createMspClientFromEnvironment();
     this.gksClient = options.gksClient ?? createGksClientFromEnvironment();
+    this.executorRegistry = createExecutorRegistry(options.executorAdapters ?? {});
     this.allowedWorkspaceRoots = options.allowedWorkspaceRoots ?? configuredWorkspaceRoots();
+    this.snapshot.providers = this.executorRegistry.inspect();
   }
 
   async initialize() {
@@ -462,6 +476,14 @@ export class GovibeRuntime {
   }
 
   async continueWorkflow(args = {}) {
+    if (args.runId && args.taskId && args.status) {
+      const target = await resolveDeclaredWorkspace(args.workspacePath, this.allowedWorkspaceRoots);
+      const event = await transitionWorkflow({ workspacePath: target, runId: args.runId, taskId: args.taskId, status: args.status, idempotencyKey: args.idempotencyKey, verification: args.verification, outputRefs: args.outputRefs });
+      const run = await getWorkflowStatus({ workspacePath: target, runId: args.runId });
+      this.snapshot = { ...this.snapshot, workflowRuns: [...this.snapshot.workflowRuns.filter((item) => item.runId !== run.runId), run], updatedAt: new Date().toISOString() };
+      this.emit({ type: "workflow.run", run });
+      return { status: run.status, event, run };
+    }
     const builtInSkill = await readSkillDefinition(
       path.join(workspaceRoot, ".govibe", "skills", "block-decomposition", "1.0.0", "SKILL.md"),
     );
@@ -474,6 +496,44 @@ export class GovibeRuntime {
     });
     this.appendTerminal(result.status === "ready" ? "sys" : "warn", `GoVibe continue ${result.status}.`);
     return result;
+  }
+
+  async createPlan(args = {}) {
+    const target = await resolveDeclaredWorkspace(args.workspacePath, this.allowedWorkspaceRoots);
+    const result = await createWorkflowPlan({ workspacePath: target, runId: args.runId, tasks: args.tasks, policyEnvelope: createPolicyEnvelope(args.mode ?? "codev", args.actor ?? "unknown") });
+    this.snapshot = { ...this.snapshot, workflowRuns: [...this.snapshot.workflowRuns.filter((run) => run.runId !== result.runId), result], updatedAt: new Date().toISOString() };
+    this.emit({ type: "workflow.run", run: result });
+    return result;
+  }
+
+  async workflowStatus(args = {}) {
+    const target = await resolveDeclaredWorkspace(args.workspacePath, this.allowedWorkspaceRoots);
+    const result = await getWorkflowStatus({ workspacePath: target, runId: args.runId });
+    this.snapshot = { ...this.snapshot, workflowRuns: [...this.snapshot.workflowRuns.filter((run) => run.runId !== result.runId), result], updatedAt: new Date().toISOString() };
+    return result;
+  }
+
+  async workspaceImpact(args = {}) {
+    const target = await resolveDeclaredWorkspace(args.workspacePath, this.allowedWorkspaceRoots);
+    return workspaceImpact({ workspacePath: target, paths: args.paths ?? [] });
+  }
+
+  async docsVersion(args = {}) {
+    const target = await resolveDeclaredWorkspace(args.workspacePath, this.allowedWorkspaceRoots);
+    return docsVersion({ workspacePath: target, path: args.path });
+  }
+
+  async reviewWorkspace(args = {}) {
+    const target = await resolveDeclaredWorkspace(args.workspacePath, this.allowedWorkspaceRoots);
+    return reviewWorkspace({ workspacePath: target });
+  }
+
+  async optimize(args = {}) {
+    assertPolicyAllows(createPolicyEnvelope(args.mode ?? "covibe", args.actor ?? "unknown"), "optimize");
+    if (args.strategy !== "deduplicate_strings" || !Array.isArray(args.values)) throw new Error("Unsupported optimize strategy.");
+    let optimized = [...args.values];
+    const result = await optimizeMeasured({ measureBefore: async () => args.values.length, optimize: async () => { optimized = [...new Set(args.values)]; }, measureAfter: async () => optimized.length });
+    return { ...result, strategy: args.strategy, output: optimized };
   }
 
   async scanWorkspace(args = {}) {

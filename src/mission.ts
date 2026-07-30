@@ -249,6 +249,8 @@ export type MissionSnapshot = {
   campaignLogs: string[];
   roadmap?: RoadmapSnapshot;
   roadmapSources?: RoadmapSourceRecord[];
+  workflowRuns?: Array<{ runId: string; status: string; currentTask: string | null; tasks: Array<{ id: string; status: string; outputRefs?: string[] }> }>;
+  providers?: Array<{ id: string; available: boolean; capabilities: string[] }>;
 };
 
 export type MissionEvent =
@@ -263,7 +265,8 @@ export type MissionEvent =
   | { type: "roadmap.node.update"; node: WorkflowTaskNode }
   | { type: "roadmap.assignment"; assignment: WorkflowAssignment }
   | { type: "roadmap.handoff"; handoff: WorkflowHandoff }
-  | { type: "roadmap.verification"; verification: WorkflowVerification };
+  | { type: "roadmap.verification"; verification: WorkflowVerification }
+  | { type: "workflow.run"; run: NonNullable<MissionSnapshot["workflowRuns"]>[number] };
 
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
@@ -357,6 +360,8 @@ const emptySnapshot: MissionSnapshot = {
   symbols: [],
   campaignLogs: [],
   roadmapSources: [],
+  workflowRuns: [],
+  providers: [],
 };
 
 function mergeSnapshot(current: MissionSnapshot, patch: Partial<MissionSnapshot>): MissionSnapshot {
@@ -375,6 +380,8 @@ function mergeSnapshot(current: MissionSnapshot, patch: Partial<MissionSnapshot>
     campaignLogs: patch.campaignLogs ?? current.campaignLogs,
     roadmap: patch.roadmap ?? current.roadmap,
     roadmapSources: patch.roadmapSources ?? current.roadmapSources,
+    workflowRuns: patch.workflowRuns ?? current.workflowRuns,
+    providers: patch.providers ?? current.providers,
     updatedAt: patch.updatedAt ?? new Date().toISOString(),
   };
 }
@@ -543,6 +550,9 @@ export class MissionGateway {
           ),
         },
       });
+    }
+    if (event.type === "workflow.run") {
+      this.setSnapshot({ workflowRuns: [...(this.snapshot.workflowRuns ?? []).filter((run) => run.runId !== event.run.runId), event.run] });
     }
   }
 
