@@ -91,6 +91,28 @@ function createEmptySnapshot() {
   };
 }
 
+function toMissionScanRun(result) {
+  const stageRuns = result.stageRuns?.map((stage) => ({
+    stage: stage.stage,
+    name: stage.name,
+    status: stage.status,
+    method: stage.method,
+    confidence: stage.confidence,
+    outputRefs: stage.outputRefs,
+    error: stage.error,
+  }));
+  return {
+    runId: result.runId,
+    status: result.status,
+    currentTask: result.status === "complete" ? null : stageRuns?.find((stage) => stage.status !== "complete" && stage.status !== "not_applicable")?.name ?? null,
+    tasks: stageRuns?.map((stage) => ({ id: `stage-${stage.stage}`, status: stage.status, outputRefs: stage.outputRefs })) ?? [],
+    kind: "scan",
+    level: result.level,
+    stageRuns,
+    graphValidation: result.graphValidation ? { passed: result.graphValidation.passed, errors: result.graphValidation.errors } : undefined,
+  };
+}
+
 function createTerminalLine(type, text) {
   return {
     id: crypto.randomUUID(),
@@ -546,6 +568,13 @@ export class GovibeRuntime {
       runId: args.runId,
       resume: args.resume === true,
     });
+    const run = toMissionScanRun(result);
+    this.snapshot = {
+      ...this.snapshot,
+      workflowRuns: [...this.snapshot.workflowRuns.filter((item) => item.runId !== run.runId), run],
+      updatedAt: new Date().toISOString(),
+    };
+    this.emit({ type: "workflow.run", run });
     this.appendTerminal(result.status === "complete" ? "sys" : "warn", `GoVibe ${result.level} scan ${result.status}.`);
     return result;
   }
@@ -726,6 +755,18 @@ export class GovibeRuntime {
     this.emit({ type: "dag.update", dag: roadmap.dag });
     this.emit({ type: "orchestration.update", orchestration });
     return roadmap;
+  }
+
+  async previewMasterPlan(sourcePath) {
+    const sources = await discoverRoadmapSources(roadmapDir);
+    const selectedSource = sources.find((source) => toRelativePath(source.path) === sourcePath);
+    if (!selectedSource) throw new Error(`Master Plan source is not discoverable: ${sourcePath}`);
+    const preview = await parseRoadmapSource(selectedSource.path);
+    if (preview.planningType !== "masterplan") throw new Error(`Source is not a Master Plan: ${sourcePath}`);
+    const masterPlanPreview = { ...preview, sourcePath: toRelativePath(selectedSource.path) };
+    this.snapshot = { ...this.snapshot, masterPlanPreview, updatedAt: new Date().toISOString() };
+    this.emit({ type: "snapshot", snapshot: { masterPlanPreview } });
+    return masterPlanPreview;
   }
 
   async closeSession() {
@@ -1126,6 +1167,22 @@ export class GovibeRuntime {
       const roadmap = await this.reloadRoadmap(command.sourcePath);
       this.appendTerminal("sys", `Roadmap source selected: ${command.sourcePath}`);
       return { ok: true, action: "roadmap.select", source: command.sourcePath, roadmap, snapshot: this.snapshot };
+    }
+
+    if (command.type === "masterplan.preview") {
+      const masterPlan = await this.previewMasterPlan(command.sourcePath);
+      this.appendTerminal("sys", `Master Plan review loaded: ${command.sourcePath}`);
+      return { ok: true, action: "masterplan.preview", masterPlan, snapshot: this.snapshot };
+    }
+
+    if (command.type === "workspace.scan") {
+      const result = await this.scanWorkspace({
+        actor: "mission-control",
+        workspacePath: command.workspacePath,
+        deep: command.deep,
+        runId: command.runId,
+      });
+      return { ok: true, action: "workspace.scan", result, snapshot: this.snapshot };
     }
 
     if (command.type === "agent.select") {

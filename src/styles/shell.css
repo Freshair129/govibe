@@ -691,6 +691,131 @@ main::after {
   grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
 }
 
+.stage-scan-panel {
+  grid-column: 1 / -1;
+}
+
+.stage-scan-heading,
+.stage-scan-controls,
+.masterplan-source,
+.masterplan-preview {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.stage-scan-heading {
+  justify-content: space-between;
+}
+
+.stage-scan-heading h2,
+.stage-scan-heading p {
+  margin: 0;
+}
+
+.stage-scan-heading p,
+.stage-validation,
+.masterplan-source span,
+.masterplan-preview span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.stage-scan-controls {
+  margin: 16px 0;
+  flex-wrap: wrap;
+}
+
+.stage-scan-controls label {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.stage-scan-controls input {
+  min-width: min(100%, 360px);
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text);
+  padding: 10px 12px;
+}
+
+.stage-scan-controls button,
+.masterplan-source button {
+  border: 1px solid color-mix(in srgb, var(--accent), transparent 36%);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent), transparent 80%);
+  color: var(--text);
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.stage-run-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.stage-run-list li {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 12px;
+}
+
+.stage-run-list li span,
+.stage-run-list li em {
+  color: var(--muted);
+  font-style: normal;
+}
+
+.stage-run-list .stage-complete,
+.stage-run-list .stage-not_applicable {
+  border-color: color-mix(in srgb, #10b981, transparent 45%);
+}
+
+.stage-run-list .stage-incomplete,
+.stage-run-list .stage-failed {
+  border-color: color-mix(in srgb, #f59e0b, transparent 35%);
+}
+
+.scan-status {
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.scan-status.complete { color: #34d399; }
+.scan-status.incomplete, .scan-status.failed { color: #fbbf24; }
+
+.masterplan-source,
+.masterplan-preview {
+  align-items: flex-start;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+  padding: 14px 0;
+}
+
+.masterplan-preview p {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.masterplan-review-panel .a2-roster-head > div {
+  display: grid;
+  gap: 6px;
+}
+
 .chart-panel {
   min-height: 380px;
 }

@@ -32,6 +32,7 @@ export function RoadmapBoard({ snapshot, send }: { snapshot: MissionSnapshot; se
   const receivedRoadmap = snapshot.roadmap;
   const roadmap = receivedRoadmap?.approvalStatus?.toLowerCase() === "approved" ? receivedRoadmap : undefined;
   const roadmapSources = (snapshot.roadmapSources ?? []).filter((source) => source.approvalStatus?.toLowerCase() === "approved");
+  const masterPlans = (snapshot.roadmapSources ?? []).filter((source) => source.sourceType === "masterplan");
   const stats = getRoadmapStats(roadmap);
   const livePhase = getPrimaryRoadmapPhase(roadmap);
   const sourceState = roadmap
@@ -156,6 +157,16 @@ export function RoadmapBoard({ snapshot, send }: { snapshot: MissionSnapshot; se
       await send({ type: "roadmap.select", sourcePath: nextSourcePath });
       setOpenPhase(true);
       setExportMenuOpen(false);
+    } finally {
+      setSwitchingSource(false);
+    }
+  }
+
+  async function handleMasterPlanPreview(sourcePath: string) {
+    if (!send) return;
+    setSwitchingSource(true);
+    try {
+      await send({ type: "masterplan.preview", sourcePath });
     } finally {
       setSwitchingSource(false);
     }
@@ -306,6 +317,23 @@ export function RoadmapBoard({ snapshot, send }: { snapshot: MissionSnapshot; se
         ) : null}
       </section>
       <div className="a2-roadmap-layout">
+        <section className="a2-roster-panel masterplan-review-panel">
+          <div className="a2-roster-head"><div><strong>Master Plan</strong><span>Review-only sources remain outside the active roadmap until LYRA approval.</span></div></div>
+          {masterPlans.length > 0 ? masterPlans.map((source) => (
+            <article className="masterplan-source" key={source.sourcePath}>
+              <strong>{source.title}</strong>
+              <span>{source.approvalStatus ?? "draft"} · {source.sourcePath}</span>
+              <button type="button" onClick={() => void handleMasterPlanPreview(source.sourcePath)} disabled={switchingSource}>Open review</button>
+            </article>
+          )) : <EmptyState title="No Master Plan discovered" body="Add a governed MASTERPLAN source under docs/roadmap to make it reviewable here." />}
+          {snapshot.masterPlanPreview ? (
+            <div className="masterplan-preview" aria-label="Master Plan review preview">
+              <strong>{snapshot.masterPlanPreview.title}</strong>
+              <span>{snapshot.masterPlanPreview.approvalStatus ?? "draft"} · review only</span>
+              <p>{snapshot.masterPlanPreview.nodes.filter((node) => node.type === "phase").map((node) => `${node.id}: ${node.title}`).join(" · ") || "No phase hierarchy parsed."}</p>
+            </div>
+          ) : null}
+        </section>
         <section className="a2-roster-panel">
           <div className="a2-roster-head">
             <div>

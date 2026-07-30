@@ -79,6 +79,13 @@ export function startSidecarServer(runtime, options = {}) {
 
   wss.on("connection", (socket) => {
     socket.send(JSON.stringify({ type: "snapshot", snapshot: runtime.getSnapshot() }));
+    socket.on("message", async (message) => {
+      try {
+        await runtime.handleMissionCommand(JSON.parse(message.toString("utf8")));
+      } catch (error) {
+        runtime.appendTerminal("warn", `Mission command failed: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    });
   });
 
   server.listen(port, host);
