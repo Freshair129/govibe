@@ -1,8 +1,8 @@
 ---
-version: "1.0.1"
+version: "1.0.2"
 doc_id: "AUDIT-GOVIBE-RWANG-CUTOVER-READINESS-2026-07-30"
 created_at: "2026-07-30T13:58:00+07:00,ATHER"
-last_update: "2026-07-30T15:30:00+07:00,ATHER"
+last_update: "2026-07-30T16:05:00+07:00,ATHER"
 status: "under review"
 superseded_by: null
 attributes:
@@ -29,7 +29,8 @@ This audit records T13 readiness without authorizing RWANG archive. RWANG remain
 | Live clean-checkout GKS/MSP | Pass | Detached merged cognitive_system checkout completed clean install/build; GoVibe recorded provenance proof, GKS knowledge, and final MSP proof through stdio. |
 | Clean clone/install | Pass | GoVibe main CI passed; cognitive_system main CI passed Node 20/22; detached cognitive_system install/build passed locally. |
 | Observation window | Pending | Starts only after owner-approved cutover. |
-| RWANG archive | Blocked | Requires rollback rehearsal and Boss approval. |
+| Rollback rehearsal | Pass | Isolated handler rehearsal routed `RWANG:version` → `govibe.docs.version`, `RWANG:scan` → `govibe.workspace.scan`, and `GoVibe:scan` → `govibe.workspace.scan`; all returned deprecation metadata and the scan aliases completed at L1. |
+| RWANG archive | Blocked | Requires the observation window and Boss approval. |
 
 ## Rollback route
 
@@ -39,11 +40,12 @@ Legacy aliases remain registered and resolve through one mapping table. Rollback
 
 - Acceptance: command, stage, history, ownership, and UI contract tests pass.
 - Success: merged clean checkouts complete the live MCP and clean-install matrices.
-- Exit: observation window and rollback rehearsal pass, then Boss approves RWANG archive in a separate change.
+- Exit: observation window passes, then Boss approves RWANG archive in a separate change.
 
 ## CHANGELOG
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 1.0.2 | 2026-07-30 | under review | Recorded isolated rollback rehearsal of RWANG and GoVibe legacy aliases; archive remains blocked. | pending | ATHER |
 | 1.0.1 | 2026-07-30 | under review | Closed clean-install and live GKS/MSP gates after correcting MCP stdio framing. | pending | ATHER |
 | 1.0.0 | 2026-07-30 | under review | Initial T13 cutover readiness record; archive remains blocked. | pending | ATHER |
