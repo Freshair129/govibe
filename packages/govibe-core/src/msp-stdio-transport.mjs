@@ -1,8 +1,7 @@
 import { spawn } from "node:child_process";
 
 function encode(payload) {
-  const body = Buffer.from(JSON.stringify(payload), "utf8");
-  return Buffer.concat([Buffer.from(`Content-Length: ${body.length}\r\n\r\n`, "utf8"), body]);
+  return Buffer.from(`${JSON.stringify(payload)}\n`, "utf8");
 }
 
 export function createMspStdioCaller({ command, args = [], cwd, env = process.env }) {
@@ -11,27 +10,27 @@ export function createMspStdioCaller({ command, args = [], cwd, env = process.en
   let buffer = Buffer.alloc(0);
   let nextId = 1;
   let initialized;
+  let stderrTail = "";
   const pending = new Map();
 
   child.stdout.on("data", (chunk) => {
     buffer = Buffer.concat([buffer, chunk]);
     while (true) {
-      const separator = buffer.indexOf("\r\n\r\n");
-      if (separator < 0) break;
-      const header = buffer.subarray(0, separator).toString("utf8");
-      const match = header.match(/content-length:\s*(\d+)/i);
-      if (!match) throw new Error("MSP response is missing Content-Length.");
-      const start = separator + 4;
-      const end = start + Number(match[1]);
-      if (buffer.length < end) break;
-      const message = JSON.parse(buffer.subarray(start, end).toString("utf8"));
-      buffer = buffer.subarray(end);
+      const newline = buffer.indexOf("\n");
+      if (newline < 0) break;
+      const line = buffer.subarray(0, newline).toString("utf8").replace(/\r$/, "");
+      buffer = buffer.subarray(newline + 1);
+      if (!line.trim()) continue;
+      const message = JSON.parse(line);
       const request = pending.get(message.id);
       if (!request) continue;
       pending.delete(message.id);
       clearTimeout(request.timeout);
       message.error ? request.reject(new Error(message.error.message)) : request.resolve(message.result);
     }
+  });
+  child.stderr.on("data", (chunk) => {
+    stderrTail = `${stderrTail}${chunk.toString("utf8")}`.slice(-4096);
   });
   child.on("error", (error) => {
     for (const request of pending.values()) {
@@ -43,7 +42,7 @@ export function createMspStdioCaller({ command, args = [], cwd, env = process.en
   child.on("exit", (code) => {
     for (const request of pending.values()) {
       clearTimeout(request.timeout);
-      request.reject(new Error(`MSP process exited with code ${code}.`));
+      request.reject(new Error(`MSP process exited with code ${code}.${stderrTail ? ` ${stderrTail.trim()}` : ""}`));
     }
     pending.clear();
   });
@@ -71,11 +70,13 @@ export function createMspStdioCaller({ command, args = [], cwd, env = process.en
     await initialized;
   }
 
-  return async (name, input) => {
+  const call = async (name, input) => {
     await ensureInitialized();
     const result = await request("tools/call", { name, arguments: input });
     const text = result?.content?.find((item) => item.type === "text")?.text;
     if (result?.isError) throw new Error(text ?? `${name} failed.`);
     return result?.structuredContent ?? (text ? JSON.parse(text) : {});
   };
+  call.close = () => child.kill();
+  return call;
 }

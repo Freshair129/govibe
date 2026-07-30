@@ -1,8 +1,8 @@
 ---
-version: "1.0.0"
+version: "1.0.1"
 doc_id: "AUDIT-GOVIBE-RWANG-CUTOVER-READINESS-2026-07-30"
 created_at: "2026-07-30T13:58:00+07:00,ATHER"
-last_update: "2026-07-30T13:58:00+07:00,ATHER"
+last_update: "2026-07-30T15:30:00+07:00,ATHER"
 status: "under review"
 superseded_by: null
 attributes:
@@ -26,8 +26,8 @@ This audit records T13 readiness without authorizing RWANG archive. RWANG remain
 | Provider loss | Pass at contract level | Missing providers return typed unavailable state without blocking boot. |
 | GKS/MSP separation | Pass at contract level | Independent schemas, adapters, and ownership-negative tests. |
 | Mission Control state | Pass | UI consumes GoVibe run/provider snapshots; no RWANG Studio state copied. |
-| Live clean-checkout GKS/MSP | Blocked | cognitive_system dependency baseline has unrelated type/build gaps; focused writer tests and atom validation pass. |
-| Clean clone/install | Pending | Must run after both repository PRs merge. |
+| Live clean-checkout GKS/MSP | Pass | Detached merged cognitive_system checkout completed clean install/build; GoVibe recorded provenance proof, GKS knowledge, and final MSP proof through stdio. |
+| Clean clone/install | Pass | GoVibe main CI passed; cognitive_system main CI passed Node 20/22; detached cognitive_system install/build passed locally. |
 | Observation window | Pending | Starts only after owner-approved cutover. |
 | RWANG archive | Blocked | Requires rollback rehearsal and Boss approval. |
 
@@ -45,4 +45,5 @@ Legacy aliases remain registered and resolve through one mapping table. Rollback
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 1.0.1 | 2026-07-30 | under review | Closed clean-install and live GKS/MSP gates after correcting MCP stdio framing. | pending | ATHER |
 | 1.0.0 | 2026-07-30 | under review | Initial T13 cutover readiness record; archive remains blocked. | pending | ATHER |
