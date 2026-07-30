@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.64+draft"
+version: "0.1.65+draft"
 updated: "2026-07-30"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.1+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.64+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.65+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -103,6 +103,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Runbook | `RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW` | `0.2.4` | approved | LYRA | `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` |
 | Runbook | `RUNBOOK-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.0+draft` | draft | JANUS / KIN | `docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md` |
+| Runbook | `RUNBOOK-GOVIBE-FIRST-USE` | `0.1.0+draft` | draft | GoVibe | `docs/runbooks/RUNBOOK-GoVibe-First-Use.md` |
 | SRS | `SRS-GOVIBE-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | ARCHON / ATHER | `docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md` |
 | SRS | `SRS-GOVIBE-MCP-SERVER` | `0.2.1` | approved | GoVibe | `docs/srs/SRS-GoVibe-MCP-Server.md` |
 | SRS | `SRS-OLLAMA-SIDECAR-EXECUTION` | `0.2.1` | approved | THESEUS | `docs/srs/SRS-Ollama-Sidecar-Execution.md` |
@@ -133,6 +134,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.65+draft | 2026-07-30 | ATHER / THESEUS | Registered the GoVibe first-use runbook for the 12-stage scan and Master Plan MVP. |
 | 0.1.64+draft | 2026-07-30 | ATHER | Recorded the isolated legacy-alias rollback rehearsal in the T13 cutover audit. |
 | 0.1.63+draft | 2026-07-30 | ATHER | Synced JSONL stdio transport contract and closed live clean-checkout cutover gates. |
 | 0.1.62+draft | 2026-07-30 | ATHER | Registered T13 cutover readiness and corrected API-005 independent GKS port wording. |
