@@ -9,7 +9,7 @@ export type MissionCommand =
   | { type: "masterplan.preview"; sourcePath: string }
   | { type: "workspace.scan"; workspacePath: string; deep: boolean; runId?: string }
   | { type: "reactor.run"; profile: string }
-  | { type: "file.save"; hash: string; data: number[]; meta: Record<string, unknown> };
+  | { type: "file.save"; hash: string; data: number[] | ArrayBuffer; meta: Record<string, unknown> };
 
 export type MissionSnapshot = {
   connectionState: "disconnected" | "connecting" | "connected" | "error";
