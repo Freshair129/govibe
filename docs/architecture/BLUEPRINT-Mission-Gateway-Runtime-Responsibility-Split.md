@@ -2,7 +2,7 @@
 title: "Blueprint: Mission Gateway and Runtime Responsibility Split"
 doc_id: "BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT"
 status: "approved"
-version: "0.1.0"
+version: "0.1.1"
 updated: "2026-08-02"
 owner: "Boss / ATHER"
 source_of_truth: true
@@ -140,6 +140,20 @@ Each numbered step is a separately reviewable commit or PR. A failed gate rolls 
 - Every migration slice has passing tests and a reversible commit boundary.
 - Issue #27 closes only after final CI and behavior-parity evidence is attached.
 
+## Implementation and architecture review evidence
+
+ATHER reviewed the implemented dependency direction against this blueprint on 2026-08-02:
+
+- `src/mission.ts` is a 14-line compatibility facade; `src/mission/gateway.ts` is the single gateway implementation.
+- Frontend domain, navigation, reducer, store, browser ingress, HTTP transport, and WebSocket construction have explicit modules.
+- `scripts/mcp/runtime-core.mjs` decreased from 1,216 to 249 lines and composes isolated registry, snapshot, temporal, roadmap, workspace, orchestration, translator, and command-router services.
+- Runtime services do not import the composition root, sidecar, or MCP stdio server. The dependency-boundary test rejects those imports and runtime-service cycles.
+- The `yaml` package replaces indentation-sensitive registry parsing and parity tests use both the real registry and focused fixtures.
+- `npm run baseline:check` passes with 31 test files and 145 passing tests; one Windows symlink test is permission-skipped and passes in Linux CI.
+- `npm run mcp:smoke` passes with 15 tools, 90 roadmap nodes, and agent launcher exit code 0.
+
+Architecture review result: **PASS pending CI/E2E confirmation on the implementation PR**.
+
 ## Risk assessment
 
 **HIGH** — the work moves shared state ownership and command routing across frontend and runtime boundaries. Risk is controlled through compatibility facades, characterization tests, incremental commits, and no behavior changes.
@@ -155,5 +169,6 @@ Each numbered step is a separately reviewable commit or PR. A failed gate rolls 
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.1.1 | 2026-08-02 | approved | Added implementation mapping and architecture-review evidence for issue #27. | pending | ATHER |
 | 0.1.0 | 2026-08-02 | approved | Owner approved the responsibility split, dependency direction, and staged compatibility plan for issue #27. | pending | ATHER |
 | 0.1.0b | 2026-08-02 | candidate | Initial responsibility split and staged compatibility plan for issue #27. | pending | ATHER |
