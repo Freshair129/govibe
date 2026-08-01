@@ -2,10 +2,15 @@
 title: "Architecture: Vault, Context, Link, and Impact Model"
 doc_id: "ARCH-VAULT-CONTEXT-MODEL"
 status: "approved"
-version: "1.0.0"
+version: "1.0.1"
 updated: "2026-08-01"
 owner: "Boss / ATHER"
 source_of_truth: true
+related_docs:
+  - "docs/alignment/ALIGNMENT-01-System-Authority-and-Command-Boundary.md"
+  - "docs/alignment/ALIGNMENT-04-12-Stage-Decomposition-Contract.md"
+  - "docs/alignment/ALIGNMENT-06-Context-Vault-and-Memory-Assembly.md"
+  - "docs/alignment/ALIGNMENT-12-Mission-Control-Context-and-Impact-Surface.md"
 ---
 
 # Vault model
@@ -169,6 +174,12 @@ Impact score combines relation weight, graph-distance decay, change-type severit
 
 The runtime must not claim completeness when unresolved links or missing graph coverage exist. Text search may be retained only as a low-confidence discovery fallback, never as the canonical impact algorithm.
 
+# Alignment conformance
+
+The registered `ALIGNMENT-01`, `ALIGNMENT-04`, `ALIGNMENT-06`, and `ALIGNMENT-12` files are non-SOT conformance mappings. They map command authority, twelve-stage decomposition, context/vault assembly, and Mission Control presentation back to this architecture and its canonical API/ADR/Blueprint owners.
+
+When an alignment document conflicts with this architecture or another canonical owner, the canonical document wins and the alignment mapping must be revised. The alignment files remain registered so backlink and impact analysis can discover every conformance dependency.
+
 # Invariants
 
 1. Private experience is not Shared Vault truth.
@@ -177,10 +188,12 @@ The runtime must not claim completeness when unresolved links or missing graph c
 4. Backlinks are reverse projections of forward links and preserve source relation identity.
 5. Impact traversal is cycle-safe, distance-bounded, explainable, and confidence-bearing.
 6. Every injected context is replayable from exact retained source versions or explicitly marked non-replayable.
+7. Alignment mappings are traceability artifacts and never override canonical owners.
 
 # Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.0.1 | 2026-08-01 | Boss / ATHER | Linked registered ALIGNMENT-01/04/06/12 conformance mappings and made canonical-precedence and backlink traceability explicit. |
 | 1.0.0 | 2026-08-01 | Boss / ATHER | Approved vault/context model; added Deep Scan candidate ownership, GKS canonicalization, wikilink/crosslink/symbol-link/backlink taxonomy, and explainable reverse-dependency impact analysis. |
 | 0.1.0 | 2026-08-01 | Boss / ATHER | Initial vault and context architecture proposal. |
