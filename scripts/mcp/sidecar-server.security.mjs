@@ -96,6 +96,42 @@ test("rejects missing bearer auth", async () => {
   }
 });
 
+test("rejects invalid bearer auth", async () => {
+  const instance = await startTestServer();
+  try {
+    const response = await fetch(`${instance.baseUrl}/mission/snapshot`, {
+      headers: { Origin: trustedOrigin, Authorization: "Bearer invalid-token" },
+    });
+    assert.equal(response.status, 401);
+  } finally {
+    await stopTestServer(instance);
+  }
+});
+
+test("supports the default local Vite origins without exposing the token", async () => {
+  const instance = startSidecarServer(createRuntime(), {
+    host: "127.0.0.1",
+    port: 0,
+    authToken: token,
+    maxBodyBytes: 1024,
+  });
+  await once(instance.server, "listening");
+  const address = instance.server.address();
+  assert.ok(address && typeof address === "object");
+  try {
+    assert.ok(instance.allowedOrigins.includes("http://localhost:1420"));
+    assert.ok(instance.allowedOrigins.includes("http://localhost:5173"));
+    const response = await fetch(`http://127.0.0.1:${address.port}/mission/snapshot`, {
+      headers: { Origin: trustedOrigin, Authorization: `Bearer ${token}` },
+    });
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get("access-control-allow-origin"), trustedOrigin);
+    assert.equal((await response.text()).includes(token), false);
+  } finally {
+    await stopTestServer(instance);
+  }
+});
+
 test("preserves command acknowledgements for authenticated requests", async () => {
   const instance = await startTestServer();
   try {
@@ -148,6 +184,21 @@ test("rejects WebSocket upgrades from untrusted origins", async () => {
     await stopTestServer(instance);
   }
 });
+
+for (const [name, credential] of [["missing", ""], ["invalid", "invalid-token"]]) {
+  test(`rejects WebSocket upgrades with ${name} authentication`, async () => {
+    const instance = await startTestServer();
+    const suffix = credential ? `?token=${encodeURIComponent(credential)}` : "";
+    const socket = new WebSocket(`${instance.wsUrl}${suffix}`, { origin: trustedOrigin });
+    try {
+      const [error] = await once(socket, "error");
+      assert.match(error.message, /Unexpected server response: 403/);
+    } finally {
+      await closeSocket(socket);
+      await stopTestServer(instance);
+    }
+  });
+}
 
 test("accepts authenticated WebSocket upgrades and emits a snapshot", async () => {
   const instance = await startTestServer();

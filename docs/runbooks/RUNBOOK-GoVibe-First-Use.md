@@ -2,8 +2,8 @@
 title: "RUNBOOK: GoVibe First Use"
 doc_id: "RUNBOOK-GOVIBE-FIRST-USE"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-07-30"
+version: "0.1.1+draft"
+updated: "2026-08-02"
 owner: "GoVibe"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -51,6 +51,22 @@ npm run mission:dev
 # Terminal 2: หน้าเว็บ
 npm run dev
 ```
+
+The Mission sidecar now fails closed unless both processes share a local
+authentication token. Copy `.env.example` to the ignored `.env.local`, replace
+the placeholder with a random value, and keep these two values identical:
+
+```dotenv
+GOVIBE_MCP_TOKEN=<random-local-token>
+VITE_GOVIBE_MCP_TOKEN=<same-random-local-token>
+```
+
+`GOVIBE_MCP_TOKEN` protects HTTP and WebSocket access. The `VITE_` value lets
+Mission Control attach that credential before the application imports. Never
+commit `.env.local`, print the token, or put it in a MissionSnapshot. The
+default allowlist accepts Vite on localhost/127.0.0.1 ports 1420 and 5173. For
+a different development origin, set `GOVIBE_MCP_ALLOWED_ORIGINS` to an explicit
+comma-separated list; wildcard origins are not supported.
 
 เปิด URL ที่ Vite แสดงใน terminal (ค่าเริ่มต้นคือ `http://localhost:1420`). terminal แรกจะพิมพ์ URL ของ Mission sidecar เมื่อพร้อมใช้งาน. หากหน้าเว็บยังไม่เชื่อมต่อ ให้ตรวจว่า terminal ทั้งสองยังทำงานอยู่ก่อน.
 
@@ -133,4 +149,5 @@ GoVibe เรียก writers แยกกันผ่าน stdio MCP:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-02 | GoVibe | Documented the required local sidecar token and explicit browser-origin trust boundary. |
 | 0.1.0+draft | 2026-07-30 | GoVibe | First-use SOP for Mission Control, Master Plan review, and the 12-stage scan MVP. |
