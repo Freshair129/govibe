@@ -1,0 +1,29 @@
+name: P0 Security CI
+
+on:
+  pull_request:
+    paths:
+      - "scripts/mcp/**"
+      - "src/mission-auth-bootstrap.ts"
+      - "src/main.tsx"
+      - ".env.example"
+      - "package.json"
+      - ".github/workflows/p0-security-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:security
+      - run: npm run lint
+      - run: npm run build
