@@ -12,9 +12,26 @@ function isSidecarHttpUrl(input: RequestInfo | URL) {
   }
 }
 
+function createAuthenticatedWebSocket(
+  NativeWebSocket: typeof WebSocket,
+  authToken: string,
+  wsUrl?: string,
+) {
+  return class AuthenticatedWebSocket extends NativeWebSocket {
+    constructor(url: string | URL, protocols?: string | string[]) {
+      const target = new URL(url.toString(), window.location.href);
+      const configuredWsOrigin = wsUrl ? new URL(wsUrl, window.location.href).origin : undefined;
+      const isSidecar = configuredWsOrigin
+        ? target.origin === configuredWsOrigin
+        : (target.hostname === "127.0.0.1" || target.hostname === "localhost") && target.port === "4310";
+      if (isSidecar) target.searchParams.set("token", authToken);
+      super(target.toString(), protocols);
+    }
+  };
+}
+
 export function installMissionAuthBootstrap() {
   const token = configuredToken;
-  const wsUrl = configuredWsUrl;
   if (!token) return;
 
   const nativeFetch = window.fetch.bind(window);
@@ -25,17 +42,9 @@ export function installMissionAuthBootstrap() {
     return nativeFetch(input, { ...init, headers });
   }) as typeof window.fetch;
 
-  const NativeWebSocket = window.WebSocket;
-  const AuthenticatedWebSocket = class extends NativeWebSocket {
-    constructor(url: string | URL, protocols?: string | string[]) {
-      const target = new URL(url.toString(), window.location.href);
-      const configuredWsOrigin = wsUrl ? new URL(wsUrl, window.location.href).origin : undefined;
-      const isSidecar = configuredWsOrigin
-        ? target.origin === configuredWsOrigin
-        : (target.hostname === "127.0.0.1" || target.hostname === "localhost") && target.port === "4310";
-      if (isSidecar) target.searchParams.set("token", token);
-      super(target.toString(), protocols);
-    }
-  };
-  window.WebSocket = AuthenticatedWebSocket as typeof WebSocket;
+  window.WebSocket = createAuthenticatedWebSocket(
+    window.WebSocket,
+    token,
+    configuredWsUrl,
+  ) as typeof WebSocket;
 }
