@@ -1,62 +1,94 @@
 ---
 doc_id: "POC-H6-BUDGET-SUFFICIENCY"
-title: "PoC-2: H0–H6 + budget is sufficient & complete as agent context"
+title: "PoC-2: R0-R6 Retrieval Radius + Budget Sufficiency"
 status: "approved"
-version: "0.1.1"
-updated: "2026-07-10"
+version: "0.2.0"
+updated: "2026-08-01"
 owner: "Boss (CEO)"
 type: audit
+legacy_title: "PoC-2: H0-H6 + budget is sufficient & complete as agent context"
 ---
 
-# PoC-2: H0–H6 + Budget Sufficiency
+# PoC-2: R0-R6 Retrieval Radius + Budget Sufficiency
 
-> **Terminology note (2026-07-10):** the "H0–H6" analyzed here is the *retrieval-radius* scale — renamed **R0–R6** in `FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS` v1.4. It is distinct from the enforcement-side **Access Scope H0–H4** of `STD-Execution-Governance` v2.3. This PoC's two-dimensional split (reach × budget) and its measurable precondition (diameter ≤ 6 via ADR-018 cross-linking, checkable as `avg_path_length`) are the evidence base the v1.4/v2.3 redesign builds on — the analysis stands unchanged under the rename.
+> The filename and `doc_id` retain `H6` as a stable legacy identifier. All active semantics in this document use **Retrieval Radius `R0-R6`**. Executor **Access Scope remains `H0-H4`** under `STD-Execution-Governance` and ADR-021.
 
 ## 1. Claim
-The hop tiers **H0–H6**, **combined with a budget axis**, are **sufficient and complete** to supply any agent task the context it needs — reaching everything required while always staying within the token budget.
 
-## 2. Method (reduce to two checkable conditions)
-Context control is **2-dimensional**: `H` = reach (breadth) × `budget` = volume. The claim splits into:
-- **(reach)** every relevant node is reachable within the tier ⇢ reduces to **graph diameter ≤ 6**.
-- **(volume)** the rendered context always fits the budget ⇢ reduces to **"can always render a ≤budget, task-sufficient packet"**.
+Retrieval-radius tiers `R0-R6`, combined with a separate context-budget axis, are sufficient to supply bounded agent context when the graph and rendering preconditions below hold.
 
-## 3. Reach — sufficiency & completeness
-- **Sufficiency (ceiling):** by Six Degrees of Separation, from any node 6 hops reach the whole connected graph ⇒ **H6 reaches everything**. Empirically GenesisBlockDB measured hop-6 traversal at 1M nodes (~9 ms) ⇒ feasible.
-- **Practical:** retrieval teleports to anchors (L1–L3, 0-hop) then expands ≤ H hops ⇒ task context = anchor neighbourhood, not a linear 6-hop walk.
-- **Completeness (no granularity gap):**
+This is a two-dimensional model:
 
-| H0 | H1 | H2 | H3 | H4 | H5 | H6 |
-|---|---|---|---|---|---|---|
-| subtask | task/comp | story/feat | epic/module | phase/arch | roadmap/cross-sys | full-network |
+```text
+R = retrieval reach / graph-hop radius
+context budget = rendered token/content volume
+```
 
-- **Honest precondition:** diameter ≤ 6 holds only for a **small-world** graph. A pure deep containment tree (no cross-links) can exceed 6 ⇒ **the wikilink/backlink discipline (ADR-018) is the precondition** that guarantees reach. W-scale caps fan-out so neighbourhoods don't explode.
+Neither dimension grants tools or permissions. Executor capability is governed independently by Access Scope `H0-H4`.
 
-## 4. Volume — always-fits-or-kicks-back
-When the H-neighbourhood exceeds budget (even at low H), degrade in order, then escalate:
-1. **Resolution-gradient** — load distant atoms at higher compaction depth `D` (System summary, not Method detail).
-2. **Compression** — summarise the neighbourhood (MSP compressor).
-3. **K-Impact ranking** — keep highest-authority (core/central); drop lowest first.
-4. **Governance kickback** — H0 alone > budget ⇒ **god-atom / refactor**; task needs > budget ⇒ **decompose** (lower C-tier), multi-pass.
+## 2. Method
 
-**Guarantee:** resolution can always abstract further until it fits (worst case = a tiny System-level summary). Therefore the render **always fits, or the request is kicked back to governance** — never silent truncation.
+The claim separates into two checkable conditions:
 
-## 5. Result
-Both conditions reduce to **measurable invariants**, not faith:
-| Condition | Metric the gate can assert |
+- **Reach:** every relevant node is reachable within the approved retrieval radius, reducing to a graph-diameter and anchor-selection condition.
+- **Volume:** the rendered context fits the approved budget or the request is kicked back for decomposition/refactoring.
+
+## 3. Reach
+
+| Radius | Typical retrieval scope |
 |---|---|
-| reach (diameter ≤ 6) | `avg_path_length`, `clustering_coefficient` on the GKS graph (after cross-link) |
-| volume (≤ budget) | `rendered_tokens ≤ budget` per tier; kickback rate |
+| R0 | selected anchor / exact item |
+| R1 | immediate neighbourhood |
+| R2 | task or component neighbourhood |
+| R3 | feature or module neighbourhood |
+| R4 | architecture neighbourhood |
+| R5 | roadmap or cross-system neighbourhood |
+| R6 | full-network ceiling |
 
-## 6. Honest limits
-- Reach proof is conditional on adequate cross-linking (a metric, continuously checkable — not assumed).
-- Multi-region tasks run K anchor-scoped queries (each ≤ H), not one giant traversal.
-- Lossy degradation (resolution-gradient/compression) trades completeness for fit — acceptable because the alternative is silent failure; the governance kickback is the safety valve.
+`R6` can reach an entire connected graph only when the graph's effective diameter is no greater than six. This depends on adequate cross-links and must be measured rather than assumed.
+
+Retrieval normally teleports to anchors using exact, lexical, or vector lookup and then expands within the approved radius. Multi-region tasks use multiple anchor-scoped queries rather than one uncontrolled traversal.
+
+## 4. Volume
+
+When the selected neighbourhood exceeds the context budget, the renderer must degrade or escalate in this order:
+
+1. resolution-gradient compaction
+2. governed compression
+3. K-Impact/authority ranking
+4. governance kickback for atom refactor, task decomposition, or multi-pass execution
+
+No path silently truncates required context and pretends completeness.
+
+## 5. Measurable invariants
+
+| Condition | Gate metric |
+|---|---|
+| graph reach | graph diameter / path-length metrics and anchor coverage |
+| neighbourhood control | returned node distance is no greater than requested `R_n` |
+| volume | rendered tokens/content are within approved budget |
+| safety | kickback and decomposition events are explicit and auditable |
+| semantic separation | no retrieval request infers `R` or budget from `H` |
+
+## 6. Limits
+
+- Full-network reach is conditional on graph topology and cross-link quality.
+- Compression may be lossy and therefore must preserve provenance and disclose resolution level.
+- A bounded packet may still be insufficient for a poorly scoped task; kickback is a valid safe outcome.
+- Access Scope `H0-H4`, W-scale, complexity, risk, retrieval radius, and budget remain separate policy axes.
 
 ## 7. Traceability
-`STD-Execution-Governance` (H/W/C), `SRS-GKS-RETRIEVAL-LAYER` (FR-5..7), ADR-018 (wikilink precondition), GenesisBlockDB K-Impact + graph benchmarks.
+
+- `STD-Execution-Governance` for Access Scope H0-H4, C, and W
+- `ADR-021-H-AXIS-ACCESS-SCOPE-SEPARATION`
+- `SRS-GKS-RETRIEVAL-LAYER` for R0-R6 retrieval behavior
+- ADR-018 for graph cross-link structure
+- GenesisBlockDB graph benchmarks and K-Impact evidence
 
 ## Changelog
+
 | Version | Date | Owner | Summary |
 |---|---|---|---|
-| 0.1.1 | 2026-07-10 | ClaudeFable / Boss (CEO) sign-off | Added rename cross-reference: this doc's H0–H6 = Retrieval Radius R0–R6 (GVDOC-1003 v1.4), distinct from Access Scope H0–H4 (STD v2.3). Analysis untouched. |
-| 0.1.0+draft | 2026-06-22 | Boss (CEO) | PoC-2: H0–H6 + budget sufficiency via reach(diameter≤6) × volume(always-fits-or-kickback). |
+| 0.2.0 | 2026-08-01 | ATHER / ARCHON | Converted active reach semantics from legacy H0-H6 wording to Retrieval Radius R0-R6 while retaining stable filename/doc_id compatibility. |
+| 0.1.1 | 2026-07-10 | ClaudeFable / Boss (CEO) sign-off | Added an initial terminology note distinguishing retrieval radius from Access Scope. |
+| 0.1.0+draft | 2026-06-22 | Boss (CEO) | Initial reach and budget sufficiency analysis. |
