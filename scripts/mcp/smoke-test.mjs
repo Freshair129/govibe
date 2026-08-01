@@ -1,4 +1,5 @@
 import { spawn } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { unlink } from "node:fs/promises";
 
 import { GovibeRuntime } from "./runtime-core.mjs";
@@ -41,6 +42,7 @@ function createMcpClient() {
     env: {
       ...process.env,
       GOVIBE_MCP_PORT: "0",
+      GOVIBE_MCP_TOKEN: randomBytes(32).toString("hex"),
     },
     stdio: ["pipe", "pipe", "pipe"],
   });
