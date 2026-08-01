@@ -2,8 +2,8 @@
 title: "GoVibe Universal Agent Operating Contract"
 summary: "สัญญาการทำงานสากลและการควบคุมจริยธรรมของ AI Agents ในโครงการ GoVibe"
 doc_id: "AGENTS-CORE-001"
-version: "1.4.0"
-updated: "2026-06-22"
+version: "1.5.0"
+updated: "2026-08-01"
 owner: "THESEUS"
 type: "agents"
 # --- MASTER HUB METADATA ---
@@ -12,7 +12,7 @@ block_manifest:
     id: "[[AGENTS::UNIVERSAL_HUB]]"
     block_id: "[[UGB::AGENT_TEAM_SYSTEM]]"
     domain: "Agent-Governance"
-    context_scaling_tier: "H4"
+    access_scope: "H4"
     status: "ACTIVE"
 ---
 
@@ -32,7 +32,7 @@ block_manifest:
 เพื่อให้เกิดประสิทธิภาพสูงสุดในการใช้ Context/Token:
 - **Full-Scale Hub:** ใช้ `AGENTS.md` (ไฟล์นี้ — มาตรฐานที่ codex/gpt auto-load) และ `BLUEPRINT-*.md` เป็น Hub เก็บ Metadata ชุดเต็ม
 - **Spoke Linkage:** Agent ต้องใช้ `block_id` ในการเชื่อมโยงงานกลับมาที่ Hub เสมอ
-- **Minimal Metadata Rule:** ในระดับการเขียนโค้ด ให้ระบุเพียง `id`, `block_id`, `tier`, และ `status` เพื่อลด Token Noise
+- **Minimal Metadata Rule:** ในระดับการเขียนโค้ด ให้ระบุเพียง `id`, `block_id`, `access_scope`, และ `status` เพื่อลด Token Noise
 
 ---
 
@@ -41,28 +41,67 @@ block_manifest:
 > metadata: { "color": "#4CAF50", "icon": "handshake", "link_to": "[[AGENTS::UNIVERSAL_HUB]]", "label": "Handoff Protocol" }
 
 กระบวนการส่งต่องานระหว่าง Agent ต้องทำผ่านเหตุการณ์ (Mission Events) ดังนี้:
-1. **Assignment:** รับงานจาก LYRA (PM) พร้อมค่า C/H/W Levels
+1. **Assignment:** รับงานจาก LYRA (PM) พร้อมค่า C/H/W Levels และแกน retrieval/context ที่เกี่ยวข้อง
 2. **Implementation:** ผลิต Artifact (Code/Docs) และ Link กลับไปที่ Task ID
 3. **Verification Request:** ส่งต่อให้ GHOST (QA) หรือ ATHER (Auditor) ตรวจสอบ
 4. **Evidence Attachment:** แนบหลักฐานการตรวจสอบ (QA Report/Audit Log) ก่อนส่งคืน Human Owner
 
 ---
 
-## 🛡️ 3. ACCESS SCOPE (H0-H4) [L3-Governance] AGENTS::SCALING
+## 🛡️ 3. GOVERNANCE AXES [L3-Governance] AGENTS::SCALING
 > 👁️ **Visual Node: SCALING_GOVERNANCE**
-> metadata: { "color": "#F44336", "icon": "shield-lock", "link_to": "[[AGENTS::UNIVERSAL_HUB]]", "label": "Access Scope" }
+> metadata: { "color": "#F44336", "icon": "shield-lock", "link_to": "[[AGENTS::UNIVERSAL_HUB]]", "label": "Governance Axes" }
 
-H = **เพดาน capability ของ executor** ตาม `docs/STD-Execution-Governance.md` 2.3.x (canonical:
-RWANG PROMAX `references/EXECUTION-GOVERNANCE.md`) — **ไม่ใช่** context-hop radius อีกต่อไป
-(radius แยกเป็นแกน **R0-R6**, compaction แยกเป็น **CH1-CH5** — ดู GVDOC-1003):
+### 3.1 Canonical axis meanings
+
+| Axis | Meaning | Canonical values |
+|---|---|---|
+| **C** | Process complexity | `C-0..C-3` |
+| **H** | Executor Access Scope / tool-permission ceiling | `H0..H4` |
+| **R** | Retrieval radius / graph distance | `R0..R6` or explicit retrieval policy |
+| **D** | Compaction / resolution depth | repository-defined `D` scale |
+| **W** | Fan-out / branching width | `W2..W4` |
+| **Budget** | Token/content allowance | explicit numeric or policy object |
+| **Risk** | Operational/security impact | repository-defined risk class |
+
+**ห้ามใช้ตัวอักษรหนึ่งแกนแทนอีกแกนหนึ่ง** โดยเฉพาะ:
+
+```text
+H != graph hops
+H != retrieval radius
+H != context/token budget
+H != risk
+H != CoVibe/CoDev mode
+```
+
+### 3.2 Access Scope H0-H4
+
+H = **เพดาน capability ของ executor** ตาม `docs/STD-Execution-Governance.md` และ `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` โดย canonical home อยู่ที่ RWANG PROMAX `skills/rwang/references/EXECUTION-GOVERNANCE.md`:
+
 - **H0:** read ไฟล์เดี่ยว (glob/grep forbidden)
 - **H1:** + search (glob/grep)
 - **H2:** + write / multi-file edit
 - **H3:** + shell execution
-- **H4:** + network **และต้องได้ approval ก่อนลงมือ** (grantor ตาม complexity: C-2=lead, C-3=owner)
+- **H4:** + network/full configured capability set **และต้องได้ approval ก่อนลงมือ**
 
-Default map จาก Complexity: C-0→H0 · C-1→H1 · C-2→H2 · C-3→H3 (H4 by declaration);
-declare เฉพาะ override ขาขึ้น. **H5/H6 ถูกยกเลิก** (RWANG `RFC--H-AXIS-0.6.0`, sign-off 2026-07-10).
+Default map จาก Complexity:
+
+```text
+C-0 -> H0
+C-1 -> H1
+C-2 -> H2
+C-3 -> H3
+```
+
+`C-3/H4` เป็น upward override สำหรับ architecture, cross-system หรือ platform work และต้องได้รับ owner approval ก่อน implementation. **H5/H6 ถูกยกเลิก** และห้ามใช้ใน active contract, metadata, task packet หรือ implementation symbol.
+
+### 3.3 Retrieval and context rules
+
+- ใช้ `R` หรือ field ชัดเจน เช่น `retrieval_radius`, `max_hops`, `retrievalPolicy` สำหรับ graph distance
+- ใช้ `D` สำหรับ compaction/resolution depth
+- ใช้ `context_budget` หรือ `max_tokens` สำหรับปริมาณ context
+- `context_tier` เป็น legacy/ambiguous alias และห้ามสร้างเพิ่ม; ต้องจำแนก semantic ก่อน migrate
+- ห้ามอนุมาน retrieval radius หรือ token budget จาก H
 
 ---
 
@@ -86,6 +125,8 @@ declare เฉพาะ override ขาขึ้น. **H5/H6 ถูกยกเ�
 - **Docs First:** ห้ามเขียน Code ก่อนที่ Blueprint/Spec จะได้รับการ Approve
 - **Surgical Edit:** แก้ไขเฉพาะจุดที่เกี่ยวข้องกับ Task ID เท่านั้น
 - **Traceability:** ทุก Commit ต้องระบุ Task ID หรือ Atom ID ที่เกี่ยวข้อง
+- **Axis Declaration:** งาน non-trivial ต้องประกาศ C และใช้ H ตาม default หรือ upward override; R, D, W, Budget และ Risk ให้ประกาศเมื่อเกี่ยวข้อง ห้ามรวมความหมายเข้า H
+- **Legacy Rejection:** ห้ามสร้าง active field/symbol ใหม่ที่ใช้ `H5`, `H6`, `HLevelClassifier`, `classifyHLevel`, หรือใช้ `context_tier` โดยไม่ระบุ semantic migration
 - **Handoff Awareness:** Agent ทุกตัวต้องตรวจสอบโฟลเดอร์ `handoff/` และไฟล์ `log.jsonl` ในโดเมนที่รับผิดชอบทุกครั้งเมื่อได้รับมอบหมายงาน (Revoke/Invoke) เพื่อรับช่วงต่องานที่ค้างอยู่หรือข้อมูลบริบทเพิ่มเติม
 - **Project Reality Check:** When asked to help GoVibe or a connected repo, inspect real project state before making claims. At minimum check `git status`, root context files (`AGENTS.md`, `AGENT.md`, `GEMINI.md`, `CLAUDE.md` when present), referenced source docs, referenced commands, and relevant code/test evidence.
 - **No Imagined Capability:** Do not claim a feature, command, doc, or integration exists or works unless it was verified from current project evidence. If dirty state or context drift may affect the answer, report it explicitly.
@@ -99,6 +140,7 @@ declare เฉพาะ override ขาขึ้น. **H5/H6 ถูกยกเ�
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.5.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Aligned the universal contract with ADR-021: renamed metadata to `access_scope`, separated C/H/R/D/W/Budget/Risk, replaced legacy CH compaction wording with D, prohibited H5/H6 and ambiguous new `context_tier` usage. |
 | 1.4.0 | 2026-07-19 | ClaudeFable | §3 synced to STD-Execution-Governance 2.3.x: Context Scaling Tiers H0-H6 → Access Scope H0-H4 (capability ceiling; radius→R, compaction→CH; H5/H6 abolished per RWANG RFC--H-AXIS-0.6.0). |
 | 1.3.1 | 2026-06-22 | THESEUS | Affirmed `AGENTS.md` as the standard contract auto-loaded by codex/gpt (with `AGENT.md`/`GEMINI.md` as compatibility bridges); fixed the stale Full-Scale Hub reference (`agent.md` → `AGENTS.md`). |
 | 1.3.0 | 2026-06-16 | THESEUS | Universal agent operating contract: hub-and-spoke metadata, unified handover, context scaling tiers, role directory, execution rules. |
