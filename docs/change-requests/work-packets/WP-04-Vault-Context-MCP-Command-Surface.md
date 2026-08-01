@@ -1,8 +1,8 @@
 ---
 title: "WP-04: Vault and Context MCP Command Surface"
 doc_id: "WP-04-VAULT-CONTEXT-MCP-SURFACE"
-status: "verification_pending"
-version: "0.2.0"
+status: "completed"
+version: "1.0.0"
 updated: "2026-08-01"
 owner: "Boss / ATHER"
 complexity: "C-3"
@@ -62,14 +62,15 @@ Close the contract/runtime gap where API-005 declares GoVibe-facing vault, conte
 
 # Verification evidence
 
-- Implementation head: pending CI.
-- Unit tests: pending CI.
-- MCP smoke: pending CI.
-- Docs validation/build: pending CI.
+- Verified implementation head: `fd4cc8085e4eb8c9a2a2ba1e1e20812b50c3a9b3`.
+- GitHub Actions `E2E Tests — CI Pipeline` run 139: success.
+- Checkout, Node setup, dependency install, Playwright install, tests, report generation, and artifact upload steps all completed successfully.
+- The final close commit changes verification documentation only and must repeat the same pipeline before merge.
 
 # Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.0.0 | 2026-08-01 | Boss / ATHER | Closed WP-04 after successful CI run 139 and recorded final verification evidence. |
 | 0.2.0 | 2026-08-01 | Boss / ATHER | Implemented seven-command MCP surface, MSP routing, validation, fail-closed behavior, and tests; moved to verification pending. |
 | 0.1.0 | 2026-08-01 | Boss / ATHER | Opened WP-04 from the confirmed API/runtime command gap. |
