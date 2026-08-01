@@ -8,7 +8,7 @@ import { startSidecarServer } from "./sidecar-server.mjs";
 const trustedOrigin = "http://localhost:1420";
 const token = "test-token-123";
 
-function createRuntime() {
+function createRuntime(handledCommands = []) {
   const listeners = new Set();
   return {
     subscribe(listener) {
@@ -23,19 +23,20 @@ function createRuntime() {
     },
     async reloadRoadmap() {},
     async handleMissionCommand(command) {
+      handledCommands.push(command);
       return { accepted: command.type };
     },
     appendTerminal() {},
   };
 }
 
-async function startTestServer() {
-  const instance = startSidecarServer(createRuntime(), {
+async function startTestServer({ handledCommands = [], maxBodyBytes = 1024 } = {}) {
+  const instance = startSidecarServer(createRuntime(handledCommands), {
     host: "127.0.0.1",
     port: 0,
     authToken: token,
     allowedOrigins: [trustedOrigin],
-    maxBodyBytes: 1024,
+    maxBodyBytes,
   });
   await once(instance.server, "listening");
   const address = instance.server.address();
@@ -133,7 +134,8 @@ test("supports the default local Vite origins without exposing the token", async
 });
 
 test("preserves command acknowledgements for authenticated requests", async () => {
-  const instance = await startTestServer();
+  const handledCommands = [];
+  const instance = await startTestServer({ handledCommands });
   try {
     const response = await fetch(`${instance.baseUrl}/mission/commands`, {
       method: "POST",
@@ -148,6 +150,7 @@ test("preserves command acknowledgements for authenticated requests", async () =
     const body = await response.json();
     assert.equal(body.commandId, "cmd-1");
     assert.equal(body.ok, true);
+    assert.deepEqual(handledCommands, [{ type: "agent.select", agentId: "agent-1" }]);
   } finally {
     await stopTestServer(instance);
   }
@@ -185,6 +188,82 @@ test("rejects WebSocket upgrades from untrusted origins", async () => {
   }
 });
 
+for (const [name, body] of [
+  ["malformed JSON", "{"],
+  ["wrong field types", JSON.stringify({ type: "agent.select", agentId: 42 })],
+  ["unknown discriminators", JSON.stringify({ type: "agent.destroy", agentId: "agent-1" })],
+  ["unknown top-level fields", JSON.stringify({ type: "agent.select", agentId: "agent-1", admin: true })],
+  ["JSON-encoded file transfers", JSON.stringify({ type: "file.save", hash: "abc", data: [1], meta: {} })],
+]) {
+  test(`rejects ${name} before runtime execution`, async () => {
+    const handledCommands = [];
+    const instance = await startTestServer({ handledCommands });
+    try {
+      const response = await fetch(`${instance.baseUrl}/mission/commands`, {
+        method: "POST",
+        headers: {
+          Origin: trustedOrigin,
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body,
+      });
+      assert.equal(response.status, 400);
+      assert.deepEqual(handledCommands, []);
+    } finally {
+      await stopTestServer(instance);
+    }
+  });
+}
+
+test("accepts bounded binary file transfers through the dedicated endpoint", async () => {
+  const handledCommands = [];
+  const instance = await startTestServer({ handledCommands });
+  try {
+    const metadata = Buffer.from(JSON.stringify({ name: "proof.bin" })).toString("base64url");
+    const response = await fetch(`${instance.baseUrl}/mission/files`, {
+      method: "POST",
+      headers: {
+        Origin: trustedOrigin,
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/octet-stream",
+        "X-GoVibe-File-Hash": "sha256:proof",
+        "X-GoVibe-File-Meta": metadata,
+      },
+      body: Buffer.from([1, 2, 3]),
+    });
+    assert.equal(response.status, 200);
+    assert.equal(handledCommands.length, 1);
+    assert.equal(handledCommands[0].type, "file.save");
+    assert.equal(handledCommands[0].hash, "sha256:proof");
+    assert.deepEqual(handledCommands[0].meta, { name: "proof.bin" });
+    assert.deepEqual([...new Uint8Array(handledCommands[0].data)], [1, 2, 3]);
+  } finally {
+    await stopTestServer(instance);
+  }
+});
+
+test("returns 413 for oversized binary file transfers", async () => {
+  const handledCommands = [];
+  const instance = await startTestServer({ handledCommands, maxBodyBytes: 8 });
+  try {
+    const response = await fetch(`${instance.baseUrl}/mission/files`, {
+      method: "POST",
+      headers: {
+        Origin: trustedOrigin,
+        Authorization: `Bearer ${token}`,
+        "X-GoVibe-File-Hash": "sha256:proof",
+        "X-GoVibe-File-Meta": Buffer.from("{}").toString("base64url"),
+      },
+      body: Buffer.alloc(9),
+    });
+    assert.equal(response.status, 413);
+    assert.deepEqual(handledCommands, []);
+  } finally {
+    await stopTestServer(instance);
+  }
+});
+
 for (const [name, credential] of [["missing", ""], ["invalid", "invalid-token"]]) {
   test(`rejects WebSocket upgrades with ${name} authentication`, async () => {
     const instance = await startTestServer();
@@ -211,6 +290,30 @@ test("accepts authenticated WebSocket upgrades and emits a snapshot", async () =
     const [message] = await messagePromise;
     const event = JSON.parse(message.toString("utf8"));
     assert.equal(event.type, "snapshot");
+  } finally {
+    await closeSocket(socket);
+    await stopTestServer(instance);
+  }
+});
+
+test("rejects invalid WebSocket commands before runtime execution", async () => {
+  const handledCommands = [];
+  const instance = await startTestServer({ handledCommands });
+  const socket = new WebSocket(`${instance.wsUrl}?token=${encodeURIComponent(token)}`, {
+    origin: trustedOrigin,
+  });
+  try {
+    const snapshot = once(socket, "message");
+    await once(socket, "open");
+    await snapshot;
+    const acknowledgement = once(socket, "message");
+    socket.send(JSON.stringify({ commandId: "bad-1", type: "agent.select", agentId: 42 }));
+    const [message] = await acknowledgement;
+    const event = JSON.parse(message.toString("utf8"));
+    assert.equal(event.type, "command.ack");
+    assert.equal(event.commandId, "bad-1");
+    assert.equal(event.ok, false);
+    assert.deepEqual(handledCommands, []);
   } finally {
     await closeSocket(socket);
     await stopTestServer(instance);

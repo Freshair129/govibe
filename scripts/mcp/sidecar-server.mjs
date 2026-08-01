@@ -4,7 +4,10 @@ import { WebSocketServer } from "ws";
 import {
   boundedProtocolMessage,
   createCommandResponse,
+  isFileSaveMetadata,
   isMissionCommand,
+  isMissionEvent,
+  MISSION_PROTOCOL_LIMITS,
 } from "../../packages/mission-protocol/index.js";
 
 const DEFAULT_ALLOWED_ORIGINS = [
@@ -13,7 +16,7 @@ const DEFAULT_ALLOWED_ORIGINS = [
   "http://127.0.0.1:5173",
   "http://localhost:5173",
 ];
-const DEFAULT_MAX_BODY_BYTES = 1_000_000;
+const DEFAULT_MAX_BODY_BYTES = MISSION_PROTOCOL_LIMITS.jsonBodyBytes;
 
 function parseAllowedOrigins(value) {
   if (!value) return DEFAULT_ALLOWED_ORIGINS;
@@ -46,13 +49,13 @@ function sendJson(response, statusCode, payload, origin, allowedOrigins) {
   if (originAllowed(origin, allowedOrigins)) {
     headers["Access-Control-Allow-Origin"] = origin;
     headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS";
-    headers["Access-Control-Allow-Headers"] = "Authorization,Content-Type";
+    headers["Access-Control-Allow-Headers"] = "Authorization,Content-Type,X-GoVibe-File-Hash,X-GoVibe-File-Meta";
   }
   response.writeHead(statusCode, headers);
   response.end(statusCode === 204 ? undefined : JSON.stringify(payload));
 }
 
-async function readJsonBody(request, maxBytes) {
+async function readBoundedBody(request, maxBytes) {
   const chunks = [];
   let total = 0;
   for await (const chunk of request) {
@@ -64,13 +67,32 @@ async function readJsonBody(request, maxBytes) {
     }
     chunks.push(chunk);
   }
-  if (chunks.length === 0) return {};
+  return Buffer.concat(chunks);
+}
+
+async function readJsonBody(request, maxBytes) {
+  const body = await readBoundedBody(request, maxBytes);
+  if (body.length === 0) return {};
   try {
-    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+    return JSON.parse(body.toString("utf8"));
   } catch {
     const error = new Error("Malformed JSON request body.");
     error.statusCode = 400;
     throw error;
+  }
+}
+
+function readFileMetadata(request) {
+  const hash = request.headers["x-govibe-file-hash"];
+  const encodedMeta = request.headers["x-govibe-file-meta"];
+  if (typeof hash !== "string" || hash.length === 0 || hash.length > MISSION_PROTOCOL_LIMITS.idChars || typeof encodedMeta !== "string") {
+    return undefined;
+  }
+  try {
+    const meta = JSON.parse(Buffer.from(encodedMeta, "base64url").toString("utf8"));
+    return isFileSaveMetadata(meta) ? { hash, meta } : undefined;
+  } catch {
+    return undefined;
   }
 }
 
@@ -144,7 +166,7 @@ export function startSidecarServer(runtime, options = {}) {
         const body = await readJsonBody(request, maxBodyBytes);
         const commandId = commandIdFrom(body);
         const command = commandPayload(body);
-        if (!isMissionCommand(command)) {
+        if (!isMissionCommand(command) || command.type === "file.save") {
           sendJson(response, 400, createCommandResponse({
             commandId,
             ok: false,
@@ -167,6 +189,29 @@ export function startSidecarServer(runtime, options = {}) {
             message: boundedProtocolMessage(error),
           }), origin, allowedOrigins);
         }
+        return;
+      }
+
+      if (request.method === "POST" && url.pathname === "/mission/files") {
+        const file = readFileMetadata(request);
+        if (!file) {
+          sendJson(response, 400, { error: "Invalid file transfer metadata." }, origin, allowedOrigins);
+          return;
+        }
+        const data = await readBoundedBody(request, Math.min(maxBodyBytes, MISSION_PROTOCOL_LIMITS.fileBytes));
+        const arrayBuffer = data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength);
+        const command = { type: "file.save", hash: file.hash, data: arrayBuffer, meta: file.meta };
+        if (!isMissionCommand(command)) {
+          sendJson(response, 400, { error: "File transfer failed protocol validation." }, origin, allowedOrigins);
+          return;
+        }
+        const result = await runtime.handleMissionCommand(command);
+        sendJson(response, 200, createCommandResponse({
+          commandId: crypto.randomUUID(),
+          ok: true,
+          result,
+          snapshot: runtime.getSnapshot(),
+        }), origin, allowedOrigins);
         return;
       }
 
@@ -195,6 +240,10 @@ export function startSidecarServer(runtime, options = {}) {
   });
 
   runtime.subscribe((event) => {
+    if (!isMissionEvent(event)) {
+      runtime.appendTerminal("warn", "Mission event failed protocol validation and was not published.");
+      return;
+    }
     const payload = JSON.stringify(event);
     for (const client of wss.clients) {
       if (client.readyState === client.OPEN) client.send(payload);
@@ -229,7 +278,7 @@ export function startSidecarServer(runtime, options = {}) {
 
       const commandId = commandIdFrom(body);
       const command = commandPayload(body);
-      if (!isMissionCommand(command)) {
+      if (!isMissionCommand(command) || command.type === "file.save") {
         socket.send(JSON.stringify({
           type: "command.ack",
           commandId,
