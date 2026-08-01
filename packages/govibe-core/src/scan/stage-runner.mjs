@@ -18,6 +18,7 @@ function knowledgePayload(output) {
     context_snapshots: [
       ...(output.communities?.length ? [{ kind: "communities", value: output.communities }] : []),
       ...(output.processes?.length ? [{ kind: "processes", value: output.processes }] : []),
+      ...(output.unresolved_links?.length ? [{ kind: "unresolved_links", value: output.unresolved_links }] : []),
     ],
   };
 }
@@ -72,7 +73,7 @@ export async function runDeepScan({ workspacePath, inventory, mspClient, actor, 
         record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "not_applicable", inputRefs: ["inventory:l1"], outputRefs: [`exclusion:${output.notApplicable}`, proof.proofRef], method: "inventory-exclusion", confidence: 1, exclusions: [output.notApplicable] };
       } else {
         const recordId = `${runId}-stage-${String(stage).padStart(2, "0")}`;
-        const provenance = await recordTerminalEvidence({ mspClient, runId, stage, inventoryHash, actor, recordedAt: runMeta.createdAt, verdict: "passed", method: output.method, kind: "scan-stage-provenance" });
+        const provenance = await recordTerminalEvidence({ mspClient, runId, stage, inventoryHash, actor, recordedAt: runMeta.createdAt, verdict: "passed", method: output.method, findings: output.unresolved_links?.map((item) => ({ kind: "unresolved_link", ...item })) ?? [], kind: "scan-stage-provenance" });
         const promoted = await mspClient.submitKnowledgeCandidate({
           schema_version: "govibe-knowledge-candidate/v1",
           idempotency_key: recordId,
@@ -90,7 +91,7 @@ export async function runDeepScan({ workspacePath, inventory, mspClient, actor, 
           run_id: runId,
           stage,
           source_snapshot_hash: promoted.sourceHash,
-          findings: [],
+          findings: output.unresolved_links?.map((item) => ({ kind: "unresolved_link", ...item })) ?? [],
           stage_evidence: [{ ref: promoted.knowledgeRef, source_hash: promoted.sourceHash, kind: "knowledge-link", provenance_ref: provenance.proofRef, promotion_ref: promoted.promotionRef }],
           verification: { verdict: "passed", method: output.method },
           artifact_lineage: [],
@@ -98,7 +99,7 @@ export async function runDeepScan({ workspacePath, inventory, mspClient, actor, 
           recorded_at: runMeta.createdAt,
           knowledge_ref: promoted.knowledgeRef,
         });
-        record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "complete", inputRefs: ["inventory:l1"], outputRefs: [promoted.knowledgeRef, promoted.promotionRef, provenance.proofRef, proof.proofRef], method: output.method, confidence: 1, exclusions: [] };
+        record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "complete", inputRefs: ["inventory:l1"], outputRefs: [promoted.knowledgeRef, promoted.promotionRef, provenance.proofRef, proof.proofRef], method: output.method, confidence: output.unresolved_links?.length ? 0.8 : 1, exclusions: [] };
       }
     } catch (error) {
       record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "failed", inputRefs: ["inventory:l1"], outputRefs: [], method: "stage-adapter", confidence: 0, exclusions: [], error: error instanceof Error ? error.message : String(error) };
