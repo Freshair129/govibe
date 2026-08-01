@@ -7,6 +7,7 @@ export { createMspClientFromEnvironment, createUnavailableMspClient, MspClient, 
 export { createMspStdioCaller } from "./msp-stdio-transport.mjs";
 export { definitionHash, installSkillDefinition, loadGlobalTrustPolicy, loadSkillLock, readSkillDefinition, resolveSkill } from "./skill-registry.mjs";
 export { createWorkspaceVaultBindings, normalizeAgentId, slugifyProjectName, VAULT_LEVELS, VAULT_TYPES } from "./vaults.mjs";
+export { buildLinkGraph, calculateWorkspaceImpact } from "./impact/impact-engine.mjs";
 export { scanWorkspace, inventoryWorkspace } from "./scan/scan.mjs";
 export { createDefaultStageAdapters } from "./scan/stage-adapters.mjs";
 export { CANONICAL_STAGES, validateStageRun } from "./scan/stage-contract.mjs";
