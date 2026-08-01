@@ -26,6 +26,8 @@ The sidecar server validates inbound commands with `isMissionCommand` and return
 
 ## External data ingest
 
+Browser `postMessage` ingress accepts only exact origins from `VITE_GOVIBE_EVENT_ORIGINS` (default: the current app origin), requires `event.source === window`, and validates the shared event schema. Wildcard origins are ignored. The legacy `govibe:mission-event` custom event is disabled by default because same-page scripts cannot be authenticated; `VITE_GOVIBE_ALLOW_CUSTOM_EVENTS=true` enables it only as an explicitly unsafe development compatibility interface.
+
 External producers must:
 
 1. Include only documented event discriminators.

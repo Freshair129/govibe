@@ -2,6 +2,11 @@ import {
   isMissionCommand as isWireMissionCommand,
   isMissionEvent as isWireMissionEvent,
 } from "../packages/mission-protocol/index.js";
+import {
+  readDevelopmentCustomMissionEvent,
+  readTrustedMissionMessage,
+  resolveMissionEventOrigins,
+} from "./missionBrowserIngress";
 
 export type DomainId = "A" | "B" | "C" | "D";
 export type ViewId =
@@ -694,12 +699,24 @@ export function ingestExternalMissionEvent(value: unknown) {
   return true;
 }
 
-window.addEventListener("govibe:mission-event", ((event: CustomEvent<unknown>) => {
-  if (!ingestExternalMissionEvent(event.detail)) console.warn("Rejected invalid govibe:mission-event payload.");
-}) as EventListener);
+const allowedMissionEventOrigins = resolveMissionEventOrigins(
+  import.meta.env.VITE_GOVIBE_EVENT_ORIGINS as string | undefined,
+  window.location.origin,
+);
+const allowDevelopmentCustomEvents = import.meta.env.VITE_GOVIBE_ALLOW_CUSTOM_EVENTS === "true";
 
-window.addEventListener("message", (event: MessageEvent<{ source?: string; event?: unknown }>) => {
-  if (event.data?.source === "govibe-mission-control") ingestExternalMissionEvent(event.data.event);
+if (allowDevelopmentCustomEvents) {
+  window.addEventListener("govibe:mission-event", ((event: CustomEvent<unknown>) => {
+    const missionEvent = readDevelopmentCustomMissionEvent(event.detail, allowDevelopmentCustomEvents);
+    if (missionEvent) missionGateway.handleEvent(missionEvent as MissionEvent);
+    else console.warn("Rejected invalid development mission event.");
+  }) as EventListener);
+}
+
+window.addEventListener("message", (event: MessageEvent<unknown>) => {
+  const missionEvent = readTrustedMissionMessage(event, window, allowedMissionEventOrigins);
+  if (missionEvent) missionGateway.handleEvent(missionEvent as MissionEvent);
+  else console.warn("Rejected untrusted or invalid mission message.");
 });
 
 export function saveFile(hash: string, data: ArrayBuffer, meta: Record<string, unknown>) {

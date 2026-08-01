@@ -17,6 +17,11 @@ import type {
   WorkflowTaskNode,
   WorkflowVerification,
 } from "./mission";
+import {
+  readDevelopmentCustomMissionEvent,
+  readTrustedMissionMessage,
+  resolveMissionEventOrigins,
+} from "./missionBrowserIngress";
 
 export type CommandStatus = "pending" | "succeeded" | "failed" | "timed-out";
 
@@ -596,10 +601,21 @@ export function ingestReliableExternalMissionEvent(value: unknown): boolean {
 }
 
 if (typeof window !== "undefined") {
-  window.addEventListener("govibe:mission-event", ((event: CustomEvent<unknown>) => {
-    ingestReliableExternalMissionEvent(event.detail);
-  }) as EventListener);
-  window.addEventListener("message", (event: MessageEvent<{ source?: string; event?: unknown }>) => {
-    if (event.data?.source === "govibe-mission-control") ingestReliableExternalMissionEvent(event.data.event);
+  const allowedMissionEventOrigins = resolveMissionEventOrigins(
+    import.meta.env.VITE_GOVIBE_EVENT_ORIGINS as string | undefined,
+    window.location.origin,
+  );
+  const allowDevelopmentCustomEvents = import.meta.env.VITE_GOVIBE_ALLOW_CUSTOM_EVENTS === "true";
+  if (allowDevelopmentCustomEvents) {
+    window.addEventListener("govibe:mission-event", ((event: CustomEvent<unknown>) => {
+      const missionEvent = readDevelopmentCustomMissionEvent(event.detail, allowDevelopmentCustomEvents);
+      if (missionEvent) missionGateway.handleEvent(missionEvent);
+      else console.warn("Rejected invalid development mission event.");
+    }) as EventListener);
+  }
+  window.addEventListener("message", (event: MessageEvent<unknown>) => {
+    const missionEvent = readTrustedMissionMessage(event, window, allowedMissionEventOrigins);
+    if (missionEvent) missionGateway.handleEvent(missionEvent);
+    else console.warn("Rejected untrusted or invalid mission message.");
   });
 }

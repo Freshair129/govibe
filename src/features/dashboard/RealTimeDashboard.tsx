@@ -52,7 +52,7 @@ export function RealTimeDashboard({ snapshot, theme, send }: { snapshot: Mission
             <span>{metric.label}</span>
             <strong>{metric.value}</strong>
           </article>
-        )) : <EmptyState title="No telemetry connected" body="Send a snapshot or metrics.update event through WebSocket, HTTP, or window govibe:mission-event." />}
+        )) : <EmptyState title="No telemetry connected" body="Send a snapshot or metrics.update event through the authenticated WebSocket or HTTP transport." />}
       </div>
       <div className="dashboard-grid">
         <StageScanPanel snapshot={snapshot} send={send} />
