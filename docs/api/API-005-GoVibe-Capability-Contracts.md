@@ -2,7 +2,7 @@
 title: "API: GoVibe Capability Contracts"
 doc_id: "API-005-GOVIBE-CAPABILITY-CONTRACTS"
 status: "approved"
-version: "3.0.0"
+version: "3.1.0"
 updated: "2026-08-01"
 owner: "Boss / ATHER"
 source_of_truth: true
@@ -82,6 +82,42 @@ The public deep-scan contract contains twelve stages:
 
 F1-F4 are internal finalization operations and are not public Stage 13-16 identifiers. GoVibe orchestrates scan execution. Producing stages submit a `govibe-knowledge-candidate/v1` to MSP. MSP validates authority and promotion policy, mediates GKS lifecycle, and returns opaque knowledge and promotion references.
 
+Deep Scan is also the observed-link discovery engine:
+
+- Stage 3 creates document, section/atom, wikilink, and document-reference candidates.
+- Stage 5 creates symbol and call-link candidates.
+- Stages 6-8 create route, tool, and ORM candidates.
+- Stage 9 resolves cross-file import/reference links.
+- Stage 10 resolves inheritance links.
+- Stages 11-12 add community/process relations.
+
+These are candidates. GKS assigns canonical document, atom, symbol, entity, and relation identities after MSP authorization.
+
+# Workspace Impact
+
+`govibe.workspace.impact` performs explainable reverse-dependency traversal over observed or canonical links. It must not be implemented as plain substring search.
+
+Accepted change types:
+
+- `editorial`
+- `schema_additive`
+- `schema_breaking`
+- `semantic_change`
+- `authority_boundary_change`
+- `runtime_behavior_change`
+
+The runtime resolves one or more changed seeds, walks incoming edges/backlinks, applies relation weights and graph-distance decay, and returns `govibe-impact/v2` with:
+
+- direct and transitive affected artifacts;
+- relation chain and distance;
+- impact score;
+- reason;
+- required action;
+- unresolved links and graph coverage;
+- backward-compatible affected `references` paths.
+
+Backlinks are reverse projections of forward relations. They preserve the original link ID and relation type and must not create a duplicate semantic truth.
+
 # MCP Commands
 
 Existing commands:
@@ -131,6 +167,8 @@ The exact internal MSP-to-GKS port is outside the GoVibe contract.
 - Private memory must not be promoted to Shared Vault without MSP validation and approval.
 - `kvId` must not be issued before the model runtime creates or verifies the KV cache.
 - Replay must not substitute newer vault versions silently.
+- Deep Scan must not label candidates as canonical knowledge.
+- Impact analysis must not claim completeness when unresolved links or missing graph coverage remain.
 
 # Runtime Transport
 
@@ -140,6 +178,7 @@ The exact internal MSP-to-GKS port is outside the GoVibe contract.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 3.1.0 | 2026-08-01 | Boss / ATHER | Added Deep Scan link discovery ownership, backlink projection, and explainable reverse-dependency `govibe.workspace.impact` contract. |
 | 3.0.0 | 2026-08-01 | Boss / ATHER | Replaced independent GKS access with mandatory MSP mediation; added vault identity, context profiles, replay lineage, and parent-mediated knowledge promotion. |
 | 2.0.2 | 2026-07-30 | ATHER | Fixed the stdio wire contract. |
 | 2.0.0 | 2026-07-30 | Boss / ATHER | Added full migration capability contracts. |
