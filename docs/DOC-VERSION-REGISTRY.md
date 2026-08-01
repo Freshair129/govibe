@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.68+draft"
+version: "0.1.69+draft"
 updated: "2026-08-01"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -30,7 +30,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.1+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.68+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.69+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -92,7 +92,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | ADR | `ADR-022-VAULT-OWNERSHIP-CONTEXT-LINEAGE` | `1.0.0` | approved | Boss / ATHER | `docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md` |
 | Architecture | `BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.1` | approved | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md` |
 | Architecture | `BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE` | `3.0.0` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md` |
-| Architecture | `ARCH-VAULT-CONTEXT-MODEL` | `1.0.0` | approved | Boss / ATHER | `docs/architecture/ARCH-Vault-and-Context-Model.md` |
+| Architecture | `ARCH-VAULT-CONTEXT-MODEL` | `1.0.1` | approved | Boss / ATHER | `docs/architecture/ARCH-Vault-and-Context-Model.md` |
 | Architecture | `BLUEPRINT-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Translator-Core-Slice.md` |
 | LLD | `LLD-TASK-SCOPED-CONTEXT-INJECTION-CORE` | `0.1.1` | approved | ARCHON / ATHER | `docs/lld/LLD-Task-Scoped-Context-Injection-Core.md` |
 | Architecture | `MSP-GKS-TAXONOMY-MAPPING` | `0.1.0` | approved | THESEUS / KIN | `docs/architecture/MSP-GKS-Taxonomy-Mapping.md` |
@@ -146,6 +146,7 @@ These files map historical or cross-document terminology into canonical owners. 
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.69+draft | 2026-08-01 | Boss / ATHER | Synced ARCH-VAULT-CONTEXT-MODEL v1.0.1 after linking registered alignment conformance mappings. |
 | 0.1.68+draft | 2026-08-01 | Boss / ATHER | Registered ALIGNMENT-01/04/06/12 as non-SOT conformance mappings and corrected ARCH-VAULT-CONTEXT-MODEL to approved v1.0.0. |
 | 0.1.67+draft | 2026-08-01 | Boss / ATHER | Registered link/backlink/impact schemas and corrected the ARCH Vault/Context/Link/Impact record. |
 | 0.1.66+draft | 2026-08-01 | Boss / ATHER | Registered API-004 v0.3.0, API-005 v3.0.0, API-006 v1.0.0, ADR-022, vault/context architecture, and Blueprint v3.0.0. |
