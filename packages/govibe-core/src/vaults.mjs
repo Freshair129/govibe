@@ -1,16 +1,8 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash } from "node:crypto";
 import path from "node:path";
 
-export const VAULT_TYPES = Object.freeze({
-  SHARED: "shared",
-  PRIVATE: "private",
-});
-
-export const VAULT_LEVELS = Object.freeze({
-  PROJECT: "project",
-  WORKSPACE: "workspace",
-  GLOBAL: "global",
-});
+export const VAULT_TYPES = Object.freeze({ SHARED: "shared", PRIVATE: "private" });
+export const VAULT_LEVELS = Object.freeze({ PROJECT: "project", WORKSPACE: "workspace", GLOBAL: "global" });
 
 export function slugifyProjectName(value) {
   const slug = String(value ?? "")
@@ -22,6 +14,14 @@ export function slugifyProjectName(value) {
   return slug;
 }
 
+export function normalizeAgentId(value) {
+  const agentId = String(value ?? "").trim();
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(agentId) || agentId.includes("..")) {
+    throw new Error("Agent ID must be a safe stable identifier.");
+  }
+  return agentId;
+}
+
 function stableId(prefix, ...parts) {
   const digest = createHash("sha256").update(parts.join("\u0000")).digest("hex").slice(0, 24);
   return `${prefix}_${digest}`;
@@ -29,10 +29,12 @@ function stableId(prefix, ...parts) {
 
 export function createWorkspaceVaultBindings({ projectName, workspacePath, agentId = "default-agent", globalPrivateVaultId }) {
   const projectSlug = slugifyProjectName(projectName);
+  const safeAgentId = normalizeAgentId(agentId);
   const projectId = stableId("project", projectSlug);
   const workspaceId = stableId("workspace", projectId, path.resolve(workspacePath));
   const sharedVaultId = stableId("vault", "shared", projectId);
-  const workspacePrivateVaultId = stableId("vault", "private", agentId, workspaceId);
+  const workspacePrivateVaultId = stableId("vault", "private", safeAgentId, workspaceId);
+  const resolvedGlobalPrivateVaultId = globalPrivateVaultId ?? stableId("vault", "private", "global", safeAgentId);
 
   return {
     schema: "govibe-workspace-vault-bindings/v1",
@@ -48,29 +50,33 @@ export function createWorkspaceVaultBindings({ projectName, workspacePath, agent
       workspace_id: null,
       agent_id: null,
       mode: "read_write",
+      status: "active",
       materialization_path: `.brain/${projectSlug}`,
     },
     workspace_private_vaults: [{
       vault_id: workspacePrivateVaultId,
-      slug: agentId,
+      slug: safeAgentId,
       vault_type: VAULT_TYPES.PRIVATE,
       vault_level: VAULT_LEVELS.WORKSPACE,
       role: "episodic_memory",
       project_id: projectId,
       workspace_id: workspaceId,
-      agent_id: agentId,
+      agent_id: safeAgentId,
       mode: "read_write",
-      materialization_path: `.brain/private/${agentId}`,
+      status: "active",
+      materialization_path: `.brain/private/${safeAgentId}`,
     }],
     global_private_vault: {
-      vault_id: globalPrivateVaultId ?? `vault_global_${randomUUID()}`,
+      vault_id: resolvedGlobalPrivateVaultId,
+      slug: safeAgentId,
       vault_type: VAULT_TYPES.PRIVATE,
       vault_level: VAULT_LEVELS.GLOBAL,
       role: "compressed_durable_memory",
       project_id: null,
       workspace_id: null,
-      agent_id: agentId,
+      agent_id: safeAgentId,
       mode: "read_write",
+      status: "active",
       materialization_path: null,
     },
     mounted_shared_vaults: [],
