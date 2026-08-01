@@ -1,6 +1,13 @@
+import {
+  boundedProtocolMessage,
+  isCommandResponse,
+  isMissionEvent,
+  isMissionSnapshot,
+  isRecord,
+  type MissionCommand,
+  type MissionEvent,
+} from "../packages/mission-protocol/index.js";
 import type {
-  MissionCommand,
-  MissionEvent,
   MissionSnapshot,
   RoadmapSnapshot,
   TerminalLine,
@@ -24,15 +31,7 @@ export type CommandTerminalLine = TerminalLine & {
   commandStatus?: CommandStatus;
 };
 
-type CommandAckEvent = {
-  type: "command.ack";
-  commandId: string;
-  ok: boolean;
-  message?: string;
-  snapshot?: Partial<MissionSnapshot>;
-};
-
-type WireEvent = MissionEvent | CommandAckEvent;
+type WireEvent = MissionEvent;
 
 type PendingCommand = {
   command: MissionCommand;
@@ -59,7 +58,6 @@ const IDEMPOTENT_COMMANDS = new Set<MissionCommand["type"]>([
   "masterplan.preview",
 ]);
 
-const MAX_ERROR_LENGTH = 240;
 const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
 const DEFAULT_ACK_TIMEOUT_MS = 10_000;
 const DEFAULT_RECONNECT_BASE_MS = 500;
@@ -82,11 +80,6 @@ const emptySnapshot: MissionSnapshot = {
   workflowRuns: [],
   providers: [],
 };
-
-function boundedMessage(value: unknown): string {
-  const message = value instanceof Error ? value.message : String(value ?? "Unknown error");
-  return message.length > MAX_ERROR_LENGTH ? `${message.slice(0, MAX_ERROR_LENGTH - 1)}…` : message;
-}
 
 function mergeSnapshot(current: MissionSnapshot, patch: Partial<MissionSnapshot>): MissionSnapshot {
   return {
@@ -125,31 +118,6 @@ function ensureRoadmapSnapshot(current?: RoadmapSnapshot): RoadmapSnapshot {
 function upsertByKey<T>(items: T[], next: T, matches: (item: T) => boolean): T[] {
   const index = items.findIndex(matches);
   return index === -1 ? [...items, next] : items.map((item, i) => i === index ? next : item);
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isWireEvent(value: unknown): value is WireEvent {
-  if (!isRecord(value) || typeof value.type !== "string") return false;
-  switch (value.type) {
-    case "snapshot": return isRecord(value.snapshot);
-    case "terminal.line": return isRecord(value.line) && typeof value.line.id === "string";
-    case "metrics.update": return Array.isArray(value.metrics);
-    case "chart.update": return isRecord(value.chart);
-    case "agents.update": return Array.isArray(value.agents);
-    case "graph.update": return isRecord(value.graph);
-    case "heatmap.update": return isRecord(value.heatmap);
-    case "roadmap.snapshot": return isRecord(value.roadmap);
-    case "roadmap.node.update": return isRecord(value.node) && typeof value.node.id === "string";
-    case "roadmap.assignment": return isRecord(value.assignment) && typeof value.assignment.taskId === "string";
-    case "roadmap.handoff": return isRecord(value.handoff) && typeof value.handoff.taskId === "string";
-    case "roadmap.verification": return isRecord(value.verification) && typeof value.verification.taskId === "string";
-    case "workflow.run": return isRecord(value.run) && typeof value.run.runId === "string";
-    case "command.ack": return typeof value.commandId === "string" && typeof value.ok === "boolean";
-    default: return false;
-  }
 }
 
 export class ReliableMissionGateway {
@@ -261,7 +229,7 @@ export class ReliableMissionGateway {
       this.appendTerminal("warn", "Ignored malformed WebSocket JSON frame.");
       return;
     }
-    if (!isWireEvent(parsed)) {
+    if (!isMissionEvent(parsed)) {
       this.appendTerminal("warn", "Ignored WebSocket frame that failed Mission Control schema validation.");
       return;
     }
@@ -276,7 +244,7 @@ export class ReliableMissionGateway {
           commandId: event.commandId,
           status: event.ok ? "succeeded" : "failed",
           message: event.message,
-          snapshot: event.snapshot,
+          snapshot: event.snapshot as Partial<MissionSnapshot> | undefined,
         };
         if (pending) {
           clearTimeout(pending.timeoutId);
@@ -286,21 +254,47 @@ export class ReliableMissionGateway {
         this.reconcileCommand(result);
         return;
       }
-      case "snapshot": this.setSnapshot(event.snapshot); return;
-      case "terminal.line": this.reconcileTerminalLine(event.line as CommandTerminalLine); return;
-      case "metrics.update": this.setSnapshot({ metrics: event.metrics }); return;
-      case "chart.update": this.setSnapshot({ chart: event.chart }); return;
-      case "agents.update": this.setSnapshot({ agents: event.agents }); return;
-      case "graph.update": this.setSnapshot({ graph: event.graph }); return;
-      case "heatmap.update": this.setSnapshot({ heatmap: event.heatmap }); return;
-      case "roadmap.snapshot": this.setSnapshot({ roadmap: event.roadmap }); return;
-      case "roadmap.node.update": this.updateRoadmapNode(event.node); return;
-      case "roadmap.assignment": this.updateRoadmapAssignment(event.assignment); return;
-      case "roadmap.handoff": this.updateRoadmapHandoff(event.handoff); return;
-      case "roadmap.verification": this.updateRoadmapVerification(event.verification); return;
-      case "workflow.run":
-        this.setSnapshot({ workflowRuns: [...(this.snapshot.workflowRuns ?? []).filter((run) => run.runId !== event.run.runId), event.run] });
+      case "snapshot":
+        this.setSnapshot(event.snapshot as Partial<MissionSnapshot>);
         return;
+      case "terminal.line":
+        this.reconcileTerminalLine(event.line as CommandTerminalLine);
+        return;
+      case "metrics.update":
+        this.setSnapshot({ metrics: event.metrics as MissionSnapshot["metrics"] });
+        return;
+      case "chart.update":
+        this.setSnapshot({ chart: event.chart as MissionSnapshot["chart"] });
+        return;
+      case "agents.update":
+        this.setSnapshot({ agents: event.agents as MissionSnapshot["agents"] });
+        return;
+      case "graph.update":
+        this.setSnapshot({ graph: event.graph as MissionSnapshot["graph"] });
+        return;
+      case "heatmap.update":
+        this.setSnapshot({ heatmap: event.heatmap as NonNullable<MissionSnapshot["heatmap"]> });
+        return;
+      case "roadmap.snapshot":
+        this.setSnapshot({ roadmap: event.roadmap as RoadmapSnapshot });
+        return;
+      case "roadmap.node.update":
+        this.updateRoadmapNode(event.node as WorkflowTaskNode);
+        return;
+      case "roadmap.assignment":
+        this.updateRoadmapAssignment(event.assignment as WorkflowAssignment);
+        return;
+      case "roadmap.handoff":
+        this.updateRoadmapHandoff(event.handoff as WorkflowHandoff);
+        return;
+      case "roadmap.verification":
+        this.updateRoadmapVerification(event.verification as WorkflowVerification);
+        return;
+      case "workflow.run": {
+        const run = event.run as NonNullable<MissionSnapshot["workflowRuns"]>[number];
+        this.setSnapshot({ workflowRuns: [...(this.snapshot.workflowRuns ?? []).filter((item) => item.runId !== run.runId), run] });
+        return;
+      }
       default: {
         const exhaustive: never = event;
         return exhaustive;
@@ -318,11 +312,12 @@ export class ReliableMissionGateway {
       try {
         const response = await this.fetchWithTimeout(`${this.options.httpBaseUrl!.replace(/\/$/, "")}/mission/snapshot`, {});
         if (!response.ok) throw new Error(`Snapshot bootstrap failed with ${response.status}`);
-        const snapshot = await response.json() as MissionSnapshot;
-        this.setSnapshot({ ...snapshot, connectionState: wsUrl ? "connecting" : "connected" });
+        const payload: unknown = await response.json();
+        if (!isMissionSnapshot(payload)) throw new Error("Snapshot bootstrap failed Mission Control schema validation.");
+        this.setSnapshot({ ...(payload as MissionSnapshot), connectionState: wsUrl ? "connecting" : "connected" });
       } catch (error) {
         if (!wsUrl) {
-          this.appendTerminal("warn", boundedMessage(error));
+          this.appendTerminal("warn", boundedProtocolMessage(error));
           this.setSnapshot({ connectionState: "error" });
           return;
         }
@@ -357,7 +352,7 @@ export class ReliableMissionGateway {
       });
     } catch (error) {
       this.resetSocket(false);
-      this.appendTerminal("warn", boundedMessage(error));
+      this.appendTerminal("warn", boundedProtocolMessage(error));
       this.setSnapshot({ connectionState: "error" });
       this.scheduleReconnect();
     }
@@ -402,8 +397,26 @@ export class ReliableMissionGateway {
       });
       const payload = await this.readJson(response);
       if (!response.ok) {
-        return { commandId, status: "failed", message: boundedMessage(payload?.error ?? `Server rejected command with ${response.status}.`) };
+        const message = isCommandResponse(payload)
+          ? payload.message
+          : payload?.error ?? `Server rejected command with ${response.status}.`;
+        return { commandId, status: "failed", message: boundedProtocolMessage(message) };
       }
+
+      if (isCommandResponse(payload)) {
+        if (payload.commandId !== commandId) {
+          return { commandId, status: "failed", message: "Server response commandId did not match the outbound command." };
+        }
+        const result: CommandResult = {
+          commandId,
+          status: payload.ok ? "succeeded" : "failed",
+          message: payload.message,
+          snapshot: payload.snapshot as Partial<MissionSnapshot> | undefined,
+        };
+        if (result.snapshot) this.setSnapshot(result.snapshot);
+        return result;
+      }
+
       const result: CommandResult = {
         commandId,
         status: "succeeded",
@@ -415,7 +428,7 @@ export class ReliableMissionGateway {
       return result;
     } catch (error) {
       const timedOut = error instanceof DOMException && error.name === "AbortError";
-      return { commandId, status: timedOut ? "timed-out" : "failed", message: boundedMessage(error) };
+      return { commandId, status: timedOut ? "timed-out" : "failed", message: boundedProtocolMessage(error) };
     }
   }
 
@@ -440,7 +453,12 @@ export class ReliableMissionGateway {
 
   private serializeCommand(command: MissionCommand): Record<string, unknown> {
     return command.type === "file.save"
-      ? { ...command, data: Array.from(new Uint8Array(command.data)) }
+      ? {
+          ...command,
+          data: command.data instanceof ArrayBuffer
+            ? Array.from(new Uint8Array(command.data))
+            : command.data,
+        }
       : { ...command };
   }
 
