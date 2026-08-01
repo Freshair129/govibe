@@ -1,10 +1,11 @@
 export { buildContextPacket } from "./context-packet.mjs";
 export { bindRuntimeKv, CONTEXT_PROFILES, createContextLineage, sha256Json, validateContextProfile } from "./context-lineage.mjs";
+export { loadContextCache, persistContextInjection } from "./context-store.mjs";
 export { continueWorkflow } from "./continue.mjs";
 export { createMspClientFromEnvironment, createUnavailableMspClient, MspClient, MspUnavailableError } from "./msp-client.mjs";
 export { createMspStdioCaller } from "./msp-stdio-transport.mjs";
 export { definitionHash, installSkillDefinition, loadGlobalTrustPolicy, loadSkillLock, readSkillDefinition, resolveSkill } from "./skill-registry.mjs";
-export { createWorkspaceVaultBindings, slugifyProjectName, VAULT_LEVELS, VAULT_TYPES } from "./vaults.mjs";
+export { createWorkspaceVaultBindings, normalizeAgentId, slugifyProjectName, VAULT_LEVELS, VAULT_TYPES } from "./vaults.mjs";
 export { scanWorkspace, inventoryWorkspace } from "./scan/scan.mjs";
 export { createDefaultStageAdapters } from "./scan/stage-adapters.mjs";
 export { CANONICAL_STAGES, validateStageRun } from "./scan/stage-contract.mjs";
