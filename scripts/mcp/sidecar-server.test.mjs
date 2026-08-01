@@ -50,10 +50,20 @@ async function startTestServer() {
 
 async function stopTestServer(instance) {
   for (const client of instance.wss.clients) client.terminate();
-  instance.wss.close();
+  await new Promise((resolve) => instance.wss.close(resolve));
+  if (!instance.server.listening) return;
   await new Promise((resolve, reject) => {
     instance.server.close((error) => error ? reject(error) : resolve());
   });
+}
+
+function closeSocket(socket) {
+  if (socket.readyState === WebSocket.CLOSED) return Promise.resolve();
+  const closed = once(socket, "close");
+  if (socket.readyState === WebSocket.CONNECTING || socket.readyState === WebSocket.OPEN) {
+    socket.terminate();
+  }
+  return closed;
 }
 
 test("rejects startup without an auth token", () => {
@@ -112,30 +122,31 @@ test("returns snapshot for a trusted origin and valid token", async () => {
 
 test("rejects WebSocket upgrade from an untrusted origin", async () => {
   const instance = await startTestServer();
+  const socket = new WebSocket(`${instance.wsUrl}?token=${encodeURIComponent(token)}`, {
+    origin: "https://attacker.example",
+  });
   try {
-    const socket = new WebSocket(`${instance.wsUrl}?token=${encodeURIComponent(token)}`, {
-      origin: "https://attacker.example",
-    });
     const [error] = await once(socket, "error");
     assert.match(error.message, /Unexpected server response: 403/);
   } finally {
+    await closeSocket(socket);
     await stopTestServer(instance);
   }
 });
 
 test("accepts WebSocket upgrade with trusted origin and valid token", async () => {
   const instance = await startTestServer();
+  const socket = new WebSocket(`${instance.wsUrl}?token=${encodeURIComponent(token)}`, {
+    origin: trustedOrigin,
+  });
   try {
-    const socket = new WebSocket(`${instance.wsUrl}?token=${encodeURIComponent(token)}`, {
-      origin: trustedOrigin,
-    });
+    const messagePromise = once(socket, "message");
     await once(socket, "open");
-    const [message] = await once(socket, "message");
+    const [message] = await messagePromise;
     const event = JSON.parse(message.toString("utf8"));
     assert.equal(event.type, "snapshot");
-    socket.close();
-    await once(socket, "close");
   } finally {
+    await closeSocket(socket);
     await stopTestServer(instance);
   }
 });
