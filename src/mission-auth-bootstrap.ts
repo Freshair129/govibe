@@ -14,6 +14,7 @@ function isSidecarHttpUrl(input: RequestInfo | URL) {
 
 export function installMissionAuthBootstrap() {
   const token = configuredToken;
+  const wsUrl = configuredWsUrl;
   if (!token) return;
 
   const nativeFetch = window.fetch.bind(window);
@@ -28,7 +29,7 @@ export function installMissionAuthBootstrap() {
   const AuthenticatedWebSocket = class extends NativeWebSocket {
     constructor(url: string | URL, protocols?: string | string[]) {
       const target = new URL(url.toString(), window.location.href);
-      const configuredWsOrigin = configuredWsUrl ? new URL(configuredWsUrl, window.location.href).origin : undefined;
+      const configuredWsOrigin = wsUrl ? new URL(wsUrl, window.location.href).origin : undefined;
       const isSidecar = configuredWsOrigin
         ? target.origin === configuredWsOrigin
         : (target.hostname === "127.0.0.1" || target.hostname === "localhost") && target.port === "4310";
