@@ -5,7 +5,7 @@ import { CampaignLogsView } from "../features/benchmark/CampaignLogsView";
 import { Heatmap } from "../features/benchmark/Heatmap";
 import { ReactorRunTrigger } from "../features/benchmark/ReactorRunTrigger";
 import { CapabilityPlugins } from "../features/capabilities/CapabilityPlugins";
-import { BrainConfig } from "../features/config/BrainConfig";
+import { ContextOperationsView } from "../features/context/ContextOperationsView";
 import { RealTimeDashboard } from "../features/dashboard/RealTimeDashboard";
 import { DatabaseErdView } from "../features/erd/DatabaseErdView";
 import { GraphStudioView } from "../features/graph/GraphStudioView";
@@ -33,7 +33,7 @@ export function RenderView({
   if (activeView === "A1") return <RealTimeDashboard snapshot={snapshot} theme={theme} send={send} />;
   if (activeView === "A2") return <RoadmapBoard snapshot={snapshot} send={send} />;
   if (activeView === "A3") return <CapabilityPlugins snapshot={snapshot} />;
-  if (activeView === "A4") return <BrainConfig />;
+  if (activeView === "A4") return <ContextOperationsView snapshot={snapshot} />;
   if (activeView === "A5") return <AgentManagement snapshot={snapshot} send={send} />;
   if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;
   if (activeView === "B2") return <BusinessSpecificationsView snapshot={snapshot} />;
