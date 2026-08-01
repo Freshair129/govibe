@@ -32,8 +32,8 @@ npm run diff:check     # docs/source diff governance check (add :staged for stag
 Running a single test:
 ```bash
 npx vitest run src/roadmapExport.test.ts          # one file
-npx vitest run -t "scoring"                         # by test name
-npx vitest run scripts/mcp/runtime-core.test.mjs    # NOTE: see gotcha below
+npx vitest run -t "scoring"                       # by test name
+npx vitest run scripts/mcp/runtime-core.test.mjs  # NOTE: see gotcha below
 ```
 
 ## Architecture
@@ -98,9 +98,63 @@ newest file in `.brain/session/` if you need the full story. **End of session:**
 `end-session` skill (`.claude/skills/end-session/SKILL.md`) — session summary + todo-next
 refresh + CLAUDE/AGENTS drift check + validate-before-commit.
 
-Canonical Execution Governance (C/H/W, Access Scope H0-H4) lives in RWANG PROMAX
-(`D:/rwang/RWANG-PROMAX-skills/skills/rwang/references/EXECUTION-GOVERNANCE.md`);
-`docs/STD-Execution-Governance.md` here is a mirror.
+Canonical Execution Governance lives in RWANG PROMAX
+(`skills/rwang/references/EXECUTION-GOVERNANCE.md`); `docs/STD-Execution-Governance.md` here is a
+mirror. `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` is the binding GoVibe semantic
+separation decision.
+
+## Canonical governance axes
+
+Claude must keep these meanings separate in planning, docs, schemas, symbols, and code:
+
+| Axis | Meaning | Values / representation |
+|---|---|---|
+| `C` | process complexity | `C-0..C-3` |
+| `H` | executor Access Scope / tool-permission ceiling | `H0..H4` |
+| `R` | retrieval radius / graph distance | `R0..R6`, `maxHops`, or retrieval policy |
+| `D` | compaction / resolution depth | repository-defined `D` scale |
+| `W` | fan-out / branching width | `W2..W4` |
+| Budget | token/content allowance | explicit numeric or budget policy |
+| Risk | operational/security impact | repository-defined risk class |
+
+Access defaults from complexity:
+
+```text
+C-0 -> H0
+C-1 -> H1
+C-2 -> H2
+C-3 -> H3
+```
+
+`C-3/H4` is an explicit upward override for architecture, cross-system, or platform work and
+requires owner approval before implementation. H4 is not unrestricted authority; task scope,
+repository policy, deny rules, and human gates still apply.
+
+Never use or introduce active semantics where:
+
+```text
+H = graph hops
+H = retrieval radius
+H = context/token budget
+H = risk
+H = operating mode
+H5/H6 = active access tiers
+```
+
+Migration rules:
+
+- use `access_scope` for H metadata; do not introduce `context_scaling_tier` as an alias
+- use `retrieval_radius`, `max_hops`, or a retrieval-policy object for graph distance
+- use `D` for compaction/resolution depth
+- use `context_budget` or `max_tokens` for context allowance
+- treat `context_tier` as legacy and ambiguous; classify its actual behavior before renaming
+- do not create symbols such as `HLevelClassifier` or `classifyHLevel`; use explicit names such as
+  `AccessScopeClassifier`, `RetrievalRadiusPlanner`, and `ContextBudgetPlanner`
+- historical changelog references may remain only when clearly historical
+
+For any non-trivial task, report C and the effective H. Report R, D, W, Budget, and Risk only when
+those concerns are actually involved. Do not stuff them into H merely because one letter feels
+administratively convenient.
 
 ## Working agreement (from AGENTS.md / AGENT.md)
 
