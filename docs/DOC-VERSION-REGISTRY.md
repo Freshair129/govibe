@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.66+draft"
+version: "0.1.67+draft"
 updated: "2026-08-01"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -29,7 +29,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.1+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.66+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.67+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -37,8 +37,8 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | BRD | `BRD-GOVIBE-PLATFORM` | `0.1.1+draft` | draft | Boss (CEO) | `docs/BRD-GoVibe-Platform.md` |
 | API | `API-004-TASK-SCOPED-CONTEXT-PACKET-SCHEMA` | `0.3.0` | approved | ARCHON / ATHER | `docs/api/API-004-Task-Scoped-Context-Packet-Schema.md` |
-| API | `API-005-GOVIBE-CAPABILITY-CONTRACTS` | `3.0.0` | approved | Boss / ATHER | `docs/api/API-005-GoVibe-Capability-Contracts.md` |
-| API | `API-006-VAULT-CONTEXT-REPLAY-CONTRACTS` | `1.0.0` | approved | Boss / ATHER | `docs/api/API-006-Vault-Context-and-Replay-Contracts.md` |
+| API | `API-005-GOVIBE-CAPABILITY-CONTRACTS` | `3.1.0` | approved | Boss / ATHER | `docs/api/API-005-GoVibe-Capability-Contracts.md` |
+| API | `API-006-VAULT-CONTEXT-REPLAY-CONTRACTS` | `1.1.0` | approved | Boss / ATHER | `docs/api/API-006-Vault-Context-and-Replay-Contracts.md` |
 | Change Request | `CR-2026-07-26-govibe-rwang-capability-absorption` | `1.0.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md` |
 | PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.4.3+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
 | PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.1+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
@@ -90,8 +90,8 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | ADR | `ADR-020-PER-AGENT-MEMORY-UNIT` | `0.1.0+draft` | proposed | ARCHON / ATHER | `docs/adr/ADR-020-Per-Agent-Memory-Unit.md` |
 | ADR | `ADR-022-VAULT-OWNERSHIP-CONTEXT-LINEAGE` | `1.0.0` | approved | Boss / ATHER | `docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md` |
 | Architecture | `BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.1` | approved | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md` |
-| Architecture | `BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE` | `3.0.0` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md` |
-| Architecture | `ARCH-VAULT-CONTEXT-MODEL` | `0.1.0` | proposed | Boss / ATHER | `docs/architecture/ARCH-Vault-and-Context-Model.md` |
+| Architecture | `BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE` | `3.1.0` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md` |
+| Architecture | `ARCH-VAULT-CONTEXT-MODEL` | `1.0.0` | approved | Boss / ATHER | `docs/architecture/ARCH-Vault-and-Context-Model.md` |
 | Architecture | `BLUEPRINT-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Translator-Core-Slice.md` |
 | LLD | `LLD-TASK-SCOPED-CONTEXT-INJECTION-CORE` | `0.1.1` | approved | ARCHON / ATHER | `docs/lld/LLD-Task-Scoped-Context-Injection-Core.md` |
 | Architecture | `MSP-GKS-TAXONOMY-MAPPING` | `0.1.0` | approved | THESEUS / KIN | `docs/architecture/MSP-GKS-Taxonomy-Mapping.md` |
@@ -132,6 +132,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.67+draft | 2026-08-01 | Boss / ATHER | Registered API-005 v3.1.0, API-006 v1.1.0, Blueprint v3.1.0, and approved Vault/Context/Link/Impact architecture v1.0.0. |
 | 0.1.66+draft | 2026-08-01 | Boss / ATHER | Registered API-004 v0.3.0, API-005 v3.0.0, API-006 v1.0.0, ADR-022, vault/context architecture, and Blueprint v3.0.0. |
 | 0.1.65+draft | 2026-07-30 | ATHER / THESEUS | Registered the GoVibe first-use runbook for the 12-stage scan and Master Plan MVP. |
 | 0.1.64+draft | 2026-07-30 | ATHER | Recorded the isolated legacy-alias rollback rehearsal in the T13 cutover audit. |
