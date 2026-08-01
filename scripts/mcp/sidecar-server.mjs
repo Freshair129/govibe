@@ -1,6 +1,11 @@
 import http from "node:http";
 import { timingSafeEqual } from "node:crypto";
 import { WebSocketServer } from "ws";
+import {
+  MissionProtocolError,
+  readBoundedJsonBody,
+  validateMissionCommand,
+} from "./mission-protocol-security.mjs";
 
 const DEFAULT_ALLOWED_ORIGINS = [
   "http://127.0.0.1:1420",
@@ -8,6 +13,7 @@ const DEFAULT_ALLOWED_ORIGINS = [
   "http://127.0.0.1:5173",
   "http://localhost:5173",
 ];
+const DEFAULT_MAX_BODY_BYTES = 1_000_000;
 
 function parseAllowedOrigins(value) {
   if (!value) return DEFAULT_ALLOWED_ORIGINS;
@@ -44,7 +50,7 @@ function sendJson(response, statusCode, payload, origin, allowedOrigins) {
     headers["Access-Control-Allow-Headers"] = "Authorization,Content-Type";
   }
   response.writeHead(statusCode, headers);
-  response.end(JSON.stringify(payload));
+  response.end(statusCode === 204 ? undefined : JSON.stringify(payload));
 }
 
 function requireTrustedOrigin(request, allowedOrigins) {
@@ -60,15 +66,24 @@ function requireWebSocketAuth(request, expectedToken) {
   return tokenMatches(url.searchParams.get("token"), expectedToken);
 }
 
+function statusForError(error) {
+  return error instanceof MissionProtocolError ? error.statusCode : 500;
+}
+
+function payloadForError(error) {
+  if (error instanceof MissionProtocolError) return { error: error.code, message: error.message };
+  return { error: "internal-error" };
+}
+
 export function startSidecarServer(runtime, options = {}) {
   const port = Number(options.port ?? process.env.GOVIBE_MCP_PORT ?? 4310);
   const host = options.host ?? process.env.GOVIBE_MCP_HOST ?? "127.0.0.1";
   const authToken = options.authToken ?? process.env.GOVIBE_MCP_TOKEN;
   const allowedOrigins = options.allowedOrigins ?? parseAllowedOrigins(process.env.GOVIBE_MCP_ALLOWED_ORIGINS);
+  const maxBodyBytes = Number(options.maxBodyBytes ?? process.env.GOVIBE_MCP_MAX_BODY_BYTES ?? DEFAULT_MAX_BODY_BYTES);
 
-  if (!authToken) {
-    throw new Error("GOVIBE_MCP_TOKEN is required to start the Mission Control sidecar.");
-  }
+  if (!authToken) throw new Error("GOVIBE_MCP_TOKEN is required to start the Mission Control sidecar.");
+  if (!Number.isSafeInteger(maxBodyBytes) || maxBodyBytes <= 0) throw new Error("GOVIBE_MCP_MAX_BODY_BYTES must be a positive integer.");
 
   const server = http.createServer(async (request, response) => {
     const origin = request.headers.origin;
@@ -92,7 +107,6 @@ export function startSidecarServer(runtime, options = {}) {
         sendJson(response, 403, { error: "origin-not-allowed" }, origin, allowedOrigins);
         return;
       }
-
       if (!requireHttpAuth(request, authToken)) {
         sendJson(response, 401, { error: "unauthorized" }, origin, allowedOrigins);
         return;
@@ -100,9 +114,7 @@ export function startSidecarServer(runtime, options = {}) {
 
       if (request.method === "GET" && url.pathname === "/mission/snapshot") {
         const source = url.searchParams.get("source") ?? undefined;
-        if (source) {
-          await runtime.reloadRoadmap(source);
-        }
+        if (source) await runtime.reloadRoadmap(source);
         sendJson(response, 200, runtime.getSnapshot(), origin, allowedOrigins);
         return;
       }
@@ -116,21 +128,19 @@ export function startSidecarServer(runtime, options = {}) {
       }
 
       if (request.method === "POST" && url.pathname === "/mission/commands") {
-        const chunks = [];
-        for await (const chunk of request) chunks.push(chunk);
-        const body = chunks.length === 0 ? {} : JSON.parse(Buffer.concat(chunks).toString("utf8"));
-        const result = await runtime.handleMissionCommand(body);
+        const command = validateMissionCommand(await readBoundedJsonBody(request, maxBodyBytes));
+        const result = await runtime.handleMissionCommand(command);
         sendJson(response, 200, result, origin, allowedOrigins);
         return;
       }
 
       sendJson(response, 404, { error: "not-found", path: url.pathname }, origin, allowedOrigins);
     } catch (error) {
-      sendJson(response, 500, { error: error instanceof Error ? error.message : String(error) }, origin, allowedOrigins);
+      sendJson(response, statusForError(error), payloadForError(error), origin, allowedOrigins);
     }
   });
 
-  const wss = new WebSocketServer({ noServer: true });
+  const wss = new WebSocketServer({ noServer: true, maxPayload: maxBodyBytes });
   server.on("upgrade", (request, socket, head) => {
     if (!requireTrustedOrigin(request, allowedOrigins) || !requireWebSocketAuth(request, authToken)) {
       socket.write("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n");
@@ -143,9 +153,7 @@ export function startSidecarServer(runtime, options = {}) {
       socket.destroy();
       return;
     }
-    wss.handleUpgrade(request, socket, head, (webSocket) => {
-      wss.emit("connection", webSocket, request);
-    });
+    wss.handleUpgrade(request, socket, head, (webSocket) => wss.emit("connection", webSocket, request));
   });
 
   runtime.subscribe((event) => {
@@ -157,15 +165,18 @@ export function startSidecarServer(runtime, options = {}) {
 
   wss.on("connection", (socket) => {
     socket.send(JSON.stringify({ type: "snapshot", snapshot: runtime.getSnapshot() }));
-    socket.on("message", async (message) => {
+    socket.on("message", async (message, isBinary) => {
       try {
-        await runtime.handleMissionCommand(JSON.parse(message.toString("utf8")));
+        if (isBinary) throw new MissionProtocolError("Binary WebSocket commands are not supported.");
+        const command = validateMissionCommand(JSON.parse(message.toString("utf8")));
+        await runtime.handleMissionCommand(command);
       } catch (error) {
-        runtime.appendTerminal("warn", `Mission command failed: ${error instanceof Error ? error.message : String(error)}`);
+        const safeMessage = error instanceof Error ? error.message : "Invalid mission command.";
+        runtime.appendTerminal("warn", `Mission command rejected: ${safeMessage}`);
       }
     });
   });
 
   server.listen(port, host);
-  return { server, wss, port, host, allowedOrigins };
+  return { server, wss, port, host, allowedOrigins, maxBodyBytes };
 }
