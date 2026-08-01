@@ -1,8 +1,8 @@
 ---
 title: "Blueprint: Mission Gateway and Runtime Responsibility Split"
 doc_id: "BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT"
-status: "candidate"
-version: "0.1.0b"
+status: "approved"
+version: "0.1.0"
 updated: "2026-08-02"
 owner: "Boss / ATHER"
 source_of_truth: true
@@ -17,7 +17,7 @@ related_docs:
 
 ## Decision request
 
-Approve a behavior-preserving, staged split of `src/mission.ts`, `src/missionGateway.ts`, and `scripts/mcp/runtime-core.mjs`. This document is the implementation gate for issue #27. No code movement is authorized while its status remains `candidate`.
+This approved blueprint authorizes a behavior-preserving, staged split of `src/mission.ts`, `src/missionGateway.ts`, and `scripts/mcp/runtime-core.mjs` for issue #27.
 
 ## Evidence and root cause
 
@@ -155,4 +155,5 @@ Each numbered step is a separately reviewable commit or PR. A failed gate rolls 
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.1.0 | 2026-08-02 | approved | Owner approved the responsibility split, dependency direction, and staged compatibility plan for issue #27. | pending | ATHER |
 | 0.1.0b | 2026-08-02 | candidate | Initial responsibility split and staged compatibility plan for issue #27. | pending | ATHER |
