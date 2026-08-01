@@ -1,47 +1,19 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-import { GksClient, GksUnavailableError, createUnavailableGksClient } from "./gks-client.mjs";
-
-const HASH = "a".repeat(64);
+import { GksClient, GksUnavailableError, createGksClientFromEnvironment, createUnavailableGksClient } from "./gks-client.mjs";
 
 describe("GksClient", () => {
-  it("writes versioned code knowledge through gks_code_upsert", async () => {
-    const call = vi.fn(async () => ({ knowledge_ref: "gks:run-1/stage-5", source_hash: HASH }));
-    const client = new GksClient(call);
-    const input = {
-      schema_version: "govibe-knowledge-batch/v1",
-      idempotency_key: "run-1-stage-5",
-      run_id: "run-1",
-      stage: 5,
-      source_snapshot_hash: HASH,
-      provenance_ref: "msp:proof/run-1-stage-5",
-      symbols: [{ name: "run", path: "src/run.ts" }],
-      relations: [],
-      atoms: [],
-      context_snapshots: [],
-    };
-
-    await expect(client.upsertCodeKnowledge(input)).resolves.toEqual({
-      knowledgeRef: "gks:run-1/stage-5",
-      sourceHash: HASH,
+  it("fails closed for the deprecated direct GKS client", async () => {
+    await expect(new GksClient().upsertCodeKnowledge({})).rejects.toMatchObject({
+      code: "DIRECT_GKS_DISABLED",
     });
-    expect(call).toHaveBeenCalledWith("gks_code_upsert", input);
-  });
-
-  it("rejects proof payloads at the GKS ownership boundary", async () => {
-    const client = new GksClient(vi.fn());
-    await expect(client.upsertCodeKnowledge({
-      schema_version: "govibe-knowledge-batch/v1",
-      idempotency_key: "run-1-stage-5",
-      run_id: "run-1",
-      stage: 5,
-      source_snapshot_hash: HASH,
-      provenance_ref: "msp:proof/run-1-stage-5",
-      verification: { verdict: "pass" },
-    })).rejects.toThrow(/proof fields/i);
   });
 
   it("fails closed when the GKS transport is unavailable", async () => {
     await expect(createUnavailableGksClient().upsertCodeKnowledge({})).rejects.toBeInstanceOf(GksUnavailableError);
+  });
+
+  it("does not enable direct GKS access from environment configuration", async () => {
+    await expect(createGksClientFromEnvironment({ GOVIBE_GKS_COMMAND: "ignored" }).upsertCodeKnowledge({})).rejects.toBeInstanceOf(GksUnavailableError);
   });
 });
