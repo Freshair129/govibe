@@ -1,6 +1,7 @@
 export { buildContextPacket } from "./context-packet.mjs";
 export { bindRuntimeKv, CONTEXT_PROFILES, createContextLineage, sha256Json, validateContextProfile } from "./context-lineage.mjs";
 export { loadContextCache, persistContextInjection } from "./context-store.mjs";
+export { createFileReplayProvider, loadReplayBundle, persistReplayBundle, restoreReplayContext } from "./replay-provider.mjs";
 export { continueWorkflow } from "./continue.mjs";
 export { materializeCanonicalKnowledge, validateCanonicalMaterializationRequest } from "./canonical-materialization.mjs";
 export { createGksClientFromEnvironment, createUnavailableGksClient, GksClient, GksUnavailableError } from "./gks-client.mjs";
