@@ -2,6 +2,7 @@ import { govibeRuntime } from "./runtime-core.mjs";
 import { startSidecarServer } from "./sidecar-server.mjs";
 import { handleResourceRead, handleToolCall } from "./handlers.mjs";
 import { resourceCatalog, serverInfo, toolCatalog } from "./registry.mjs";
+import { handleVaultContextTool, handlesVaultContextTool } from "./vault-context-surface.mjs";
 
 const protocolVersion = "2024-11-05";
 let readBuffer = Buffer.alloc(0);
@@ -53,7 +54,9 @@ async function onRequest(message) {
       case "tools/call": {
         const name = params?.name;
         const args = params?.arguments ?? {};
-        const result = await handleToolCall(name, args);
+        const result = handlesVaultContextTool(name)
+          ? await handleVaultContextTool(name, args)
+          : await handleToolCall(name, args);
         success(id, result);
         return;
       }
