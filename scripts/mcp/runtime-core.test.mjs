@@ -73,6 +73,30 @@ describe("GovibeRuntime roadmap source scoring", () => {
     expect(snapshot.roadmap?.sourcePath).toBe("docs/roadmap/ROADMAP-task-scoped-context-injection.md");
     expect(snapshot.roadmap?.scoreBreakdown).toContain("env override");
   });
+
+  it("rejects roadmap traversal, absolute escapes, and missing files with distinct bounded errors", async () => {
+    const runtime = new GovibeRuntime();
+    await expect(runtime.reloadRoadmap("../package.json")).rejects.toMatchObject({
+      code: "PATH_OUTSIDE_ALLOWED_ROOT",
+      message: "Requested path is outside configured allowed roots.",
+    });
+    await expect(runtime.reloadRoadmap(path.join(process.cwd(), "package.json"))).rejects.toMatchObject({ code: "PATH_OUTSIDE_ALLOWED_ROOT" });
+    await expect(runtime.reloadRoadmap("docs/roadmap/ROADMAP-does-not-exist.md")).rejects.toMatchObject({
+      code: "PATH_NOT_FOUND",
+      message: "Requested path does not exist within an allowed root.",
+    });
+  });
+
+  it("applies the same containment to Master Plan preview and export", async () => {
+    const exportRoot = await mkdtemp(path.join(os.tmpdir(), "govibe-roadmap-export-"));
+    roots.push(exportRoot);
+    const runtime = new GovibeRuntime({ allowedRoadmapWriteRoots: [exportRoot] });
+    await expect(runtime.previewMasterPlan(path.join(process.cwd(), "package.json"))).rejects.toMatchObject({ code: "PATH_OUTSIDE_ALLOWED_ROOT" });
+    await runtime.initialize();
+    await expect(runtime.exportRoadmapMarkdown({ outputPath: path.join(process.cwd(), "escape.md") })).rejects.toMatchObject({ code: "PATH_OUTSIDE_ALLOWED_ROOT" });
+    const outputPath = path.join(exportRoot, "approved-export.md");
+    await expect(runtime.exportRoadmapMarkdown({ outputPath })).resolves.toMatchObject({ outputPath: expect.stringContaining("approved-export.md") });
+  });
 });
 
 describe("Mission Control workspace scan command", () => {
