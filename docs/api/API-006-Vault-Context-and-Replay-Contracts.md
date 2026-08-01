@@ -1,8 +1,8 @@
 ---
 title: "API: Vault, Context, and Replay Contracts"
 doc_id: "API-006-VAULT-CONTEXT-REPLAY-CONTRACTS"
-status: "proposed"
-version: "0.1.0"
+status: "approved"
+version: "1.0.0"
 updated: "2026-08-01"
 owner: "Boss / ATHER"
 source_of_truth: true
@@ -10,24 +10,25 @@ related_docs:
   - "docs/architecture/ARCH-Vault-and-Context-Model.md"
   - "docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md"
   - "docs/api/API-004-Task-Scoped-Context-Packet-Schema.md"
+  - "docs/api/API-005-GoVibe-Capability-Contracts.md"
 ---
 
 # Boundary
 
-Claude Code and other executors call GoVibe MCP. GoVibe calls the MSP parent boundary only. MSP owns vault registration, private memory, context resolution, injection lineage, replay authorization, and mediation to GKS. No GoVibe-facing GKS or GenesisBlockDB tool is part of this contract.
+Claude Code and other executors call GoVibe MCP. GoVibe calls MSP only. MSP owns Vault Registry, private memory, context resolution, injection lineage, replay authorization, evidence, and mediation to GKS. No GoVibe-facing GKS or GenesisBlockDB capability is valid.
 
-# Context profiles
+# Context Profiles
 
 ```ts
 type ContextProfile = "T-ctx" | "V-ctx" | "W-ctx" | "M-ctx";
 ```
 
-- T-ctx: system plus one task/event context.
-- V-ctx: global private plus current workspace private context.
-- W-ctx: V-ctx plus one active multi-agent workflow.
-- M-ctx: per-turn synchronized global/workspace context with diff lineage and real-time shared context.
+- `T-ctx`: system plus one task/event context; private history is not loaded implicitly.
+- `V-ctx`: Agent Global Private plus current Workspace Private context.
+- `W-ctx`: V-ctx plus exactly one active multi-agent workflow.
+- `M-ctx`: per-turn synchronized Global/Workspace context with diff lineage and real-time shared context.
 
-# Vault bindings
+# Workspace Vault Bindings
 
 ```ts
 type WorkspaceVaultBindings = {
@@ -41,11 +42,9 @@ type WorkspaceVaultBindings = {
 };
 ```
 
-The primary Shared Vault materializes at `.brain/<project-slug>/`. Workspace-private memory may materialize at `.brain/private/<agent-id>/`. Global-private memory is parent-managed and normally represented by a reference rather than copied into the repository.
+The project Shared Vault materializes at `.brain/<project-slug>/`. An Agent Workspace Private Vault materializes at `.brain/private/<agent-id>/`. Global Private memory is parent-managed and represented by immutable vault identity/reference, not copied into every workspace.
 
-# Context packet extension
-
-API-004 packets gain these fields:
+# Context Lineage
 
 ```ts
 type ContextLineage = {
@@ -59,26 +58,67 @@ type ContextLineage = {
 };
 ```
 
-`contextId` identifies the logical assembly. `cacheId` identifies the materialized payload. `kvId` is issued by the model runtime after ingestion and must remain null before that event.
+- `contextId` identifies logical assembly.
+- `cacheId` identifies the exact persisted packet.
+- `kvId` is issued only by a model runtime after ingestion.
+- `parentContextId` forms M-ctx turn lineage.
+- hashes bind exact sources and payload.
 
-# Parent-facing MCP capabilities
+# Local Retention
 
-Target capabilities are:
+GoVibe persists:
 
-- `govibe.context.resolve`
-- `govibe.context.diff`
-- `govibe.context.replay`
-- `govibe.context.audit`
-- `govibe.vault.status`
-- `govibe.vault.mount`
-- `govibe.memory.promote`
+```text
+.govibe/contexts/<cacheId>.json
+.govibe/context-injections/<injectionId>.json
+```
 
-These capabilities are GoVibe commands backed by MSP-facing contracts. They do not expose GKS directly.
+The cache file stores the exact injected packet and packet hash. The injection record binds Agent, project, workspace, session, run, turn, profile, context/cache/KV IDs, source/context hashes, diff reference, and replay requirements.
 
-# Replay invariants
+# Parent-facing MSP Tools
 
-1. Replay preserves exact source versions, policy, ordering, and hashes.
-2. M-ctx records append-only `parentContextId` lineage each turn.
-3. KV reuse requires matching model, tokenizer, tool schemas, system context, ordering, and source content.
-4. Context reproducibility, execution reproducibility, and output identity are reported separately.
-5. Newer vault versions are never substituted silently.
+- `msp_workspace_register`
+- `msp_context_resolve`
+- `msp_context_injection_record`
+- `msp_context_replay`
+- `msp_knowledge_promote`
+- `msp_evidence_record`
+
+GoVibe commands may expose `govibe.context.*`, `govibe.vault.*`, and `govibe.memory.promote`, but their implementation must use these MSP-facing contracts only.
+
+# Knowledge Promotion
+
+Producing scan stages submit `govibe-knowledge-candidate/v1` to MSP with provenance. MSP applies identity, disclosure, promotion, and Shared Vault policy before mediating GKS. Returned `gks:` references are opaque references and do not expose a direct GKS connection.
+
+# Replay
+
+Replay inputs bind exact `contextId`, `cacheId`, optional `kvId`, source versions, model/runtime metadata, system context hash, tool-schema hash, ordering version, and external-state assumptions.
+
+Replay outputs report separately:
+
+- context reproducibility;
+- execution reproducibility;
+- output identity.
+
+Newer source versions may not be substituted silently. Missing exact versions yield an explicit non-reproducible result.
+
+# KV Rules
+
+A KV record binds `kvId` to `cacheId`, model/version, tokenizer, runtime, tool-schema hash, system-context hash, context hash, ordering version, creation time, and lifecycle status. Any mismatch invalidates reuse.
+
+# Invariants
+
+1. Every dispatched turn has one context injection record.
+2. Every injection points to one exact context cache.
+3. Every reusable KV points to the cache from which it was derived.
+4. T-ctx does not load private history implicitly.
+5. W-ctx has exactly one active workflow.
+6. M-ctx after its first turn has a parent context and diff lineage.
+7. Private memory is not Shared Vault SOT.
+8. GoVibe does not call GKS or GenesisBlockDB directly.
+
+# Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 1.0.0 | 2026-08-01 | Boss / ATHER | Approved vault binding, context profiles, exact injection retention, MSP-mediated promotion, replay, audit, and KV lineage contracts. |
