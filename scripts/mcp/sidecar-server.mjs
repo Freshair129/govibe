@@ -1,5 +1,10 @@
 import http from "node:http";
 import { WebSocketServer } from "ws";
+import {
+  boundedProtocolMessage,
+  createCommandResponse,
+  isMissionCommand,
+} from "../../packages/mission-protocol/index.js";
 
 function sendJson(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -18,6 +23,18 @@ async function readJsonBody(request) {
   }
   if (chunks.length === 0) return {};
   return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+}
+
+function commandIdFrom(body) {
+  return typeof body?.commandId === "string" && body.commandId.length > 0
+    ? body.commandId
+    : crypto.randomUUID();
+}
+
+function commandPayload(body) {
+  if (!body || typeof body !== "object") return body;
+  const { commandId: _commandId, ...command } = body;
+  return command;
 }
 
 export function startSidecarServer(runtime, options = {}) {
@@ -56,14 +73,37 @@ export function startSidecarServer(runtime, options = {}) {
 
       if (request.method === "POST" && url.pathname === "/mission/commands") {
         const body = await readJsonBody(request);
-        const result = await runtime.handleMissionCommand(body);
-        sendJson(response, 200, result);
+        const commandId = commandIdFrom(body);
+        const command = commandPayload(body);
+        if (!isMissionCommand(command)) {
+          sendJson(response, 400, createCommandResponse({
+            commandId,
+            ok: false,
+            message: "Mission command failed protocol validation.",
+          }));
+          return;
+        }
+        try {
+          const result = await runtime.handleMissionCommand(command);
+          sendJson(response, 200, createCommandResponse({
+            commandId,
+            ok: true,
+            result,
+            snapshot: runtime.getSnapshot(),
+          }));
+        } catch (error) {
+          sendJson(response, 500, createCommandResponse({
+            commandId,
+            ok: false,
+            message: boundedProtocolMessage(error),
+          }));
+        }
         return;
       }
 
       sendJson(response, 404, { error: "not-found", path: url.pathname });
     } catch (error) {
-      sendJson(response, 500, { error: error instanceof Error ? error.message : String(error) });
+      sendJson(response, 500, { error: boundedProtocolMessage(error) });
     }
   });
 
@@ -80,10 +120,48 @@ export function startSidecarServer(runtime, options = {}) {
   wss.on("connection", (socket) => {
     socket.send(JSON.stringify({ type: "snapshot", snapshot: runtime.getSnapshot() }));
     socket.on("message", async (message) => {
+      let body;
       try {
-        await runtime.handleMissionCommand(JSON.parse(message.toString("utf8")));
+        body = JSON.parse(message.toString("utf8"));
+      } catch {
+        socket.send(JSON.stringify({
+          type: "command.ack",
+          commandId: crypto.randomUUID(),
+          ok: false,
+          message: "Mission command frame was not valid JSON.",
+        }));
+        return;
+      }
+
+      const commandId = commandIdFrom(body);
+      const command = commandPayload(body);
+      if (!isMissionCommand(command)) {
+        socket.send(JSON.stringify({
+          type: "command.ack",
+          commandId,
+          ok: false,
+          message: "Mission command failed protocol validation.",
+        }));
+        return;
+      }
+
+      try {
+        await runtime.handleMissionCommand(command);
+        socket.send(JSON.stringify({
+          type: "command.ack",
+          commandId,
+          ok: true,
+          snapshot: runtime.getSnapshot(),
+        }));
       } catch (error) {
-        runtime.appendTerminal("warn", `Mission command failed: ${error instanceof Error ? error.message : String(error)}`);
+        const messageText = boundedProtocolMessage(error);
+        runtime.appendTerminal("warn", `Mission command failed: ${messageText}`);
+        socket.send(JSON.stringify({
+          type: "command.ack",
+          commandId,
+          ok: false,
+          message: messageText,
+        }));
       }
     });
   });

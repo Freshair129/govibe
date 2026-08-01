@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { missionGateway, type MissionCommand, type MissionSnapshot } from "../mission";
+import type { MissionCommand, MissionSnapshot } from "../mission";
+import { missionGateway } from "../missionGateway";
 
 export function useMissionSnapshot() {
   const [snapshot, setSnapshot] = useState<MissionSnapshot>(() => missionGateway.getSnapshot());
 
   useEffect(() => {
     const unsubscribe = missionGateway.subscribe(setSnapshot);
-    missionGateway.connect();
+    void missionGateway.connect();
     return unsubscribe;
   }, []);
 
