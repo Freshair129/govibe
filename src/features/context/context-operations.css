@@ -1,0 +1,80 @@
+.context-status-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.context-status-card {
+  display: grid;
+  gap: 8px;
+}
+
+.context-status-card > span,
+.context-status-card > small {
+  opacity: 0.72;
+}
+
+.context-status-card > strong {
+  font-size: 1.35rem;
+  text-transform: uppercase;
+}
+
+.context-ops-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.context-command-list code {
+  overflow-wrap: anywhere;
+}
+
+.context-state {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.context-state.registered {
+  color: var(--accent);
+}
+
+.context-state.unavailable {
+  color: #f59e0b;
+}
+
+.context-evidence-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.context-evidence-list li {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 12px;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  padding-bottom: 10px;
+}
+
+.context-evidence-list time {
+  opacity: 0.58;
+  font-variant-numeric: tabular-nums;
+}
+
+.context-trust-panel {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 900px) {
+  .context-status-grid,
+  .context-ops-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .context-trust-panel {
+    grid-column: auto;
+  }
+}
