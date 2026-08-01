@@ -1,4 +1,4 @@
-const token = import.meta.env.VITE_GOVIBE_MCP_TOKEN as string | undefined;
+const configuredToken = import.meta.env.VITE_GOVIBE_MCP_TOKEN as string | undefined;
 const configuredApiUrl = import.meta.env.VITE_GOVIBE_API_URL as string | undefined;
 const configuredWsUrl = import.meta.env.VITE_GOVIBE_WS_URL as string | undefined;
 
@@ -13,6 +13,7 @@ function isSidecarHttpUrl(input: RequestInfo | URL) {
 }
 
 export function installMissionAuthBootstrap() {
+  const token = configuredToken;
   if (!token) return;
 
   const nativeFetch = window.fetch.bind(window);
