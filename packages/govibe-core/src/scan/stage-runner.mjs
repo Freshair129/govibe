@@ -22,10 +22,26 @@ function knowledgePayload(output) {
   };
 }
 
-export async function runDeepScan({ workspacePath, inventory, mspClient, gksClient, actor, adapters, runId = randomUUID(), resume = false }) {
-  if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(runId) || runId.includes("..")) {
-    throw new Error(`Invalid scan runId: ${runId}`);
-  }
+async function recordTerminalEvidence({ mspClient, runId, stage, inventoryHash, actor, recordedAt, verdict, method, findings = [], kind }) {
+  return mspClient.recordEvidence({
+    schema_version: "govibe-proof-batch/v1",
+    idempotency_key: `proof-${runId}-stage-${String(stage).padStart(2, "0")}-${kind}`,
+    run_id: runId,
+    stage,
+    source_snapshot_hash: inventoryHash,
+    findings,
+    stage_evidence: [{ ref: "inventory:l1", source_hash: inventoryHash, kind }],
+    verification: { verdict, method },
+    artifact_lineage: [],
+    actor,
+    recorded_at: recordedAt,
+  });
+}
+
+export async function runDeepScan({ workspacePath, inventory, mspClient, actor, adapters, runId = randomUUID(), resume = false }) {
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(runId) || runId.includes("..")) throw new Error(`Invalid scan runId: ${runId}`);
+  if (!mspClient?.submitKnowledgeCandidate) throw new Error("Deep scan requires an MSP client with parent-mediated knowledge promotion.");
+
   const runDirectory = path.join(workspacePath, "state", "runs", runId);
   const runRoot = path.join(runDirectory, "stages");
   await mkdirSafe(workspacePath, runRoot);
@@ -35,106 +51,54 @@ export async function runDeepScan({ workspacePath, inventory, mspClient, gksClie
     runMeta = JSON.parse(await readFile(runMetaPath, "utf8"));
   } catch (error) {
     if (error?.code !== "ENOENT") throw error;
-    runMeta = { schema: "govibe-scan-run/v1", runId, createdAt: new Date().toISOString() };
+    runMeta = { schema: "govibe-scan-run/v1", runId, createdAt: new Date().toISOString(), resumeRequested: Boolean(resume) };
     await writeFile(runMetaPath, `${JSON.stringify(runMeta, null, 2)}\n`, { flag: "wx" });
   }
-  if (runMeta.schema !== "govibe-scan-run/v1" || runMeta.runId !== runId || !runMeta.createdAt) {
-    throw new Error(`Invalid scan run metadata: ${runMetaPath}`);
-  }
+  if (runMeta.schema !== "govibe-scan-run/v1" || runMeta.runId !== runId || !runMeta.createdAt) throw new Error(`Invalid scan run metadata: ${runMetaPath}`);
+
   const inventoryHash = hash(inventory);
   const stageRuns = [];
-
   for (let index = 0; index < CANONICAL_STAGES.length; index += 1) {
     const stage = index + 1;
     const recordPath = path.join(runRoot, `${String(stage).padStart(2, "0")}.json`);
-    // Resume replays deterministic writes through MSP/GKS instead of trusting local records.
-
     let record;
     try {
       const output = await adapters[index]({ inventory, stageRuns, workspacePath });
       if (output.incomplete) {
-        const recordId = `${runId}-stage-${String(stage).padStart(2, "0")}`;
-        const proof = await mspClient.recordEvidence({
-          schema_version: "govibe-proof-batch/v1",
-          idempotency_key: `proof-${recordId}`,
-          run_id: runId,
-          stage,
-          source_snapshot_hash: inventoryHash,
-          findings: [{ kind: "incomplete", message: output.incomplete }],
-          stage_evidence: [{ ref: "inventory:l1", source_hash: inventoryHash, kind: "scan-stage-incomplete" }],
-          verification: { verdict: "blocked", method: output.method ?? "parser-coverage" },
-          artifact_lineage: [],
-          actor,
-          recorded_at: runMeta.createdAt,
-        });
-        const proofRef = proof.proofRef;
-        if (!proofRef) throw new Error("MSP writer returned no proof reference for incomplete stage.");
-        record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "incomplete", inputRefs: ["inventory:l1"], outputRefs: [`incomplete:${output.incomplete}`, proofRef], method: output.method ?? "parser-coverage", confidence: 0, exclusions: [], error: output.incomplete };
+        const proof = await recordTerminalEvidence({ mspClient, runId, stage, inventoryHash, actor, recordedAt: runMeta.createdAt, verdict: "blocked", method: output.method ?? "parser-coverage", findings: [{ kind: "incomplete", message: output.incomplete }], kind: "scan-stage-incomplete" });
+        record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "incomplete", inputRefs: ["inventory:l1"], outputRefs: [`incomplete:${output.incomplete}`, proof.proofRef], method: output.method ?? "parser-coverage", confidence: 0, exclusions: [], error: output.incomplete };
       } else if (output.notApplicable) {
-        const recordId = `${runId}-stage-${String(stage).padStart(2, "0")}`;
-        const proof = await mspClient.recordEvidence({
-          schema_version: "govibe-proof-batch/v1",
-          idempotency_key: `proof-${recordId}`,
-          run_id: runId,
-          stage,
-          source_snapshot_hash: inventoryHash,
-          findings: [],
-          stage_evidence: [{ ref: "inventory:l1", source_hash: inventoryHash, kind: "scan-stage-exclusion" }],
-          verification: { verdict: "passed", method: "inventory-exclusion" },
-          artifact_lineage: [],
-          actor,
-          recorded_at: runMeta.createdAt,
-        });
-        const proofRef = proof.proofRef;
-        if (!proofRef) throw new Error("MSP writer returned no proof reference for exclusion.");
-        record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "not_applicable", inputRefs: ["inventory:l1"], outputRefs: [`exclusion:${output.notApplicable}`, proofRef], method: "inventory-exclusion", confidence: 1, exclusions: [output.notApplicable] };
+        const proof = await recordTerminalEvidence({ mspClient, runId, stage, inventoryHash, actor, recordedAt: runMeta.createdAt, verdict: "passed", method: "inventory-exclusion", kind: "scan-stage-exclusion" });
+        record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "not_applicable", inputRefs: ["inventory:l1"], outputRefs: [`exclusion:${output.notApplicable}`, proof.proofRef], method: "inventory-exclusion", confidence: 1, exclusions: [output.notApplicable] };
       } else {
         const recordId = `${runId}-stage-${String(stage).padStart(2, "0")}`;
-        const provenanceProof = await mspClient.recordEvidence({
-          schema_version: "govibe-proof-batch/v1",
-          idempotency_key: `proof-${recordId}-provenance`,
-          run_id: runId,
-          stage,
-          source_snapshot_hash: inventoryHash,
-          findings: [],
-          stage_evidence: [{ ref: "inventory:l1", source_hash: inventoryHash, kind: "scan-stage" }],
-          verification: { verdict: "passed", method: output.method },
-          artifact_lineage: [],
-          actor,
-          recorded_at: runMeta.createdAt,
-        });
-        const provenanceProofRef = provenanceProof.proofRef;
-        if (!provenanceProofRef) throw new Error("MSP writer returned no provenance proof reference.");
-        const knowledge = await gksClient.upsertCodeKnowledge({
-          schema_version: "govibe-knowledge-batch/v1",
+        const provenance = await recordTerminalEvidence({ mspClient, runId, stage, inventoryHash, actor, recordedAt: runMeta.createdAt, verdict: "passed", method: output.method, kind: "scan-stage-provenance" });
+        const promoted = await mspClient.submitKnowledgeCandidate({
+          schema_version: "govibe-knowledge-candidate/v1",
           idempotency_key: recordId,
           run_id: runId,
           stage,
           source_snapshot_hash: inventoryHash,
-          provenance_ref: provenanceProofRef,
-          ...knowledgePayload(output),
+          provenance_ref: provenance.proofRef,
+          candidate: knowledgePayload(output),
+          actor,
+          submitted_at: runMeta.createdAt,
         });
-        const knowledgeRef = knowledge.knowledgeRef;
-        const knowledgeHash = knowledge.sourceHash;
-        if (!knowledgeRef) throw new Error("GKS writer returned no knowledge reference.");
-        if (typeof knowledgeHash !== "string" || !/^[a-f0-9]{64}$/i.test(knowledgeHash)) throw new Error("GKS writer returned no knowledge source hash.");
         const proof = await mspClient.recordEvidence({
           schema_version: "govibe-proof-batch/v1",
           idempotency_key: `proof-${recordId}`,
           run_id: runId,
           stage,
-          source_snapshot_hash: knowledgeHash,
+          source_snapshot_hash: promoted.sourceHash,
           findings: [],
-          stage_evidence: [{ ref: knowledgeRef, source_hash: knowledgeHash, kind: "knowledge-link", provenance_ref: provenanceProofRef }],
+          stage_evidence: [{ ref: promoted.knowledgeRef, source_hash: promoted.sourceHash, kind: "knowledge-link", provenance_ref: provenance.proofRef, promotion_ref: promoted.promotionRef }],
           verification: { verdict: "passed", method: output.method },
           artifact_lineage: [],
           actor,
           recorded_at: runMeta.createdAt,
-          knowledge_ref: knowledgeRef,
+          knowledge_ref: promoted.knowledgeRef,
         });
-        const proofRef = proof.proofRef;
-        if (!proofRef) throw new Error("MSP writer returned no proof reference.");
-        record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "complete", inputRefs: ["inventory:l1"], outputRefs: [knowledgeRef, provenanceProofRef, proofRef], method: output.method, confidence: 1, exclusions: [] };
+        record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "complete", inputRefs: ["inventory:l1"], outputRefs: [promoted.knowledgeRef, promoted.promotionRef, provenance.proofRef, proof.proofRef], method: output.method, confidence: 1, exclusions: [] };
       }
     } catch (error) {
       record = { schema: "govibe-stage-run/v1", runId, stage, name: CANONICAL_STAGES[index], status: "failed", inputRefs: ["inventory:l1"], outputRefs: [], method: "stage-adapter", confidence: 0, exclusions: [], error: error instanceof Error ? error.message : String(error) };
