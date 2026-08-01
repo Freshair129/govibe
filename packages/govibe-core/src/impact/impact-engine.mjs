@@ -27,7 +27,10 @@ const CHANGE_WEIGHTS = Object.freeze({
 });
 
 function normalizeRepoPath(value) {
-  return String(value ?? "").replaceAll("\\", "/").replace(/^\.\//, "");
+  return String(value ?? "")
+    .replaceAll("\\", "/")
+    .replace(/^\.\//, "")
+    .split(/[?#]/)[0];
 }
 
 function stableId(prefix, value) {
@@ -85,7 +88,7 @@ function addEdge(edges, seen, edge) {
 }
 
 function targetFromLabel(label, sourcePath, indexes) {
-  const clean = normalizeRepoPath(label.split("#")[0].trim());
+  const clean = normalizeRepoPath(label.trim());
   if (!clean) return null;
   if (indexes.byPath.has(clean)) return clean;
   const relative = path.posix.normalize(path.posix.join(path.posix.dirname(sourcePath), clean));
@@ -100,12 +103,26 @@ function inferRelation(sourcePath, targetPath, textAround = "") {
   const source = sourcePath.toLowerCase();
   const target = targetPath.toLowerCase();
   const around = textAround.toLowerCase();
-  if (/test|spec/.test(source)) return "validates";
+  if (/(^|\/)(?:tests?|specs?)(\/|$)|\.(?:test|spec)\./.test(source)) return "validates";
   if (/schema/.test(target) && /api|contract|packet|record/.test(around)) return "defines";
   if (/adr|std-/.test(target)) return "governed_by";
   if (/blueprint|api-/.test(target) && /src\//.test(source)) return "implements";
   if (/ui|component|view/.test(source)) return "renders";
   return "references";
+}
+
+function importSpecifiers(text) {
+  const specifiers = [];
+  const patterns = [
+    /\bimport\s+(?:[^"'\n;]+?\s+from\s+)?["']([^"']+)["']/g,
+    /\bimport\s*\(\s*["']([^"']+)["']\s*\)/g,
+    /\brequire\s*\(\s*["']([^"']+)["']\s*\)/g,
+    /\bexport\s+[^"'\n;]+?\s+from\s+["']([^"']+)["']/g,
+  ];
+  for (const pattern of patterns) {
+    for (const match of text.matchAll(pattern)) specifiers.push({ value: match[1], offset: match.index });
+  }
+  return specifiers;
 }
 
 export async function buildLinkGraph(workspacePath) {
@@ -140,14 +157,14 @@ export async function buildLinkGraph(workspacePath) {
     for (const match of text.matchAll(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g)) {
       const target = targetFromLabel(match[1], source, indexes);
       if (target) addEdge(edges, seen, { from: source, to: target, relation: "wikilink", provenance: [{ path: source, offset: match.index }] });
-      else unresolved.push({ source, label: match[1], relation: "wikilink" });
+      else unresolved.push({ source, label: match[1], relation: "wikilink", reason: "target_not_resolved" });
     }
 
     for (const match of text.matchAll(/\[[^\]]*\]\(([^)]+)\)/g)) {
       if (/^(?:https?:|mailto:|#)/i.test(match[1])) continue;
       const target = targetFromLabel(match[1], source, indexes);
       if (target) addEdge(edges, seen, { from: source, to: target, relation: inferRelation(source, target, match[0]), provenance: [{ path: source, offset: match.index }] });
-      else unresolved.push({ source, label: match[1], relation: "references" });
+      else unresolved.push({ source, label: match[1], relation: "references", reason: "target_not_resolved" });
     }
 
     for (const match of text.matchAll(/`([^`\n]+\.(?:md|mdx|mjs|cjs|js|jsx|ts|tsx|json|yaml|yml))`/gi)) {
@@ -155,16 +172,20 @@ export async function buildLinkGraph(workspacePath) {
       if (target) addEdge(edges, seen, { from: source, to: target, relation: inferRelation(source, target, match[0]), provenance: [{ path: source, offset: match.index }] });
     }
 
-    for (const match of text.matchAll(/(?:from\s+|import\s*\(|require\s*\()\s*["']([^"']+)["']/g)) {
-      const target = resolveRelativeSource(source, match[1], byPath);
-      if (target) addEdge(edges, seen, { from: source, to: target, relation: "imports", provenance: [{ path: source, offset: match.index }] });
+    for (const specifier of importSpecifiers(text)) {
+      const target = resolveRelativeSource(source, specifier.value, byPath);
+      if (target) {
+        const relation = inferRelation(source, target, "import") === "validates" ? "validates" : "imports";
+        addEdge(edges, seen, { from: source, to: target, relation, provenance: [{ path: source, offset: specifier.offset }] });
+      }
     }
 
     const relatedDocsBlock = text.match(/related_docs:\s*\n((?:\s+-\s+[^\n]+\n?)+)/);
     if (relatedDocsBlock) {
-      for (const item of relatedDocsBlock[1].matchAll(/-\s+["']?([^"'\n]+)["']?/g)) {
+      for (const item of relatedDocsBlock[1].matchAll(/-\s+["']?([^"'\n]+?)["']?\s*$/gm)) {
         const target = targetFromLabel(item[1], source, indexes);
         if (target) addEdge(edges, seen, { from: source, to: target, relation: inferRelation(source, target, "related_docs"), provenance: [{ path: source }] });
+        else unresolved.push({ source, label: item[1], relation: "references", reason: "related_doc_not_resolved" });
       }
     }
   }
@@ -191,17 +212,21 @@ export async function buildLinkGraph(workspacePath) {
 
 function normalizeSeeds(paths, graph) {
   const seeds = [];
+  const unresolvedSeeds = [];
   const seen = new Set();
   for (const raw of paths ?? []) {
     const normalized = normalizeRepoPath(raw);
     const candidates = [normalized, ...graph.nodes.filter((node) => node.doc_id === raw || path.posix.basename(node.path) === normalized).map((node) => node.path)];
+    let resolved = false;
     for (const candidate of candidates) {
       if (!graph.nodes.some((node) => node.path === candidate) || seen.has(candidate)) continue;
       seen.add(candidate);
       seeds.push(candidate);
+      resolved = true;
     }
+    if (!resolved) unresolvedSeeds.push({ source: null, label: raw, relation: "change_seed", reason: "seed_not_resolved" });
   }
-  return seeds;
+  return { seeds, unresolvedSeeds };
 }
 
 export async function calculateWorkspaceImpact({
@@ -212,10 +237,10 @@ export async function calculateWorkspaceImpact({
   minimumScore = 0.2,
 } = {}) {
   const graph = await buildLinkGraph(workspacePath);
-  const seeds = normalizeSeeds(paths, graph);
+  const { seeds, unresolvedSeeds } = normalizeSeeds(paths, graph);
   const changeWeight = CHANGE_WEIGHTS[changeType] ?? CHANGE_WEIGHTS.semantic_change;
   const affected = new Map();
-  const queue = seeds.map((seed) => ({ path: seed, distance: 0, score: 1, chain: [] }));
+  const queue = seeds.map((seed) => ({ path: seed, distance: 0, chain: [] }));
   const bestTraversal = new Map(seeds.map((seed) => [seed, 1]));
 
   while (queue.length) {
@@ -243,7 +268,7 @@ export async function calculateWorkspaceImpact({
       }
       if ((bestTraversal.get(edge.from) ?? 0) < score) {
         bestTraversal.set(edge.from, score);
-        queue.push({ path: edge.from, distance, score, chain });
+        queue.push({ path: edge.from, distance, chain });
       }
     }
   }
@@ -257,7 +282,7 @@ export async function calculateWorkspaceImpact({
     seeds: seeds.map((seed) => ({ id: `file:${seed}`, path: seed })),
     affected: affectedList,
     references: affectedList.map((item) => item.path),
-    unresolved: graph.unresolved,
+    unresolved: [...unresolvedSeeds, ...graph.unresolved],
     graph_summary: { nodes: graph.nodes.length, links: graph.edges.length, backlinks: Object.keys(graph.backlinks).length },
     policy: { max_distance: maxDistance, minimum_score: minimumScore },
   };
