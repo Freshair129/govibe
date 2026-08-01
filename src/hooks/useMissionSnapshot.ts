@@ -8,10 +8,7 @@ export function useMissionSnapshot() {
   useEffect(() => {
     const unsubscribe = missionGateway.subscribe(setSnapshot);
     void missionGateway.connect();
-    return () => {
-      unsubscribe();
-      missionGateway.dispose();
-    };
+    return unsubscribe;
   }, []);
 
   return {
