@@ -7,11 +7,14 @@ import { fileURLToPath } from "node:url";
 import { discoverRoadmapSources, parseRoadmapSource } from "./roadmap-parser.mjs";
 import { writeRoadmapMarkdownExport } from "./roadmap-exporter.mjs";
 import { resolvePathWithinAnyRoot } from "./path-security.mjs";
+import { parseAgentRegistry } from "./runtime/agent-registry-service.mjs";
+import { createRuntimeSnapshot, RuntimeSnapshotStore } from "./runtime/snapshot-store.mjs";
+import { latestTemporalByKey, TemporalOverlayStore } from "./runtime/temporal-overlay-store.mjs";
 import { buildDag } from "./dag.mjs";
 import { computeWaves } from "./wave.mjs";
 import { runStep as executeStep } from "./step.mjs";
 import { runVerifyGate } from "./verify-gate.mjs";
-import { compareTemporalOrder, createTemporalVersion, isTemporalVisible, nextVersion } from "./temporal-versioning.mjs";
+import { compareTemporalOrder, createTemporalVersion, nextVersion } from "./temporal-versioning.mjs";
 import { toolCatalog } from "./registry.mjs";
 import { SessionTracker } from "../../packages/govibe-core/bin/session-tracker.mjs";
 import { atomize } from "./translator/atomizer.mjs";
@@ -43,7 +46,6 @@ const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)),
 const roadmapDir = path.join(workspaceRoot, "docs", "roadmap");
 const launcherScript = path.join(workspaceRoot, "scripts", "agents", "invoke-agent.ps1");
 const agentRegistryPath = path.join(workspaceRoot, ".agents", "agent-registry.yaml");
-const agentAccents = ["#10b981", "#6366f1", "#22d3ee", "#f472b6", "#f59e0b", "#a78bfa"];
 const actionableRoadmapTypes = new Set(["task", "sub-task", "micro-task", "atomic-task"]);
 const planningTypeWeights = {
   roadmap: 40,
@@ -64,32 +66,6 @@ function gitPorcelain(cwd) {
     child.on("error", () => resolve([]));
     child.on("close", () => resolve(out.split(/\r?\n/).map((line) => line.trim()).filter(Boolean)));
   });
-}
-
-function createEmptySnapshot() {
-  return {
-    connectionState: "connected",
-    updatedAt: new Date().toISOString(),
-    metrics: [],
-    chart: { labels: [], series: [] },
-    reactor: [],
-    agents: [],
-    capabilities: toolCatalog.map((tool) => ({
-      id: tool.name,
-      title: tool.name,
-      description: tool.description,
-      status: "registered",
-      sourcePath: "scripts/mcp/registry.mjs",
-    })),
-    terminal: [],
-    graph: { nodes: [], edges: [] },
-    specs: [],
-    symbols: [],
-    campaignLogs: [],
-    orchestration: createEmptyOrchestration(),
-    workflowRuns: [],
-    providers: [],
-  };
 }
 
 function toMissionScanRun(result) {
@@ -114,116 +90,6 @@ function toMissionScanRun(result) {
   };
 }
 
-function createTerminalLine(type, text) {
-  return {
-    id: crypto.randomUUID(),
-    type,
-    text,
-    time: new Date().toLocaleTimeString("en-US", { hour12: false }),
-  };
-}
-
-function unquoteYamlScalar(value) {
-  const trimmed = value.trim();
-  if (
-    (trimmed.startsWith('"') && trimmed.endsWith('"'))
-    || (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  ) {
-    return trimmed.slice(1, -1);
-  }
-  return trimmed;
-}
-
-function parseAgentRegistry(text) {
-  const agents = [];
-  let inAgents = false;
-  let current;
-  let listTarget;
-
-  for (const rawLine of text.replace(/\r\n/g, "\n").split("\n")) {
-    if (rawLine === "agents:") {
-      inAgents = true;
-      continue;
-    }
-    if (!inAgents) continue;
-    if (rawLine === "scopes:") break;
-
-    const agentMatch = rawLine.match(/^  ([a-z0-9_-]+):\s*$/i);
-    if (agentMatch) {
-      current = {
-        id: agentMatch[1],
-        responsibility: [],
-        sourceRefs: [],
-        authority: { can: [], cannot: [] },
-      };
-      agents.push(current);
-      listTarget = undefined;
-      continue;
-    }
-    if (!current) continue;
-
-    const scalarMatch = rawLine.match(/^    (label|role|job_title_equivalent|domain|cluster):\s*(.+)$/);
-    if (scalarMatch) {
-      current[scalarMatch[1]] = unquoteYamlScalar(scalarMatch[2]);
-      listTarget = undefined;
-      continue;
-    }
-    if (/^    responsibility:\s*$/.test(rawLine)) {
-      listTarget = current.responsibility;
-      continue;
-    }
-    if (/^    source_refs:\s*$/.test(rawLine)) {
-      listTarget = current.sourceRefs;
-      continue;
-    }
-    const authorityMatch = rawLine.match(/^      (can|cannot):\s*$/);
-    if (authorityMatch) {
-      listTarget = current.authority[authorityMatch[1]];
-      continue;
-    }
-    const execPolicyMatch = rawLine.match(/^      (default_executor|default_mode|local_model_tier):\s*(.+)$/);
-    if (execPolicyMatch) {
-      current[execPolicyMatch[1]] = unquoteYamlScalar(execPolicyMatch[2]);
-      continue;
-    }
-    const listItemMatch = rawLine.match(/^ {6,8}-\s+(.+)$/);
-    if (listItemMatch && listTarget) {
-      listTarget.push(unquoteYamlScalar(listItemMatch[1]));
-      continue;
-    }
-    if (/^    [a-z0-9_-]+:/i.test(rawLine)) {
-      listTarget = undefined;
-    }
-  }
-
-  return agents.map((agent, index) => ({
-    id: agent.id,
-    name: agent.label ?? agent.id.toUpperCase(),
-    role: agent.role ?? "Unspecified",
-    model: "Registry-defined",
-    status: "registered",
-    tasks: "unavailable",
-    accuracy: "unavailable",
-    speed: "unavailable",
-    defaultExecutor: agent.default_executor,
-    defaultMode: agent.default_mode,
-    modelTier: agent.local_model_tier,
-    accent: agentAccents[index % agentAccents.length],
-    fleet: {
-      fleetRole: agent.role,
-      jobTitleEquivalent: agent.job_title_equivalent,
-      domain: agent.domain,
-      cluster: agent.cluster,
-      responsibility: agent.responsibility,
-      authority: agent.authority,
-      sourceRefs: agent.sourceRefs,
-      approvalGate: "Registry metadata only; execution requires assignment and approval.",
-      scopeBoundary: "Defined by agent-registry.yaml execution policy.",
-      scopeStatus: "ready_for_assignment",
-    },
-  }));
-}
-
 function toRelativePath(fullPath) {
   return path.relative(workspaceRoot, fullPath).replaceAll("\\", "/");
 }
@@ -240,22 +106,6 @@ function buildAuditRef(capability) {
 
 function keyForHandoff(handoff) {
   return `${handoff.taskId}:${handoff.fromId}:${handoff.toId}`;
-}
-
-function activeTemporalRecords(records, options = {}) {
-  return records.filter((record) => isTemporalVisible(record, options));
-}
-
-function latestByKey(records, keySelector, options = {}) {
-  const selected = new Map();
-  for (const record of activeTemporalRecords(records, options)) {
-    const key = keySelector(record);
-    const existing = selected.get(key);
-    if (!existing || Date.parse(record.recordedAt ?? "") >= Date.parse(existing.recordedAt ?? "")) {
-      selected.set(key, record);
-    }
-  }
-  return Array.from(selected.values());
 }
 
 function ensureTemporalItem(item, fallback = {}) {
@@ -458,23 +308,17 @@ async function resolveDeclaredWorkspace(workspacePath, allowedRoots) {
 
 export class GovibeRuntime {
   constructor(options = {}) {
-    this.snapshot = createEmptySnapshot();
+    this.snapshotStore = new RuntimeSnapshotStore(createRuntimeSnapshot(toolCatalog.map((tool) => ({
+      id: tool.name,
+      title: tool.name,
+      description: tool.description,
+      status: "registered",
+      sourcePath: "scripts/mcp/registry.mjs",
+    }))));
     this.sessionTracker = new SessionTracker(workspaceRoot);
-    this.listeners = new Set();
     this.atomStore = new Map();      // translator-core slice: in-process atom store (ref -> atoms)
     this.templateStore = new Map();  // translator-core slice: in-process format templates
-    this.overlay = {
-      nodes: new Map(),
-      assignments: new Map(),
-      handoffs: new Map(),
-      verifications: new Map(),
-    };
-    this.temporalHistory = {
-      nodes: new Map(),
-      assignments: new Map(),
-      handoffs: new Map(),
-      verifications: new Map(),
-    };
+    this.temporalOverlayStore = new TemporalOverlayStore();
     this.activeRoadmapSource = undefined;
     this.availableSources = [];
     this.mspClient = options.mspClient ?? createMspClientFromEnvironment();
@@ -484,6 +328,14 @@ export class GovibeRuntime {
     this.allowedRoadmapReadRoots = options.allowedRoadmapReadRoots ?? configuredPathRoots("GOVIBE_ROADMAP_READ_ROOTS", roadmapDir);
     this.allowedRoadmapWriteRoots = options.allowedRoadmapWriteRoots ?? configuredPathRoots("GOVIBE_ROADMAP_WRITE_ROOTS", roadmapDir);
     this.snapshot.providers = this.executorRegistry.inspect();
+  }
+
+  get snapshot() {
+    return this.snapshotStore.getSnapshot();
+  }
+
+  set snapshot(value) {
+    this.snapshotStore.replace(value);
   }
 
   async initialize() {
@@ -595,14 +447,11 @@ export class GovibeRuntime {
   }
 
   subscribe(listener) {
-    this.listeners.add(listener);
-    return () => this.listeners.delete(listener);
+    return this.snapshotStore.subscribe(listener);
   }
 
   emit(event) {
-    for (const listener of this.listeners) {
-      listener(event);
-    }
+    this.snapshotStore.emit(event);
   }
 
   getSnapshot() {
@@ -610,13 +459,7 @@ export class GovibeRuntime {
   }
 
   appendTerminal(type, text) {
-    const line = createTerminalLine(type, text);
-    this.snapshot = {
-      ...this.snapshot,
-      terminal: [...this.snapshot.terminal.slice(-199), line],
-      updatedAt: new Date().toISOString(),
-    };
-    this.emit({ type: "terminal.line", line });
+    this.snapshotStore.appendTerminal(type, text);
   }
 
   async discoverSources() {
@@ -666,26 +509,10 @@ export class GovibeRuntime {
     const selectedSourceMeta = rankedSources.find((source) => source.path === selectedSource);
     const parsed = selectedSourceMeta?.parsed ?? await parseRoadmapSource(selectedSource);
     this.activeRoadmapSource = selectedSource;
-    const overlayNodes = latestByKey(
-      Array.from(this.temporalHistory.nodes.values()).flat(),
-      (node) => node.id,
-      options,
-    );
-    const overlayAssignments = latestByKey(
-      Array.from(this.temporalHistory.assignments.values()).flat(),
-      (assignment) => assignment.taskId,
-      options,
-    );
-    const overlayHandoffs = latestByKey(
-      Array.from(this.temporalHistory.handoffs.values()).flat(),
-      keyForHandoff,
-      options,
-    );
-    const overlayVerifications = latestByKey(
-      Array.from(this.temporalHistory.verifications.values()).flat(),
-      (verification) => verification.taskId,
-      options,
-    );
+    const overlayNodes = this.temporalOverlayStore.active("nodes", (node) => node.id, options);
+    const overlayAssignments = this.temporalOverlayStore.active("assignments", (assignment) => assignment.taskId, options);
+    const overlayHandoffs = this.temporalOverlayStore.active("handoffs", keyForHandoff, options);
+    const overlayVerifications = this.temporalOverlayStore.active("verifications", (verification) => verification.taskId, options);
 
     let roadmap = {
       ...parsed,
@@ -702,22 +529,22 @@ export class GovibeRuntime {
       }, parsed.updatedAt),
     };
 
-    roadmap.nodes = latestByKey(
+    roadmap.nodes = latestTemporalByKey(
       roadmap.nodes.map((node) => ensureTemporalItem(node, roadmap)),
       (node) => node.id,
       options,
     );
-    roadmap.assignments = latestByKey(
+    roadmap.assignments = latestTemporalByKey(
       roadmap.assignments.map((assignment) => ensureTemporalItem(assignment, roadmap)),
       (assignment) => assignment.taskId,
       options,
     );
-    roadmap.handoffs = latestByKey(
+    roadmap.handoffs = latestTemporalByKey(
       roadmap.handoffs.map((handoff) => ensureTemporalItem(handoff, roadmap)),
       keyForHandoff,
       options,
     );
-    roadmap.verifications = latestByKey(
+    roadmap.verifications = latestTemporalByKey(
       roadmap.verifications.map((verification) => ensureTemporalItem(verification, roadmap)),
       (verification) => verification.taskId,
       options,
@@ -979,7 +806,7 @@ export class GovibeRuntime {
 
     let event;
     if (mutationType === "node.update") {
-      const history = this.temporalHistory.nodes.get(args.nodeId) ?? [];
+      const history = this.temporalOverlayStore.getHistory("nodes", args.nodeId);
       const now = new Date().toISOString();
       const nextNode = {
         ...(this.snapshot.roadmap?.nodes.find((node) => node.id === args.nodeId) ?? { id: args.nodeId, type: "task", title: args.nodeId, state: "planned" }),
@@ -994,14 +821,10 @@ export class GovibeRuntime {
         }, now),
       };
       validateTemporalItem(nextNode, `node ${args.nodeId}`);
-      this.temporalHistory.nodes.set(args.nodeId, [
-        ...history.map((record) => record.supersededAt ? record : { ...record, supersededAt: nextNode.recordedAt }),
-        nextNode,
-      ]);
-      this.overlay.nodes.set(args.nodeId, nextNode);
+      this.temporalOverlayStore.record("nodes", args.nodeId, nextNode);
       event = { type: "roadmap.node.update", node: nextNode };
     } else if (mutationType === "assignment") {
-      const history = this.temporalHistory.assignments.get(args.nodeId) ?? [];
+      const history = this.temporalOverlayStore.getHistory("assignments", args.nodeId);
       const now = new Date().toISOString();
       const assignment = {
         taskId: args.nodeId,
@@ -1019,11 +842,7 @@ export class GovibeRuntime {
         }, now),
       };
       validateTemporalItem(assignment, `assignment ${args.nodeId}`);
-      this.temporalHistory.assignments.set(args.nodeId, [
-        ...history.map((record) => record.supersededAt ? record : { ...record, supersededAt: assignment.recordedAt }),
-        assignment,
-      ]);
-      this.overlay.assignments.set(args.nodeId, assignment);
+      this.temporalOverlayStore.record("assignments", args.nodeId, assignment);
       event = { type: "roadmap.assignment", assignment };
     } else if (mutationType === "handoff") {
       const now = new Date().toISOString();
@@ -1044,17 +863,13 @@ export class GovibeRuntime {
         }, now),
       };
       const handoffKey = keyForHandoff(handoff);
-      const history = this.temporalHistory.handoffs.get(handoffKey) ?? [];
+      const history = this.temporalOverlayStore.getHistory("handoffs", handoffKey);
       handoff.version = handoff.version ?? nextVersion(history);
       validateTemporalItem(handoff, `handoff ${handoffKey}`);
-      this.temporalHistory.handoffs.set(handoffKey, [
-        ...history.map((record) => record.supersededAt ? record : { ...record, supersededAt: handoff.recordedAt }),
-        handoff,
-      ]);
-      this.overlay.handoffs.set(handoffKey, handoff);
+      this.temporalOverlayStore.record("handoffs", handoffKey, handoff);
       event = { type: "roadmap.handoff", handoff };
     } else if (mutationType === "verification") {
-      const history = this.temporalHistory.verifications.get(args.nodeId) ?? [];
+      const history = this.temporalOverlayStore.getHistory("verifications", args.nodeId);
       const now = new Date().toISOString();
       const verification = {
         taskId: args.nodeId,
@@ -1071,11 +886,7 @@ export class GovibeRuntime {
         }, now),
       };
       validateTemporalItem(verification, `verification ${args.nodeId}`);
-      this.temporalHistory.verifications.set(args.nodeId, [
-        ...history.map((record) => record.supersededAt ? record : { ...record, supersededAt: verification.recordedAt }),
-        verification,
-      ]);
-      this.overlay.verifications.set(args.nodeId, verification);
+      this.temporalOverlayStore.record("verifications", args.nodeId, verification);
       event = { type: "roadmap.verification", verification };
     } else {
       throw new Error(`Unsupported roadmap mutation type: ${mutationType}`);
@@ -1089,9 +900,9 @@ export class GovibeRuntime {
       mutationType,
       roadmap: await this.reloadRoadmap(undefined, temporalOptions),
       history: {
-        nodes: args.nodeId ? this.temporalHistory.nodes.get(args.nodeId) ?? [] : [],
-        assignments: args.nodeId ? this.temporalHistory.assignments.get(args.nodeId) ?? [] : [],
-        verifications: args.nodeId ? this.temporalHistory.verifications.get(args.nodeId) ?? [] : [],
+        nodes: args.nodeId ? this.temporalOverlayStore.getHistory("nodes", args.nodeId) : [],
+        assignments: args.nodeId ? this.temporalOverlayStore.getHistory("assignments", args.nodeId) : [],
+        verifications: args.nodeId ? this.temporalOverlayStore.getHistory("verifications", args.nodeId) : [],
       },
     };
   }
