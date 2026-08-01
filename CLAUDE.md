@@ -33,7 +33,8 @@ Running a single test:
 ```bash
 npx vitest run src/roadmapExport.test.ts          # one file
 npx vitest run -t "scoring"                       # by test name
-npx vitest run scripts/mcp/runtime-core.test.mjs  # NOTE: see gotcha below
+npx vitest run scripts/mcp/runtime-core.test.mjs  # backend test
+npx vitest run packages/govibe-core/impact-engine.test.mjs
 ```
 
 ## Architecture
@@ -59,21 +60,19 @@ npx vitest run scripts/mcp/runtime-core.test.mjs  # NOTE: see gotcha below
   CustomEvent and `window.postMessage` (source `"govibe-mission-control"`), and exposes
   `window.__govibeMissionGateway`. This is how the HTML template / data-ingest view feed live state.
 
-### Backend (`scripts/mcp/`)
-- `govibe-mcp-server.mjs` — the entrypoint. Speaks MCP JSON-RPC (`Content-Length` framed) over
-  stdio AND boots the sidecar. On start it calls `govibeRuntime.initialize()`.
+### Backend (`scripts/mcp/` and `packages/govibe-core/`)
+- `govibe-mcp-server.mjs` — the MCP entrypoint plus sidecar bootstrap.
 - `runtime-core.mjs` — `GovibeRuntime` / `govibeRuntime`: owns the server-side snapshot, agent
-  registry parsing (`.agents/agent-registry.yaml`), roadmap loading, and mission-command handling.
-- `registry.mjs` — `toolCatalog` (the `govibe.*` tools: agent.run, docs.resolve, roadmap.load/
-  update/export, deploy.vercel, workspace.*, doc.create) and `resourceCatalog`. Add a tool here.
+  registry parsing, roadmap loading, and mission-command handling.
+- `registry.mjs` — `toolCatalog` and `resourceCatalog`. Add a public MCP tool here.
 - `handlers.mjs` — dispatches `tools/call` and `resources/read` to the runtime.
-- `sidecar-server.mjs` — the HTTP/WS bridge the browser talks to: `GET /mission/snapshot`,
-  `GET /roadmap/sources`, `POST /mission/commands`, `/mission/ws`. Port via `GOVIBE_MCP_PORT`.
-- `roadmap-parser.mjs` — parses planning docs matching
-  `^(MASTERPLAN|ROADMAP|BACKLOG|SPRINT)-*.{md,html}` under `docs/roadmap/` into
-  `WorkflowTaskNode`s, and scores/ranks candidate sources.
-- `temporal-versioning.mjs` — bitemporal (`validFrom/validTo`, `recordedAt/supersededAt`) helpers;
-  roadmap queries accept `asOfValidAt`/`asOfRecordedAt`.
+- `sidecar-server.mjs` — HTTP/WS bridge: `GET /mission/snapshot`, `GET /roadmap/sources`,
+  `POST /mission/commands`, `/mission/ws`. Port via `GOVIBE_MCP_PORT`.
+- `packages/govibe-core/src/scan/` — canonical 12-stage decomposition and observed graph discovery.
+- `packages/govibe-core/src/impact/impact-engine.mjs` — local observed link graph, backlink index,
+  and explainable reverse-dependency traversal used by `govibe.workspace.impact`.
+- `packages/govibe-core/src/context-*.mjs` — context profile, packet, cache, injection, replay lineage.
+- `packages/govibe-core/src/vaults.mjs` — project/workspace/agent vault identities and bindings.
 
 The **roadmap is document-driven**: the board's data originates from Markdown/HTML planning files in
 `docs/roadmap/`, not a database. Editing those docs changes the board.
@@ -82,28 +81,66 @@ The **roadmap is document-driven**: the board's data originates from Markdown/HT
 
 - **`npm run lint` is `tsc --noEmit`**, with `strict`, `noUnusedLocals`, `noUnusedParameters`,
   `noFallthroughCasesInSwitch`. Unused imports/vars and un-handled switch cases fail the build.
-- **Vitest only collects `src/**/*.test.ts`** (`vitest.config.ts`). The MCP runtime test
-  (`scripts/mcp/runtime-core.test.mjs`) is **not** picked up by `npm test` — run it by explicit path.
+- Vitest collects `src/**/*.test.ts`, `scripts/**/*.test.mjs`, and `packages/**/*.test.mjs`.
+  Tests under a root `tests/` folder are not collected by the canonical config.
 - Frontend and backend share *type intent* but not files: `src/mission.ts` (TS types) and the
   `.mjs` runtime produce the same snapshot shape independently. Keep them in sync when changing the
   `MissionSnapshot`/event contract.
 - Live-data-only is a product rule (`PRODUCT.md`): do not introduce fake telemetry or mock values
   presented as backend state; use empty states that explain the missing feed.
 
-## Session memory (.brain/) — revived 2026-07-19
+## Session memory and vaults
 
-Working memory lives in `.brain/` (git-tracked). **Start of session:** read
-`.brain/memory/todo-next.md` (rolling self-note — ranked next work + hard-won facts), then the
-newest file in `.brain/session/` if you need the full story. **End of session:** run the
-`end-session` skill (`.claude/skills/end-session/SKILL.md`) — session summary + todo-next
-refresh + CLAUDE/AGENTS drift check + validate-before-commit.
+The canonical memory model is defined by `docs/architecture/ARCH-Vault-and-Context-Model.md`.
+
+- Shared Vault: governed project source of truth for authorized agent teams.
+- Workspace Private Vault: detailed episodic/experiential memory for one agent in the current workspace.
+- Global Private Vault: compressed durable memory for one agent across workspaces.
+- `V-space` means workspace. It is not another memory tier.
+
+Workspace materialization uses `.brain/<project-slug>/` for the project Shared Vault and
+`.brain/private/<agent-id>/` for Workspace Private memory. Folder names are not canonical identities;
+use `vault_id`, `project_id`, `workspace_id`, and `agent_id` from `.govibe/vaults.json`.
+
+Start of session: read the applicable Shared/Workspace context selected by the GoVibe context packet.
+Do not blindly ingest every `.brain/` file. End of session: persist bounded summaries, decisions,
+outcomes, and lessons. Never store hidden chain-of-thought.
+
+## Context profiles and replay
+
+- `T-ctx`: system plus task/event context, normally worker or headless agents.
+- `V-ctx`: Global Private plus current Workspace Private context.
+- `W-ctx`: V-ctx plus exactly one active multi-agent workflow.
+- `M-ctx`: per-turn synchronized Global/Workspace context with diff lineage.
+
+Every dispatched turn must retain `contextId`, `cacheId`, optional runtime-issued `kvId`, exact source
+versions/hashes, and injection metadata. M-ctx forms a parent-linked chain. Never silently replay with
+newer vault content. Context reproducibility, execution reproducibility, and identical output are
+separate claims.
+
+## Knowledge, links, backlinks, and impact
+
+Deep Scan creates observed candidates. It does not create canonical GKS truth.
+
+- Stage 3 discovers Markdown documents, sections/atom candidates, wikilinks, and references.
+- Stage 5 discovers symbols and call links.
+- Stages 6-10 add route/tool/ORM/import/inheritance links.
+- MSP authorizes and mediates promotion.
+- GKS assigns canonical document, atom, symbol, entity, and relation identities.
+- GenesisBlockDB persists/indexes canonical records.
+
+A backlink is the incoming projection of the same forward relation, not a duplicate semantic edge.
+When a contract, schema, architecture decision, or runtime symbol changes, run
+`govibe.workspace.impact` or `calculateWorkspaceImpact` with the changed paths. Review every returned
+`must_update` and `review_and_update` artifact. The result must explain relation chain, distance,
+score, and unresolved links. Plain substring search is not accepted as impact analysis.
+
+## Canonical governance axes
 
 Canonical Execution Governance lives in RWANG PROMAX
 (`skills/rwang/references/EXECUTION-GOVERNANCE.md`); `docs/STD-Execution-Governance.md` here is a
 mirror. `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` is the binding GoVibe semantic
 separation decision.
-
-## Canonical governance axes
 
 Claude must keep these meanings separate in planning, docs, schemas, symbols, and code:
 
@@ -162,9 +199,10 @@ This repo runs under a documented agent operating contract — the canonical fil
 (`AGENT.md` and `GEMINI.md` are compatibility bridges). The points that affect day-to-day edits:
 
 - **Docs First:** substantial code changes follow an approved Blueprint/Spec; the doc set under
-  `docs/` (PRD, SDD, STD-*, roadmap) is the source of truth, and `docs:validate` gates it.
-- **Surgical edits:** change only what the task requires; don't invent new architecture, docs, or
-  scope to answer a narrow request.
-- **Project reality check / no imagined capability:** verify against real state (`git status`,
-  the referenced files, actual code) before claiming a feature, command, or integration exists.
+  `docs/` is the source of truth, and `docs:validate` gates it.
+- **Surgical edits:** change only what the task requires; don't invent unrelated architecture.
+- **Project reality check / no imagined capability:** verify real files, code, tests, and CI before
+  claiming a feature, command, or integration exists.
+- **Impact before completion:** run reverse-dependency impact analysis for semantic, schema,
+  authority-boundary, or runtime-behavior changes and update the required dependents.
 - **Best Code Rule:** prefer skipping work, or a docs/config/process/one-line fix, over new code.
