@@ -1,8 +1,8 @@
 ---
 title: "WP-03: Vault, Context, Link, Impact, Replay, and Alignment Implementation"
 doc_id: "WP-03-VAULT-CONTEXT-REPLAY"
-status: "verification_pending"
-version: "1.1.0"
+status: "completed"
+version: "1.1.1"
 updated: "2026-08-01"
 owner: "Boss / ATHER"
 complexity: "C-3"
@@ -40,7 +40,7 @@ Implement the GoVibe vault identity, context profiles, exact context replay/audi
 9. Added explainable `govibe-impact/v2` results with relation chain, distance, score, action, unresolved links, and graph coverage.
 10. Added unit coverage for backlink construction, transitive impact, and cycle handling.
 11. Added `ALIGNMENT-01`, `ALIGNMENT-04`, `ALIGNMENT-06`, and `ALIGNMENT-12` as conformance documents with `conforms_to` links to canonical owners.
-12. Registered alignment documents in `DOC-VERSION-REGISTRY.md` and corrected the stale ARCH Vault/Context registry version/status.
+12. Registered alignment documents in `DOC-VERSION-REGISTRY.md` and corrected stale canonical document version/status entries.
 
 # Alignment model
 
@@ -69,17 +69,21 @@ The MSP server-side Vault Registry, canonical relation resolver, GKS materializa
 - `workspaceImpact` returns direct/transitive affected artifacts with explanations and remains backward compatible through `references`.
 - Impact traversal is cycle-safe, distance-bounded, and reports unresolved targets.
 - Alignment 01/04/06/12 are traceable to canonical owners and registered as non-SOT conformance documents.
-- Tests, docs validation, lint, MCP smoke, and build pass on the final head.
+- Tests, docs validation, lint, MCP smoke, build, and E2E pipeline pass on the final verified implementation head.
 
 # Verification evidence
 
-- Implementation CI run 114: success.
-- Alignment/registry propagation: pending final head CI.
+- Implementation and alignment/registry verification head: `fb56caa5ccf6871f7f73d0487abf29755e235c1a`.
+- GitHub Actions workflow: `E2E Tests — CI Pipeline`.
+- Workflow run: `122`.
+- Result: `success`.
+- PR remained mergeable and ready for review after verification.
 
 # Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.1.1 | 2026-08-01 | Boss / ATHER | Closed WP-03 after successful final alignment/registry CI verification on run 122. |
 | 1.1.0 | 2026-08-01 | Boss / ATHER | Added alignment conformance ingestion, registry propagation, canonical ownership rules, and traceability acceptance criteria. |
 | 1.0.0 | 2026-08-01 | Boss / ATHER | Expanded WP-03 to full vault/context/replay plus Deep Scan links, backlinks, and explainable impact implementation. |
 | 0.1.0 | 2026-08-01 | Boss / ATHER | Initial implementation work packet. |
