@@ -1,6 +1,18 @@
 export const MISSION_PROTOCOL_VERSION: "1.0.0";
 export const MISSION_PROTOCOL_COMPATIBILITY: 1;
 export const MAX_PROTOCOL_MESSAGE_LENGTH: 240;
+export const MISSION_PROTOCOL_LIMITS: Readonly<{
+  typeChars: 64;
+  idChars: 256;
+  pathChars: 4096;
+  commandChars: 16384;
+  arrayItems: 10000;
+  metadataKeys: 64;
+  metadataBytes: 16384;
+  fileBytes: 262144;
+  eventBytes: 1000000;
+  jsonBodyBytes: 1000000;
+}>;
 
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
@@ -60,6 +72,7 @@ export type CommandResponse = {
 };
 
 export function isRecord(value: unknown): value is Record<string, unknown>;
+export function isFileSaveMetadata(value: unknown): value is Record<string, unknown>;
 export function boundedProtocolMessage(value: unknown): string;
 export function isMissionCommand(value: unknown): value is MissionCommand;
 export function isMissionSnapshot(value: unknown): value is MissionSnapshot;

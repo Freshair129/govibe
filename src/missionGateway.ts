@@ -1,6 +1,7 @@
 import {
   boundedProtocolMessage,
   isCommandResponse,
+  isMissionCommand,
   isMissionEvent,
   isMissionSnapshot,
   isRecord,
@@ -63,6 +64,13 @@ const DEFAULT_ACK_TIMEOUT_MS = 10_000;
 const DEFAULT_RECONNECT_BASE_MS = 500;
 const DEFAULT_RECONNECT_MAX_MS = 15_000;
 const DEFAULT_RECONNECT_ATTEMPTS = 8;
+
+function encodeBase64Url(value: string): string {
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
 
 const emptySnapshot: MissionSnapshot = {
   connectionState: "disconnected",
@@ -181,8 +189,18 @@ export class ReliableMissionGateway {
 
   async send(command: MissionCommand): Promise<CommandResult> {
     const commandId = crypto.randomUUID();
-    const correlated = { ...this.serializeCommand(command), commandId };
+    if (!isMissionCommand(command)) {
+      return { commandId, status: "failed", message: "Mission command failed protocol validation." };
+    }
     this.appendCommandLine(commandId, command, "pending");
+
+    if (command.type === "file.save") {
+      const result = await this.sendFileHttp(command, commandId);
+      this.reconcileCommand(result);
+      return result;
+    }
+
+    const correlated = { ...command, commandId };
 
     if (this.socket?.readyState === WebSocket.OPEN) {
       return new Promise<CommandResult>((resolve) => {
@@ -432,6 +450,33 @@ export class ReliableMissionGateway {
     }
   }
 
+  private async sendFileHttp(command: Extract<MissionCommand, { type: "file.save" }>, commandId: string): Promise<CommandResult> {
+    if (!this.options.httpBaseUrl) {
+      return { commandId, status: "failed", message: "No HTTP transport configured for file.save." };
+    }
+    try {
+      const response = await this.fetchWithTimeout(`${this.options.httpBaseUrl.replace(/\/$/, "")}/mission/files`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "X-GoVibe-File-Hash": command.hash,
+          "X-GoVibe-File-Meta": encodeBase64Url(JSON.stringify(command.meta)),
+        },
+        body: command.data instanceof ArrayBuffer ? command.data : new Uint8Array(command.data).buffer,
+      });
+      const payload = await this.readJson(response);
+      return {
+        commandId,
+        status: response.ok ? "succeeded" : "failed",
+        message: response.ok ? undefined : boundedProtocolMessage(payload?.error ?? `Server rejected file transfer with ${response.status}.`),
+        snapshot: isRecord(payload?.snapshot) ? payload.snapshot as Partial<MissionSnapshot> : undefined,
+      };
+    } catch (error) {
+      const timedOut = error instanceof DOMException && error.name === "AbortError";
+      return { commandId, status: timedOut ? "timed-out" : "failed", message: boundedProtocolMessage(error) };
+    }
+  }
+
   private async fetchWithTimeout(input: RequestInfo | URL, init: RequestInit): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.options.requestTimeoutMs ?? DEFAULT_REQUEST_TIMEOUT_MS);
@@ -449,17 +494,6 @@ export class ReliableMissionGateway {
     } catch {
       return undefined;
     }
-  }
-
-  private serializeCommand(command: MissionCommand): Record<string, unknown> {
-    return command.type === "file.save"
-      ? {
-          ...command,
-          data: command.data instanceof ArrayBuffer
-            ? Array.from(new Uint8Array(command.data))
-            : command.data,
-        }
-      : { ...command };
   }
 
   private appendCommandLine(commandId: string, command: MissionCommand, status: CommandStatus): void {
@@ -555,11 +589,17 @@ export const missionGateway = new ReliableMissionGateway({
   httpBaseUrl: import.meta.env.VITE_GOVIBE_API_URL ?? resolveLocalApiFallback(),
 });
 
+export function ingestReliableExternalMissionEvent(value: unknown): boolean {
+  if (!isMissionEvent(value)) return false;
+  missionGateway.handleEvent(value);
+  return true;
+}
+
 if (typeof window !== "undefined") {
-  window.addEventListener("govibe:mission-event", ((event: CustomEvent<MissionEvent>) => {
-    missionGateway.handleEvent(event.detail);
+  window.addEventListener("govibe:mission-event", ((event: CustomEvent<unknown>) => {
+    ingestReliableExternalMissionEvent(event.detail);
   }) as EventListener);
-  window.addEventListener("message", (event: MessageEvent<{ source?: string; event?: MissionEvent }>) => {
-    if (event.data?.source === "govibe-mission-control" && event.data.event) missionGateway.handleEvent(event.data.event);
+  window.addEventListener("message", (event: MessageEvent<{ source?: string; event?: unknown }>) => {
+    if (event.data?.source === "govibe-mission-control") ingestReliableExternalMissionEvent(event.data.event);
   });
 }

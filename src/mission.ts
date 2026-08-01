@@ -1,3 +1,8 @@
+import {
+  isMissionCommand as isWireMissionCommand,
+  isMissionEvent as isWireMissionEvent,
+} from "../packages/mission-protocol/index.js";
+
 export type DomainId = "A" | "B" | "C" | "D";
 export type ViewId =
   | "A1" | "A2" | "A3" | "A4" | "A5"
@@ -299,6 +304,13 @@ export type MissionCommand =
   | { type: "reactor.run"; profile: string }
   | { type: "file.save"; hash: string; data: ArrayBuffer; meta: Record<string, unknown> };
 
+function encodeBase64Url(value: string) {
+  const bytes = new TextEncoder().encode(value);
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
 export type MissionDomain = {
   id: DomainId;
   title: string;
@@ -488,7 +500,15 @@ export class MissionGateway {
       const socket = new WebSocket(wsUrl);
       this.socket = socket;
       socket.addEventListener("open", () => this.setSnapshot({ connectionState: "connected" }));
-      socket.addEventListener("message", (event) => this.handleEvent(JSON.parse(event.data) as MissionEvent));
+      socket.addEventListener("message", (event) => {
+        try {
+          const parsed: unknown = JSON.parse(event.data);
+          if (isWireMissionEvent(parsed)) this.handleEvent(parsed as MissionEvent);
+          else this.appendTerminal("warn", "Mission event failed protocol validation.");
+        } catch {
+          this.appendTerminal("warn", "Mission event was not valid JSON.");
+        }
+      });
       socket.addEventListener("close", () => {
         this.socket = undefined;
         this.setSnapshot({ connectionState: "disconnected" });
@@ -581,7 +601,28 @@ export class MissionGateway {
   }
 
   async send(command: MissionCommand) {
+    if (!isWireMissionCommand(command)) {
+      this.appendTerminal("warn", "Mission command failed protocol validation.");
+      return;
+    }
     if (command.type === "terminal.command") this.appendTerminal("user", command.command);
+    if (command.type === "file.save") {
+      if (!this.options.httpBaseUrl) {
+        this.appendTerminal("warn", "No HTTP transport configured for file.save.");
+        return;
+      }
+      const response = await fetch(`${this.options.httpBaseUrl.replace(/\/$/, "")}/mission/files`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "X-GoVibe-File-Hash": command.hash,
+          "X-GoVibe-File-Meta": encodeBase64Url(JSON.stringify(command.meta)),
+        },
+        body: command.data,
+      });
+      if (!response.ok) this.appendTerminal("warn", `file.save failed with HTTP ${response.status}.`);
+      return;
+    }
     if (this.socket?.readyState === WebSocket.OPEN) {
       this.socket.send(JSON.stringify(command));
       return;
@@ -590,11 +631,10 @@ export class MissionGateway {
       this.appendTerminal("warn", `No transport configured for ${command.type}. Set VITE_GOVIBE_WS_URL or VITE_GOVIBE_API_URL.`);
       return;
     }
-    const body = command.type === "file.save" ? { ...command, data: Array.from(new Uint8Array(command.data)) } : command;
     const response = await fetch(`${this.options.httpBaseUrl.replace(/\/$/, "")}/mission/commands`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify(command),
     });
     if (response.ok) {
       try {
@@ -648,14 +688,18 @@ declare global {
 
 window.__govibeMissionGateway = missionGateway;
 
-window.addEventListener("govibe:mission-event", ((event: CustomEvent<MissionEvent>) => {
-  missionGateway.handleEvent(event.detail);
+export function ingestExternalMissionEvent(value: unknown) {
+  if (!isWireMissionEvent(value)) return false;
+  missionGateway.handleEvent(value as MissionEvent);
+  return true;
+}
+
+window.addEventListener("govibe:mission-event", ((event: CustomEvent<unknown>) => {
+  if (!ingestExternalMissionEvent(event.detail)) console.warn("Rejected invalid govibe:mission-event payload.");
 }) as EventListener);
 
-window.addEventListener("message", (event: MessageEvent<{ source?: string; event?: MissionEvent }>) => {
-  if (event.data?.source === "govibe-mission-control" && event.data.event) {
-    missionGateway.handleEvent(event.data.event);
-  }
+window.addEventListener("message", (event: MessageEvent<{ source?: string; event?: unknown }>) => {
+  if (event.data?.source === "govibe-mission-control") ingestExternalMissionEvent(event.data.event);
 });
 
 export function saveFile(hash: string, data: ArrayBuffer, meta: Record<string, unknown>) {

@@ -14,13 +14,15 @@ Frontend transport code imports runtime validators and shared wire types from `@
 - Validate WebSocket frames with `isMissionEvent` before mutating state.
 - Validate HTTP command envelopes with `isCommandResponse`.
 - Validate bootstrap snapshots with `isMissionSnapshot`.
+- Validate browser `CustomEvent` and `postMessage` payloads with `isMissionEvent` before dispatch.
 - Use `boundedProtocolMessage` for user-visible transport errors.
+- Send `file.save` bytes through `POST /mission/files`; do not serialize byte arrays into command JSON.
 
 Local UI-specific domain types may remain in `src/mission.ts`, but wire command, event, snapshot, and response validation must come from the shared package.
 
 ## Backend
 
-The sidecar server validates inbound commands with `isMissionCommand` and returns `createCommandResponse(...)` envelopes over HTTP. WebSocket commands return a correlated `command.ack` event using the same `commandId`.
+The sidecar server validates inbound commands with `isMissionCommand` and returns `createCommandResponse(...)` envelopes over HTTP. WebSocket commands return a correlated `command.ack` event using the same `commandId`. Malformed JSON and schema failures are rejected before runtime execution; bounded binary file transfers use the authenticated `/mission/files` endpoint.
 
 ## External data ingest
 
@@ -29,9 +31,9 @@ External producers must:
 1. Include only documented event discriminators.
 2. Preserve `commandId` on command acknowledgements.
 3. Reject unsupported compatibility versions.
-4. Ignore unknown optional fields within compatibility version 1.
+4. Reject unknown top-level command or event fields; treat nested domain-record fields and optional snapshot fields as forward-compatible.
 5. Treat required-field removal, discriminator changes, or semantic reinterpretation as breaking changes requiring a compatibility-version bump.
 
 ## Forward compatibility
 
-Unknown optional object fields are preserved or ignored. Unknown event or command discriminators are rejected because silently accepting new behavior would make exhaustive handling meaningless.
+Unknown top-level command or event fields and unknown discriminators are rejected because silently accepting new behavior would make exhaustive handling meaningless. Nested domain records and optional snapshot fields remain extensible within compatibility version 1.
