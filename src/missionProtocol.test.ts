@@ -10,7 +10,7 @@ import {
 } from "../packages/mission-protocol/index.js";
 
 const snapshotFixture = {
-  connectionState: "connected",
+  connectionState: "connected" as const,
   metrics: [],
   chart: { labels: [], series: [] },
   reactor: [],

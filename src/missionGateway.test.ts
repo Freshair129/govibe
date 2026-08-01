@@ -40,7 +40,7 @@ afterEach(() => {
 
 describe("ReliableMissionGateway command lifecycle", () => {
   it("returns a structured success result and reconciles the optimistic terminal line", async () => {
-    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ message: "accepted" }), {
+    const fetchImpl = vi.fn<typeof fetch>(async (_input, _init) => new Response(JSON.stringify({ message: "accepted" }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     }));
@@ -58,7 +58,7 @@ describe("ReliableMissionGateway command lifecycle", () => {
   });
 
   it("surfaces bounded non-2xx feedback", async () => {
-    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({ error: "x".repeat(500) }), {
+    const fetchImpl = vi.fn<typeof fetch>(async (_input, _init) => new Response(JSON.stringify({ error: "x".repeat(500) }), {
       status: 503,
       headers: { "Content-Type": "application/json" },
     }));
@@ -90,7 +90,7 @@ describe("ReliableMissionGateway command lifecycle", () => {
   });
 
   it("retries only documented idempotent commands", async () => {
-    const fetchImpl = vi.fn(async () => {
+    const fetchImpl = vi.fn<typeof fetch>(async (_input, _init) => {
       throw new DOMException("Aborted", "AbortError");
     });
     const idempotentGateway = new ReliableMissionGateway({ httpBaseUrl: "http://localhost:4310", fetchImpl });
@@ -177,12 +177,12 @@ describe("ReliableMissionGateway WebSocket resilience", () => {
   });
 
   it("supports explicit HTTP-only re-bootstrap", async () => {
-    const fetchImpl = vi.fn(async () => new Response(JSON.stringify({
+    const fetchImpl = vi.fn<typeof fetch>(async (_input, _init) => new Response(JSON.stringify({
       connectionState: "connected",
       metrics: [], chart: { labels: [], series: [] }, reactor: [], agents: [], capabilities: [],
       terminal: [], graph: { nodes: [], edges: [] }, specs: [], symbols: [], campaignLogs: [],
     }), { status: 200, headers: { "Content-Type": "application/json" } }));
-    const gateway = new ReliableMissionGateway({ httpBaseUrl: "http://localhost:4310", fetchImpl });
+    const gateway = new ReliableMissionGateway({ httpBaseUrl: "http://localhost:4310", wsUrl: "", fetchImpl });
 
     await gateway.connect();
     await gateway.reconnect();
