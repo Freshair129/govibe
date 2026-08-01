@@ -2,7 +2,7 @@
 doc_id: "CR-2026-08-01-GOVIBE-ARCHITECTURE-ALIGNMENT-IMPLEMENTATION"
 title: "Change Request: GoVibe Architecture Alignment and Operating Mode Implementation"
 status: "candidate"
-version: "0.1.0"
+version: "0.1.1"
 updated: "2026-08-01"
 owner: "Boss (CEO)"
 coordinator: "LYRA"
@@ -13,8 +13,10 @@ verifier: "GHOST"
 source_of_truth: false
 type: "change-request"
 complexity: "C-3"
-context_tier: "H5"
+access_scope: "H4"
 risk: "cross-system"
+canonical_governance:
+  - "Freshair129/RWANG-PROMAX: skills/rwang/references/EXECUTION-GOVERNANCE.md"
 related_docs:
   - "docs/BRD-GoVibe-Platform.md"
   - "docs/PRD-GoVibe-Platform-Overview.md"
@@ -32,9 +34,9 @@ related_docs:
 
 ## 1. Purpose
 
-Promote the already approved `CoVibe` and `CoDev` terminology into a complete, traceable implementation plan across canonical product documents, system requirements, architecture, runtime policy, Mission Control, and verification.
+Promote the approved `CoVibe` and `CoDev` terminology into a traceable implementation plan across canonical product documents, software requirements, architecture, runtime policy, Mission Control, and verification.
 
-This CR also reconciles the broader GoVibe architecture model discussed after the terminology approval:
+This CR also reconciles the intended architecture:
 
 ```text
 GoVibe
@@ -45,36 +47,95 @@ GoVibe
 
 with:
 
-- `CoVibe` as intra-owner / solo-owner orchestration
-- `CoDev` as inter-owner / inter-team coordination
 - human-first document-driven development
-- diagram/model-to-document and semantic model workflows
+- diagram-to-document review gates
 - 12-stage code-to-knowledge decomposition
 - 7-phase knowledge-to-code assembly
-- Genesis Loop as a canonical architecture intermediate representation
-- declared-vs-observed architecture conformance
+- Genesis Loop as a proposed architecture intermediate representation
+- declared-vs-observed conformance
 
-This is a parent orchestration CR. It does not authorize broad code mutation before the canonical-definition and document-propagation gates pass.
-
----
-
-## 2. Why This CR Is Required
-
-The previous positioning CR intentionally requested terminology review only and prohibited immediate system restructuring or implementation.
-
-That review is now followed by approved source documents defining:
-
-- `CoVibe` as solo-owner / intra-owner orchestration with a main agent or main agent team and bounded support agents or executors
-- `CoDev` as multi-owner / inter-team coordination across separate human-owned delivery parties and their agent teams
-- both modes as layers over `SYSTEM-05::Agent-Team-Management-System`
-- supporting behavior from `SYSTEM-06`, `SYSTEM-09`, and `SYSTEM-10`
-- `MCP` as the primary orchestration interface rather than the product identity
-
-The remaining gap is propagation and implementation consistency. Without a controlled CR, agents may update BRD, PRD, SRS, SDD, C4, UI, runtime policy, and code independently and create new drift while supposedly fixing old drift. Humanity has performed this trick often enough.
+This is a parent orchestration CR. It does not authorize broad code or canonical-document mutation before the required gates pass.
 
 ---
 
-## 3. Canonical Decisions to Preserve
+## 2. Canonical H-Axis Definition
+
+This CR adopts the RWANG PROMAX canonical Execution Governance Standard.
+
+### 2.1 Binding definition
+
+```text
+H = Access Scope
+```
+
+`H` is the executor's enforceable tool and permission ceiling. It answers:
+
+> Which capabilities may this executor use while performing this task?
+
+The valid range is:
+
+| Tier | Capability ceiling | Typical scope |
+|---|---|---|
+| H0 | read one bounded file | subtask / PR |
+| H1 | H0 + repository search | task / component |
+| H2 | H1 + multi-file write | story / feature |
+| H3 | H2 + shell execution | epic / module |
+| H4 | H3 + network/full approved toolset | architecture / cross-system / platform |
+
+### 2.2 Default C-to-H mapping
+
+```yaml
+complexity_access_mapping:
+  C-0: H0
+  C-1: H1
+  C-2: H2
+  C-3: H3
+```
+
+`H4` is an upward override that requires approval before implementation. For C-3 work, the owner grants H4.
+
+This CR is therefore:
+
+```text
+Complexity: C-3
+Access Scope: H4
+```
+
+### 2.3 Removed meanings
+
+`H5` and `H6` are invalid as enforcement tiers. They were removed because they granted no capability beyond H4.
+
+`H` must not be used to represent:
+
+- graph distance
+- retrieval hops
+- retrieval relevance
+- context size
+- token budget
+- task risk
+- fan-out or coupling
+- organization level
+- model intelligence
+
+### 2.4 Separate axes
+
+The following concerns remain separate:
+
+| Axis | Meaning |
+|---|---|
+| C | process complexity and required workflow |
+| H | executor access/tool ceiling |
+| W | fan-out, branching width, or coupling |
+| Retrieval radius | graph/search distance used to collect candidate context |
+| Context budget | maximum context size or token allocation |
+| Risk | impact and safety exposure |
+| Operating mode | CoVibe or CoDev authority/collaboration model |
+
+No implementation or document may overload one axis to stand in for another.
+
+---
+
+## 3. Canonical Product Decisions
 
 ### 3.1 Platform identity
 
@@ -83,8 +144,6 @@ The remaining gap is propagation and implementation consistency. Without a contr
 `CoVibe` and `CoDev` are collaboration modes/modules, not separate product brands and not new top-level PRD systems in this change.
 
 ### 3.2 CoVibe
-
-Canonical definition:
 
 ```text
 [Human]
@@ -97,14 +156,13 @@ Canonical definition:
 Meaning:
 
 - intra-owner / solo-owner orchestration
-- one primary human owner or lead agent remains the center of authority
-- support execution is bounded by packet, scope, policy, evidence, and handoff
-- minimum required governance is selected by complexity and risk
-- CoVibe does not bypass execution governance, provenance, verification, or mandatory gates
+- one primary owner authority boundary
+- bounded support execution
+- evidence and handoff back to the owner
+- governance selected by complexity, access scope, fan-out, and risk
+- no bypass of mandatory security, provenance, review, or verification
 
 ### 3.3 CoDev
-
-Canonical definition:
 
 ```text
 [Human / Team A + Agent Team A]
@@ -115,10 +173,10 @@ Canonical definition:
 Meaning:
 
 - inter-owner / inter-team coordination
-- multiple human-owned delivery parties remain distinct
+- independent human-owned delivery parties remain distinct
 - each party may retain its own agent team, workflow, toolchain, and local governance
-- shared planning, dependency coordination, handoff, review, evidence, and conformance are governed at the GoVibe boundary
-- long-term product vision supports swarm-to-swarm interoperability beyond pairwise A2A
+- GoVibe governs shared planning, dependencies, handoff, evidence, review, and conformance
+- swarm-to-swarm interoperability remains a long-term product vision unless implementation evidence proves otherwise
 
 ### 3.4 Protocol boundary
 
@@ -128,9 +186,11 @@ A2A = optional agent communication primitive
 CoDev = governed inter-owner operating model above protocol primitives
 ```
 
-This CR must not replace MCP or claim that CoDev itself guarantees an A2A implementation.
+CoDev does not replace MCP and does not itself guarantee A2A compliance.
 
-### 3.5 Core architecture hierarchy
+---
+
+## 4. Core Architecture Boundary
 
 Logical agent-facing hierarchy:
 
@@ -144,31 +204,50 @@ GoVibe
 Required boundary:
 
 - agent-facing session, identity, memory, knowledge, and context access is mediated by MSP
-- GKS is the knowledge construction, ontology, atomization, retrieval, projection, and lifecycle subsystem beneath MSP
-- GenesisBlockDB is the graph/vector/lexical/temporal persistence and query engine beneath GKS and internal MSP repositories
+- GKS owns knowledge construction, ontology, atomization, retrieval, projection, and lifecycle
+- GenesisBlockDB is the graph/vector/lexical/temporal persistence and query engine
 - GoVibe and Mission Control are product/control surfaces, not canonical knowledge stores
+- no new agent-facing direct database interface may be introduced
 
-### 3.6 Human-first source documents
+Current implementation evidence must remain honest: intended MSP mediation is not considered implemented until runtime wiring and tests prove it.
+
+---
+
+## 5. Human-First Source Rule
 
 Human-readable SWE documents remain canonical authoring and planning sources where they exist.
 
 GKS must:
 
-- read source documents without mutating them by default
+- read protected source documents without mutating them by default
 - assign stable document identity
 - calculate content hashes and versions
 - derive physical or virtual knowledge atoms
-- preserve source provenance
+- preserve provenance
 - materialize derived knowledge into the operational graph
 
-Derived atoms, indexes, diagrams, reports, and graph exports must not silently replace protected human-readable source documents.
+Derived atoms, indexes, diagrams, reports, graph exports, and Web layout state must not silently replace protected human-readable source documents.
 
-### 3.7 Development loop
+Required implementation flow:
+
+```text
+diagram
+  -> draft document
+  -> human review
+  -> approved document
+  -> docs to code
+```
+
+Direct diagram-to-production-code generation is outside the approved governance flow unless a separately approved standard changes that rule.
+
+---
+
+## 6. Development Loop
 
 ```text
 Declared documents and models
   -> GKS atomization
-  -> Genesis Loop / canonical architecture IR
+  -> proposed Genesis Loop / architecture IR
   -> 7-phase knowledge-to-code assembly
   -> code and tests
   -> 12-stage code-to-knowledge decomposition
@@ -176,13 +255,26 @@ Declared documents and models
   -> conformance and feedback
 ```
 
-### 3.8 Genesis Loop
+The 12-stage and 7-phase models must not use H as graph depth or retrieval radius.
 
-Genesis Loop is a logical architecture source of truth / intermediate representation composed from stable atoms, typed relations, constraints, evidence, and versions.
+Any graph traversal depth used by decomposition, retrieval, or rendering must have a separately named field such as:
+
+```text
+retrieval_radius
+max_graph_hops
+relation_depth
+context_budget
+```
+
+---
+
+## 7. Genesis Loop Status
+
+Genesis Loop is currently treated by this CR as a proposed logical architecture source of truth / intermediate representation composed from stable atoms, typed relations, constraints, evidence, and versions.
 
 It is not a new diagram format and need not be one physical Markdown file.
 
-It must support projections such as:
+Potential projections include:
 
 - domain-driven
 - cluster-driven
@@ -197,21 +289,23 @@ It must support projections such as:
 
 Rendered views and Web layout state are derived presentation artifacts.
 
+Promotion of Genesis Loop into a canonical platform contract requires architecture review and an ADR if the existing accepted ADR set does not already define the full contract.
+
 ---
 
-## 4. Scope
+## 8. Scope
 
 ### In scope
 
-1. Audit current canonical documents against the decisions above.
-2. Produce an evidence-backed gap matrix.
-3. Refine BRD and PRD wording only where current approved terminology is incomplete or contradictory.
-4. Add or update SRS requirements for operating modes and cross-layer contracts.
-5. Update SDD/C4 only after architecture review confirms boundaries.
-6. Define implementation tasks for runtime mode selection, policy, evidence, Mission Control, and conformance.
-7. Implement approved code changes in bounded work packets.
+1. Audit canonical documents against the decisions in this CR.
+2. Produce an evidence-backed authority and gap matrix.
+3. Correct invalid H-axis use in affected planning and architecture documents.
+4. Refine BRD and PRD wording only where incomplete or contradictory.
+5. Add or update SRS requirements for operating modes and cross-layer contracts.
+6. Update SDD/C4 only after architecture decisions are recorded.
+7. Define bounded implementation work packets.
 8. Verify through tests, document validation, repository analysis, and conformance evidence.
-9. Update the document version registry and traceability records.
+9. Update document registry and traceability records.
 
 ### Out of scope unless separately approved
 
@@ -220,36 +314,19 @@ Rendered views and Web layout state are derived presentation artifacts.
 - replacing MCP
 - claiming full A2A compliance
 - replacing external coding agents or orchestrators
-- forcing human authors to write Genesis atoms directly
-- making generated atom files canonical when protected SWE documents exist
-- implementing all competitive-analysis ideas as product commitments
+- requiring humans to author Genesis atoms directly
+- treating generated atom files as canonical over protected SWE documents
 - rewriting GenesisBlockDB core without a proven interface gap
+- using H5/H6 or redefining H as retrieval depth
 
 ---
 
-## 5. Required Work Packages
+## 9. Required Work Packages
 
-## WP-01 — Canonical document audit
+### WP-01 — Canonical document audit
 
 **Owner:** ATHER + THESEUS  
 **Review:** ARCHON
-
-Inspect at minimum:
-
-```text
-docs/BRD-GoVibe-Platform.md
-docs/PRD-GoVibe-Platform-Overview.md
-docs/PRD-GoVibe-MCP-Orchestration.md
-docs/srs/**
-docs/SDD-System-Design.md
-docs/STD-Execution-Governance.md
-docs/architecture/C4-GoVibe-Platform.md
-docs/features/agent-team/**
-docs/features/docs-to-code/**
-docs/features/diagram-to-doc/**
-docs/features/genesis-knowledge/**
-docs/features/traceability-audit/**
-```
 
 Required output:
 
@@ -268,393 +345,198 @@ deferred
 not-applicable
 ```
 
-No canonical document edits before this matrix is reviewed.
-
----
-
-## WP-02 — BRD and product-positioning refinement
-
-**Owner:** LYRA  
-**Review:** ATHER
-
-Confirm or refine:
-
-- GoVibe as governance + interoperability over heterogeneous AI-assisted software delivery
-- CoVibe as secondary/entry individual or small-team lane
-- CoDev as primary multi-owner/inter-team lane
-- GKS as internal semantic pivot, not user-facing vocabulary requirement
-- competitive boundaries against coding agents, orchestrators, memory products, and databases
-- claims requiring proof before publication
-
-Competitive language must distinguish:
+WP-01 must explicitly identify every use of:
 
 ```text
-product commitment
-validated capability
-architecture intent
-long-term vision
-competitive hypothesis
+H5
+H6
+H0-H6
+context tier
+hop-bounded H
+H-level retrieval
 ```
 
----
+and classify whether each occurrence means access scope, retrieval radius, context budget, or obsolete terminology.
 
-## WP-03 — PRD and SRS propagation
+No canonical document or runtime edits are authorized inside WP-01.
 
-**Owner:** THESEUS  
-**Review:** LYRA + ATHER
+### WP-02 — BRD and positioning refinement
 
-Add or reconcile requirements such as:
+Confirm product positioning, operating-mode priority, competitive claims, and proof status.
 
-```text
-FR-MODE-001  System supports CoVibe and CoDev modes.
-FR-MODE-002  CoVibe preserves one primary owner authority boundary.
-FR-MODE-003  CoDev preserves independent human-owned delivery parties.
-FR-MODE-004  Governance depth is selected by mode, complexity, context tier, fan-out, and risk.
-FR-MODE-005  Mode escalation preserves IDs, evidence, provenance, task state, and approvals.
-FR-MODE-006  Cross-owner handoffs preserve source, target, authority, evidence, and review state.
-FR-MSP-001   Agent-facing knowledge and memory access is mediated by MSP.
-FR-GKS-001   GKS registers stable document identity and content versions without mutating protected sources.
-FR-LOOP-001  Genesis Loop supports versioned semantic projections from a shared canonical model.
-FR-CONF-001  Declared and observed models remain separate and produce evidence-backed conformance states.
-```
+### WP-03 — PRD and SRS propagation
 
-Do not invent requirement IDs that collide with existing SRS registries. Resolve actual numbering during audit.
+Add or reconcile requirements for:
 
----
+- CoVibe and CoDev modes
+- authority boundaries
+- mode escalation
+- evidence-preserving handoff
+- MSP mediation
+- GKS document lifecycle
+- Genesis Loop status
+- declared-vs-observed conformance
+- C/H/W/retrieval/context/risk axis separation
 
-## WP-04 — Architecture and ADR review
+### WP-04 — Architecture and ADR review
 
-**Owner:** ARCHON  
-**Review:** ATHER
+Determine ADR requirements for:
 
-Determine whether ADRs are required for:
-
-- MSP mandatory mediation boundary
+- MSP mandatory mediation
 - GKS placement under MSP
-- GenesisBlockDB namespace/storage contract
-- Genesis Loop Architecture IR
-- declared-vs-observed dual graph
+- GenesisBlockDB storage/namespace contract
+- Genesis Loop architecture IR
+- declared-vs-observed dual model
 - projection/rendering architecture
-- mode escalation and policy inheritance
+- operating-mode policy inheritance
+- retrieval-radius naming and removal of H-hop semantics
 
-Update SDD/C4 only after ADR decisions are recorded.
+### WP-05 — MSP, GKS, and GenesisBlockDB contracts
 
-Required architecture separation:
+MSP contracts must define session, identity, memory, retrieval planning, context packages, disclosure logs, checkpoints, and promotion.
 
-```text
-Scan DAG != Roadmap/Task DAG != Runtime/Business Flow
-Canonical architecture state != Web layout state
-Declared model != Observed model
-Memory capture != Canonical knowledge promotion
-```
+Retrieval planning must use separately named values and must not use H tiers as graph depth.
 
----
+GKS contracts must define document identity, hashing/versioning, atom identity, provenance, lifecycle, ontology, projections, and knowledge promotion.
 
-## WP-05 — MSP, GKS, GenesisBlockDB interface contracts
+GenesisBlockDB contracts must define namespaces, transactions, temporal semantics, idempotency, snapshots, indexes, audit, and recovery.
 
-**Owner:** ARCHON + THESEUS  
-**Review:** ATHER + GHOST
+### WP-06 — CoVibe implementation
 
-Define or confirm:
+Candidate scope:
 
-### MSP
-
-- session lifecycle
-- identity hierarchy
-- working/episodic/semantic/procedural memory
-- retrieval planning
-- H0-H6 context expansion semantics
-- context packages
-- disclosure logs
-- checkpoints and branching
-- memory-to-knowledge promotion
-
-### GKS
-
-- document identity
-- content hashing/versioning
-- atom identity and atom hash
-- physical/virtual atomization
-- declared/inferred/observed states
-- ontology and relation contracts
-- Genesis Loop materialization
-- projection interfaces
-- knowledge lifecycle
-
-### GenesisBlockDB
-
-- namespaces
-- transaction boundaries
-- temporal semantics
-- idempotency
-- snapshot publication
-- vector/lexical index lifecycle
-- audit and recovery
-
-No agent-facing direct database interface may be introduced.
-
----
-
-## WP-06 — CoVibe implementation
-
-**Owner:** THESEUS  
-**Review:** GHOST + ATHER
-
-Implement only after document and architecture gates pass.
-
-Candidate capabilities:
-
-- mode classification and selection
-- one primary owner authority
-- main-agent/main-agent-team routing
-- bounded support-executor packets
-- model/quota-aware routing
-- scope guardrails
-- evidence return and handoff
-- risk-based minimum governance
+- mode selection
+- primary owner authority
+- bounded support packets
+- quota/model-aware routing
+- access-scope guardrails
+- evidence return
 - escalation request to CoDev
 
-Acceptance must prove that CoVibe simplifies only optional process and does not bypass mandatory security, provenance, evidence, or verification.
+### WP-07 — CoDev implementation
 
----
-
-## WP-07 — CoDev implementation
-
-**Owner:** THESEUS  
-**Review:** ARCHON + ATHER + GHOST
-
-Candidate capabilities:
+Candidate scope:
 
 - party/team registry
 - independent owner lanes
 - shared roadmap visibility
-- cross-team dependency graph
+- dependency coordination
 - governed handoff
-- evidence packets
 - review routing
 - policy inheritance
-- conflict and escalation paths
-- Grade 1 / Grade 2 review where existing policy requires it
-- bounded use of MCP/A2A/external bridges
+- conflict/escalation paths
 
-CoDev must preserve local autonomy rather than collapsing all teams into one execution owner.
+### WP-08 — Mission Control integration
 
----
+Candidate surfaces:
 
-## WP-08 — Mission Control and Web integration
-
-**Owner:** UI/Mission Control implementation agent  
-**Review:** LYRA + ATHER
-
-Required product surfaces may include:
-
-- explicit CoVibe/CoDev mode and authority scope
-- repository-analysis wave/DAG state
+- operating mode and authority scope
+- `C`, `H`, `W`, risk, retrieval, and context indicators as separate fields
+- repository-analysis state
 - Genesis Loop projection selector
 - declared/observed overlay
-- session/context inspector
-- task/squad/fleet ownership
-- approvals and gates
-- evidence and conformance
-- escalation/de-escalation state
+- approvals, evidence, and conformance
 
-Web components must consume application services/projection APIs and must not become the canonical architecture or knowledge store.
+### WP-09 — Verification
 
----
-
-## WP-09 — Verification and conformance
-
-**Owner:** GHOST  
-**Review:** ATHER
-
-Required evidence:
+Required evidence includes:
 
 - document validation
 - schema validation
-- unit tests
-- integration tests
-- policy tests
-- access-boundary tests
+- policy/access tests
 - mode transition tests
 - evidence/handoff tests
 - targeted 12-stage rescan
-- declared-vs-observed conformance report
-- UI evidence where applicable
-- audit trail and correlation IDs
+- declared-vs-observed report
+- audit trail
 
-Critical unresolved conformance findings block closure.
+### WP-10 — Registry and release
 
----
-
-## WP-10 — Registry, release, and knowledge update
-
-**Owner:** THESEUS + ATHER
-
-Update:
-
-- document version registry
-- change-request ledger
-- roadmap/task links
-- related docs/frontmatter
-- release notes
-- evidence registry
-- GKS ingestion/materialization state
-
-Generated indexes must be rebuilt rather than hand-edited.
+Update document registry, CR ledger, roadmap links, release notes, evidence registry, and GKS materialization state.
 
 ---
 
-## 6. Governance Gates
+## 10. Governance Gates
 
-## Gate G1 — Canonical definition
-
-Approvers:
-
-- Boss / product owner
-- LYRA
-- ARCHON
-- ATHER
+### Gate G1 — Canonical definition
 
 Exit criteria:
 
-- canonical definitions are traceable to approved sources
-- no conflict remains between CoVibe/CoDev terminology and platform identity
+- CoVibe and CoDev definitions are traceable
+- H is confirmed as Access Scope H0-H4
+- all H-hop/context collisions are listed
 - architecture assumptions are separated from approved facts
 
-## Gate G2 — Document propagation
+### Gate G2 — Document propagation
 
 Exit criteria:
 
 - BRD -> PRD -> SRS -> SDD/C4 -> FEAT/STD trace is consistent
-- document version registry is updated
-- required ADRs are approved or explicitly deferred
+- invalid H terminology is removed or explicitly marked historical
+- required ADRs are approved or deferred
 
-## Gate G3 — Implementation authorization
+### Gate G3 — Implementation authorization
 
 Exit criteria:
 
 - bounded work packets exist
 - affected code paths are identified
-- test strategy exists
-- rollback/recovery plan exists where required
-- agent ownership and review are assigned
+- test strategy and rollback exist
+- owners and reviewers are assigned
 
-## Gate G4 — Conformance and closure
+### Gate G4 — Conformance and closure
 
 Exit criteria:
 
 - tests pass
 - docs validate
 - observed graph is refreshed
-- declared-vs-observed findings are resolved, accepted with expiry, or explicitly deferred
+- conformance findings are resolved, accepted with expiry, or deferred
 - audit evidence is complete
 
 ---
 
-## 7. Mode and Governance Matrix
+## 11. Operating and Governance Matrix
 
-Operating mode, task complexity, context tier, fan-out, and risk are separate axes.
+These axes are independent:
 
 ```text
 Operating Mode: CoVibe | CoDev
 Complexity: C-0..C-3
-Context: H0..H6
-Fan-out: W-scale
-Risk: repository-defined classes
+Access Scope: H0..H4
+Fan-out: W2 | W3 | W4
+Retrieval Radius: separately named measured value
+Context Budget: separately named measured value
+Risk: repository-defined class
 ```
 
 Examples:
 
 ```text
-CoVibe + C-3
-= solo-owner architecture change; full document/diagram/review requirements may apply
+CoVibe + C-3 + H4
+= solo-owner architecture change with full approved tool access
 
-CoDev + C-1
-= small implementation task; work remains under multi-owner attribution, handoff, and audit
+CoDev + C-1 + H1
+= small implementation task under multi-owner attribution and audit
 ```
 
-No implementation may encode `CoVibe = always light` or `CoDev = always maximum ceremony`.
+No implementation may encode:
 
----
-
-## 8. Competitive Positioning Constraints
-
-The implementation and documentation must preserve these boundaries:
-
-- GoVibe is not another coding agent.
-- GoVibe is not positioned as a replacement orchestrator.
-- GoVibe is not positioned as a memory product or database product.
-- MCP and A2A are protocols/primitives GoVibe may ride.
-- 12-stage decomposition alone is not the moat.
-- graph/vector storage alone is not the moat.
-- differentiation depends on enforced governance, semantic translation, traceability, architecture conformance, and multi-owner collaboration.
-
-Claims such as `swarm-to-swarm`, `Architecture IR`, or `cross-tool semantic interlingua` must be marked as implemented, partial, planned, or vision according to evidence.
-
----
-
-## 9. Acceptance Criteria
-
-This CR is complete when:
-
-1. Canonical definitions are reconciled across BRD, PRD, SRS, SDD/C4, FEAT, and STD.
-2. CoVibe and CoDev remain modules/modes under the current system map unless a separately approved ADR changes that decision.
-3. MSP, GKS, Genesis Loop, and GenesisBlockDB boundaries are explicit and testable.
-4. Protected source documents remain human-first and are not mutated by atomization.
-5. Genesis Loop projections are separated from presentation state.
-6. Declared and observed models remain separate and conformance is evidence-backed.
-7. Approved implementation work is split into bounded packets.
-8. CoVibe and CoDev behavior is represented in runtime policy and UI where required.
-9. Verification includes code, documents, graph evidence, and auditability.
-10. All remaining gaps are visible and owned rather than silently inferred.
-
----
-
-## 10. Rollback and Safety
-
-- This CR begins as documentation and planning only.
-- No runtime changes before G1 and G2.
-- Code changes must be isolated by bounded work packet and branch/PR.
-- Existing approved terminology remains valid during migration.
-- If architecture review rejects a proposed boundary, update this CR rather than silently editing dependent documents.
-- Derived graph/index artifacts may be rebuilt; protected human-authored sources must not be rewritten automatically.
-
----
-
-## 11. Agent Team Review Request
-
-### LYRA
-
-- confirm scope, roadmap, operating-mode semantics, and business acceptance
-- separate product commitments from long-term vision
-
-### ARCHON
-
-- confirm hierarchy, interfaces, C4 placement, and ADR needs
-- identify architecture assumptions that are not yet supported by code
-
-### THESEUS
-
-- produce the canonical document audit and bounded propagation plan
-- do not bulk-edit documents before G1
-
-### ATHER
-
-- verify SSOT ordering, provenance, document registry, policy, and conformance requirements
-- fail closed on unsupported claims or silent scope expansion
-
-### GHOST
-
-- define verification evidence before implementation begins
-- confirm that completion can be reproduced from tests, snapshots, and audit records
+```text
+CoVibe = always light
+CoDev = always maximum ceremony
+H = graph hops
+H = context size
+H5/H6 = larger platform scope
+```
 
 ---
 
 ## 12. Initial Decision Request
 
-Approve this CR as the parent C-3/H5 change packet and authorize **WP-01 only**.
+Approve this CR as the parent `C-3 / H4` change packet and authorize WP-01 only.
 
-All later work packages remain blocked until the canonical document audit and Gate G1 review are complete.
+All later work packages remain blocked until the canonical audit and Gate G1 review are complete.
 
 ---
 
@@ -662,4 +544,5 @@ All later work packages remain blocked until the canonical document audit and Ga
 
 | Version | Date | Status | Summary | Agent |
 |---|---|---|---|---|
-| 0.1.0 | 2026-08-01 | candidate | Created parent CR for canonical document reconciliation, architecture alignment, operating-mode implementation, and conformance verification. | GPT-5.6 Thinking |
+| 0.1.1 | 2026-08-01 | candidate | Corrected the H-axis against RWANG PROMAX canonical governance: H is Access Scope H0-H4; removed H5/H6 and separated retrieval radius, context budget, W, risk, and operating mode. | GPT-5.6 Thinking |
+| 0.1.0 | 2026-08-01 | candidate | Created parent CR for canonical reconciliation, architecture alignment, operating-mode implementation, and conformance verification. | GPT-5.6 Thinking |
