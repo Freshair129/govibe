@@ -2,7 +2,7 @@
 title: "GoVibe Universal Agent Operating Contract"
 summary: "สัญญาการทำงานสากลและการควบคุมจริยธรรมของ AI Agents ในโครงการ GoVibe"
 doc_id: "AGENTS-CORE-001"
-version: "1.6.0"
+version: "1.7.0"
 updated: "2026-08-01"
 owner: "THESEUS"
 type: "agents"
@@ -121,7 +121,46 @@ Executor / Claude Code -> GoVibe MCP -> MSP -> GKS -> GenesisBlockDB
 - Producing scan stages สร้าง candidate knowledge แล้วส่งให้ MSP promotion gate
 - `gks:` reference ที่ถูกส่งกลับเป็น opaque reference ไม่ใช่ connection capability
 
-## 8. Agent role directory
+## 8. Knowledge, link, backlink and impact contract
+
+### 8.1 Knowledge construction
+
+Deep Scan เป็น decomposition/discovery engine และสร้างได้เฉพาะ candidate:
+
+- document/section/atom candidate
+- symbol/entity candidate
+- wikilink/crosslink/symbol-link candidate
+- observed graph relation พร้อม provenance/confidence
+
+GKS เป็นผู้ assign canonical `document_id`, `document_version_id`, `atom_id`, `symbol_id`, `entity_id`, `relation_id` หลัง MSP authorize. Agent และ GoVibe ห้ามเรียก candidate ว่า canonical knowledge.
+
+### 8.2 Link classes
+
+- Wikilink: explicit document/concept reference เช่น `[[ADR-022]]`
+- Crosslink: relation ข้าม artifact/memory domain
+- Symbol link: import/call/inheritance/route/tool/ORM relation
+- Backlink: reverse projection ของ forward relation เดิม
+
+Backlink ห้ามสร้าง semantic edge ซ้ำ. ต้อง preserve original `link_id/relation_id`, relation type, source, target และ provenance.
+
+### 8.3 Impact analysis
+
+เมื่อเปลี่ยน architecture, API, schema, authority boundary หรือ runtime behavior Agent ต้องรัน impact analysis ก่อนประกาศงานเสร็จ:
+
+```text
+changed seed
+  <- direct backlinks
+  <- transitive backlinks
+  <- implementation/tests/UI/operations
+```
+
+ผลต้องระบุ affected artifact, relation chain, graph distance, impact score, required action และ unresolved links. ต้องจัดการ cycle, จำกัดระยะ และห้ามอ้าง completeness เมื่อ graph coverage ไม่พอ.
+
+`text.includes(path)` หรือ grep อย่างเดียวเป็น discovery fallback ไม่ใช่ canonical impact algorithm.
+
+Agent ต้องแก้ทุก `must_update`; ต้องตรวจและตัดสินทุก `review_and_update`; และต้องบันทึกเหตุผลเมื่อไม่แก้รายการ `review`.
+
+## 9. Agent role directory
 
 | Agent | Role | Specialized SSOT |
 |---|---|---|
@@ -130,7 +169,7 @@ Executor / Claude Code -> GoVibe MCP -> MSP -> GKS -> GenesisBlockDB
 | ATHER | Auditor | `docs/STD-Execution-Governance.md` |
 | GHOST | QA / E2E | `.agents/qa/asset/` |
 
-## 9. Execution rules
+## 10. Execution rules
 
 - Docs First: implementation ต้องอ้าง approved Blueprint/API/ADR
 - Surgical Edit: แก้เฉพาะขอบเขต Task
@@ -140,6 +179,7 @@ Executor / Claude Code -> GoVibe MCP -> MSP -> GKS -> GenesisBlockDB
 - Parent-only Boundary: ห้ามเพิ่ม `GOVIBE_GKS_*`, direct GKS client หรือ GenesisBlockDB port ใน runtime path ใหม่
 - Exact Context Retention: ก่อน dispatch ต้อง persist cache และ injection lineage
 - Private Memory Discipline: raw private episode ไม่ใช่ durable global memory และไม่ใช่ shared truth
+- Impact Before Completion: semantic/schema/authority/runtime change ต้องผ่าน backlink impact analysis
 - Escalate, Do Not Widen: context หรือ permission ไม่พอให้ escalate ไม่ใช่ขยายเอง
 - Best Code Rule: ใช้การแก้ที่เล็กที่สุดซึ่งรักษา contract และ evidence ได้
 
@@ -147,6 +187,7 @@ Executor / Claude Code -> GoVibe MCP -> MSP -> GKS -> GenesisBlockDB
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.7.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Added Deep Scan candidate ownership, wikilink/crosslink/symbol-link/backlink semantics, and mandatory explainable impact analysis before completion. |
 | 1.6.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Added Shared/Workspace Private/Global Private vault rules, T/V/W/M context profiles, context/cache/KV/replay lineage, private-memory promotion discipline, and MSP-only runtime boundary. |
 | 1.5.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Aligned C/H/R/D/W/Budget/Risk semantics and prohibited H5/H6 and ambiguous context_tier. |
 | 1.4.0 | 2026-07-19 | ClaudeFable | Synced Access Scope H0-H4. |
