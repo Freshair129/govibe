@@ -1,8 +1,9 @@
 import { govibeRuntime } from "./runtime-core.mjs";
+import "./runtime-argument-hardening.mjs";
 import { startSidecarServer } from "./sidecar-server.mjs";
 import { handleResourceRead, handleToolCall } from "./handlers.mjs";
 import { resourceCatalog, serverInfo, toolCatalog } from "./registry.mjs";
-import { handleVaultContextTool, handlesVaultContextTool } from "./vault-context-surface.mjs";
+import { handleVaultContextTool, handlesVaultContextTool } from "./vault-context-surface-v2.mjs";
 
 const protocolVersion = "2024-11-05";
 let readBuffer = Buffer.alloc(0);
