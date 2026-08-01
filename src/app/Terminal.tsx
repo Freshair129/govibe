@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from "react";
 import type { MissionCommand, MissionSnapshot } from "../mission";
+import type { CommandTerminalLine } from "../missionGateway";
 
 export function Terminal({ snapshot, send }: { snapshot: MissionSnapshot; send: (command: MissionCommand) => void }) {
   const [open, setOpen] = useState(false);
@@ -18,9 +19,15 @@ export function Terminal({ snapshot, send }: { snapshot: MissionSnapshot; send: 
       <section className={open ? "terminal open" : "terminal"}>
         <header><strong>mission-transport</strong><button onClick={() => setOpen(false)}>x</button></header>
         <div className="terminal-output">
-          {snapshot.terminal.length ? snapshot.terminal.map((line) => (
-            <div key={line.id}><span>[{line.time}]</span> <strong>{line.type}</strong> {line.text}</div>
-          )) : <div className="muted">No terminal events yet.</div>}
+          {snapshot.terminal.length ? snapshot.terminal.map((line) => {
+            const commandLine = line as CommandTerminalLine;
+            return (
+              <div key={line.id} data-command-status={commandLine.commandStatus}>
+                <span>[{line.time}]</span> <strong>{line.type}</strong> {line.text}
+                {commandLine.commandStatus ? <small> [{commandLine.commandStatus}]</small> : null}
+              </div>
+            );
+          }) : <div className="muted">No terminal events yet.</div>}
         </div>
         <form onSubmit={submit}>
           <span>$</span>
