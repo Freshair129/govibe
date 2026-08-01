@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 import { discoverRoadmapSources, parseRoadmapSource } from "./roadmap-parser.mjs";
 import { writeRoadmapMarkdownExport } from "./roadmap-exporter.mjs";
+import { resolvePathWithinAnyRoot } from "./path-security.mjs";
 import { buildDag } from "./dag.mjs";
 import { computeWaves } from "./wave.mjs";
 import { runStep as executeStep } from "./step.mjs";
@@ -395,9 +396,9 @@ async function buildRoadmapSourceInventory(sources) {
   return scoreApprovedSources(inventory, envPreferredPath).sort(compareScoredSources);
 }
 
-async function inferRoadmapSourcePath(explicitSource, sources) {
+async function inferRoadmapSourcePath(explicitSource, sources, allowedRoots) {
   if (explicitSource) {
-    const sourcePath = path.isAbsolute(explicitSource) ? explicitSource : path.join(workspaceRoot, explicitSource);
+    const sourcePath = await resolvePathWithinAnyRoot(explicitSource, allowedRoots, { basePath: workspaceRoot });
     const parsed = await parseRoadmapSource(sourcePath);
     if (parsed.approvalStatus?.toLowerCase() !== "approved") {
       throw new Error(`Roadmap source '${toRelativePath(sourcePath)}' is not approved.`);
@@ -406,7 +407,10 @@ async function inferRoadmapSourcePath(explicitSource, sources) {
   }
 
   const rankedSources = await buildRoadmapSourceInventory(sources);
-  return rankedSources.find((source) => source.approvalStatus?.toLowerCase() === "approved")?.path;
+  const selectedSource = rankedSources.find((source) => source.approvalStatus?.toLowerCase() === "approved")?.path;
+  return selectedSource
+    ? resolvePathWithinAnyRoot(selectedSource, allowedRoots, { basePath: workspaceRoot })
+    : undefined;
 }
 
 function formatAgentRunResult(stdout, stderr, exitCode) {
@@ -423,6 +427,15 @@ function configuredWorkspaceRoots() {
   const roots = JSON.parse(process.env.GOVIBE_ALLOWED_WORKSPACE_ROOTS);
   if (!Array.isArray(roots) || roots.length === 0 || roots.some((root) => typeof root !== "string" || !path.isAbsolute(root))) {
     throw new Error("GOVIBE_ALLOWED_WORKSPACE_ROOTS must be a non-empty JSON array of absolute paths.");
+  }
+  return roots;
+}
+
+function configuredPathRoots(envName, defaultRoot) {
+  if (!process.env[envName]) return [defaultRoot];
+  const roots = JSON.parse(process.env[envName]);
+  if (!Array.isArray(roots) || roots.length === 0 || roots.some((root) => typeof root !== "string" || !path.isAbsolute(root))) {
+    throw new Error(`${envName} must be a non-empty JSON array of absolute paths.`);
   }
   return roots;
 }
@@ -468,6 +481,8 @@ export class GovibeRuntime {
     this.gksClient = options.gksClient ?? createGksClientFromEnvironment();
     this.executorRegistry = createExecutorRegistry(options.executorAdapters ?? {});
     this.allowedWorkspaceRoots = options.allowedWorkspaceRoots ?? configuredWorkspaceRoots();
+    this.allowedRoadmapReadRoots = options.allowedRoadmapReadRoots ?? configuredPathRoots("GOVIBE_ROADMAP_READ_ROOTS", roadmapDir);
+    this.allowedRoadmapWriteRoots = options.allowedRoadmapWriteRoots ?? configuredPathRoots("GOVIBE_ROADMAP_WRITE_ROOTS", roadmapDir);
     this.snapshot.providers = this.executorRegistry.inspect();
   }
 
@@ -624,7 +639,7 @@ export class GovibeRuntime {
 
   async reloadRoadmap(explicitSource, options = {}) {
     const sources = await discoverRoadmapSources(roadmapDir);
-    const selectedSource = await inferRoadmapSourcePath(explicitSource, sources);
+    const selectedSource = await inferRoadmapSourcePath(explicitSource, sources, this.allowedRoadmapReadRoots);
     const rankedSources = await buildRoadmapSourceInventory(sources);
     this.availableSources = rankedSources;
     if (!selectedSource) {
@@ -758,12 +773,10 @@ export class GovibeRuntime {
   }
 
   async previewMasterPlan(sourcePath) {
-    const sources = await discoverRoadmapSources(roadmapDir);
-    const selectedSource = sources.find((source) => toRelativePath(source.path) === sourcePath);
-    if (!selectedSource) throw new Error(`Master Plan source is not discoverable: ${sourcePath}`);
-    const preview = await parseRoadmapSource(selectedSource.path);
-    if (preview.planningType !== "masterplan") throw new Error(`Source is not a Master Plan: ${sourcePath}`);
-    const masterPlanPreview = { ...preview, sourcePath: toRelativePath(selectedSource.path) };
+    const selectedSource = await resolvePathWithinAnyRoot(sourcePath, this.allowedRoadmapReadRoots, { basePath: workspaceRoot });
+    const preview = await parseRoadmapSource(selectedSource);
+    if (preview.planningType !== "masterplan") throw new Error("Selected source is not a Master Plan.");
+    const masterPlanPreview = { ...preview, sourcePath: toRelativePath(selectedSource) };
     this.snapshot = { ...this.snapshot, masterPlanPreview, updatedAt: new Date().toISOString() };
     this.emit({ type: "snapshot", snapshot: { masterPlanPreview } });
     return masterPlanPreview;
@@ -1092,13 +1105,11 @@ export class GovibeRuntime {
       throw new Error("No roadmap snapshot is available to export.");
     }
 
-    const outputPath = args.outputPath
-      ? path.resolve(workspaceRoot, args.outputPath)
-      : undefined;
     const result = await writeRoadmapMarkdownExport(roadmap, {
       workspaceRoot,
       roadmapDir,
-      outputPath,
+      allowedOutputRoots: this.allowedRoadmapWriteRoots,
+      outputPath: args.outputPath,
       overwrite: args.overwrite === true,
       generatedAt: args.generatedAt,
     });

@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { temporalColumns } from "./temporal-versioning.mjs";
+import { resolvePathWithinAnyRoot } from "./path-security.mjs";
 
 function slugify(value) {
   return String(value ?? "roadmap")
@@ -64,9 +65,9 @@ function sortByTypeOrder(nodes) {
   });
 }
 
-function buildOutputPath(roadmap, roadmapDir, outputPath) {
+function buildOutputPath(roadmap, roadmapDir, workspaceRoot, outputPath) {
   if (outputPath) {
-    return path.isAbsolute(outputPath) ? outputPath : path.resolve(outputPath);
+    return path.isAbsolute(outputPath) ? outputPath : path.resolve(workspaceRoot, outputPath);
   }
 
   const root = roadmap.nodes.find((node) => node.type === "roadmap");
@@ -227,8 +228,17 @@ export function renderRoadmapMarkdown(roadmap, options = {}) {
 }
 
 export async function writeRoadmapMarkdownExport(roadmap, options = {}) {
-  const outputPath = buildOutputPath(roadmap, options.roadmapDir, options.outputPath);
-  assertRoadmapOutputPath(outputPath, options.roadmapDir);
+  const requestedOutputPath = buildOutputPath(roadmap, options.roadmapDir, options.workspaceRoot, options.outputPath);
+  const outputPath = await resolvePathWithinAnyRoot(
+    requestedOutputPath,
+    options.allowedOutputRoots ?? [options.roadmapDir],
+    { allowMissing: true },
+  );
+  if ((options.allowedOutputRoots ?? [options.roadmapDir]).length === 1 && options.allowedOutputRoots === undefined) {
+    assertRoadmapOutputPath(outputPath, options.roadmapDir);
+  } else if (path.extname(outputPath).toLowerCase() !== ".md") {
+    throw new Error("Roadmap export output must be a .md file.");
+  }
   const relativeOutputPath = path.relative(options.workspaceRoot, outputPath).replaceAll("\\", "/");
   const markdown = renderRoadmapMarkdown(roadmap, { ...options, relativeOutputPath });
   await mkdir(path.dirname(outputPath), { recursive: true });
