@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.67+draft"
+version: "0.1.68+draft"
 updated: "2026-08-01"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -13,14 +13,15 @@ related_docs:
 
 # Document Version Registry
 
-This registry is the audit sitemap for active canonical Markdown documents in GoVibe.
+This registry is the audit sitemap for active canonical and registered conformance Markdown documents in GoVibe.
 
 ## 1. Registry Rules
 
-- One row per active canonical document.
+- One row per active canonical document or explicitly registered conformance document.
 - `Doc ID` must match frontmatter `doc_id`.
 - `Version` must match frontmatter `version`.
-- `Path` must point to the canonical active file.
+- `Path` must point to the active file.
+- `source_of_truth: false` alignment documents are conformance mappings, not competing canonical authorities.
 - Superseded or archived documents should not remain marked as active.
 
 ## 2. Core Governance
@@ -29,7 +30,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.1+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.67+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.68+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -37,8 +38,8 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 |---|---|---|---|---|---|
 | BRD | `BRD-GOVIBE-PLATFORM` | `0.1.1+draft` | draft | Boss (CEO) | `docs/BRD-GoVibe-Platform.md` |
 | API | `API-004-TASK-SCOPED-CONTEXT-PACKET-SCHEMA` | `0.3.0` | approved | ARCHON / ATHER | `docs/api/API-004-Task-Scoped-Context-Packet-Schema.md` |
-| API | `API-005-GOVIBE-CAPABILITY-CONTRACTS` | `3.1.0` | approved | Boss / ATHER | `docs/api/API-005-GoVibe-Capability-Contracts.md` |
-| API | `API-006-VAULT-CONTEXT-REPLAY-CONTRACTS` | `1.1.0` | approved | Boss / ATHER | `docs/api/API-006-Vault-Context-and-Replay-Contracts.md` |
+| API | `API-005-GOVIBE-CAPABILITY-CONTRACTS` | `3.0.0` | approved | Boss / ATHER | `docs/api/API-005-GoVibe-Capability-Contracts.md` |
+| API | `API-006-VAULT-CONTEXT-REPLAY-CONTRACTS` | `1.0.0` | approved | Boss / ATHER | `docs/api/API-006-Vault-Context-and-Replay-Contracts.md` |
 | Change Request | `CR-2026-07-26-govibe-rwang-capability-absorption` | `1.0.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md` |
 | PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.4.3+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
 | PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.1+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
@@ -58,7 +59,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Implementation Plan | `IMP-SYSTEM05-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.2` | approved | LYRA / ARCHON / ATHER | `docs/roadmap/IMP-SYSTEM05-Task-Scoped-Context-Injection.md` |
 | Backlog | `IMP-GVMP01P05EP01` | `n/a` | tracked-outside-registry | LYRA | `.agents/.devlog/implement/IMP-GVMP01P05EP01.md` |
 
-## 5. Agent Governance
+## 5. Agent Governance and Architecture
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
@@ -90,7 +91,7 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | ADR | `ADR-020-PER-AGENT-MEMORY-UNIT` | `0.1.0+draft` | proposed | ARCHON / ATHER | `docs/adr/ADR-020-Per-Agent-Memory-Unit.md` |
 | ADR | `ADR-022-VAULT-OWNERSHIP-CONTEXT-LINEAGE` | `1.0.0` | approved | Boss / ATHER | `docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md` |
 | Architecture | `BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.1` | approved | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md` |
-| Architecture | `BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE` | `3.1.0` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md` |
+| Architecture | `BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE` | `3.0.0` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md` |
 | Architecture | `ARCH-VAULT-CONTEXT-MODEL` | `1.0.0` | approved | Boss / ATHER | `docs/architecture/ARCH-Vault-and-Context-Model.md` |
 | Architecture | `BLUEPRINT-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Translator-Core-Slice.md` |
 | LLD | `LLD-TASK-SCOPED-CONTEXT-INJECTION-CORE` | `0.1.1` | approved | ARCHON / ATHER | `docs/lld/LLD-Task-Scoped-Context-Injection-Core.md` |
@@ -100,7 +101,18 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Architecture | `SDD-VISUAL-AGENT-FLEET` | `0.1.0` | approved | THESEUS / ARCHON | `docs/architecture/SDD-Visual-Agent-Fleet.md` |
 | Architecture | `SDD-GOVIBE-MSP-GKS-INTEGRATION` | `0.1.2+draft` | draft | Boss (CEO) | `docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md` |
 
-## 6. Runbooks And Context Packets
+## 6. Alignment Conformance Documents
+
+These files map historical or cross-document terminology into canonical owners. They are registered for traceability but have `source_of_truth: false`.
+
+| Group | Doc ID | Version | Status | Owner | Path |
+|---|---|---|---|---|---|
+| Alignment | `ALIGNMENT-01-SYSTEM-AUTHORITY-COMMAND-BOUNDARY` | `1.0.0` | approved | Boss / ATHER | `docs/alignment/ALIGNMENT-01-System-Authority-and-Command-Boundary.md` |
+| Alignment | `ALIGNMENT-04-12-STAGE-DECOMPOSITION-CONTRACT` | `1.0.0` | approved | Boss / ATHER | `docs/alignment/ALIGNMENT-04-12-Stage-Decomposition-Contract.md` |
+| Alignment | `ALIGNMENT-06-CONTEXT-VAULT-MEMORY-ASSEMBLY` | `1.0.0` | approved | Boss / ATHER | `docs/alignment/ALIGNMENT-06-Context-Vault-and-Memory-Assembly.md` |
+| Alignment | `ALIGNMENT-12-MISSION-CONTROL-CONTEXT-IMPACT-SURFACE` | `1.0.0` | approved | Boss / ATHER | `docs/alignment/ALIGNMENT-12-Mission-Control-Context-and-Impact-Surface.md` |
+
+## 7. Runbooks And Context Packets
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
@@ -122,17 +134,20 @@ This registry is the audit sitemap for active canonical Markdown documents in Go
 | Context | `CONTEXT-GOVIBE-GIT-HYGIENE` | `0.1.0+draft` | draft | JANUS / ATHER | `.agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md` |
 | Context | `CONTEXT-MISSION-CONTROL-FRONTEND-STRUCTURE-REFACTOR` | `0.1.1+draft` | draft | LYRA / ARCHON / ATHER | `.agents/context/shared/CONTEXT-Mission-Control-Frontend-Structure-Refactor.md` |
 
-## 7. Migration Notes
+## 8. Migration Notes
 
 - Status values for canonical documents are defined in `docs/STD-Document-Versioning-Governance.md` Section 13.
 - Change-request and feedback artifacts under `docs/change-requests/**` remain review artifacts and are not required in this registry.
+- Alignment files are registered conformance artifacts and must declare canonical owners through `conforms_to`.
+- When an alignment document conflicts with a canonical API, ADR, architecture or Blueprint, the canonical document wins and the alignment document must be revised.
 - Older registry changelog entries remain available in Git history; the active file retains the current audit-relevant history below.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
-| 0.1.67+draft | 2026-08-01 | Boss / ATHER | Registered API-005 v3.1.0, API-006 v1.1.0, Blueprint v3.1.0, and approved Vault/Context/Link/Impact architecture v1.0.0. |
+| 0.1.68+draft | 2026-08-01 | Boss / ATHER | Registered ALIGNMENT-01/04/06/12 as non-SOT conformance mappings and corrected ARCH-VAULT-CONTEXT-MODEL to approved v1.0.0. |
+| 0.1.67+draft | 2026-08-01 | Boss / ATHER | Registered link/backlink/impact schemas and corrected the ARCH Vault/Context/Link/Impact record. |
 | 0.1.66+draft | 2026-08-01 | Boss / ATHER | Registered API-004 v0.3.0, API-005 v3.0.0, API-006 v1.0.0, ADR-022, vault/context architecture, and Blueprint v3.0.0. |
 | 0.1.65+draft | 2026-07-30 | ATHER / THESEUS | Registered the GoVibe first-use runbook for the 12-stage scan and Master Plan MVP. |
 | 0.1.64+draft | 2026-07-30 | ATHER | Recorded the isolated legacy-alias rollback rehearsal in the T13 cutover audit. |
