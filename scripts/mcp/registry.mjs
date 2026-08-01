@@ -1,6 +1,6 @@
 export const serverInfo = {
   name: "govibe-mcp",
-  version: "0.1.0",
+  version: "0.2.0",
 };
 
 export const toolCatalog = [
@@ -23,7 +23,7 @@ export const toolCatalog = [
   },
   {
     name: "govibe.orchestrate.step",
-    description: "Run one Standard Execution Packet (StEP): execute a task via an agent, then verify it against a real Definition-of-Done gate; advance the roadmap on pass or block + raise a human gate.",
+    description: "Run one Standard Execution Packet (StEP): execute a task via an agent, verify it against a real Definition-of-Done gate, then advance or block the workflow.",
     inputSchema: {
       type: "object",
       properties: {
@@ -42,7 +42,7 @@ export const toolCatalog = [
         maxAttempts: { type: "number" },
         budget: { type: "object" },
         complexity: { type: "string" },
-        contextTier: { type: "string" },
+        contextProfile: { type: "string", enum: ["T-ctx", "V-ctx", "W-ctx", "M-ctx"] },
       },
       required: ["actor", "taskId", "agentId"],
     },
@@ -56,7 +56,7 @@ export const toolCatalog = [
         actor: { type: "string" },
         selectors: { type: "array", items: { type: "string" } },
         scope: { type: "string" },
-        contextTier: { type: "string" },
+        contextProfile: { type: "string", enum: ["T-ctx", "V-ctx", "W-ctx", "M-ctx"] },
       },
       required: ["actor", "selectors"],
     },
@@ -127,31 +127,34 @@ export const toolCatalog = [
   },
   {
     name: "govibe.workspace.initialize",
-    description: "Prepare .govibe state, pin the built-in scan skill, and register the workspace without scanning.",
+    description: "Prepare workspace vault bindings, .govibe state, the built-in scan skill, and MSP registration without scanning.",
     inputSchema: {
       type: "object",
       properties: {
         actor: { type: "string" },
         workspacePath: { type: "string" },
+        agentId: { type: "string" },
+        globalPrivateVaultId: { type: "string" },
       },
       required: ["actor", "workspacePath"],
     },
   },
   {
     name: "govibe.workflow.continue",
-    description: "Resolve pinned skill, Two-Brain state, and GKS references into an executor-neutral context packet.",
+    description: "Resolve pinned skill and MSP-mediated vault/context references into an executor-neutral replayable context packet.",
     inputSchema: {
       type: "object",
       properties: {
         actor: { type: "string" },
         workspacePath: { type: "string" },
         executor: { type: "string", enum: ["claude-code", "codex", "crewai"] },
+        agentId: { type: "string" },
+        contextProfile: { type: "string", enum: ["T-ctx", "V-ctx", "W-ctx", "M-ctx"] },
+        workflowId: { type: "string" },
+        parentContextId: { type: "string" },
+        sessionId: { type: "string" },
         runId: { type: "string" },
-        taskId: { type: "string" },
-        status: { type: "string", enum: ["pending", "running", "paused", "complete", "failed", "blocked"] },
-        idempotencyKey: { type: "string" },
-        verification: { type: "object" },
-        outputRefs: { type: "array", items: { type: "string" } },
+        turnId: { type: "string" },
       },
       required: ["actor", "workspacePath"],
     },
@@ -168,8 +171,19 @@ export const toolCatalog = [
   },
   {
     name: "govibe.workspace.impact",
-    description: "Find workspace references to a bounded set of paths.",
-    inputSchema: { type: "object", properties: { actor: { type: "string" }, workspacePath: { type: "string" }, paths: { type: "array", items: { type: "string" } } }, required: ["actor", "workspacePath", "paths"] },
+    description: "Traverse observed backlinks to explain direct and transitive impact from changed workspace artifacts.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+        workspacePath: { type: "string" },
+        paths: { type: "array", minItems: 1, items: { type: "string" } },
+        changeType: { type: "string", enum: ["editorial", "schema_additive", "schema_breaking", "semantic_change", "authority_boundary_change", "runtime_behavior_change"], default: "semantic_change" },
+        maxDistance: { type: "integer", minimum: 1, maximum: 8, default: 3 },
+        minimumScore: { type: "number", minimum: 0, maximum: 1, default: 0.2 },
+      },
+      required: ["actor", "workspacePath", "paths"],
+    },
   },
   {
     name: "govibe.docs.version",
@@ -188,7 +202,7 @@ export const toolCatalog = [
   },
   {
     name: "govibe.workspace.scan",
-    description: "Run an L1 inventory or the canonical twelve-stage deep scan through MSP/GKS writers.",
+    description: "Run an L1 inventory or canonical twelve-stage Deep Scan and submit knowledge/link candidates through MSP promotion.",
     inputSchema: {
       type: "object",
       properties: {
@@ -229,7 +243,7 @@ export const toolCatalog = [
   },
   {
     name: "govibe.ingest.code",
-    description: "Ingest a repo's docs/code into GKS atoms and extract a doc-format template (translator-core slice).",
+    description: "Create document/code atom candidates and submit governed knowledge promotion through MSP.",
     inputSchema: {
       type: "object",
       properties: {
@@ -244,7 +258,7 @@ export const toolCatalog = [
   },
   {
     name: "govibe.render",
-    description: "Render a document from GKS atoms into a target format template, gated by a real fidelity check (round-trip + semantic).",
+    description: "Render a document from governed knowledge references into a target template, gated by round-trip and semantic fidelity checks.",
     inputSchema: {
       type: "object",
       properties: {
