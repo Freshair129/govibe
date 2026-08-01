@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.70+draft"
+version: "0.1.71+draft"
 updated: "2026-08-02"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -30,7 +30,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.1+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.70+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.71+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -118,7 +118,7 @@ These files map historical or cross-document terminology into canonical owners. 
 |---|---|---|---|---|---|
 | Runbook | `RUNBOOK-BOUNDED-EXTERNAL-EXECUTOR-WORKFLOW` | `0.2.4` | approved | LYRA | `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` |
 | Runbook | `RUNBOOK-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.0+draft` | draft | JANUS / KIN | `docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md` |
-| Runbook | `RUNBOOK-GOVIBE-FIRST-USE` | `0.1.0+draft` | draft | GoVibe | `docs/runbooks/RUNBOOK-GoVibe-First-Use.md` |
+| Runbook | `RUNBOOK-GOVIBE-FIRST-USE` | `0.1.1+draft` | draft | GoVibe | `docs/runbooks/RUNBOOK-GoVibe-First-Use.md` |
 | SRS | `SRS-GOVIBE-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | ARCHON / ATHER | `docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md` |
 | SRS | `SRS-GOVIBE-MCP-SERVER` | `0.2.1` | approved | GoVibe | `docs/srs/SRS-GoVibe-MCP-Server.md` |
 | SRS | `SRS-OLLAMA-SIDECAR-EXECUTION` | `0.2.1` | approved | THESEUS | `docs/srs/SRS-Ollama-Sidecar-Execution.md` |
@@ -146,6 +146,7 @@ These files map historical or cross-document terminology into canonical owners. 
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.71+draft | 2026-08-02 | ATHER | Synced the first-use runbook after documenting Mission sidecar authentication and origin policy. |
 | 0.1.70+draft | 2026-08-02 | ATHER | Restored registry parity for six governed documents whose approved version updates had already landed. |
 | 0.1.69+draft | 2026-08-01 | Boss / ATHER | Synced ARCH-VAULT-CONTEXT-MODEL v1.0.1 after linking registered alignment conformance mappings. |
 | 0.1.68+draft | 2026-08-01 | Boss / ATHER | Registered ALIGNMENT-01/04/06/12 as non-SOT conformance mappings and corrected ARCH-VAULT-CONTEXT-MODEL to approved v1.0.0. |
