@@ -44,8 +44,8 @@ export async function inventoryWorkspace(workspacePath) {
   };
 }
 
-export async function scanWorkspace({ workspacePath, deep = false, mspClient, gksClient, actor = "unknown", adapters = createDefaultStageAdapters(), runId = randomUUID(), resume = false }) {
+export async function scanWorkspace({ workspacePath, deep = false, mspClient, actor = "unknown", adapters = createDefaultStageAdapters(), runId = randomUUID(), resume = false }) {
   const inventory = await inventoryWorkspace(workspacePath);
   if (!deep) return { schema: "govibe-scan-result/v1", runId, level: "L1", status: "complete", inventory, deepScanRun: false };
-  return runDeepScan({ workspacePath: path.resolve(workspacePath), inventory, mspClient, gksClient, actor, adapters, runId, resume });
+  return runDeepScan({ workspacePath: path.resolve(workspacePath), inventory, mspClient, actor, adapters, runId, resume });
 }

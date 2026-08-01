@@ -2,11 +2,10 @@
 title: "GoVibe Universal Agent Operating Contract"
 summary: "สัญญาการทำงานสากลและการควบคุมจริยธรรมของ AI Agents ในโครงการ GoVibe"
 doc_id: "AGENTS-CORE-001"
-version: "1.5.0"
+version: "1.7.0"
 updated: "2026-08-01"
 owner: "THESEUS"
 type: "agents"
-# --- MASTER HUB METADATA ---
 block_manifest:
   core:
     id: "[[AGENTS::UNIVERSAL_HUB]]"
@@ -18,129 +17,177 @@ block_manifest:
 
 # UNIVERSAL AGENT CONTRACT [L4-Standard] AGENTS_UNIVERSAL_HUB
 
-> 📜 **Operating Rules for All GoVibe Agents**
-> ทุก Agent ที่ทำงานใน Workspace นี้ต้องปฏิบัติตามสัญญานี้อย่างเคร่งครัด
->
-> ⭐ **`AGENTS.md` (ไฟล์นี้) = สัญญามาตรฐานตัวจริง** — เป็นไฟล์ที่ codex, เครื่องมือฝั่ง GPT และ convention `AGENTS.md` auto-load. `AGENT.md` (เอกพจน์) และ `GEMINI.md` เป็นเพียง **compatibility bridge** ที่ชี้กลับมาที่ไฟล์นี้ เสมอให้ยึด `AGENTS.md` เป็นหลัก
+> `AGENTS.md` คือสัญญาหลักสำหรับ Agent ทุกตัวใน GoVibe ส่วน `AGENT.md`, `GEMINI.md` และ `CLAUDE.md` เป็น compatibility/consumer guide ที่ต้องไม่ขัดกับไฟล์นี้
 
----
+## 1. Metadata inheritance
 
-## 🛰️ 1. METADATA INHERITANCE (Hub-and-Spoke) [L3-Policy] AGENTS::INHERITANCE
-> 👁️ **Visual Node: META_HUB**
-> metadata: { "color": "#FFD600", "icon": "hub", "label": "Metadata Hub" }
+- ใช้ `AGENTS.md` และ `BLUEPRINT-*.md` เป็น Hub
+- งาน implementation ระบุอย่างน้อย `id`, `block_id`, `access_scope`, `status`
+- Spoke artifact ต้องเชื่อมกลับ Task/Work Packet/Atom ที่เป็น authority
 
-เพื่อให้เกิดประสิทธิภาพสูงสุดในการใช้ Context/Token:
-- **Full-Scale Hub:** ใช้ `AGENTS.md` (ไฟล์นี้ — มาตรฐานที่ codex/gpt auto-load) และ `BLUEPRINT-*.md` เป็น Hub เก็บ Metadata ชุดเต็ม
-- **Spoke Linkage:** Agent ต้องใช้ `block_id` ในการเชื่อมโยงงานกลับมาที่ Hub เสมอ
-- **Minimal Metadata Rule:** ในระดับการเขียนโค้ด ให้ระบุเพียง `id`, `block_id`, `access_scope`, และ `status` เพื่อลด Token Noise
+## 2. Unified handover
 
----
+1. รับ Assignment พร้อม C/H และแกน R/D/W/Budget/Risk ที่เกี่ยวข้อง
+2. ผลิต artifact และผูกกับ Task ID
+3. ส่ง Verification Request ให้ QA/Auditor
+4. แนบ evidence ก่อนส่ง Human Owner
 
-## 🤝 2. UNIFIED HANDOVER PROTOCOL [L3-Process] AGENTS::HANDOVER
-> 👁️ **Visual Node: HANDOVER_NODE**
-> metadata: { "color": "#4CAF50", "icon": "handshake", "link_to": "[[AGENTS::UNIVERSAL_HUB]]", "label": "Handoff Protocol" }
-
-กระบวนการส่งต่องานระหว่าง Agent ต้องทำผ่านเหตุการณ์ (Mission Events) ดังนี้:
-1. **Assignment:** รับงานจาก LYRA (PM) พร้อมค่า C/H/W Levels และแกน retrieval/context ที่เกี่ยวข้อง
-2. **Implementation:** ผลิต Artifact (Code/Docs) และ Link กลับไปที่ Task ID
-3. **Verification Request:** ส่งต่อให้ GHOST (QA) หรือ ATHER (Auditor) ตรวจสอบ
-4. **Evidence Attachment:** แนบหลักฐานการตรวจสอบ (QA Report/Audit Log) ก่อนส่งคืน Human Owner
-
----
-
-## 🛡️ 3. GOVERNANCE AXES [L3-Governance] AGENTS::SCALING
-> 👁️ **Visual Node: SCALING_GOVERNANCE**
-> metadata: { "color": "#F44336", "icon": "shield-lock", "link_to": "[[AGENTS::UNIVERSAL_HUB]]", "label": "Governance Axes" }
-
-### 3.1 Canonical axis meanings
+## 3. Governance axes
 
 | Axis | Meaning | Canonical values |
 |---|---|---|
-| **C** | Process complexity | `C-0..C-3` |
-| **H** | Executor Access Scope / tool-permission ceiling | `H0..H4` |
-| **R** | Retrieval radius / graph distance | `R0..R6` or explicit retrieval policy |
-| **D** | Compaction / resolution depth | repository-defined `D` scale |
-| **W** | Fan-out / branching width | `W2..W4` |
-| **Budget** | Token/content allowance | explicit numeric or policy object |
-| **Risk** | Operational/security impact | repository-defined risk class |
+| C | Process complexity | `C-0..C-3` |
+| H | Executor Access Scope | `H0..H4` |
+| R | Retrieval radius | `R0..R6` หรือ explicit policy |
+| D | Compaction/resolution depth | repository-defined |
+| W | Fan-out/branching width | explicit scale |
+| Budget | Token/content/resource allowance | explicit object/value |
+| Risk | Operational/security impact | explicit class |
 
-**ห้ามใช้ตัวอักษรหนึ่งแกนแทนอีกแกนหนึ่ง** โดยเฉพาะ:
+ห้ามใช้ H แทน graph hops, retrieval radius, token budget, risk หรือ context profile. H5/H6 ถูกยกเลิก. `context_tier` เป็น legacy ambiguous alias และห้ามสร้างเพิ่ม.
+
+Access Scope:
+
+- H0: bounded single-file read
+- H1: search
+- H2: write/multi-file edit
+- H3: shell
+- H4: network/full configured capabilities พร้อม approval
+
+Default: C-0→H0, C-1→H1, C-2→H2, C-3→H3. C-3/H4 ต้องมี owner approval.
+
+## 4. Vault and memory contract
+
+### 4.1 Shared Vault
+
+Shared Vault คือ Project Source of Truth สำหรับ Agent Team ที่ได้รับสิทธิ์ เนื้อหาที่เป็น architecture, requirement, decision, contract, validated observation และ promoted team knowledge ต้องผ่าน governance ก่อนเป็น Shared SOT.
+
+### 4.2 Workspace Private Vault
+
+Workspace Private Vault เป็น episodic/experiential memory หลักของ Agent หนึ่งตัวใน workspace ปัจจุบัน เก็บ task continuity, state snapshot, hypothesis, mistake และ recovery pattern. มันไม่ใช่ Project SOT.
+
+### 4.3 Global Private Vault
+
+Global Private Vault เป็น compressed durable memory ของ Agent ข้าม workspace. ห้าม copy raw episode ทั้งก้อนจาก Workspace Private ขึ้น Global. ต้อง reflect, deduplicate, redact, compress และผ่าน promotion policy.
+
+### 4.4 Promotion
 
 ```text
-H != graph hops
-H != retrieval radius
-H != context/token budget
-H != risk
-H != CoVibe/CoDev mode
+Workspace Private -> compression/privacy gate -> Global Private
+Workspace Private -> validation/approval gate -> Shared Vault
 ```
 
-### 3.2 Access Scope H0-H4
+Agent ห้ามเขียนหรือ promote เข้า Shared Vault โดยตรง. ทุก operation ต้องผ่าน GoVibe และ MSP parent boundary.
 
-H = **เพดาน capability ของ executor** ตาม `docs/STD-Execution-Governance.md` และ `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` โดย canonical home อยู่ที่ RWANG PROMAX `skills/rwang/references/EXECUTION-GOVERNANCE.md`:
+## 5. Context profiles
 
-- **H0:** read ไฟล์เดี่ยว (glob/grep forbidden)
-- **H1:** + search (glob/grep)
-- **H2:** + write / multi-file edit
-- **H3:** + shell execution
-- **H4:** + network/full configured capability set **และต้องได้ approval ก่อนลงมือ**
+- `T-ctx`: system + task/event; ใช้กับ worker/headless; ห้ามโหลด private history โดยปริยาย
+- `V-ctx`: Global Private + current Workspace Private; profile ปกติของ stateful agent
+- `W-ctx`: V-ctx + exactly one active multi-agent workflow; orchestrator/lead/final gate
+- `M-ctx`: sync Global/Workspace ทุก turn พร้อม diff lineage และ realtime shared context; review/audit gates
 
-Default map จาก Complexity:
+`V-space` หมายถึง workspace ไม่ใช่ memory tier. Context profile ไม่กำหนด H/R/D/W/Budget/Risk.
+
+Agent ต้องใช้ `contextProfile` ที่ packet ระบุ ห้ามอนุมานจาก role แล้วเปลี่ยนเอง. W-ctx ต้องมี workflow เดียว. M-ctx หลัง turn แรกต้องมี `parentContextId`.
+
+## 6. Context injection, cache, KV and replay
+
+ทุก Agent turn ที่ dispatch ต้องผูกกับ:
+
+- `contextId`: logical assembly
+- `cacheId`: exact persisted packet
+- `kvId`: optional runtime-issued model KV identity
+- exact source versions/hashes
+- run/session/turn/agent/workspace identity
+
+Agent ห้ามสร้าง `kvId` เอง. KV reuse ใช้ได้ต่อเมื่อ model, tokenizer, system context, tool schema, ordering และ source content ตรงทั้งหมด.
+
+Replay ห้ามแทน source รุ่นเก่าด้วยรุ่นล่าสุดแบบเงียบ ๆ และต้องรายงานแยก:
+
+1. context reproducible
+2. execution reproducible
+3. output identical
+
+ห้ามอ่าน Private Vault ของ Agent อื่นโดยไม่มี explicit grant. ห้ามถือ local `.brain` materialization เป็น canonical โดยไม่ตรวจ vault ID, registry ref, version และ hash.
+
+## 7. Runtime boundary
 
 ```text
-C-0 -> H0
-C-1 -> H1
-C-2 -> H2
-C-3 -> H3
+Executor / Claude Code -> GoVibe MCP -> MSP -> GKS -> GenesisBlockDB
 ```
 
-`C-3/H4` เป็น upward override สำหรับ architecture, cross-system หรือ platform work และต้องได้รับ owner approval ก่อน implementation. **H5/H6 ถูกยกเลิก** และห้ามใช้ใน active contract, metadata, task packet หรือ implementation symbol.
+- GoVibe ห้ามเรียก GKS หรือ GenesisBlockDB โดยตรง
+- Agent ห้ามเรียก MSP/GKS/GenesisBlockDB ผ่าน runtime credentials โดยตรง
+- Producing scan stages สร้าง candidate knowledge แล้วส่งให้ MSP promotion gate
+- `gks:` reference ที่ถูกส่งกลับเป็น opaque reference ไม่ใช่ connection capability
 
-### 3.3 Retrieval and context rules
+## 8. Knowledge, link, backlink and impact contract
 
-- ใช้ `R` หรือ field ชัดเจน เช่น `retrieval_radius`, `max_hops`, `retrievalPolicy` สำหรับ graph distance
-- ใช้ `D` สำหรับ compaction/resolution depth
-- ใช้ `context_budget` หรือ `max_tokens` สำหรับปริมาณ context
-- `context_tier` เป็น legacy/ambiguous alias และห้ามสร้างเพิ่ม; ต้องจำแนก semantic ก่อน migrate
-- ห้ามอนุมาน retrieval radius หรือ token budget จาก H
+### 8.1 Knowledge construction
 
----
+Deep Scan เป็น decomposition/discovery engine และสร้างได้เฉพาะ candidate:
 
-## 🤖 4. AGENT ROLE DIRECTORY [L3-Registry] AGENTS::ROLES
-> 👁️ **Visual Node: ROLE_REGISTRY**
-> metadata: { "color": "#2196F3", "icon": "account-details", "link_to": "[[AGENTS::UNIVERSAL_HUB]]", "label": "Role Directory" }
+- document/section/atom candidate
+- symbol/entity candidate
+- wikilink/crosslink/symbol-link candidate
+- observed graph relation พร้อม provenance/confidence
+
+GKS เป็นผู้ assign canonical `document_id`, `document_version_id`, `atom_id`, `symbol_id`, `entity_id`, `relation_id` หลัง MSP authorize. Agent และ GoVibe ห้ามเรียก candidate ว่า canonical knowledge.
+
+### 8.2 Link classes
+
+- Wikilink: explicit document/concept reference เช่น `[[ADR-022]]`
+- Crosslink: relation ข้าม artifact/memory domain
+- Symbol link: import/call/inheritance/route/tool/ORM relation
+- Backlink: reverse projection ของ forward relation เดิม
+
+Backlink ห้ามสร้าง semantic edge ซ้ำ. ต้อง preserve original `link_id/relation_id`, relation type, source, target และ provenance.
+
+### 8.3 Impact analysis
+
+เมื่อเปลี่ยน architecture, API, schema, authority boundary หรือ runtime behavior Agent ต้องรัน impact analysis ก่อนประกาศงานเสร็จ:
+
+```text
+changed seed
+  <- direct backlinks
+  <- transitive backlinks
+  <- implementation/tests/UI/operations
+```
+
+ผลต้องระบุ affected artifact, relation chain, graph distance, impact score, required action และ unresolved links. ต้องจัดการ cycle, จำกัดระยะ และห้ามอ้าง completeness เมื่อ graph coverage ไม่พอ.
+
+`text.includes(path)` หรือ grep อย่างเดียวเป็น discovery fallback ไม่ใช่ canonical impact algorithm.
+
+Agent ต้องแก้ทุก `must_update`; ต้องตรวจและตัดสินทุก `review_and_update`; และต้องบันทึกเหตุผลเมื่อไม่แก้รายการ `review`.
+
+## 9. Agent role directory
 
 | Agent | Role | Specialized SSOT |
 |---|---|---|
-| **LYRA** | PM / Planner | `docs/roadmap/` |
-| **THESEUS** | Doc Writer | `.agents/doc_writer/template/` |
-| **ATHER** | Auditor | `docs/STD-Execution-Governance.md` |
-| **GHOST** | QA / E2E | `.agents/qa/asset/` |
+| LYRA | PM / Planner | `docs/roadmap/` |
+| THESEUS | Doc Writer | `.agents/doc_writer/template/` |
+| ATHER | Auditor | `docs/STD-Execution-Governance.md` |
+| GHOST | QA / E2E | `.agents/qa/asset/` |
 
----
+## 10. Execution rules
 
-## 🛠️ 5. EXECUTION RULES [L2-Engineering] AGENTS::RULES
-> 👁️ **Visual Node: RULES_NODE**
-> metadata: { "color": "#9E9E9E", "icon": "cog", "link_to": "[[AGENTS::UNIVERSAL_HUB]]", "label": "Execution Rules" }
-
-- **Docs First:** ห้ามเขียน Code ก่อนที่ Blueprint/Spec จะได้รับการ Approve
-- **Surgical Edit:** แก้ไขเฉพาะจุดที่เกี่ยวข้องกับ Task ID เท่านั้น
-- **Traceability:** ทุก Commit ต้องระบุ Task ID หรือ Atom ID ที่เกี่ยวข้อง
-- **Axis Declaration:** งาน non-trivial ต้องประกาศ C และใช้ H ตาม default หรือ upward override; R, D, W, Budget และ Risk ให้ประกาศเมื่อเกี่ยวข้อง ห้ามรวมความหมายเข้า H
-- **Legacy Rejection:** ห้ามสร้าง active field/symbol ใหม่ที่ใช้ `H5`, `H6`, `HLevelClassifier`, `classifyHLevel`, หรือใช้ `context_tier` โดยไม่ระบุ semantic migration
-- **Handoff Awareness:** Agent ทุกตัวต้องตรวจสอบโฟลเดอร์ `handoff/` และไฟล์ `log.jsonl` ในโดเมนที่รับผิดชอบทุกครั้งเมื่อได้รับมอบหมายงาน (Revoke/Invoke) เพื่อรับช่วงต่องานที่ค้างอยู่หรือข้อมูลบริบทเพิ่มเติม
-- **Project Reality Check:** When asked to help GoVibe or a connected repo, inspect real project state before making claims. At minimum check `git status`, root context files (`AGENTS.md`, `AGENT.md`, `GEMINI.md`, `CLAUDE.md` when present), referenced source docs, referenced commands, and relevant code/test evidence.
-- **No Imagined Capability:** Do not claim a feature, command, doc, or integration exists or works unless it was verified from current project evidence. If dirty state or context drift may affect the answer, report it explicitly.
-- **Help, Don't Create Work:** When evidence and docs disagree, return the smallest safe fix, blocker, or verification step. Do not create new architecture, new docs, or new implementation scope just to answer a narrow request.
-- **Best Code Rule:** The best code is the code you never wrote. Before proposing code, check in order: can the work be skipped, solved with docs/config/process, solved by stdlib/native platform behavior, solved by an existing dependency, solved with a one-line change, and only then solved with the minimum new code.
-- **Optional Ponytail Hygiene:** `ponytail` may be used as an optional over-engineering review aid, but it is not a GoVibe dependency and must not override Docs First, RCA First, evidence-first review, or human approval gates.
-
----
+- Docs First: implementation ต้องอ้าง approved Blueprint/API/ADR
+- Surgical Edit: แก้เฉพาะขอบเขต Task
+- Traceability: commit ผูก Task/Atom/Work Packet
+- Project Reality Check: ตรวจ source docs, code, tests, CI และ current state ก่อนอ้าง capability
+- No Imagined Capability: ห้ามอ้าง command/integration ว่ามีหรือทำงานแล้วโดยไม่มี evidence
+- Parent-only Boundary: ห้ามเพิ่ม `GOVIBE_GKS_*`, direct GKS client หรือ GenesisBlockDB port ใน runtime path ใหม่
+- Exact Context Retention: ก่อน dispatch ต้อง persist cache และ injection lineage
+- Private Memory Discipline: raw private episode ไม่ใช่ durable global memory และไม่ใช่ shared truth
+- Impact Before Completion: semantic/schema/authority/runtime change ต้องผ่าน backlink impact analysis
+- Escalate, Do Not Widen: context หรือ permission ไม่พอให้ escalate ไม่ใช่ขยายเอง
+- Best Code Rule: ใช้การแก้ที่เล็กที่สุดซึ่งรักษา contract และ evidence ได้
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
-| 1.5.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Aligned the universal contract with ADR-021: renamed metadata to `access_scope`, separated C/H/R/D/W/Budget/Risk, replaced legacy CH compaction wording with D, prohibited H5/H6 and ambiguous new `context_tier` usage. |
-| 1.4.0 | 2026-07-19 | ClaudeFable | §3 synced to STD-Execution-Governance 2.3.x: Context Scaling Tiers H0-H6 → Access Scope H0-H4 (capability ceiling; radius→R, compaction→CH; H5/H6 abolished per RWANG RFC--H-AXIS-0.6.0). |
-| 1.3.1 | 2026-06-22 | THESEUS | Affirmed `AGENTS.md` as the standard contract auto-loaded by codex/gpt (with `AGENT.md`/`GEMINI.md` as compatibility bridges); fixed the stale Full-Scale Hub reference (`agent.md` → `AGENTS.md`). |
-| 1.3.0 | 2026-06-16 | THESEUS | Universal agent operating contract: hub-and-spoke metadata, unified handover, context scaling tiers, role directory, execution rules. |
+| 1.7.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Added Deep Scan candidate ownership, wikilink/crosslink/symbol-link/backlink semantics, and mandatory explainable impact analysis before completion. |
+| 1.6.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Added Shared/Workspace Private/Global Private vault rules, T/V/W/M context profiles, context/cache/KV/replay lineage, private-memory promotion discipline, and MSP-only runtime boundary. |
+| 1.5.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Aligned C/H/R/D/W/Budget/Risk semantics and prohibited H5/H6 and ambiguous context_tier. |
+| 1.4.0 | 2026-07-19 | ClaudeFable | Synced Access Scope H0-H4. |

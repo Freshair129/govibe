@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "GoVibe Vault Registry v1",
+  "type": "object",
+  "required": ["schema", "vaults"],
+  "properties": {
+    "schema": { "const": "govibe-vault-registry/v1" },
+    "vaults": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/vault" }
+    }
+  },
+  "definitions": {
+    "vault": {
+      "type": "object",
+      "required": ["vault_id", "slug", "vault_type", "vault_level", "role", "status", "owner"],
+      "properties": {
+        "vault_id": { "type": "string", "minLength": 1 },
+        "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$" },
+        "vault_type": { "enum": ["shared", "private"] },
+        "vault_level": { "enum": ["project", "workspace", "global"] },
+        "role": { "enum": ["project_source_of_truth", "episodic_memory", "compressed_durable_memory"] },
+        "status": { "enum": ["draft", "active", "read_only", "deprecated", "archived", "revoked"] },
+        "project_id": { "type": ["string", "null"] },
+        "workspace_id": { "type": ["string", "null"] },
+        "agent_id": { "type": ["string", "null"] },
+        "owner": {
+          "type": "object",
+          "required": ["type", "id"],
+          "properties": {
+            "type": { "enum": ["project", "workspace", "agent"] },
+            "id": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        },
+        "materialization_path": { "type": ["string", "null"] },
+        "registry_ref": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "role": { "const": "project_source_of_truth" } } },
+          "then": { "required": ["project_id"] }
+        },
+        {
+          "if": { "properties": { "role": { "const": "episodic_memory" } } },
+          "then": { "required": ["project_id", "workspace_id", "agent_id"] }
+        },
+        {
+          "if": { "properties": { "role": { "const": "compressed_durable_memory" } } },
+          "then": { "required": ["agent_id"] }
+        }
+      ],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

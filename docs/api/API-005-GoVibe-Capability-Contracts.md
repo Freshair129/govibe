@@ -2,70 +2,70 @@
 title: "API: GoVibe Capability Contracts"
 doc_id: "API-005-GOVIBE-CAPABILITY-CONTRACTS"
 status: "approved"
-version: "2.0.2"
-updated: "2026-07-30"
+version: "3.1.0"
+updated: "2026-08-01"
 owner: "Boss / ATHER"
 source_of_truth: true
 related_docs:
-  - "docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md"
   - "docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md"
   - "docs/api/API-004-Task-Scoped-Context-Packet-Schema.md"
+  - "docs/api/API-006-Vault-Context-and-Replay-Contracts.md"
+  - "docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md"
 ---
 
-# API: GoVibe Capability Contracts
+# Boundary
 
-## Skill Definition
+Claude Code and other executors call GoVibe MCP. GoVibe calls MSP only. MSP owns identity, Vault Registry, private memory, context resolution, injection lineage, replay authorization, evidence, promotion gates, and all mediation to GKS. GoVibe must not expose or call a direct GKS or GenesisBlockDB port.
 
-`govibe-skill-definition/v1` is immutable for an `(id, version)` pair.
-
-```ts
-type GoVibeSkillDefinition = {
-  schema: "govibe-skill-definition/v1";
-  id: string;
-  version: string;
-  aliases: string[];
-  inputSchema: Record<string, unknown>;
-  outputSchema: Record<string, unknown>;
-  permissions: string[];
-  stageHooks: Array<{ stage: number; handler: string }>;
-  verificationRequirements: string[];
-  contentHash: string;
-};
+```text
+Executor -> GoVibe MCP -> MSP -> GKS -> GenesisBlockDB
 ```
 
-Definitions live at `.govibe/skills/<id>/<version>/SKILL.md`. A workspace lock at `.govibe/skill-lock.json` selects exact versions and hashes. Global policy may allow workspace-local additions, but an existing `(id, version)` cannot resolve to different content.
+# Skill Definition
 
-Global trust policy lives at `%USERPROFILE%\.govibe\trust-policy.json` with schema `govibe-skill-trust-policy/v1`. Workspace config cannot self-authorize local skills; only the Global policy or a hash embedded by the installed GoVibe runtime may trust workspace content.
+`govibe-skill-definition/v1` is immutable for an `(id, version)` pair. Workspace locks pin exact versions and hashes. Workspace policy may narrow Global trust but may not widen it.
 
-## Stage Run
+# Workspace Initialization
 
-```ts
-type GoVibeStageRun = {
-  schema: "govibe-stage-run/v1";
-  runId: string;
-  stage: number;
-  name: string;
-  status: "complete" | "not_applicable" | "incomplete" | "failed";
-  inputRefs: string[];
-  outputRefs: string[];
-  method: string;
-  confidence: number;
-  exclusions: string[];
-  error?: string;
-};
-```
+`govibe.workspace.initialize`:
 
-Workflow snapshots use `pending | running | paused | blocked | failed |
-completed | cancelled`. Stage records additionally expose transient `pending`
-and `running` states while persisted terminal records retain the states above.
+1. resolves the workspace inside the allowed-root boundary;
+2. creates `.govibe/` and `.brain/`;
+3. creates stable `project_id`, `workspace_id`, and vault bindings;
+4. creates `.govibe/vaults.json`;
+5. materializes the project Shared Vault at `.brain/<project-slug>/`;
+6. materializes the current Agent Workspace Private Vault at `.brain/private/<agent-id>/`;
+7. binds the Agent Global Private Vault by reference;
+8. pins the built-in scan skill;
+9. registers the workspace and vault bindings through MSP;
+10. does not run a deep scan.
 
-`KnowledgeBatch` contains only atoms, symbols, relations, context snapshots,
-and `provenance_ref`. `ProofBatch` contains findings, stage evidence,
-verification, artifact lineage, and optional `knowledge_ref`. Both envelopes
-require `schema_version`, `idempotency_key`, `run_id`, `stage`, and
-`source_snapshot_hash`.
+MSP registration is fail-closed for governed execution. A local prepared state without parent registration is not dispatchable.
 
-Canonical deep-scan order is:
+# Context Profiles
+
+- `T-ctx`: system plus one task/event context, normally workers or headless agents.
+- `V-ctx`: Agent Global Private plus current Workspace Private context.
+- `W-ctx`: V-ctx plus exactly one active multi-agent workflow.
+- `M-ctx`: per-turn synchronized Global/Workspace context with diff lineage and real-time shared context.
+
+Context profile is independent from H access scope, R retrieval radius, D resolution depth, W fan-out, Budget, and Risk.
+
+# Context Lineage
+
+Every injected context carries:
+
+- `contextId`: logical assembly identity;
+- `cacheId`: exact materialized payload identity;
+- `kvId`: optional runtime-issued KV identity;
+- `parentContextId`: prior context in an M-ctx chain;
+- source-manifest and context hashes.
+
+Replay preserves exact source versions. Context reproducibility, execution reproducibility, and output identity are reported separately.
+
+# Stage Run and Deep Scan
+
+The public deep-scan contract contains twelve stages:
 
 1. Scan
 2. Structure
@@ -80,49 +80,105 @@ Canonical deep-scan order is:
 11. Communities
 12. Processes
 
-L2 completion requires all stages to be `complete` or evidenced `not_applicable` and requires graph validation to pass. `incomplete` and `failed` are terminal non-complete outcomes.
+F1-F4 are internal finalization operations and are not public Stage 13-16 identifiers. GoVibe orchestrates scan execution. Producing stages submit a `govibe-knowledge-candidate/v1` to MSP. MSP validates authority and promotion policy, mediates GKS lifecycle, and returns opaque knowledge and promotion references.
 
-## MCP Commands
+Deep Scan is also the observed-link discovery engine:
 
-- `govibe.workspace.initialize`: prepares `.govibe`, pins the built-in scan skill, registers the workspace through MSP, and does not run a deep scan.
-- `govibe.workflow.continue`: resolves the pinned skill, project state, MSP Two-Brain context, and GKS knowledge into `govibe-context-packet/v2`.
-- `govibe.workspace.scan`: defaults to L1; `deep: true` runs all twelve canonical stages in order.
-- `govibe.plan.create`: validates a dependency DAG and creates persisted workflow state.
-- `govibe.workflow.status`: returns one run snapshot without executing work.
-- `govibe.workspace.impact`: performs read-only impact inspection through the approved adapter.
-- `govibe.docs.version`: audits governed artifact versions without implicit repair.
-- `govibe.review.run`: executes under a read-only filesystem guard.
-- `govibe.optimize.run`: requires baseline and post-change measurements.
+- Stage 3 creates document, section/atom, wikilink, and document-reference candidates.
+- Stage 5 creates symbol and call-link candidates.
+- Stages 6-8 create route, tool, and ORM candidates.
+- Stage 9 resolves cross-file import/reference links.
+- Stage 10 resolves inheritance links.
+- Stages 11-12 add community/process relations.
 
-## Ownership Negatives
+These are candidates. GKS assigns canonical document, atom, symbol, entity, and relation identities after MSP authorization.
 
-- The Skill Registry never executes a stage.
-- GoVibe never writes GKS storage directly; it calls the independent `gks_code_upsert` MCP port.
-- GKS rejects proof/evidence payloads.
-- MSP proof rejects symbol/graph payloads.
-- P0-P6 Block Assembly is not part of this contract.
+# Workspace Impact
 
-## Runtime Transport
+`govibe.workspace.impact` performs explainable reverse-dependency traversal over observed or canonical links. It must not be implemented as plain substring search.
 
-GoVibe connects to MSP and GKS through independent MCP stdio adapters without
-binding to local checkouts. `GOVIBE_MSP_*` configures context/proof and
-`GOVIBE_GKS_*` configures knowledge writes. External writer tools are
-`msp_evidence_record` and `gks_code_upsert`. `GOVIBE_ALLOWED_WORKSPACE_ROOTS`
-is a non-empty JSON array of absolute server-owned roots. Missing transports,
-schema mismatch, or storage failure returns a typed degraded state; GoVibe
-does not create a private fallback store.
+Accepted change types:
 
-The stdio wire format is newline-delimited JSON-RPC, matching
-`@modelcontextprotocol/sdk` `StdioServerTransport`. HTTP-style
-`Content-Length` framing is not valid for this adapter.
+- `editorial`
+- `schema_additive`
+- `schema_breaking`
+- `semantic_change`
+- `authority_boundary_change`
+- `runtime_behavior_change`
 
-## Changelog
+The runtime resolves one or more changed seeds, walks incoming edges/backlinks, applies relation weights and graph-distance decay, and returns `govibe-impact/v2` with:
+
+- direct and transitive affected artifacts;
+- relation chain and distance;
+- impact score;
+- reason;
+- required action;
+- unresolved links and graph coverage;
+- backward-compatible affected `references` paths.
+
+Backlinks are reverse projections of forward relations. They preserve the original link ID and relation type and must not create a duplicate semantic truth.
+
+# MCP Commands
+
+Existing commands:
+
+- `govibe.workspace.initialize`
+- `govibe.workflow.continue`
+- `govibe.workspace.scan`
+- `govibe.plan.create`
+- `govibe.workflow.status`
+- `govibe.workspace.impact`
+- `govibe.docs.version`
+- `govibe.review.run`
+- `govibe.optimize.run`
+
+Vault/context commands:
+
+- `govibe.vault.status`
+- `govibe.vault.mount`
+- `govibe.context.resolve`
+- `govibe.context.diff`
+- `govibe.context.audit`
+- `govibe.context.replay`
+- `govibe.memory.promote`
+
+All vault/context commands are GoVibe-facing commands backed by MSP parent contracts.
+
+# MSP Parent Tools
+
+GoVibe may use only parent-facing tools such as:
+
+- `msp_workspace_register`
+- `msp_context_resolve`
+- `msp_context_injection_record`
+- `msp_context_replay`
+- `msp_knowledge_promote`
+- `msp_evidence_record`
+
+The exact internal MSP-to-GKS port is outside the GoVibe contract.
+
+# Ownership Negatives
+
+- GoVibe must not call GKS directly.
+- GoVibe must not call GenesisBlockDB directly.
+- Executors must not call MSP, GKS, or GenesisBlockDB directly through GoVibe runtime credentials.
+- Workspace Private memory is not project source of truth.
+- Raw Workspace Private episodes must not be copied wholesale into Global Private memory.
+- Private memory must not be promoted to Shared Vault without MSP validation and approval.
+- `kvId` must not be issued before the model runtime creates or verifies the KV cache.
+- Replay must not substitute newer vault versions silently.
+- Deep Scan must not label candidates as canonical knowledge.
+- Impact analysis must not claim completeness when unresolved links or missing graph coverage remain.
+
+# Runtime Transport
+
+`GOVIBE_MSP_*` configures the single parent transport. New GoVibe runtime code must not require `GOVIBE_GKS_*`. The stdio wire format is newline-delimited JSON-RPC compatible with MCP SDK `StdioServerTransport`.
+
+# Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
-| 2.0.2 | 2026-07-30 | ATHER | Fixed the stdio wire contract to require MCP SDK JSONL framing. |
-| 2.0.1 | 2026-07-30 | ATHER | Corrected the ownership negative to match the approved independent GKS MCP port. |
-| 2.0.0 | 2026-07-30 | Boss / ATHER | Added full migration commands, workflow states, independent GKS/MSP writer envelopes, and degraded-state contracts. |
-| 1.0.2 | 2026-07-29 | ATHER | Added the server-owned workspace allowlist and fail-closed path boundary. |
-| 1.0.1 | 2026-07-29 | ATHER | Documented the transport-neutral MSP stdio binding and fail-closed fallback rule. |
-| 1.0.0 | 2026-07-29 | Boss / ATHER | Approved contracts for the first GoVibe capability-absorption vertical slice. |
+| 3.1.0 | 2026-08-01 | Boss / ATHER | Added Deep Scan link discovery ownership, backlink projection, and explainable reverse-dependency `govibe.workspace.impact` contract. |
+| 3.0.0 | 2026-08-01 | Boss / ATHER | Replaced independent GKS access with mandatory MSP mediation; added vault identity, context profiles, replay lineage, and parent-mediated knowledge promotion. |
+| 2.0.2 | 2026-07-30 | ATHER | Fixed the stdio wire contract. |
+| 2.0.0 | 2026-07-30 | Boss / ATHER | Added full migration capability contracts. |

@@ -4,6 +4,7 @@ import { readFile, realpath } from "node:fs/promises";
 import path from "node:path";
 
 import { buildContextPacket } from "./context-packet.mjs";
+import { persistContextInjection } from "./context-store.mjs";
 import { loadGlobalTrustPolicy, loadSkillLock, resolveSkill } from "./skill-registry.mjs";
 
 async function validateRepositoryRefs(projectState, workspacePath) {
@@ -20,16 +21,27 @@ async function validateRepositoryRefs(projectState, workspacePath) {
   for (const ref of projectState.sourceRefs ?? []) sourceRefs.push(await validate(ref, "Source reference"));
   const fileRefs = [];
   for (const ref of projectState.fileRefs ?? []) {
-    try {
-      fileRefs.push(await validate(ref, "File reference"));
-    } catch (error) {
-      if (ref.required) throw error;
-    }
+    try { fileRefs.push(await validate(ref, "File reference")); }
+    catch (error) { if (ref.required) throw error; }
   }
   return { ...projectState, sourceRefs, fileRefs };
 }
 
-export async function continueWorkflow({ workspacePath, mspClient, actor = "unknown", executor = "codex", globalSkillRoot, trustedWorkspaceHashes = [] }) {
+export async function continueWorkflow({
+  workspacePath,
+  mspClient,
+  actor = "unknown",
+  executor = "codex",
+  agentId = "default-agent",
+  contextProfile = "V-ctx",
+  workflowRef = null,
+  parentContextId = null,
+  runId = `continue-${Date.now()}`,
+  turnId = "turn-1",
+  sessionId = null,
+  globalSkillRoot,
+  trustedWorkspaceHashes = [],
+}) {
   const root = path.resolve(workspacePath);
   let projectState;
   try {
@@ -37,6 +49,7 @@ export async function continueWorkflow({ workspacePath, mspClient, actor = "unkn
   } catch (error) {
     return { status: "blocked", reason: "missing_project_state", error: error instanceof Error ? error.message : String(error) };
   }
+
   try {
     const globalGovibeRoot = path.dirname(globalSkillRoot ?? path.join(os.homedir(), ".govibe", "skills"));
     const [config, lock, trustPolicy] = await Promise.all([
@@ -47,27 +60,16 @@ export async function continueWorkflow({ workspacePath, mspClient, actor = "unkn
     if (config.schema !== "govibe-workspace-config/v1") throw new Error("Invalid workspace config schema.");
     const pin = lock.skills[0];
     if (!pin) throw new Error("Skill lock contains no pinned skill.");
-    const skill = await resolveSkill({
-      workspacePath: root,
-      globalRoot: globalSkillRoot ?? path.join(os.homedir(), ".govibe", "skills"),
-      ...pin,
-      trustWorkspaceSkills: trustPolicy.trustWorkspaceSkills,
-      trustedWorkspaceHashes: [...trustPolicy.trustedWorkspaceHashes, ...trustedWorkspaceHashes],
-    });
+    const skill = await resolveSkill({ workspacePath: root, globalRoot: globalSkillRoot ?? path.join(os.homedir(), ".govibe", "skills"), ...pin, trustWorkspaceSkills: trustPolicy.trustWorkspaceSkills, trustedWorkspaceHashes: [...trustPolicy.trustedWorkspaceHashes, ...trustedWorkspaceHashes] });
     projectState = await validateRepositoryRefs(projectState, root);
-    const context = await mspClient.resolveContext({
-      actor,
-      executor,
-      mode: "codev",
-      workspaceId: projectState.workspaceId,
-      workspacePath: root,
-      stateKeys: projectState.stateKeys,
-      knowledgeRefs: projectState.knowledgeRefs,
-    });
-    return { status: "ready", packet: buildContextPacket({ projectState, skill, context }) };
+    const context = await mspClient.resolveContext({ actor, executor, agentId, contextProfile, parentContextId, workflowRef, mode: "codev", workspaceId: projectState.workspaceId, workspacePath: root, stateKeys: projectState.stateKeys, knowledgeRefs: projectState.knowledgeRefs });
+    const packet = buildContextPacket({ projectState, skill, context, contextProfile, parentContextId });
+    const persisted = await persistContextInjection({ workspacePath: root, packet, agentId, runId, turnId, sessionId, diffRef: context.diffRef ?? null });
+    const registered = await mspClient.recordContextInjection(persisted.record);
+    return { status: "ready", packet, injectionRef: registered.injectionRef, cachePath: persisted.cachePath };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    const reason = /GKS/i.test(message) ? "gks_unavailable" : /MSP|transport/i.test(message) ? "msp_unavailable" : "context_resolution_failed";
+    const reason = /MSP|transport|parent/i.test(message) ? "msp_unavailable" : "context_resolution_failed";
     return { status: "blocked", reason, error: message };
   }
 }

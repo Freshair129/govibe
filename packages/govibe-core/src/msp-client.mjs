@@ -1,3 +1,5 @@
+import { createMspStdioCaller } from "./msp-stdio-transport.mjs";
+
 export class MspUnavailableError extends Error {
   constructor(message = "MSP transport is unavailable.") {
     super(message);
@@ -8,6 +10,11 @@ export class MspUnavailableError extends Error {
 const HASH = /^[a-f0-9]{64}$/i;
 const KNOWLEDGE_FIELDS = ["atoms", "symbols", "relations", "nodes", "edges", "communities", "processes", "context_snapshots"];
 
+function requireRef(value, prefix, label) {
+  if (typeof value !== "string" || !value.startsWith(prefix)) throw new Error(`MSP returned an invalid ${label} reference.`);
+  return value;
+}
+
 function validateProofBatch(input) {
   if (!input || typeof input !== "object") throw new TypeError("Proof batch is required.");
   if (KNOWLEDGE_FIELDS.some((field) => field in input)) throw new TypeError("MSP proof batches cannot contain knowledge fields.");
@@ -17,6 +24,15 @@ function validateProofBatch(input) {
   if (!Number.isInteger(input.stage) || input.stage < 0 || input.stage > 12) throw new TypeError("Proof batch stage must be 0-12.");
   if (!HASH.test(input.source_snapshot_hash ?? "")) throw new TypeError("Proof batch source snapshot hash is invalid.");
   if (!["actual", "blocked", "failed", "passed"].includes(input.verification?.verdict)) throw new TypeError("Invalid verification verdict.");
+}
+
+function validateKnowledgeCandidate(input) {
+  if (!input || input.schema_version !== "govibe-knowledge-candidate/v1") throw new TypeError("Invalid knowledge candidate schema version.");
+  if (typeof input.idempotency_key !== "string" || !input.idempotency_key) throw new TypeError("Knowledge candidate idempotency key is required.");
+  if (typeof input.run_id !== "string" || !input.run_id) throw new TypeError("Knowledge candidate run ID is required.");
+  if (!Number.isInteger(input.stage) || input.stage < 1 || input.stage > 12) throw new TypeError("Knowledge candidate stage must be 1-12.");
+  if (!HASH.test(input.source_snapshot_hash ?? "")) throw new TypeError("Knowledge candidate source snapshot hash is invalid.");
+  if (!requireRef(input.provenance_ref, "msp:proof/", "provenance")) throw new TypeError("Knowledge candidate provenance is required.");
 }
 
 export class MspClient {
@@ -30,35 +46,43 @@ export class MspClient {
   }
 
   registerWorkspace(input) {
-    return this.recordEvidence({
-      schema_version: "govibe-proof-batch/v1",
+    return this.call("msp_workspace_register", {
+      schema_version: "govibe-workspace-registration/v1",
+      actor: input.actor,
+      workspace_id: input.workspaceId,
+      project_id: input.projectId ?? null,
+      workspace_path: input.workspacePath,
+      vault_bindings: input.vaultBindings ?? null,
       idempotency_key: input.recordId,
       run_id: input.runId,
-      stage: 0,
-      source_snapshot_hash: input.sourceHash,
-      findings: [],
-      stage_evidence: [{ ref: `workspace:${input.workspaceId}`, source_hash: input.sourceHash, kind: "workspace-registration" }],
-      verification: { verdict: "passed", method: "govibe-init" },
-      artifact_lineage: [],
-      actor: input.actor,
       recorded_at: input.timestamp,
-    });
+      source_hash: input.sourceHash,
+    }).then((result) => ({
+      workspaceRef: requireRef(result?.workspace_ref ?? result?.workspaceRef, "msp:workspace/", "workspace"),
+      registryRef: result?.registry_ref ?? result?.registryRef ?? null,
+    }));
   }
+
   async resolveContext(input) {
     const result = await this.call("msp_context_resolve", {
       workspace_root: input.workspacePath,
+      workspace_id: input.workspaceId,
+      agent_id: input.agentId,
+      context_profile: input.contextProfile ?? "T-ctx",
+      parent_context_id: input.parentContextId ?? null,
+      workflow_ref: input.workflowRef ?? null,
       mode: input.mode ?? "codev",
-      state_keys: input.stateKeys,
-      knowledge_refs: input.knowledgeRefs,
+      state_keys: input.stateKeys ?? [],
+      knowledge_refs: input.knowledgeRefs ?? [],
     });
     const normalizeRefs = (refs, label, prefix) => (refs ?? []).map((item) => {
       const ref = item?.ref;
       const sourceHash = item?.sourceHash ?? item?.source_hash;
-      if (typeof ref !== "string" || !ref || typeof sourceHash !== "string" || !/^[a-f0-9]{64}$/i.test(sourceHash)) {
+      if (typeof ref !== "string" || !ref || typeof sourceHash !== "string" || !HASH.test(sourceHash)) {
         throw new Error(`MSP returned an invalid ${label} reference.`);
       }
       if (!ref.startsWith(prefix)) throw new Error(`MSP returned an out-of-namespace ${label} reference.`);
-      return { ref, sourceHash: sourceHash.toLowerCase() };
+      return { ref, sourceHash: sourceHash.toLowerCase(), version: item.version ?? null };
     });
     const policyDecisions = (result.policyDecisions ?? result.policy_decisions ?? []).map((item) => {
       if (!["allow", "deny", "shadow"].includes(item?.decision) || typeof item?.ref !== "string" || typeof item?.reason !== "string") {
@@ -67,20 +91,49 @@ export class MspClient {
       return { decision: item.decision, ref: item.ref, reason: item.reason };
     });
     return {
-      globalStateRefs: normalizeRefs(result.globalStateRefs ?? result.global_state_refs, "Global state", "global:state/"),
-      workspaceStateRefs: normalizeRefs(result.workspaceStateRefs ?? result.workspace_state_refs, "Workspace state", "workspace:state/"),
-      knowledgeRefs: normalizeRefs(result.knowledgeRefs ?? result.knowledge_refs, "knowledge", "gks:"),
+      globalPrivateVaultRefs: normalizeRefs(result.global_private_vault_refs ?? result.globalStateRefs, "global private vault", "msp:vault/"),
+      workspacePrivateVaultRefs: normalizeRefs(result.workspace_private_vault_refs ?? result.workspaceStateRefs, "workspace private vault", "msp:vault/"),
+      sharedVaultRefs: normalizeRefs(result.shared_vault_refs ?? result.knowledgeRefs, "shared vault", "gks:"),
+      workflowRef: result.workflow_ref ?? result.workflowRef ?? null,
+      diffRef: result.diff_ref ?? result.diffRef ?? null,
       policyDecisions,
       diagnostics: result.diagnostics ?? [],
     };
   }
+
+  async submitKnowledgeCandidate(input) {
+    validateKnowledgeCandidate(input);
+    const result = await this.call("msp_knowledge_promote", input);
+    return {
+      knowledgeRef: requireRef(result?.knowledge_ref ?? result?.knowledgeRef, "gks:", "knowledge"),
+      sourceHash: (() => {
+        const value = result?.source_hash ?? result?.sourceHash;
+        if (!HASH.test(value ?? "")) throw new Error("MSP returned an invalid promoted knowledge hash.");
+        return value.toLowerCase();
+      })(),
+      promotionRef: requireRef(result?.promotion_ref ?? result?.promotionRef, "msp:promotion/", "promotion"),
+    };
+  }
+
+  async recordContextInjection(input) {
+    const result = await this.call("msp_context_injection_record", input);
+    return { injectionRef: requireRef(result?.injection_ref ?? result?.injectionRef, "msp:context-injection/", "context injection") };
+  }
+
+  async replayContext(input) {
+    const result = await this.call("msp_context_replay", input);
+    return {
+      replayRef: requireRef(result?.replay_ref ?? result?.replayRef, "msp:replay/", "replay"),
+      contextReproducible: Boolean(result?.context_reproducible ?? result?.contextReproducible),
+      executionReproducible: Boolean(result?.execution_reproducible ?? result?.executionReproducible),
+      outputIdentical: Boolean(result?.output_identical ?? result?.outputIdentical),
+    };
+  }
+
   async recordEvidence(input) {
-    if (typeof this.callTool !== "function") throw new MspUnavailableError();
     validateProofBatch(input);
     const result = await this.call("msp_evidence_record", input);
-    const proofRef = result?.proof_ref ?? result?.proofRef;
-    if (typeof proofRef !== "string" || !proofRef.startsWith("msp:proof/")) throw new Error("MSP returned an invalid proof reference.");
-    return { proofRef };
+    return { proofRef: requireRef(result?.proof_ref ?? result?.proofRef, "msp:proof/", "proof") };
   }
 }
 
@@ -97,11 +150,5 @@ export function createMspClientFromEnvironment(env = process.env) {
       throw new Error("GOVIBE_MSP_ARGS must be a JSON array of strings.");
     }
   }
-  return new MspClient(createMspStdioCaller({
-    command: env.GOVIBE_MSP_COMMAND,
-    args,
-    cwd: env.GOVIBE_MSP_CWD,
-    env,
-  }));
+  return new MspClient(createMspStdioCaller({ command: env.GOVIBE_MSP_COMMAND, args, cwd: env.GOVIBE_MSP_CWD, env }));
 }
-import { createMspStdioCaller } from "./msp-stdio-transport.mjs";
