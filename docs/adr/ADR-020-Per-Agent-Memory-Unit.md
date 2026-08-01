@@ -2,8 +2,8 @@
 title: "ADR: Per-Agent Memory via Composed Tiered Units (EVA Memory-OS Subset Port)"
 doc_id: "ADR-020-PER-AGENT-MEMORY-UNIT"
 status: "proposed"
-version: "0.1.0+draft"
-updated: "2026-06-23"
+version: "0.1.1+draft"
+updated: "2026-08-01"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -14,6 +14,7 @@ related_docs:
   - "docs/features/traceability-audit/FEAT-Bi-Temporal-Versioning.md"
   - "docs/adr/ADR-014-MSP-GKS-Traceability-Gate.md"
   - "docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md"
+  - "docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md"
   - ".agents/FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS.md"
 ---
 
@@ -66,13 +67,20 @@ accepted.
    never silently overwritten.
 
 5. **Compose, not rebuild.** Storage = GenesisBlockDB; knowledge = GKS; passport/retrieval =
-   MSP (V3); spatial scope = Hierarchy-Compaction (`D`/`H`); promotion = Verify Gate; audit
+   MSP (V3); spatial retrieval scope = Hierarchy-Compaction `R` (retrieval radius); resolution
+   depth = `D`; executor capability ceiling = Access Scope `H`; promotion = Verify Gate; audit
    time = `temporal-versioning`. **Net-new is only**: the episodic-unit schema, the 8-8-8
    cadence, the promotion pipeline, and the LCA reconcile step.
 
 6. **Naming discipline.** 8-8-8 is named **"Memory Distillation"** (a *temporal* axis) and kept
-   distinct from the *spatial* **"Hierarchy-Compaction"** (`D`/`H` scale), per the ADR-018
-   H-vs-D collision lesson. The term "compaction" is reserved for the spatial scale.
+   distinct from spatial retrieval and compaction controls:
+
+   - `R` = retrieval radius / graph distance
+   - `D` = compaction or resolution depth
+   - `H` = executor Access Scope, never graph distance or memory resolution
+
+   The term "compaction" is reserved for the `D` resolution axis. This follows ADR-021 and
+   prevents the former H-vs-D collision from reappearing under a new subsystem.
 
 ## Consequences
 
@@ -120,10 +128,12 @@ accepted.
 - `docs/features/traceability-audit/FEAT-Bi-Temporal-Versioning.md`
 - `docs/adr/ADR-014-MSP-GKS-Traceability-Gate.md`
 - `docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md`
+- `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md`
 - `.agents/FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS.md`
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-01 | GPT-5.6 Thinking / ATHER | Replaced legacy spatial `D/H` language with explicit `D/R` semantics and reserved `H` for executor Access Scope per ADR-021. |
 | 0.1.0+draft | 2026-06-23 | ARCHON / ATHER | Initial decision: composed, tiered per-agent memory (Option A); runnable EVA Memory-OS subset port re-grounded for SWE; epistemic-state + Verify-Gate promotion for anti-hallucination; LCA bitemporal conflict resolution; 8-8-8 "Memory Distillation" named distinct from spatial Hierarchy-Compaction; governs FEAT-PER-AGENT-MEMORY-UNIT. |
