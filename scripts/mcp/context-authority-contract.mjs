@@ -97,3 +97,45 @@ export function validateContextAuthorityRequest(args = {}) {
     unresolvedAssumptions: [],
   };
 }
+
+export function validateContextAuthorityResponse(response, requestContract) {
+  if (!response || typeof response !== "object" || Array.isArray(response)) {
+    fail("invalid_msp_response", "MSP context response must be an object.");
+  }
+
+  const policyDecision = requireString(response.policyDecision ?? response.policy_decision, "policyDecision");
+  if (!['allow', 'deny', 'shadow'].includes(policyDecision)) {
+    fail("invalid_policy_decision", "MSP returned an invalid policy decision.", { policyDecision });
+  }
+  if (policyDecision !== "allow") {
+    fail("context_policy_denied", "MSP did not authorize context use.", { policyDecision });
+  }
+
+  const contextId = requireString(response.contextId ?? response.context_id, "contextId");
+  const cacheId = requireString(response.cacheId ?? response.cache_id, "cacheId");
+  const returnedSources = normalizeSources(response.sources ?? requestContract.sources);
+  const expected = new Map(requestContract.sources.map((source) => [`${source.id}@${source.version}`, source.hash]));
+  for (const source of returnedSources) {
+    const expectedHash = expected.get(`${source.id}@${source.version}`);
+    if (!expectedHash || expectedHash !== source.hash) {
+      fail("source_lineage_mismatch", "MSP response changed the requested source lineage.", { source });
+    }
+  }
+
+  const lineage = response.lineage && typeof response.lineage === "object" ? response.lineage : {};
+  return {
+    ...response,
+    contextId,
+    cacheId,
+    policyDecision,
+    sources: returnedSources,
+    lineage: {
+      contextId,
+      cacheId,
+      parentContextId: lineage.parentContextId ?? lineage.parent_context_id ?? requestContract.lineage.parentContextId,
+      runId: lineage.runId ?? lineage.run_id ?? requestContract.identity.runId,
+      sessionId: lineage.sessionId ?? lineage.session_id ?? requestContract.identity.sessionId,
+      turnId: lineage.turnId ?? lineage.turn_id ?? requestContract.identity.turnId,
+    },
+  };
+}
