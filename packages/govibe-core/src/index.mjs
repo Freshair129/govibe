@@ -4,6 +4,7 @@ export { loadContextCache, persistContextInjection } from "./context-store.mjs";
 export { createFileReplayProvider, loadReplayBundle, persistReplayBundle, restoreReplayContext } from "./replay-provider.mjs";
 export { continueWorkflow } from "./continue.mjs";
 export { materializeCanonicalKnowledge, validateCanonicalMaterializationRequest } from "./canonical-materialization.mjs";
+export { buildBoundedGraphQuery, assertExecutorDispatchAllowed, RuntimeAuthorityError } from "./authority-enforcement.mjs";
 export { createGksClientFromEnvironment, createUnavailableGksClient, GksClient, GksUnavailableError } from "./gks-client.mjs";
 export { createMspClientFromEnvironment, createUnavailableMspClient, MspClient, MspUnavailableError } from "./msp-client.mjs";
 export { createMspStdioCaller } from "./msp-stdio-transport.mjs";
