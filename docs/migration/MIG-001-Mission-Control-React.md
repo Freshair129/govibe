@@ -1,3 +1,13 @@
+---
+title: "MIG-001: Mission Control React Migration Plan"
+doc_id: "MIG-001-MISSION-CONTROL-REACT"
+status: "draft"
+version: "0.1.0+draft"
+updated: "2026-08-03"
+owner: "LYRA"
+source_of_truth: false
+---
+
 # MIG-001: Mission Control React Migration Plan
 
 **Status:** `APPROVED`
@@ -46,3 +56,9 @@
 
 ---
 **Please review and approve this Migration Plan. Once approved, I will begin Step 1: Scaffolding.**
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-08-03 | LYRA | Added governed metadata under delegated Phase 1B authority; previous approval prose is retained as historical content, not current lifecycle approval. |

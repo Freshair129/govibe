@@ -1,0 +1,21 @@
+{
+  "schema_version": "1.0.0",
+  "result_id": "DOC-CLEANSING-PHASE1B-METADATA-EXECUTION-RESULT-v1",
+  "baseline_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+  "execution_authority": "owner delegated decision in this task",
+  "scope": "eight Phase 1B metadata candidates only",
+  "accounting": {"candidates":8,"normalized":8,"deferred":0,"path_moves":0,"registry_edits":0,"canonical_gks_ids_assigned":0,"msp_gks_materializations":0},
+  "decisions": [
+    {"path":"docs/audit/AUDIT-GoVibe-RWANG-Cutover-Readiness-2026-07-30.md","owner":"ATHER","status":"draft","version":"1.0.2","source_of_truth":false},
+    {"path":"docs/audit/IMPACT-ANALYSIS-PHASE4.md","owner":"ATHER","status":"draft","version":"0.1.0+draft","source_of_truth":false},
+    {"path":"docs/audit/UAT-Plan.md","owner":"GHOST","status":"draft","version":"0.1.0+draft","source_of_truth":false},
+    {"path":"docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md","owner":"Boss (Product Authority)","status":"draft","version":"0.1.1-beta","source_of_truth":false},
+    {"path":"docs/handover/GVDOC-1004-Handover Specification.md","owner":"THESEUS","status":"draft","version":"2.2.0-ga","source_of_truth":false},
+    {"path":"docs/migration/MIG-001-Mission-Control-React.md","owner":"LYRA","status":"draft","version":"0.1.0+draft","source_of_truth":false},
+    {"path":"docs/rca/RCA-2026-06-14-Visual-Agent-Fleet-Governance-Failure.md","owner":"ATHER","status":"draft","version":"0.1.0+draft","source_of_truth":false},
+    {"path":"docs/security/PATH-CONTAINMENT.md","owner":"ATHER","status":"draft","version":"0.1.0+draft","source_of_truth":false}
+  ],
+  "rollback_map":"docs/change-requests/manifests/results/DOC-CLEANSING-PHASE1B-METADATA-ROLLBACK-MAP-v1.json",
+  "validation_scope":{"json_parse":"pass","bounded_references":"pass: bounded discovery only; no completeness claim","doc_id_collision_check":"pass","docs_validate":"expected transitional fail: central registry retains pre-integration status under review for the cutover audit","roadmap_validate":"environment_blocked: node-html-parser is not installed in this worktree","lint":"environment_blocked: tsc is not installed in this worktree","diff_check":"expected transitional fail: delegates to docs:validate and is blocked only by the out-of-scope central registry mismatch"},
+  "out_of_scope":["path relocation","docs/DOC-VERSION-REGISTRY.md reconciliation","semantic body revision","lifecycle approval","MSP/GKS materialization"]
+}

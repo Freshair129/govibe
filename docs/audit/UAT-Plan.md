@@ -1,3 +1,13 @@
+---
+title: "User Acceptance Testing (UAT) Plan - GoVibe Phase 3/4"
+doc_id: "UAT-PLAN-GOVIBE-PHASE-3-4"
+status: "draft"
+version: "0.1.0+draft"
+updated: "2026-08-03"
+owner: "GHOST"
+source_of_truth: false
+---
+
 # User Acceptance Testing (UAT) Plan - GoVibe Phase 3/4
 
 ## Objective
@@ -20,3 +30,9 @@ To verify that the integrated features (GenesisBlockDB, Overlays, UI Polish) mee
 - IPC communication is stable.
 - UI component behavior strictly follows the design system (`packages/ui`).
 - No regressions in navigation or core dashboard logic.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-08-03 | GHOST | Added governed metadata under delegated Phase 1B authority; execution evidence and acceptance remain pending. |

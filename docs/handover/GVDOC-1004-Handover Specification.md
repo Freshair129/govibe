@@ -1,15 +1,14 @@
 ---
-title: GKS System Handover Specification
+title: "GKS System Handover Specification"
 summary: Handover instructions for the GKS JIT Context Engine, H0-H6 routing, W-Scale fan-out control, and hybrid retrieval enforcement after Phase 4.
-doc_id: GVDOC-1004
+doc_id: "GVDOC-1004"
 created: "2026-06-12T19:15:00+07:00,GKS Lead Architect"
-updated: "2026-06-12T19:15:00+07:00,GKS Lead Architect"
-version: "2.2.0-Release"
-status: active
-state: active
+updated: "2026-08-03"
+version: "2.2.0-ga"
+status: "draft"
+owner: "THESEUS"
+source_of_truth: false
 type: handover-specification
-vault_id: default
-source_type: axiomatic
 tags:
   - handover
   - architecture
@@ -139,3 +138,9 @@ This document hands over the operational instructions for:
 - hybrid retrieval enforcement
 
 The long-term source of truth for these rules must remain in the standard and feature documents, with this handover acting as an implementation transfer layer.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 2.2.0-ga | 2026-08-03 | THESEUS | Normalized legacy release version and governed metadata under delegated Phase 1B authority; no handover content is approved as canonical. |
