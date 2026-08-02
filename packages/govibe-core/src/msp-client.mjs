@@ -1,3 +1,4 @@
+import { buildBoundedGraphQuery } from "./authority-enforcement.mjs";
 import { createMspStdioCaller } from "./msp-stdio-transport.mjs";
 
 export class MspUnavailableError extends Error {
@@ -64,6 +65,7 @@ export class MspClient {
   }
 
   async resolveContext(input) {
+    const boundedGraphQuery = buildBoundedGraphQuery(input.contextAuthority);
     const result = await this.call("msp_context_resolve", {
       workspace_root: input.workspacePath,
       workspace_id: input.workspaceId,
@@ -74,6 +76,8 @@ export class MspClient {
       mode: input.mode ?? "codev",
       state_keys: input.stateKeys ?? [],
       knowledge_refs: input.knowledgeRefs ?? [],
+      context_authority: input.contextAuthority,
+      bounded_graph_query: boundedGraphQuery,
     });
     const normalizeRefs = (refs, label, prefix) => (refs ?? []).map((item) => {
       const ref = item?.ref;
@@ -91,6 +95,16 @@ export class MspClient {
       return { decision: item.decision, ref: item.ref, reason: item.reason };
     });
     return {
+      contextId: result.context_id ?? result.contextId ?? null,
+      cacheId: result.cache_id ?? result.cacheId ?? null,
+      policyDecision: result.policy_decision ?? result.policyDecision ?? null,
+      sources: result.sources ?? input.contextAuthority.sources,
+      lineage: result.lineage ?? {
+        runId: input.contextAuthority.identity.runId,
+        sessionId: input.contextAuthority.identity.sessionId,
+        turnId: input.contextAuthority.identity.turnId,
+      },
+      boundedGraphQuery: result.bounded_graph_query ?? result.boundedGraphQuery ?? boundedGraphQuery,
       globalPrivateVaultRefs: normalizeRefs(result.global_private_vault_refs ?? result.globalStateRefs, "global private vault", "msp:vault/"),
       workspacePrivateVaultRefs: normalizeRefs(result.workspace_private_vault_refs ?? result.workspaceStateRefs, "workspace private vault", "msp:vault/"),
       sharedVaultRefs: normalizeRefs(result.shared_vault_refs ?? result.knowledgeRefs, "shared vault", "gks:"),
