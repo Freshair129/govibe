@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.74+draft"
+version: "0.1.75+draft"
 updated: "2026-08-02"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -22,15 +22,17 @@ This registry is the audit sitemap for active canonical and registered conforman
 - `Version` must match frontmatter `version`.
 - `Path` must point to the active file.
 - `source_of_truth: false` alignment documents are conformance mappings, not competing canonical authorities.
+- Cross-repository mirrors must declare `source_of_truth: false`, identify the canonical repository/path/version/hash, and must not appear as competing canonical rows.
+- For `STD-EXECUTION-GOVERNANCE`, GoVibe is canonical and RWANG-PROMAX is a distribution mirror.
 - Superseded or archived documents should not remain marked as active.
 
 ## 2. Core Governance
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
-| Standard | `STD-EXECUTION-GOVERNANCE` | `2.3.1+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
+| Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.74+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.75+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -141,12 +143,14 @@ These files map historical or cross-document terminology into canonical owners. 
 - Change-request and feedback artifacts under `docs/change-requests/**` remain review artifacts and are not required in this registry.
 - Alignment files are registered conformance artifacts and must declare canonical owners through `conforms_to`.
 - When an alignment document conflicts with a canonical API, ADR, architecture or Blueprint, the canonical document wins and the alignment document must be revised.
+- Cross-repository mirrors are distribution copies only; authority, semantic versioning, and conflict resolution remain with the registered GoVibe canonical document.
 - Older registry changelog entries remain available in Git history; the active file retains the current audit-relevant history below.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.75+draft | 2026-08-02 | Boss / ATHER | Restored GoVibe as canonical SOT for Execution Governance, registered v2.4.0+ga, and defined RWANG-PROMAX as a non-authoritative mirror. |
 | 0.1.74+draft | 2026-08-02 | ATHER | Synced issue #27 implementation and architecture-review evidence. |
 | 0.1.73+draft | 2026-08-02 | Boss / ATHER | Promoted the owner-approved Mission Gateway and runtime responsibility split blueprint. |
 | 0.1.72+draft | 2026-08-02 | ATHER | Registered the candidate Mission Gateway and runtime responsibility split blueprint for issue #27. |
