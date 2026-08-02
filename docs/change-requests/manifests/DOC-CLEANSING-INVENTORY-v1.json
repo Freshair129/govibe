@@ -1,0 +1,864 @@
+{
+  "schema_version": "1.0.0",
+  "manifest_id": "DOC-CLEANSING-INVENTORY-v1",
+  "generated_at": "2026-08-03T00:00:00+07:00",
+  "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
+  "accounting": {
+    "approved_total": 206,
+    "tracked_total": 201,
+    "processable": 195,
+    "tracked_excluded": 6,
+    "external_untracked_excluded": 5
+  },
+  "included": [
+    {
+      "path": "docs/BRD-GoVibe-Platform.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/CONCEPT--HYBRID-JIT-CONTEXT.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/DOC-VERSION-REGISTRY.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/DOCS-Human-First-Atom-Extraction.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/PRD-GoVibe-MCP-Orchestration.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/PRD-GoVibe-Platform-Overview.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/SDD-System-Design.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/STD-Document-Versioning-Governance.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/STD-Execution-Governance.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/TDD-Phase1-Core-State.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/TDD-Phase2-Desktop-Integration.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/adr/ADR-001-Monorepo-Architecture.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-002-MCP-As-Primary-Orchestration-Interface.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-006-Deterministic-Agent-ID-Generation.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-007-Deterministic-Governance.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-008-Session-Traceability.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-011-Intent-to-Production-Governance.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-012-Visual-Agent-Fleet-Governance.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-013-Task-Scoped-Context-Injection.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-014-MSP-GKS-Traceability-Gate.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-015-Master-Essence-vs-GOV-Policy.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-017-GoVibe-Governance-Translator-GKS-Interlingua.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-019-Universal-Code-In-MCP-Out.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-020-Per-Agent-Memory-Unit.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-023-Knowledge-Authority-Context-Authority-Boundary.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/alignment/ALIGNMENT-01-System-Authority-and-Command-Boundary.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/alignment/ALIGNMENT-04-12-Stage-Decomposition-Contract.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/alignment/ALIGNMENT-06-Context-Vault-and-Memory-Assembly.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/alignment/ALIGNMENT-12-Mission-Control-Context-and-Impact-Surface.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/api/API-001-Backend-Gateway.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/api/API-002-Symbol-Linking.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/api/API-003-Mission-Workflow-Event-Schema.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/api/API-004-Task-Scoped-Context-Packet-Schema.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/api/API-005-GoVibe-Capability-Contracts.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/api/API-006-Vault-Context-and-Replay-Contracts.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/api/API-007-Knowledge-Context-Authority-Contract.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/api/MISSION-PROTOCOL-v1.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/architecture/ARCH-Vault-and-Context-Model.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-Mission-Gateway-Runtime-Responsibility-Split.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-Translator-Core-Slice.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/C4-GoVibe-Platform-H-Axis-Correction.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/C4-GoVibe-Platform.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/C4-Knowledge-Context-Authority-Overlay.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/C4-Provider-Entitlement-Execution-Routing-Overlay.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/CTX-GoVibe-System-Context.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/ERD-GoVibe-Platform-Data-Model.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/H-Axis-Compatibility-Decision.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/MSP-GKS-Taxonomy-Mapping.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/RWANG-CONSUMER-BOUNDARY.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/SDD-Genesis-Block.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/SDD-MSP-External-Evidence-Boundary.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/SDD-Symbol-Graph-Traceability-Boundary.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/SDD-Visual-Agent-Fleet.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/SEQ-Ollama-Sidecar-Flow.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/architecture/TDD-GoVibe-Centric-Owner-Feature-Map.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/archive/candidate/README.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/archive/candidate/data-architecture-hnsw-explorer.html",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/archive/candidate/genesisdb-obsidian-production-workflow.html",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/archive/candidate/hector-compaction-explorer.html",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/archive/legacy-p1-mvp-import-reference.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/audit/AUDIT-GoVibe-RWANG-Cutover-Readiness-2026-07-30.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/audit/IMPACT-ANALYSIS-PHASE4.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/audit/POC-5-Axis-Coverage.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/audit/POC-H6-Budget-Sufficiency.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/audit/TDD-Phase1-Core-State.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/audit/TDD-Phase2-Desktop-Integration.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/audit/UAT-Plan.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/audits/AUDIT-2026-08-01-GoVibe-Canonical-Architecture-Alignment-WP01.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/audits/AUDIT-2026-08-01-H-Axis-and-STD-Inventory.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/blueprints/BLUEPRINT-Agent-Team-Management.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/blueprints/BLUEPRINT-Genesis-Knowledge-System.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/amendments/AMENDMENT-2026-08-01-H-Axis-Definition-and-CR-Correction.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/feedback/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review-feedback.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/feedback/CR-2026-06-16-Project-Agent-Reality-Check-feedback.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/feedback/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor-feedback.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/feedback/FEAT-CoDev-CoVibe-Terminology-Definition-feedback.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-01-Canonical-Document-Audit.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-02-H-Axis-Canonical-Propagation.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-03-Vault-Context-Replay.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-04-Vault-Context-MCP-Command-Surface.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-05-Runtime-Propagation-and-Typed-MSP-Contracts.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-07-Mission-Control-Context-Operations-UI.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-08-GKS-Canonical-Integration-and-Materialization.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-09-Production-Replay-and-KV-Provider-Integration.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/design/DESIGN_SYSTEM.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/design/DOMAIN_DETAILS.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/design/GoVibe-Document-Hierarchy.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/design/LANDING-GoVibe-Mockup.html",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/design/LANDING-GoVibe-Release-Notes-v0.1.2.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/design/MOCKUP-A2-Roadmap-Board.html",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/design/SITE_MAP.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/design/TEMPLATE_MODULARIZATION.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/design/TEMPLATE_REFERENCE.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/design/WIREFRAME-A2-Roadmap-Board.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/features/README.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Agent-Management-Migration.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-CoDev-Module.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-CoVibe-Module.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Multi-Agent-Collaboration.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Per-Agent-Memory-Unit.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Task-Scoped-Context-Injection.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Tiered-Review.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Visual-Office-Simulation.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/diagram-to-doc/FEAT-Diagram-to-Doc-System.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/docs-to-code/FEAT-Docs-to-Code-System.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/execution-governance/FEAT-Execution-Governance-Standard.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Call-Graph-Visualization.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Doc-Format-Template-Extraction.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-GenesisBlockDB-Core.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-HNSW-Vector-Space.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Hierarchy-Compaction-System.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Hybrid-JIT-Context-System.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Markdown-Renderer.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Visual-Engineering-AST.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/governance-access/FEAT-RBAC-ABAC-Governance.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/integration-bridge/FEAT-Multi-Provider-Entitlement-Routing.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/mission-control/FEAT-Command-Palette-Orchestration.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/mission-control/FEAT-Mission-Control-Specification.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/mission-control/FEAT-UI-Migration-Phase-2.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/platform-runtime/FEAT-Mobile-Capacitor-Build.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/project-roadmap/FEAT-Roadmap-Board-Migration.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/quality-testing/FEAT-Playwright-E2E-Setup.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/quality-testing/FEAT-Testing-Infrastructure.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-AI-Benchmark-Heatmap.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-AI-Stress-Test.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-Bi-Temporal-Versioning.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-Document-Version-Governance.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-Traceability-Audit-Verification.md",
+      "batch": "B03"
+    },
+    {
+      "path": "docs/fontend/desigh/desigh system/desigh system.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/handover/GVDOC-1004-Handover Specification.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/lld/LLD-Agent-Launcher-Execution-Router.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/lld/LLD-GoVibe-MCP-Tools.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/lld/LLD-Task-Scoped-Context-Injection-Core.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/lld/LLD-Translator-Core-Slice.md",
+      "batch": "B02"
+    },
+    {
+      "path": "docs/migration/MIG-001-Mission-Control-React.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/protocol/MISSION-PROTOCOL-MIGRATION.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/rca/RCA-2026-06-14-Visual-Agent-Fleet-Governance-Failure.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/rca/RCA-20260613-Local-Model-Friction.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/roadmap/BACKLOG-p1-mvp-core.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/roadmap/BACKLOG-task-scoped-context-injection.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/roadmap/GV-SYS1A-ROADMAP-01.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/roadmap/IMP-SYSTEM05-Task-Scoped-Context-Injection.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/roadmap/ROADMAP-govibe-mcp-runtime.html",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/roadmap/ROADMAP-govibe-mcp-runtime.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/roadmap/ROADMAP-task-scoped-context-injection.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/roadmap/ROADMAP-translator-core.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK--CODEX-HYBRID-SAVINGS-TEST.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-GoVibe-First-Use.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md",
+      "batch": "B05"
+    },
+    {
+      "path": "docs/security/PATH-CONTAINMENT.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md",
+      "batch": "B04"
+    },
+    {
+      "path": "docs/specs/SPEC-Genesis-Block.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/srs/SRD-Genesis-Block.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/srs/SRS-GKS-Retrieval-Layer.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/srs/SRS-Genesis-Block.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/srs/SRS-GoVibe-MCP-Server.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/srs/SRS-GoVibe-Translator-Core-Slice.md",
+      "batch": "B01"
+    },
+    {
+      "path": "docs/srs/SRS-Ollama-Sidecar-Execution.md",
+      "batch": "B01"
+    }
+  ],
+  "tracked_exclusions": [
+    {
+      "path": "docs/features/diagram-to-doc/.gitkeep",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "disposition": "excluded_hidden_placeholder"
+    },
+    {
+      "path": "docs/features/docs-to-code/.gitkeep",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "disposition": "excluded_hidden_placeholder"
+    },
+    {
+      "path": "docs/features/execution-governance/.gitkeep",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "disposition": "excluded_hidden_placeholder"
+    },
+    {
+      "path": "docs/features/governance-access/.gitkeep",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "disposition": "excluded_hidden_placeholder"
+    },
+    {
+      "path": "docs/features/integration-bridge/.gitkeep",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "disposition": "excluded_hidden_placeholder"
+    },
+    {
+      "path": "docs/roadmap/.gitkeep",
+      "sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+      "disposition": "excluded_hidden_placeholder"
+    }
+  ],
+  "external_untracked_exclusions": [
+    {
+      "path": "docs/ref/FEAT-014_WorkflowAutomation.yaml",
+      "bytes": 22296,
+      "sha256": "49fe72a2ec2a0c1802e27888d9b00ccfc350abdc6c909041af6e6c699ca2ae82",
+      "disposition": "preserved_unmodified",
+      "reason": "ignored/untracked user file outside pinned Git baseline and worker writable scope"
+    },
+    {
+      "path": "docs/ref/codegen_microtask_contract.yaml",
+      "bytes": 5011,
+      "sha256": "cfc5aceef8542166cdd6ff341c46bbee180b3011d94eb62f15319650188f4ce8",
+      "disposition": "preserved_unmodified",
+      "reason": "ignored/untracked user file outside pinned Git baseline and worker writable scope"
+    },
+    {
+      "path": "docs/ref/template/GoVibe-Mission-Control-template.html",
+      "bytes": 439357,
+      "sha256": "52d7fc1205b2c1a1dd0bde8a89efb2329ed8e6fa812f4b7913b3c0ed7a865c01",
+      "disposition": "preserved_unmodified",
+      "reason": "ignored/untracked user file outside pinned Git baseline and worker writable scope"
+    },
+    {
+      "path": "docs/ref/template/covibe-roadmap-export.json",
+      "bytes": 81415,
+      "sha256": "bf023af59056076ee07c700513883168e44339b3660b941b4528d3b149919cc1",
+      "disposition": "preserved_unmodified",
+      "reason": "ignored/untracked user file outside pinned Git baseline and worker writable scope"
+    },
+    {
+      "path": "docs/ref/template/p0-feasibility-spike-.yaml",
+      "bytes": 6695,
+      "sha256": "16e9a31efecfe0497f89f8f0d7fa616e15a2d70b5af9625fece45e51d750b1e1",
+      "disposition": "preserved_unmodified",
+      "reason": "ignored/untracked user file outside pinned Git baseline and worker writable scope"
+    }
+  ]
+}

@@ -1,0 +1,297 @@
+{
+  "schema_version": "1.0.0",
+  "manifest_id": "DOC-CLEANSING-B02-v1",
+  "batch_id": "B02",
+  "generated_at": "2026-08-03T00:00:00+07:00",
+  "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
+  "source_inventory": "docs/change-requests/manifests/DOC-CLEANSING-INVENTORY-v1.json",
+  "context_profile": "T-ctx",
+  "writable_ownership": "files[].path only",
+  "cross_batch_reads": "prohibited unless reviewer escalates a named dependency",
+  "required_context_fields": [
+    "contextId",
+    "cacheId",
+    "sourceManifestHash",
+    "contextHash"
+  ],
+  "kv_id": "runtime-issued only",
+  "file_count": 46,
+  "files": [
+    {
+      "path": "docs/adr/ADR-001-Monorepo-Architecture.md",
+      "bytes": 3567,
+      "sha256": "f554c3b337fc7fdd71c58efa7265da6b2aebc61e283d00b76a1099af1043afa4",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-002-MCP-As-Primary-Orchestration-Interface.md",
+      "bytes": 4086,
+      "sha256": "dea3b8e933a1b208395610966cd23db38a8ab4ede78eab664fb29e477f68e368",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-006-Deterministic-Agent-ID-Generation.md",
+      "bytes": 1112,
+      "sha256": "44fe92f6402469546ee218db353416921912100fdb0fe3757b8f562e8db19c59",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-007-Deterministic-Governance.md",
+      "bytes": 1670,
+      "sha256": "018b129e423ed0544df811f45ce2552a43ead86267d01cb163b61bbb89d8e31b",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-008-Session-Traceability.md",
+      "bytes": 1180,
+      "sha256": "5cd78990f3429116ea522d7fd171cfe977bb13ca2fdcf32d74861a78c1155d99",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-011-Intent-to-Production-Governance.md",
+      "bytes": 2109,
+      "sha256": "098107a98f0277a92e210b9dc7b218d528ebc9de86c68a8b9aa878127c831b13",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-012-Visual-Agent-Fleet-Governance.md",
+      "bytes": 4299,
+      "sha256": "0561f5c8a88049e3ef117c9e4e28dedf4b8623342d54e5c6c54020b0d9680c54",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-013-Task-Scoped-Context-Injection.md",
+      "bytes": 5954,
+      "sha256": "59cef6ac9d1a23f162b105ed1957b6f91e3df4ef0897fc67100d75836f3b34a4",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-014-MSP-GKS-Traceability-Gate.md",
+      "bytes": 11128,
+      "sha256": "23902a9b96bee214f6ddd3de17bf0fcbd03d9785321084db7ef7021277033495",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-015-Master-Essence-vs-GOV-Policy.md",
+      "bytes": 1894,
+      "sha256": "8f82ac11c4d6d3a4d16d09633c8ad98687ecd1b2f10128437937dc5b9deb939d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md",
+      "bytes": 3192,
+      "sha256": "d7a65945324cb70ee989d440dee4f0ef265e11e7931b5463352ba578e8fece10",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-017-GoVibe-Governance-Translator-GKS-Interlingua.md",
+      "bytes": 3129,
+      "sha256": "4bfde1bd2154dfb3c3054976f94f14f33a7fb5e6d6dab81bc9c3bc2dfd14077d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md",
+      "bytes": 3634,
+      "sha256": "4d834409ed52ba8466b23cc34ca2abf7801b48df67d65318bd32f7557fb050ab",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-019-Universal-Code-In-MCP-Out.md",
+      "bytes": 3978,
+      "sha256": "887a06043f2dfefe8758bc093712d735d25892196d99888de22d8a6fa417e432",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-020-Per-Agent-Memory-Unit.md",
+      "bytes": 8293,
+      "sha256": "c4e3914461284ce7bf7b85a388e0c13bc47d8b934e87bb3704c3c6499ce179c3",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md",
+      "bytes": 4831,
+      "sha256": "5d6e8079b7413e9ac20aa1ea11917b6fd82bf422639702d7c18513f2dda8b1f8",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md",
+      "bytes": 2115,
+      "sha256": "aab0743d917ed67e22eeb0baad54d65bedb7a6a8a3ba0f9d4d3abc11d8cb87e2",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-023-Knowledge-Authority-Context-Authority-Boundary.md",
+      "bytes": 5910,
+      "sha256": "85de9e3754af16c5f739ea11816c3bfa35d7c5991ae3a24a793e912e85937b14",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md",
+      "bytes": 8269,
+      "sha256": "cd3ef326f9bcde323e49b17589d875324cff5645be6ed9eed2e3243aa07d0948",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/ARCH-Vault-and-Context-Model.md",
+      "bytes": 9643,
+      "sha256": "950e9ecb42fccf88e0e7460055545880266b97387cdc6a57a7ff04f5b943c5cd",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md",
+      "bytes": 7689,
+      "sha256": "e5f3148b8b43cbcc0c8bc548ef070359614880069ac7b0414a5ed1837ec54022",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-Mission-Gateway-Runtime-Responsibility-Split.md",
+      "bytes": 11401,
+      "sha256": "60b04485865152497688deb621e45c10e5d531342ffe57a2a061d5ae6905c2b3",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md",
+      "bytes": 12213,
+      "sha256": "ab38e7e672ae2b9b63038ffef016f92a0e61d12361771cb148b0b905770e8327",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-Translator-Core-Slice.md",
+      "bytes": 4699,
+      "sha256": "3a06c8ee345e8e25b1e1a2d99c188007d8cb9a4649522850053f001f17494e2c",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/C4-GoVibe-Platform-H-Axis-Correction.md",
+      "bytes": 4354,
+      "sha256": "0648f0378e980fcf19e14a2add480c6da9479fcf89abf903038f5b19ed485f50",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/C4-GoVibe-Platform.md",
+      "bytes": 18914,
+      "sha256": "1002d58d9a0d23b5a399b308abcd12e3357ca6f477c426478cf84838ed13be55",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/C4-Knowledge-Context-Authority-Overlay.md",
+      "bytes": 4108,
+      "sha256": "bb5ed991a04a0f3d9ea49ee1895e5af123e77d1eeb1bd0577344ee70927ea6f1",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/C4-Provider-Entitlement-Execution-Routing-Overlay.md",
+      "bytes": 7787,
+      "sha256": "4772008778769a57eda5627889a4ca32d5c4eb3782c74a78cbd8a8e858f1b1d5",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/CTX-GoVibe-System-Context.md",
+      "bytes": 6399,
+      "sha256": "554d4fc0683d0d71b29b5284cdf710be3a365186bd10aa8dc835b3c4028b1eb7",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/ERD-GoVibe-Platform-Data-Model.md",
+      "bytes": 8887,
+      "sha256": "5482446f39a4ad73b2bea2c02be3ae0eb83f59236f7bf79a14763a3ce64b06bf",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/H-Axis-Compatibility-Decision.md",
+      "bytes": 3035,
+      "sha256": "2b8fae91ae067e0c84b4c69289c2fe8c6b370daeb74a4cbeaeaefdafb9e31fcf",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/MSP-GKS-Taxonomy-Mapping.md",
+      "bytes": 2699,
+      "sha256": "2d4c94ed1d9685808eef89919f5bb99feef677554fe529fa59cc0a09eb170062",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/RWANG-CONSUMER-BOUNDARY.md",
+      "bytes": 6034,
+      "sha256": "8520a4232d3a9f4374db6a19d9982ac995466a68fd79645c0287c6b33820e74d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/SDD-Genesis-Block.md",
+      "bytes": 3690,
+      "sha256": "7fbd30dac8ed3edc08b79e5d452e2bcc8824a7ecc2fb3ca7c720af376a8bfd2b",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md",
+      "bytes": 4161,
+      "sha256": "7f168df4da29a724330fc25bce97bee48dc47b651ad34b8439d3dc274913dd6d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/SDD-MSP-External-Evidence-Boundary.md",
+      "bytes": 7037,
+      "sha256": "9c6a567738dff90ac309df351b56fcf9c72d5d9c7af74c5cd2f43624946f80da",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/SDD-Symbol-Graph-Traceability-Boundary.md",
+      "bytes": 9127,
+      "sha256": "c41a008e1758ac243c45a15e9f40175946aaf03bc37f03172378c0780f4964f1",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/SDD-Visual-Agent-Fleet.md",
+      "bytes": 5549,
+      "sha256": "3f9fe29679948abe75abaef50a5b2517b10c0931c8fe8ce733a654d4b32b5245",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/SEQ-Ollama-Sidecar-Flow.md",
+      "bytes": 3086,
+      "sha256": "7918fdac9203e708de23d0626cf05ff15ca9a1769cfac57c3124689b6f8aa971",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/architecture/TDD-GoVibe-Centric-Owner-Feature-Map.md",
+      "bytes": 39775,
+      "sha256": "fcddc75d1e42727cc6387c8ad250cf39c779483bdac7405ef3a3561bd992ff60",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/blueprints/BLUEPRINT-Agent-Team-Management.md",
+      "bytes": 6133,
+      "sha256": "1f7ae29501b584a9ab0c248cf61bf37e2f19bb4d5d3dabd01493aa65e313736f",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/blueprints/BLUEPRINT-Genesis-Knowledge-System.md",
+      "bytes": 5020,
+      "sha256": "320f1810e7519ccd3254416738e50ad542f181f0f176d0fce6c9265ea80269b3",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/lld/LLD-Agent-Launcher-Execution-Router.md",
+      "bytes": 4346,
+      "sha256": "087ac3517f4b7d8e0306b8a6b9165ce9a2c14502d989b9f35116a796d6e87218",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/lld/LLD-GoVibe-MCP-Tools.md",
+      "bytes": 8450,
+      "sha256": "a5f63b3c9555ee48f2bc86adec94417e2ae09fc8446a03c8e6d92499bfaf5c49",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/lld/LLD-Task-Scoped-Context-Injection-Core.md",
+      "bytes": 20223,
+      "sha256": "7a03c21456b77f8b4dfd0851aa087081b264c40f065b5fcbaaaa9ed5603fb691",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/lld/LLD-Translator-Core-Slice.md",
+      "bytes": 6644,
+      "sha256": "01005ffb95c3cb68b711820e5f397328cbbc59c8db2a73e95b394b848762ab32",
+      "disposition": "candidate_pending_analysis"
+    }
+  ]
+}

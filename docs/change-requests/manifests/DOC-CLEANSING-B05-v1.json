@@ -1,0 +1,153 @@
+{
+  "schema_version": "1.0.0",
+  "manifest_id": "DOC-CLEANSING-B05-v1",
+  "batch_id": "B05",
+  "generated_at": "2026-08-03T00:00:00+07:00",
+  "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
+  "source_inventory": "docs/change-requests/manifests/DOC-CLEANSING-INVENTORY-v1.json",
+  "context_profile": "T-ctx",
+  "writable_ownership": "files[].path only",
+  "cross_batch_reads": "prohibited unless reviewer escalates a named dependency",
+  "required_context_fields": [
+    "contextId",
+    "cacheId",
+    "sourceManifestHash",
+    "contextHash"
+  ],
+  "kv_id": "runtime-issued only",
+  "file_count": 22,
+  "files": [
+    {
+      "path": "docs/archive/candidate/README.md",
+      "bytes": 1463,
+      "sha256": "d02cf1038799234e990568ed2d5c7995298b19d045e8835c0919efb8a515b916",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/archive/candidate/data-architecture-hnsw-explorer.html",
+      "bytes": 34910,
+      "sha256": "80aaa8efcb91171b0b55ca551fa687d0b78aa22ff2b63938810bcec299a6f054",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/archive/candidate/genesisdb-obsidian-production-workflow.html",
+      "bytes": 33369,
+      "sha256": "8a5ea11d6f6ee0c5b69fb865ef5f6f8376f8fb76d7ee2fbb8926bfe43da4298a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/archive/candidate/hector-compaction-explorer.html",
+      "bytes": 33383,
+      "sha256": "f0a1cb35c106ccca7f4f725da6611c71311f281f3c3ab92d902c20a7764b03dd",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/archive/legacy-p1-mvp-import-reference.md",
+      "bytes": 5852,
+      "sha256": "62021f5811a0b201e6646cbdbbfef2232cb0fb2b947b088e9bc204801cae51f5",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/DESIGN_SYSTEM.md",
+      "bytes": 12085,
+      "sha256": "e94abee07b3fb32213ef3f187c09851ada822c430c6b91d79cd2f0c50855e9e2",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/DOMAIN_DETAILS.md",
+      "bytes": 10986,
+      "sha256": "327c6868040145c124565e3d801823d76f3531ef53c3bd04836d7e800c5f0835",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/GoVibe-Document-Hierarchy.md",
+      "bytes": 5995,
+      "sha256": "5046b779c6aa5b2dd5b63c7c3654ba609273834fec24aad5368415f09ded4a2d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md",
+      "bytes": 15669,
+      "sha256": "d29409985f2b4a65e1c36fd70cfe53b229c750e5cde4448992fea8b07a027c2e",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/LANDING-GoVibe-Mockup.html",
+      "bytes": 91211,
+      "sha256": "0be363c6e240f3ca07c25db312ed7bb50915c0c0f8715ec3e51888420aeac7cf",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/LANDING-GoVibe-Release-Notes-v0.1.2.md",
+      "bytes": 5894,
+      "sha256": "0d0afa65e69e75f2dd481ee0ac3ed62b4df381a932cfdf512f3acddd5230b02d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/MOCKUP-A2-Roadmap-Board.html",
+      "bytes": 33228,
+      "sha256": "7d80352847066fc17b4d527ce9e9d0bd8c04309a6902eea7f6fbe4aa89d02408",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/SITE_MAP.md",
+      "bytes": 3831,
+      "sha256": "771121fd2df4cb8e01939dd2f2abf2aa5063807cc173a68dc34da8000fede30c",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/TEMPLATE_MODULARIZATION.md",
+      "bytes": 2118,
+      "sha256": "1d2662a69bae93665253632c47f84588f8c0300a296e7ffd204eb52a204e053e",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/TEMPLATE_REFERENCE.md",
+      "bytes": 12657,
+      "sha256": "25967a3f818d3ad228c6a6ef390656a6b9bd085defaa039b3ee9b779da0fc141",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/design/WIREFRAME-A2-Roadmap-Board.md",
+      "bytes": 15589,
+      "sha256": "7a977885789df3e3ae72b3be9fbd1ad3ec2e6c9007959e4b1d16b3dbf2b9b35c",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/fontend/desigh/desigh system/desigh system.md",
+      "bytes": 2201,
+      "sha256": "aa185af842b8483de1bb2f3e2b520905eb02682e77a4cf89c039d7790c76caea",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK--CODEX-HYBRID-SAVINGS-TEST.md",
+      "bytes": 4924,
+      "sha256": "97937cc9c47a8a61d83c1e4b1b74aaaee66fcbb180304889e8bf718281078f9a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md",
+      "bytes": 8309,
+      "sha256": "d298bf4b47c73b7a181b68739869b27fa9d49424e14ee61ccce0be6087c2bc86",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-GoVibe-First-Use.md",
+      "bytes": 10834,
+      "sha256": "a497517a40fe464d19437ced9a95cbbbec28de4b06c9954403b62d0e203269ea",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "bytes": 10690,
+      "sha256": "4675dd41087456d9f381828ca6255efde0b27a32ac167b68b56a5eaaeb75134c",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md",
+      "bytes": 2637,
+      "sha256": "9dab65cfe6aef82e3afef2b3cea465f6f4cc5955f290adb2f8066b9f94446308",
+      "disposition": "candidate_pending_analysis"
+    }
+  ]
+}

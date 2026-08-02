@@ -1,0 +1,267 @@
+{
+  "schema_version": "1.0.0",
+  "manifest_id": "DOC-CLEANSING-B04-v1",
+  "batch_id": "B04",
+  "generated_at": "2026-08-03T00:00:00+07:00",
+  "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
+  "source_inventory": "docs/change-requests/manifests/DOC-CLEANSING-INVENTORY-v1.json",
+  "context_profile": "T-ctx",
+  "writable_ownership": "files[].path only",
+  "cross_batch_reads": "prohibited unless reviewer escalates a named dependency",
+  "required_context_fields": [
+    "contextId",
+    "cacheId",
+    "sourceManifestHash",
+    "contextHash"
+  ],
+  "kv_id": "runtime-issued only",
+  "file_count": 41,
+  "files": [
+    {
+      "path": "docs/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md",
+      "bytes": 9516,
+      "sha256": "dfbe7502e6294279864b3ddeaf107b1754979d0368fa9217878780c2e0ce4bc6",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/audit/AUDIT-GoVibe-RWANG-Cutover-Readiness-2026-07-30.md",
+      "bytes": 3297,
+      "sha256": "c089859bf1805434224c33f6d6ec7bb7c7bc2d63037bd70cc8309647e9c277e6",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md",
+      "bytes": 4833,
+      "sha256": "cb8ae1b96577b9fe8445b759aefabbe4710c7402e3a33ede79eafd454841888d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/audit/IMPACT-ANALYSIS-PHASE4.md",
+      "bytes": 2071,
+      "sha256": "20fc7f800799b2fcc1d12b12eccc7271b6352f59194d1e5feec1480514b3c934",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/audit/POC-5-Axis-Coverage.md",
+      "bytes": 5618,
+      "sha256": "85e9577579815a9100e3de0c45540748d2849a9bbdff09a430936b21349fc687",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/audit/POC-H6-Budget-Sufficiency.md",
+      "bytes": 4156,
+      "sha256": "6b225fc19d0ceeb8134be2003e5e273f6288a3fd4ad606644f245e7f83bb6907",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/audit/TDD-Phase1-Core-State.md",
+      "bytes": 1359,
+      "sha256": "4057cb7b7e1a05cf4bc91a3cacd842f398fd203cbb956cb60558159ecaf561f9",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/audit/TDD-Phase2-Desktop-Integration.md",
+      "bytes": 2494,
+      "sha256": "403763eb494e07a8dc806a6f9d791f5c505dd7a5550bdfe02984057f65d3fff5",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/audit/UAT-Plan.md",
+      "bytes": 1132,
+      "sha256": "d34ac2d9d302e6cb9eb1b5b400a729253871834bb68783a5980b1108b1e0ee65",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/audits/AUDIT-2026-08-01-GoVibe-Canonical-Architecture-Alignment-WP01.md",
+      "bytes": 32536,
+      "sha256": "9307a7c50b4507f5acf474a1aa9e0dcb2c1e35e3879cc99cd14644d7bb033687",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/audits/AUDIT-2026-08-01-H-Axis-and-STD-Inventory.md",
+      "bytes": 5395,
+      "sha256": "02ad6d7efc0297bc4344ff60c5f08ce02e3ccbe0e54d31966aa796e3999e8dcb",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md",
+      "bytes": 11574,
+      "sha256": "dede497c4ad3cc3a0b42231ae366ba19cf76718d32cddc0bb840abaecfbf3a77",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md",
+      "bytes": 9029,
+      "sha256": "1a00e47673289ac66af32fd4dac3b71aec75fb38554e413e9f515733b47e9207",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md",
+      "bytes": 3216,
+      "sha256": "eb97b49ba19862c2d5991bad5a8ddf7fbfc6b98859935675c2118be39832c2e4",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md",
+      "bytes": 7430,
+      "sha256": "7c74c3353790fa9b070451146b6d79589c85273a41d6e1412de19f82ed025662",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md",
+      "bytes": 28767,
+      "sha256": "53570a048cf0e7bfa9240a75723df80b148e423f3aa30ecfc6861e066df969fe",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md",
+      "bytes": 15298,
+      "sha256": "ab00924c01ee3fe24b9f3ebe4db13de34759a0f113dc9c935c13415db55859b7",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md",
+      "bytes": 7124,
+      "sha256": "acb7fb1ee877c405e17f8ccb20069b09f2d0dfa7699ed2fb54a63afdeba73a67",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md",
+      "bytes": 10342,
+      "sha256": "5714744f173a4e0aa25413425684669d7988b595f3c7f41b64c0e742c6d5e8e3",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/amendments/AMENDMENT-2026-08-01-H-Axis-Definition-and-CR-Correction.md",
+      "bytes": 5530,
+      "sha256": "ab68bc4ae753c0af9929aa797f546ea743a1c411fc6c4f4c2a8fb1a848d7dd8e",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md",
+      "bytes": 7745,
+      "sha256": "927d8dd2b459a22b0e1e6ea0c9438aa5cf7bc7e364d3668c98c89cf8994ff785",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md",
+      "bytes": 7959,
+      "sha256": "a41f6bcc82e05677187e69f6201387f168e64282d0379b52486abad993fc6f2f",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/feedback/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review-feedback.md",
+      "bytes": 4698,
+      "sha256": "ab3d7fd1ec2e634e865640e485f4874290e84921d5823b635f16ffb7c3a6d79c",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/feedback/CR-2026-06-16-Project-Agent-Reality-Check-feedback.md",
+      "bytes": 5638,
+      "sha256": "1a29bea446610245000cab6da8a3263e43e4ac526535334b2ef8476d3473f7b9",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/feedback/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor-feedback.md",
+      "bytes": 10711,
+      "sha256": "c996ffa4327abf64618a6cfe57cdffd6aef2a36c57e7dcd85c2791f1174e8a00",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/feedback/FEAT-CoDev-CoVibe-Terminology-Definition-feedback.md",
+      "bytes": 7817,
+      "sha256": "64dc1345858932a44afb3b86a01b08827fdd6691f555a1c8cf611263628b7849",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md",
+      "bytes": 7384,
+      "sha256": "4e036070a92aee56160f469363ba5028ae65c61536e8f6b01c71e99865b96d15",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-01-Canonical-Document-Audit.md",
+      "bytes": 7303,
+      "sha256": "135e3298c2497fc2a0807ebaa70ec0c7814450fb4afa936e0fcbcfaf389ce986",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-02-H-Axis-Canonical-Propagation.md",
+      "bytes": 6340,
+      "sha256": "6ba4f5c182d1488014746209aa798134e32bf29c692c14fd1819651da6523017",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-03-Vault-Context-Replay.md",
+      "bytes": 5725,
+      "sha256": "f2e75682466e3fde873ff1f0f97e80b002ba57e68d1b57953c7353f64294ebbf",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-04-Vault-Context-MCP-Command-Surface.md",
+      "bytes": 4257,
+      "sha256": "7850bc39fd1707705fa90bb9d39ec7cce735bd4d4cabf80a166d78197ef66fc5",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-05-Runtime-Propagation-and-Typed-MSP-Contracts.md",
+      "bytes": 2172,
+      "sha256": "86991c3279ae2b130a5258f8459c4d12f88926dae25e6be5370fa2d1a93f2f42",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-07-Mission-Control-Context-Operations-UI.md",
+      "bytes": 1868,
+      "sha256": "f3aabdd95b9820df403d9b8de0f1f2b0a5c1053e76c89e25429469f52de3d70a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-08-GKS-Canonical-Integration-and-Materialization.md",
+      "bytes": 2010,
+      "sha256": "9b891113c4261d3019e8503409efb09573fbb1f4334b5105323a625bbb98d5dd",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/change-requests/work-packets/WP-09-Production-Replay-and-KV-Provider-Integration.md",
+      "bytes": 1894,
+      "sha256": "c54911942b8690d9990786d2c275912a926390df1f9b87f0a30c3bf5ad48bc57",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/handover/GVDOC-1004-Handover Specification.md",
+      "bytes": 4413,
+      "sha256": "b4b01052d8e7266b21768ebea8e835cf430f1ed093734fc9e9b4b324ab4fa196",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/migration/MIG-001-Mission-Control-React.md",
+      "bytes": 2668,
+      "sha256": "fbba93fc1b8dc6a6f460666201a23976ef0bdf34b94b723307f86bbbd424711a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/rca/RCA-2026-06-14-Visual-Agent-Fleet-Governance-Failure.md",
+      "bytes": 3011,
+      "sha256": "f11bfe4828e0882999a48c46010bf28437e2787de1725636c721dcb651cb63dc",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/rca/RCA-20260613-Local-Model-Friction.md",
+      "bytes": 4325,
+      "sha256": "8892384e2f32b18af625a43311bf72cbfe32b0552d2901e9fcdb5d6eeed1e813",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/security/PATH-CONTAINMENT.md",
+      "bytes": 850,
+      "sha256": "f84b56c44b682dca0961c2ce7e52da23b54fc1d3a07c33499f5d4c84e7614592",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md",
+      "bytes": 22843,
+      "sha256": "24a07c79fa039319db868dd02408caf5cd58916082b32f72c22197d39b1942b0",
+      "disposition": "candidate_pending_analysis"
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "schema_version": "1.0.0",
+  "manifest_id": "DOC-CLEANSING-B03-v1",
+  "batch_id": "B03",
+  "generated_at": "2026-08-03T00:00:00+07:00",
+  "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
+  "source_inventory": "docs/change-requests/manifests/DOC-CLEANSING-INVENTORY-v1.json",
+  "context_profile": "T-ctx",
+  "writable_ownership": "files[].path only",
+  "cross_batch_reads": "prohibited unless reviewer escalates a named dependency",
+  "required_context_fields": [
+    "contextId",
+    "cacheId",
+    "sourceManifestHash",
+    "contextHash"
+  ],
+  "kv_id": "runtime-issued only",
+  "file_count": 43,
+  "files": [
+    {
+      "path": "docs/features/README.md",
+      "bytes": 2446,
+      "sha256": "2e55ec09e87380aff5d9649f41cdaae021f55bde566b934a258075d266538e2c",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Agent-Management-Migration.md",
+      "bytes": 4092,
+      "sha256": "9fff15953ed08d48f7e5ff9683caf2caf8ef622ea59a4d793949793d88fc47dd",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md",
+      "bytes": 8885,
+      "sha256": "0062031e910040fd820fdd99ee565ea05af2cf367242d37506c4548c0a5b1f9d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-CoDev-Module.md",
+      "bytes": 8659,
+      "sha256": "86cb17104597e62ac39a5de6fb24d765d8690a04f3e6ae846aadc333f18d6903",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-CoVibe-Module.md",
+      "bytes": 8060,
+      "sha256": "d90dc3bdb26e31aec93d46c82f9223e838f3467379d3e6498cce64c1901bfe00",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Multi-Agent-Collaboration.md",
+      "bytes": 4616,
+      "sha256": "abf473df42ea2e37529b5835b5e6effb52681e3580ee914632fb28b2a3afd3ab",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md",
+      "bytes": 10392,
+      "sha256": "eb1f1da160dcd0c488c6bf6be2a92407b89e89eab1db0e5625fe2bb1ffa14ee8",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Per-Agent-Memory-Unit.md",
+      "bytes": 10204,
+      "sha256": "1558ef859e7a7dbabe4a5768ba5d083c5c08d1f3acd9783d41d3d6e9f0571c85",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md",
+      "bytes": 6442,
+      "sha256": "369b11cc7555f016e9b9f52cda0f25f85ed6e67e512282a129f52bcae5c1fcf9",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Task-Scoped-Context-Injection.md",
+      "bytes": 5984,
+      "sha256": "e4999bea8bd08d3825a1a0f9105b1481375cecdcadf109e72472479bb3870c39",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Tiered-Review.md",
+      "bytes": 5945,
+      "sha256": "19fd4e4e50e1844c72e65013f85974d7d0c823334098489d38423456eafef4cd",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md",
+      "bytes": 7496,
+      "sha256": "7c969a4c86a37d8dc8dd9dfa9ce043d720041cee3f775ea02660e66bea14c3e3",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/agent-team/FEAT-Visual-Office-Simulation.md",
+      "bytes": 3362,
+      "sha256": "d7ed18f1a71883e4ad1840099d218f19e7b23b109cd4499395435442398fc50a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/diagram-to-doc/FEAT-Diagram-to-Doc-System.md",
+      "bytes": 1414,
+      "sha256": "bdb62b079b2e7c1ead977fb728244fa96655d7e29e44e7e2a67694828e9e7cce",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/docs-to-code/FEAT-Docs-to-Code-System.md",
+      "bytes": 1615,
+      "sha256": "7b978e7b193397133e520570e662b76b538d0888f43ba0a55847105fda0c504c",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/execution-governance/FEAT-Execution-Governance-Standard.md",
+      "bytes": 1263,
+      "sha256": "c2b3f547d7f0da73b5eac92b0173e381b01e81db9a3cde71f4e2b74d809ff58a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Call-Graph-Visualization.md",
+      "bytes": 3414,
+      "sha256": "3122a03e24717b858bdd3f8f26ba4b7a9e402b08338046e76825ee9d0cc435b7",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Doc-Format-Template-Extraction.md",
+      "bytes": 4838,
+      "sha256": "0973cdb872e4520b02df1d854a379e9bae80b4b29bc996ab7c99b0b926031784",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-GenesisBlockDB-Core.md",
+      "bytes": 4630,
+      "sha256": "7a8ad83bc33a3ee8c87be53ae8baf733e63a328bcf52e54f07b99c24424cc2f9",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-HNSW-Vector-Space.md",
+      "bytes": 3856,
+      "sha256": "af7821260618f70f5a99bbdec142bf80e554356d123b618fc0d359ab9b9aad46",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Hierarchy-Compaction-System.md",
+      "bytes": 3037,
+      "sha256": "b9548357a894b01cdab7aabe5cf7716041ad3a3bbe798fc814a73c99df9613d6",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Hybrid-JIT-Context-System.md",
+      "bytes": 1350,
+      "sha256": "2262efac1a0715581a65cf55937a95954dfe885f5305e42b30c1aea0a95c006d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Markdown-Renderer.md",
+      "bytes": 3208,
+      "sha256": "2bc0006de974edb37281a0b136f04597e3fe7f80ddea8fad5fc09c0b9fdb8ba1",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/genesis-knowledge-system/FEAT-Visual-Engineering-AST.md",
+      "bytes": 2609,
+      "sha256": "cdc4a6a8bb8f40efd34dcda4331a7241b2685b8ccc1e37329e177a690043b9b3",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/governance-access/FEAT-RBAC-ABAC-Governance.md",
+      "bytes": 1234,
+      "sha256": "e8f01e9e5cf042af96ee85a21014b539d27d2f63ddc1d6ca1411707931f7f1f1",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md",
+      "bytes": 1533,
+      "sha256": "20c7e657b98e5e50eb2a5fdeceb10fe85a63cfcf8c9f2f606626a6573d43db1f",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/integration-bridge/FEAT-Multi-Provider-Entitlement-Routing.md",
+      "bytes": 10919,
+      "sha256": "85d1b34a581662868b8095f668705b92282f941e65bce2e20d588c6e6757fde2",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md",
+      "bytes": 8196,
+      "sha256": "ddf7044d46bc6faf9dbea144f70a9db942c3bfad1dca6dfc1dfc85c3e523b2af",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/mission-control/FEAT-Command-Palette-Orchestration.md",
+      "bytes": 3805,
+      "sha256": "4de367b0344ccb2f2c64aebe642ea0035bf3620ff393330a2731e905946b2e03",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/mission-control/FEAT-Mission-Control-Specification.md",
+      "bytes": 4579,
+      "sha256": "bf477ba07309e73ffc3930d52ada6ff9c5a52a326a2a9974aca52926b425a421",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/mission-control/FEAT-UI-Migration-Phase-2.md",
+      "bytes": 2807,
+      "sha256": "b7e7d29c41f302d4f610d121a64f9eae7d776a04aa2550df39edaccbd723a85a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/platform-runtime/FEAT-Mobile-Capacitor-Build.md",
+      "bytes": 3525,
+      "sha256": "2c1039e2e97cb78009254b055b058743d57e746c335380fd6ba93dc12474a928",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md",
+      "bytes": 3365,
+      "sha256": "00203de30ac524caa5a2864feb1d098480b78659243f939524ed3cec1dfb8d24",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/project-roadmap/FEAT-Roadmap-Board-Migration.md",
+      "bytes": 6384,
+      "sha256": "b7c1fb25af43cad3b82e7f86b155d1d0eecada9534408382011fe63ebfff175b",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md",
+      "bytes": 5607,
+      "sha256": "9bc133255300a32e6a190e8b472b6b1340defab45a15579aece158d136caade9",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/quality-testing/FEAT-Playwright-E2E-Setup.md",
+      "bytes": 1996,
+      "sha256": "fb9aede35bdc3909214b027cb3e4d5f973d60998df3a4ffc28e2aad750d7899e",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/quality-testing/FEAT-Testing-Infrastructure.md",
+      "bytes": 2721,
+      "sha256": "84401c5ba514c88280d70bfdabf3228e6b59b583f62ee3608e494e22ac3716da",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-AI-Benchmark-Heatmap.md",
+      "bytes": 3627,
+      "sha256": "6f31f6c11b6dea01cfab7441695a41c0b361b3f733cecfd4fd59920700cb7875",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-AI-Stress-Test.md",
+      "bytes": 3903,
+      "sha256": "3535e64b16e7141826c3235248cf3d42015973afb26bf35e33c35187fa76f52d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-Bi-Temporal-Versioning.md",
+      "bytes": 3840,
+      "sha256": "0af007517577f5d9f688f30916e8098bb291378365fd7d47fbb106d8de413e1b",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-Document-Version-Governance.md",
+      "bytes": 4841,
+      "sha256": "d1ab2af023e423c74c47a0d24a249f47de2780eba7d70e7da21b353683fc2952",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md",
+      "bytes": 4632,
+      "sha256": "f9c304aaf6ccdacc0bdebe7210e01642a288132a9e687e8be90552801fd0c480",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/features/traceability-audit/FEAT-Traceability-Audit-Verification.md",
+      "bytes": 1424,
+      "sha256": "d2056e072bc7a5a463683397cc8929f467d1e486c177839b14d816eedd85458c",
+      "disposition": "candidate_pending_analysis"
+    }
+  ]
+}

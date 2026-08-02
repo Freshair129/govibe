@@ -1,0 +1,279 @@
+{
+  "schema_version": "1.0.0",
+  "manifest_id": "DOC-CLEANSING-B01-v1",
+  "batch_id": "B01",
+  "generated_at": "2026-08-03T00:00:00+07:00",
+  "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
+  "source_inventory": "docs/change-requests/manifests/DOC-CLEANSING-INVENTORY-v1.json",
+  "context_profile": "T-ctx",
+  "writable_ownership": "files[].path only",
+  "cross_batch_reads": "prohibited unless reviewer escalates a named dependency",
+  "required_context_fields": [
+    "contextId",
+    "cacheId",
+    "sourceManifestHash",
+    "contextHash"
+  ],
+  "kv_id": "runtime-issued only",
+  "file_count": 43,
+  "files": [
+    {
+      "path": "docs/BRD-GoVibe-Platform.md",
+      "bytes": 11467,
+      "sha256": "2d5669b22bd2ae0fdbbc9450b0f290c71fce43ec19812d25c5205512f06b9109",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/CONCEPT--HYBRID-JIT-CONTEXT.md",
+      "bytes": 9410,
+      "sha256": "3f7c1dcea404ed2eb7633bf93c47093a9aadea83202c4c2beda9932a6a9b5b7a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER.md",
+      "bytes": 3156,
+      "sha256": "7a627bb8571045ddd1529a9c15286078f0c3755f18522adac1800c5e51bfe491",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/DOC-VERSION-REGISTRY.md",
+      "bytes": 17696,
+      "sha256": "5da7065028a78c29a664638a6fbe7a749f956fca1e3b2b38b1d3614a8bb99ec7",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/DOCS-Human-First-Atom-Extraction.md",
+      "bytes": 4281,
+      "sha256": "10d4145c660df9d9e7f223709587447d5793167672ec7940954d1fe165f362c2",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/PRD-GoVibe-MCP-Orchestration.md",
+      "bytes": 16843,
+      "sha256": "1351380cd2250bd506bc5ea22354058be1187f198bd5c44d606e94fef3a6da0a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/PRD-GoVibe-Platform-Overview.md",
+      "bytes": 13317,
+      "sha256": "7e53e793c704ebfa66e8926f4f925f8657813cb5e62c9325b6696d879bbc400a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/SDD-System-Design.md",
+      "bytes": 4979,
+      "sha256": "5300812ef593c6ab2c12240d7e9efabb2b206d2e25fb94268cddfd51887f8290",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/STD-Document-Versioning-Governance.md",
+      "bytes": 7539,
+      "sha256": "d6e55db8456d9b8e13e679cba03e199b2a1023be775bee5e3edc09262115722a",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/STD-Execution-Governance.md",
+      "bytes": 13880,
+      "sha256": "c629b53d0b0e3ce8e015e6c34ed3bd00753f28e9cf057bcc1a12e3ec9d95cdd1",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/TDD-Phase1-Core-State.md",
+      "bytes": 1399,
+      "sha256": "ba03740059245313f6aeecf63b83f5b68f225e47c7b6f26f26fa38d7bd8f3a2f",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/TDD-Phase2-Desktop-Integration.md",
+      "bytes": 2494,
+      "sha256": "403763eb494e07a8dc806a6f9d791f5c505dd7a5550bdfe02984057f65d3fff5",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/alignment/ALIGNMENT-01-System-Authority-and-Command-Boundary.md",
+      "bytes": 2113,
+      "sha256": "9dc4b69f4bf91b833baf918ae95fa3453282838719f5a792b77e0393e4e1d723",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/alignment/ALIGNMENT-04-12-Stage-Decomposition-Contract.md",
+      "bytes": 2642,
+      "sha256": "92556cf545f39377d43ba4e712eedeb1f85c10dfaca9cb7dd68de70f2dce25e6",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/alignment/ALIGNMENT-06-Context-Vault-and-Memory-Assembly.md",
+      "bytes": 2650,
+      "sha256": "97f50c0a7947118341b08de061f7c75a178f920c4c8683b24fef7bbd1b3dd8fb",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/alignment/ALIGNMENT-12-Mission-Control-Context-and-Impact-Surface.md",
+      "bytes": 2687,
+      "sha256": "efbe3074dd0f983a724a98e82e51427e7ae16a4330714368df7bb00d17ac8c03",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/api/API-001-Backend-Gateway.md",
+      "bytes": 2394,
+      "sha256": "512526ff51be620f45aa031a825500bd5c635d4b84b8bfb4fa0e89524484bff4",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/api/API-002-Symbol-Linking.md",
+      "bytes": 1801,
+      "sha256": "d00a2247e8c7592328621a39af44a057b2448616f38831551d3572b9165da7a9",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/api/API-003-Mission-Workflow-Event-Schema.md",
+      "bytes": 7190,
+      "sha256": "cf73df3045f363010f87511d4f1afad414e2769cdee331c9d5e1f4d4d0867070",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/api/API-004-Task-Scoped-Context-Packet-Schema.md",
+      "bytes": 5296,
+      "sha256": "5a4837f0acad358d5c1dbd7d6660127b6f96c367bd3b691c40881ccba8abdcd2",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/api/API-005-GoVibe-Capability-Contracts.md",
+      "bytes": 7244,
+      "sha256": "38b50a3fdb3e9c5075b76606a94ec7859e051c9df2d1e61d340155e7d7d43af0",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/api/API-006-Vault-Context-and-Replay-Contracts.md",
+      "bytes": 8457,
+      "sha256": "bb8553431d7bcbbc13765e97577a6882d0f11186cd276b85e0a537bf99edf3e8",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/api/API-007-Knowledge-Context-Authority-Contract.md",
+      "bytes": 4988,
+      "sha256": "18d47a544e62fdc312cb997f23210c3a58ec2de1ab3ee992086f6207c51bd62d",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md",
+      "bytes": 11820,
+      "sha256": "93eb86cb400152ddd0c8b32e06c9edb67385fdcc0b35bc6d8900b5434bc42997",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/api/MISSION-PROTOCOL-v1.md",
+      "bytes": 4242,
+      "sha256": "04770d702a4f63a413fa9ecc1d70cf6cdd24305ada3b9e01b20331b000c7a5f6",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/protocol/MISSION-PROTOCOL-MIGRATION.md",
+      "bytes": 2610,
+      "sha256": "955d98575006cf8b1f0c0aa2746fd5fde1fff553326a6d8de34ea56d9e7c585f",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/roadmap/BACKLOG-p1-mvp-core.md",
+      "bytes": 30261,
+      "sha256": "90cb137e382c641732fc8375b9a578c88bdb3cf81dd7c956622ce64bad2b27d1",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/roadmap/BACKLOG-task-scoped-context-injection.md",
+      "bytes": 25145,
+      "sha256": "92af4ee5b62949bf097b2661c1b0ac866f140bf0199974562c487f2fcdab1c99",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/roadmap/GV-SYS1A-ROADMAP-01.md",
+      "bytes": 2559,
+      "sha256": "a1b5584a82965dd05611174ce94e62ef73e8df66f15d37f8c48c3ec9524705e3",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/roadmap/IMP-SYSTEM05-Task-Scoped-Context-Injection.md",
+      "bytes": 25422,
+      "sha256": "709591aefcf5aba2fd99816e3684e8169f8f9ae453668ec0d1de586cba02eb74",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md",
+      "bytes": 11714,
+      "sha256": "1b1a77f72e12aaa2d77fa4a825d94711a97d7d401bcfb060bf515512ea004310",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/roadmap/ROADMAP-govibe-mcp-runtime.html",
+      "bytes": 3345,
+      "sha256": "249c4a9d36627675da24a3779035f927dab31aebed07dd9218170d713be37548",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/roadmap/ROADMAP-govibe-mcp-runtime.md",
+      "bytes": 23683,
+      "sha256": "400d0348220f59e3c13485a38c88b4864c2d35e1291b1668bf5d3cea7c4664a6",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/roadmap/ROADMAP-task-scoped-context-injection.md",
+      "bytes": 7310,
+      "sha256": "d0ad4af1aca1c56906ea43a0e7c603428ddbbbb94bd3732a63c16be318d3fbee",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/roadmap/ROADMAP-translator-core.md",
+      "bytes": 8805,
+      "sha256": "5da0a58a2a4448f632b87ba9ec0a4b9432211e1d66e26e17697163a5f7c44cdf",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/specs/SPEC-Genesis-Block.md",
+      "bytes": 4611,
+      "sha256": "93df1ed87aba959ab54db7efb4ae864778e2d0489c3b01dd958cc679f52db847",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/srs/SRD-Genesis-Block.md",
+      "bytes": 4175,
+      "sha256": "c5012c08478ffd77d5d7136dad78c09652ee5a86228cdfcdde1d868bccdbb8de",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/srs/SRS-GKS-Retrieval-Layer.md",
+      "bytes": 4717,
+      "sha256": "9d6061361990c7e3478a8309af591f8827d58e22d4c20cf86cdae8d5b62e83e8",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/srs/SRS-Genesis-Block.md",
+      "bytes": 4537,
+      "sha256": "f0513356c0d917868f64f854d9944974d56b4fb6ecff949f8e70a09d7d228df0",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/srs/SRS-GoVibe-MCP-Server.md",
+      "bytes": 8419,
+      "sha256": "dc73fc2811b39838a40713125cd35e913610c5d8fd3302135000c2e6eceba8be",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md",
+      "bytes": 9468,
+      "sha256": "03593f9a3b9531461e2ac2afea804626b20f809982a8ec95abc43b7ca7584835",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/srs/SRS-GoVibe-Translator-Core-Slice.md",
+      "bytes": 7127,
+      "sha256": "98038c27b40a941aa3dd1dbdfb1567d56b8fefccdd05e429b9649bb71a06da53",
+      "disposition": "candidate_pending_analysis"
+    },
+    {
+      "path": "docs/srs/SRS-Ollama-Sidecar-Execution.md",
+      "bytes": 6862,
+      "sha256": "b60fc2dca64e5d9be7e888645cc9b90911c93d23b10040b3f75a9a6f4ba3cdb5",
+      "disposition": "candidate_pending_analysis"
+    }
+  ]
+}
