@@ -81,7 +81,7 @@ Return YAML only with these keys:
 ## 8. Context Attachment
 
 - Context container: `.agents/context/CONTEXT-Bounded-External-Executor.md`
-- Return path: `docs/change-requests/feedback/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review-feedback.md`
+- Return path: `docs/change-control/change-requests/feedback/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review-feedback.md`
 
 ## 9. Success Criteria
 

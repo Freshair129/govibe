@@ -43,7 +43,7 @@ docs/features/diagram-to-doc/**
 docs/features/genesis-knowledge/**
 docs/features/traceability-audit/**
 docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md
-docs/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md
+docs/change-control/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md
 ```
 
 Expand scope only when a reviewed document links to another source required to resolve authority, terminology, ownership, or contradiction.
@@ -76,7 +76,7 @@ For each topic, determine what the repository currently says, which document is 
 Create:
 
 ```text
-docs/audits/AUDIT-2026-08-01-GoVibe-Canonical-Architecture-Alignment-WP01.md
+docs/assurance/audit/AUDIT-2026-08-01-GoVibe-Canonical-Architecture-Alignment-WP01.md
 ```
 
 The report must include:

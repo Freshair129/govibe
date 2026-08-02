@@ -15,8 +15,8 @@ canonical_authority:
   version: "2.3.0+ga"
 related_docs:
   - "docs/STD-Execution-Governance.md"
-  - "docs/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md"
-  - "docs/audits/AUDIT-2026-08-01-GoVibe-Canonical-Architecture-Alignment-WP01.md"
+  - "docs/change-control/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md"
+  - "docs/assurance/audit/AUDIT-2026-08-01-GoVibe-Canonical-Architecture-Alignment-WP01.md"
 ---
 
 # Amendment: H-Axis Definition and Parent CR Correction

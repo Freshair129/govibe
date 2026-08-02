@@ -7,14 +7,14 @@ updated: "2026-06-19"
 owner: "ARCHON"
 source_of_truth: true
 related_docs:
-  - "docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md"
+  - "docs/change-control/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md"
 ---
 
 # Feedback: CR-2026-06-19 Mission Control Frontend Structure Refactor
 
 ## 1. Review Scope
 
-- scope source: `docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md`
+- scope source: `docs/change-control/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md`
 - requested reviewer: `ARCHON`
 - downstream implementation owner: `VIBE`
 - ADR author when required: `ARCHON`

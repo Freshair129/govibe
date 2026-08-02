@@ -10,7 +10,7 @@ source_of_truth: true
 related_docs:
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md"
-  - "docs/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md"
+  - "docs/change-control/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md"
 ---
 
 # Feedback: FEAT CoDev / CoVibe Terminology Definition
@@ -33,7 +33,7 @@ Reviewed inputs:
 - `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md`
 - `docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md`
 - `docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md`
-- `docs/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md`
+- `docs/change-control/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md`
 
 ## 2. Feedback Summary
 

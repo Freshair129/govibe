@@ -43,11 +43,11 @@ Retrieval distance, representation depth, context budget, W-scale, risk, and ope
 | RWANG `EXECUTION-GOVERNANCE.md` | canonical external STD | Confirms H0-H4 and separates graph radius | used as authority |
 | `docs/architecture/C4-GoVibe-Platform.md` | active draft architecture | Uses H0-H6 for retrieval and full-network traversal | correction overlay added; direct rewrite deferred |
 | `docs/srs/SRS-GKS-Retrieval-Layer.md` | active draft SRS | Used H0-H6 as graph hops and cited STD incorrectly | corrected to R0-R6 |
-| `docs/audit/POC-H6-Budget-Sufficiency.md` | approved audit, legacy identifier | Note distinguished R from H but active body still used H0-H6 | body normalized to R0-R6; filename/doc_id retained for compatibility |
+| `docs/assurance/audit/POC-H6-Budget-Sufficiency.md` | approved audit, legacy identifier | Note distinguished R from H but active body still used H0-H6 | body normalized to R0-R6; filename/doc_id retained for compatibility |
 | `docs/features/genesis-knowledge-system/FEAT-Hierarchy-Compaction-System.md` | active draft feature | Defined H0-H6 as context/compaction scale | corrected to H/R/D/W/budget separation |
 | `docs/adr/ADR-020-Per-Agent-Memory-Unit.md` | proposed ADR | Contains legacy `D/H` spatial wording and H-vs-D references | residual correction required before acceptance |
 | `docs/api/API-004-Task-Scoped-Context-Packet-Schema.md` | approved API | Does not currently encode H, R, or budget fields; no semantic collision | no change required in this PR |
-| `docs/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md` | parent CR | Previously used H5 and H0-H6 context expansion | corrected to C-3/H4 and separated axes |
+| `docs/change-control/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md` | parent CR | Previously used H5 and H0-H6 context expansion | corrected to C-3/H4 and separated axes |
 | `docs/adr/ADR-020-H-Axis-Access-Scope-Semantic-Separation.md` | newly created but colliding | ADR number collided with existing ADR-020 | replaced by ADR-021 |
 
 ## 4. Active corrections completed

@@ -91,8 +91,8 @@ The audit does not silently reconcile contradictions. Every contradiction remain
 
 ### 3.5 Parent change control
 
-- `docs/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md`
-- `docs/change-requests/work-packets/WP-01-Canonical-Document-Audit.md`
+- `docs/change-control/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md`
+- `docs/change-control/change-requests/work-packets/WP-01-Canonical-Document-Audit.md`
 
 ### 3.6 Scope limitation
 

@@ -51,7 +51,7 @@ Rationale:
   - `A2::Roadmap Board`
   - shared Mission Control layout and view composition under `src/`
 - Source-of-truth document path:
-  - `docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md`
+  - `docs/change-control/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md`
 
 ## 4. Ownership And Execution Routing
 
@@ -170,7 +170,7 @@ Return Markdown with these sections:
 
 ## 14. Handoff Attachment
 
-- recommended architecture return path: `docs/change-requests/feedback/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor-feedback.md`
+- recommended architecture return path: `docs/change-control/change-requests/feedback/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor-feedback.md`
 - recommended shared context packet: `.agents/context/shared/CONTEXT-Mission-Control-Frontend-Structure-Refactor.md`
 - recommended implementation contract seed: `.agents/frontend/AGENT.md`
 - recommended PM routing context: `.agents/pm/context/LYRA-Scope-Control-Context.md`

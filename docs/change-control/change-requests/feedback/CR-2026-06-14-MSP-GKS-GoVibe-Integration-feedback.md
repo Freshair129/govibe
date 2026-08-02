@@ -8,7 +8,7 @@ owner: "LYRA"
 auditor: "ATHER"
 source_of_truth: true
 related_docs:
-  - "docs/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md"
+  - "docs/change-control/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md"
 ---
 
 # Feedback: CR MSP/GKS Integration as GoVibe Traceability Gate

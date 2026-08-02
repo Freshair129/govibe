@@ -8,7 +8,7 @@ owner: "CODEX"
 auditor: "ATHER"
 source_of_truth: true
 related_docs:
-  - "docs/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md"
+  - "docs/change-control/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md"
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
@@ -27,7 +27,7 @@ Execution settings:
 - model: `gemini-3.1-flash-lite`
 - approval mode: `plan`
 - output format: `json`
-- scope source: `docs/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md`
+- scope source: `docs/change-control/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md`
 
 Reviewed inputs:
 

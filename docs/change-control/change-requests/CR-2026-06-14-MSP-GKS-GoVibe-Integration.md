@@ -15,7 +15,7 @@ related_docs:
   - "docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md"
   - "docs/architecture/SDD-Visual-Agent-Fleet.md"
   - ".brain/rca/RCA-2026-06-14-visual-agent-fleet-doc-governance.md"
-  - "docs/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md"
+  - "docs/change-control/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md"
 external_refs:
   - "C:/Users/freshair/cognitive_system/FRAMEWORK_MASTER_SPEC.md"
   - "C:/Users/freshair/cognitive_system/packages/msp/README.md"
@@ -125,7 +125,7 @@ Role-specific prompts:
 
 Feedback was collected from ARCHON, ATHER, LYRA, THESEUS, KIN, GHOST, and JANUS through role-simulated Gemini CLI review. All reviewers returned `approve_with_changes`.
 
-Feedback summary is recorded in `docs/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md`.
+Feedback summary is recorded in `docs/change-control/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md`.
 
 Common required refinements:
 
