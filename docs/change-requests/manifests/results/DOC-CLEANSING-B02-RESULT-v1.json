@@ -477,21 +477,21 @@
       "path": "docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md",
       "git_object_id": "4b5050255fd5b6513fd8d34532ce6b66687047e2",
       "source_bytes": 8056,
-      "source_sha256": "8592dd59b00ae61…2479 tokens truncated…c863afe3695204acc071d351760cd437ec526fc6daeb1e",
+      "source_sha256": "8592dd59b00ae618ecac2dad908ec59441443b7a279c269f19e7470d7f11957e",
       "baseline_blob_verified": true,
       "observed": {
-        "title": "ERD: GoVibe Platform Data Model",
-        "doc_id": null,
-        "status": "unresolved",
-        "version": "unresolved",
-        "owner": "unresolved",
+        "title": "ADR-024: Provider Entitlement and Execution Authority Boundary",
+        "doc_id": "ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY",
+        "status": "proposed",
+        "version": "0.1.0+draft",
+        "owner": "Boss (CEO)",
         "source_of_truth": "unresolved"
       },
       "disposition": "escalate",
-      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "reason": "source_of_truth authority field is missing and cannot be inferred by this worker",
       "path_operation": null,
       "inbound_reference_evidence": "not_required_no_path_operation",
-      "explicit_document_reference_signals": 5,
+      "explicit_document_reference_signals": 0,
       "phase2_semantic_flags": []
     },
     {
@@ -951,7 +951,7 @@
       "source_sha256": "9ec903a8c583c866717d5254e51b24725086a6ba27bc765ec6d9ae283b244013",
       "baseline_blob_verified": true,
       "observed": {
-        "title": "--- MASTER HUB METADATA (Full-Scale) ---",
+        "title": "SYSTEM: Multi-Agent Team Orchestration [L4-Container] AGENT_TEAM_SYSTEM",
         "doc_id": "UGB-SYSTEM-05-001",
         "status": "candidate",
         "version": "1.0.0",
@@ -974,7 +974,7 @@
       "source_sha256": "0afbbff1b5bfacdfc8a2e72f0d3b0387831a91ba66accaa72ea4280e144d58ce",
       "baseline_blob_verified": true,
       "observed": {
-        "title": "--- MASTER HUB METADATA (Full-Scale) ---",
+        "title": "SYSTEM: Genesis Knowledge System [L4-Container] GKS_CORE",
         "doc_id": "UGB-GKS-001",
         "status": "candidate",
         "version": "1.3.0",
