@@ -6,7 +6,7 @@ version: "0.2.0"
 updated: "2026-08-02"
 owner: "Boss (CEO)"
 type: adr
-related_adrs: ["ADR-020"]
+related_adrs: ["ADR-023"]
 ---
 
 # ADR-019: Universal code-in + MCP-out — no per-framework adapters
@@ -25,7 +25,7 @@ Read the **artifact**, not the **producer framework**:
 
 - **Ingest:** any codebase or supported artifact → structural candidates → GKS promotion pipeline, without requiring migration of existing documents.
 - **Generate:** governed intent/context → candidate doc/diagram/spec/code output, routed by the Execution Governance contract. UX may be exposed through MCP tools such as `govibe:add_feature`.
-- **Control surface = MCP.** Cross-team meaning is reconciled through the GKS interlingua (`ADR-017`) and task context is governed by MSP (`ADR-020`).
+- **Control surface = MCP.** Cross-team meaning is reconciled through the GKS interlingua (`ADR-017`) and task context is governed by MSP (`ADR-023`).
 - Decomposition, extraction, and generation providers are **replaceable bounded skills/providers**, but their outputs remain candidates.
 - A provider output must carry source IDs and hashes, provenance, assumptions, requested scope, exclusions, and provider/version identity before normalization.
 - GoVibe normalizes and validates candidate shape. MSP applies authority, context, and promotion policy. GKS alone assigns canonical identities, resolves canonical relations, deduplicates, and records graph versions.
@@ -51,7 +51,7 @@ External skill / parser / generator
 - (−) Human or policy approval remains necessary when relation coverage, authority, or assumptions are unresolved.
 
 ## 4. Related
-[[ADR-017-GoVibe-Governance-Translator-GKS-Interlingua]], [[ADR-020-Knowledge-Authority-Context-Authority-Boundary]], `STD-Execution-Governance`, `CONCEPT--HYBRID-JIT-CONTEXT`, `BRD-GoVibe-Platform`.
+[[ADR-017-GoVibe-Governance-Translator-GKS-Interlingua]], [[ADR-023-Knowledge-Authority-Context-Authority-Boundary]], `STD-Execution-Governance`, `CONCEPT--HYBRID-JIT-CONTEXT`, `BRD-GoVibe-Platform`.
 
 ## Changelog
 | Version | Date | Owner | Summary |
