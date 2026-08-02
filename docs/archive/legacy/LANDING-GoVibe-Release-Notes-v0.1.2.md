@@ -84,7 +84,7 @@ All user interactions saved and restored on page reload:
 
 ## Architecture
 
-**Single HTML file:** `docs/design/LANDING-GoVibe-Mockup.html`
+**Single HTML file:** `docs/references/fixtures/LANDING-GoVibe-Mockup.html`
 - 76 KB uncompressed
 - All CSS + JS inline (no build step)
 - CSS custom properties (vars) as public knobs
