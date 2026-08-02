@@ -1,11 +1,27 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.0.1",
   "result_id": "DOC-CLEANSING-PHASE1B-PHASE2-INTEGRATION-RESULT-v1",
-  "status": "execution_complete",
+  "status": "execution_complete_evidence_repaired_with_runtime_baseline_debt",
   "execution_complete": true,
   "execution_authorized": false,
   "integration_branch": "codex/docs-cleansing-ia",
   "accepted_base_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+  "evidence_revision": {
+    "revision": 2,
+    "status": "verified_git_blob_content_bytes",
+    "scope": "Phase 2 semantic rollback map only",
+    "preserves": "accepted commits, authority provenance, forward operations, inverse operations, and final target identities",
+    "sha256_basis": "git_blob_content_bytes",
+    "verified_associations": 88
+  },
+  "post_sync_validation": {
+    "origin_main": "91ec65aed07c5e22f5b5c8a8e214c6b9e0067c2a",
+    "merge_commit": "23081b9c58fb63758491127ab315516485058da4",
+    "origin_changed_paths": 9,
+    "path_overlap_with_cleansing_branch": 0,
+    "status": "documentation_evidence_passed_runtime_baseline_debt_recorded",
+    "reason": "Current runtime/security test outcomes changed after the required origin/main merge and are recorded without modifying runtime code in this evidence-only repair."
+  },
   "authority_provenance": {
     "owner": "Boss (Product Authority)",
     "decision": "owner approval plus delegated decision authority in the assigned cleansing task",
@@ -23,7 +39,7 @@
   ],
   "review_gates": {
     "independent_review": "ACCEPT for each accepted commit",
-    "integration_gate": "this result preserves accepted slice evidence and does not rewrite it",
+    "integration_gate": "this result preserves accepted slice operations and provenance; revision 2 normalizes only the Phase 2 rollback-map hash basis",
     "final_gate": "parent final gate receives this result, validations, versions, rollback accounting, and unresolved queue"
   },
   "operation_accounting": {
@@ -48,6 +64,16 @@
     "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE2-SEMANTIC-RESULT-v1.md",
     "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE2-SEMANTIC-ROLLBACK-MAP-v1.json"
   ],
+  "source_evidence_revisions": {
+    "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE2-SEMANTIC-ROLLBACK-MAP-v1.json": {
+      "schema_version": "1.1",
+      "evidence_revision": 2,
+      "status": "verified_git_blob_content_bytes",
+      "sha256_basis": "git_blob_content_bytes",
+      "operations": 22,
+      "before_after_inverse_associations": 88
+    }
+  },
   "cross_slice_identity_chains": {
     "CoDev_CR": {
       "path": "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md",
@@ -136,15 +162,16 @@
     "roadmap_validate": "PASS: 7 sources, 0 errors, 14 pre-existing plan-quality warnings.",
     "lint": "PASS: tsc --noEmit; existing roadmap quality warnings are emitted by repository tooling and not fixed here.",
     "build": "PASS: tsc and Vite production build completed.",
-    "security": "PASS: 35 passed, 0 failed.",
+    "security": "POST-SYNC BASELINE FAILURE: 34 passed, 1 failed. graph-dispatch-authority.security.mjs expects direct adapter dispatch but merged execution-binding enforcement correctly requires a governed binding (EXECUTION_BINDING_REQUIRED).",
     "mission_gateway_targeted_test": "PASS: src/missionGateway.test.ts, 8 passed.",
     "diff_checks": "PASS: npm run diff:check and git diff --check.",
-    "full_npm_test": "BASELINE FAILURE, unchanged: 6 failed, 149 passed, 1 skipped. Failing files are capability-runtime (3), migration-capabilities (1), and msp-live-contract (2); all fail at the new required contextAuthority boundary or its expected status. test:security is not reached by npm test because Vitest exits first, but it passed independently."
+    "phase2_semantic_rollback_map_hash_associations": "PASS: 22 operations and 88 before/after/inverse associations recomputed from recorded Git blob content bytes.",
+    "full_npm_test": "POST-SYNC BASELINE FAILURE: 11 failed, 180 passed, 1 skipped. Failures are capability-runtime (3), migration-capabilities (1), msp-live-contract (2), and executor-adapter (5); all concern the merged required contextAuthority, allow-policy, or execution-binding contracts. test:security is not reached by npm test because Vitest exits first; its direct post-sync run is separately recorded above."
   },
   "exclusions_and_unresolved_queue": [
     "77 criteria-structure warnings: unchanged and not treated as documentation-cleaning completion.",
     "14 legacy roadmap-quality warnings: unchanged and not treated as roadmap repair.",
-    "Six baseline runtime test failures: unchanged and not treated as runtime repair.",
+    "Post-sync runtime baseline debt: 11 full-test failures and 1 security-test failure caused by merged contextAuthority, allow-policy, and execution-binding contract expectations; not treated as runtime repair in this evidence-only change.",
     "No direct MSP/GKS/GenesisBlockDB operation, canonical identity assignment, or graph-completeness claim.",
     "Old active runbook path is permitted only in historical manifests, results, rollback evidence, and non-canonical .brain materialization."
   ],

@@ -1,7 +1,7 @@
 ---
 title: "Document Cleansing Phase 2 Semantic Authority Result"
 doc_id: "DOC-CLEANSING-PHASE2-SEMANTIC-RESULT-v1"
-version: "0.1.1+draft"
+version: "0.1.2+draft"
 status: "candidate"
 updated: "2026-08-03"
 owner: "ATHER"
@@ -83,6 +83,20 @@ the 23 path/resource-reference rewrites, deterministic rollback order, and unres
 scope. Prefer a non-destructive `git revert` of the committed slice; the map
 provides a byte-verified recovery procedure if a file-level rollback is needed.
 
+### Hash-basis evidence revision
+
+| Field | Value |
+|---|---|
+| Revision | 2 |
+| Status | `verified_git_blob_content_bytes` |
+| SHA-256 basis | `git_blob_content_bytes` |
+| Associations proved | 22 operations; 88 before/after/inverse blob-identity associations |
+| Corpus semantics | unchanged; this revision only replaces working-tree-basis evidence with Git blob identities |
+
+Each before, after, and inverse precondition/restore digest in the rollback map
+was recomputed from its recorded Git blob content bytes. The accepted Phase 2
+operations, inverse order, authority provenance, and target corpus are retained.
+
 ## Validation Evidence
 
 | Gate | Result | Evidence |
@@ -114,5 +128,6 @@ not remediated in this documentation-only slice.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-08-03 | ATHER | Normalized rollback-map SHA-256 evidence to recorded Git blob content bytes; added per-operation before/after/inverse blob identities without changing corpus semantics. |
 | 0.1.1+draft | 2026-08-03 | ATHER | Repaired the stable MCP resource URI mapping and authority label after independent P1 review; added exact rollback evidence. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Recorded the authorized Phase 2 semantic/authority slice, bounded impact evidence, and pending independent-review gates. |
