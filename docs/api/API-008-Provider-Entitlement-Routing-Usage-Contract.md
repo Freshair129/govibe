@@ -1,0 +1,397 @@
+---
+doc_id: "API-008-PROVIDER-ENTITLEMENT-ROUTING-USAGE-CONTRACT"
+title: "API-008: Provider Entitlement, Routing and Usage Contract"
+status: "draft"
+version: "0.1.0+draft"
+updated: "2026-08-02"
+owner: "ARCHON / ATHER"
+source_of_truth: true
+related_issue: 55
+related_adrs: ["ADR-023", "ADR-024"]
+---
+
+# API-008: Provider Entitlement, Routing and Usage Contract
+
+## 1. Purpose
+
+Define minimum contracts for provider capability discovery, entitlement ownership, execution planning, governed binding, normalized run results, usage telemetry, affinity, retry and failover.
+
+This API consumes MSP-governed context. It does not define knowledge retrieval, context construction, canonical promotion, or graph authority.
+
+## 2. Contract rules
+
+- Every executable resource is addressed by entitlement ID, not raw credential.
+- Every entitlement has an owner and explicit share policy.
+- Credential references are opaque and must never enter model context or provider-visible artifact payloads unless the provider protocol itself requires a derived token delivered by the adapter.
+- Execution binding occurs only after a valid persisted MSP context packet exists.
+- Routers and adapters must not mutate context content, scope, exclusions, source identity, reason chains, or authority state.
+- Provider output is candidate state.
+- Reported, estimated, and unknown usage values remain distinguishable.
+- Failover creates a new binding and preserves context lineage.
+
+## 3. Provider capability descriptor
+
+Schema identifier: `govibe-provider-capability-descriptor/v1`
+
+```yaml
+schema: govibe-provider-capability-descriptor/v1
+provider_id: string
+adapter_id: string
+adapter_version: string
+executor_classes: [string]
+models:
+  - model_id: string
+    capabilities: [string]
+    context_limit_tokens: integer|null
+    supports_tools: boolean
+    supports_streaming: boolean
+    supports_reasoning_control: boolean|null
+entitlement_types:
+  - personal_subscription
+  - business_seat
+  - organization_service
+  - api
+  - local_compute
+usage_visibility: detailed|partial|rate-limit-only|unknown
+token_usage_reported: boolean
+cached_token_usage_reported: boolean
+remaining_quota_reported: boolean
+rate_limit_detectable: boolean
+supports_session_affinity: boolean
+supports_prompt_cache_reference: boolean
+supports_cancellation: boolean
+supports_parallel_runs: boolean
+credential_modes: [string]
+data_policy_tags: [string]
+observed_at: string
+```
+
+Capabilities are adapter observations or provider-declared facts. They do not grant authorization.
+
+## 4. Entitlement record
+
+Schema identifier: `govibe-provider-entitlement/v1`
+
+```yaml
+schema: govibe-provider-entitlement/v1
+entitlement_id: string
+version: string
+provider_id: string
+entitlement_type: personal_subscription|business_seat|organization_service|api|local_compute
+owner:
+  owner_type: user|team|organization|service
+  owner_id: string
+share_policy: owner_only|named_principals|workspace_pool|organization_pool
+allowed_principals: [string]
+allowed_roles: [string]
+allowed_workspaces: [string]
+allowed_projects: [string]
+data_classifications: [string]
+residency_policy: [string]
+credential_ref: string|null
+executor_classes: [string]
+model_allowlist: [string]
+model_denylist: [string]
+concurrency:
+  max_active: integer|null
+  max_queued: integer|null
+session_policy:
+  cross_run_reuse: boolean
+  cross_user_reuse: boolean
+  ttl_seconds: integer|null
+quota_policy_ref: string|null
+state: active|suspended|revoked|expired
+valid_from: string
+valid_until: string|null
+```
+
+`cross_user_reuse` must default to false and requires explicit provider and organizational authorization when enabled.
+
+## 5. Capability planning request
+
+Schema identifier: `govibe-execution-capability-request/v1`
+
+```yaml
+schema: govibe-execution-capability-request/v1
+request_id: string
+actor_id: string
+organization_id: string
+workspace_id: string
+project_id: string|null
+task_id: string
+agent_id: string
+executor_class: string
+required_capabilities: [string]
+required_tools: [string]
+modalities: [string]
+data_classification: string
+residency_requirements: [string]
+maximum_context_budget_tokens: integer|null
+latency_class: interactive|standard|batch|background
+risk: string
+```
+
+The response lists eligible execution classes and constraints only. It must not include knowledge selections or relation traversal decisions.
+
+## 6. Capability planning response
+
+Schema identifier: `govibe-execution-capability-plan/v1`
+
+```yaml
+schema: govibe-execution-capability-plan/v1
+request_id: string
+eligible_targets:
+  - provider_id: string
+    entitlement_id: string
+    executor_class: string
+    model_candidates: [string]
+    maximum_context_tokens: integer|null
+    usage_visibility: detailed|partial|rate-limit-only|unknown
+    session_affinity_available: boolean
+    prompt_cache_reference_available: boolean
+    policy_refs: [string]
+rejected_targets:
+  - provider_id: string
+    entitlement_id: string|null
+    reason_code: string
+constraints_for_msp:
+  maximum_context_budget_tokens: integer|null
+  required_rendering_contracts: [string]
+  prohibited_provider_features: [string]
+created_at: string
+```
+
+`constraints_for_msp` is advisory input to context resolution. It does not authorize the router to alter context.
+
+## 7. Governed execution binding request
+
+Schema identifier: `govibe-execution-binding-request/v1`
+
+```yaml
+schema: govibe-execution-binding-request/v1
+binding_request_id: string
+actor_id: string
+organization_id: string
+workspace_id: string
+project_id: string|null
+task_id: string
+agent_id: string
+run_id: string
+session_id: string
+turn_id: string
+context:
+  context_id: string
+  cache_id: string
+  context_hash: string
+  source_manifest_hash: string
+  context_profile: string
+  token_count: integer|null
+  tool_contract_hash: string
+required_capabilities: [string]
+preferred_targets:
+  - provider_id: string
+    entitlement_id: string|null
+    model_id: string|null
+affinity:
+  affinity_key: string|null
+  previous_binding_id: string|null
+  provider_session_id: string|null
+fallback_policy_id: string|null
+risk: string
+```
+
+The context packet must already be persisted and valid under API-007/API-006 before this request is accepted.
+
+## 8. Governed execution binding response
+
+Schema identifier: `govibe-execution-binding/v1`
+
+```yaml
+schema: govibe-execution-binding/v1
+binding_id: string
+binding_request_id: string
+context_id: string
+context_hash: string
+provider_id: string
+adapter_id: string
+adapter_version: string
+entitlement_id: string
+credential_ref: string|null
+executor_class: string
+model_id: string
+resolved_tools: [string]
+provider_session_id: string|null
+provider_prompt_cache_ref: string|null
+affinity_key: string|null
+quota_snapshot_ref: string|null
+fallback_policy_id: string|null
+policy_decision_refs: [string]
+authorized_at: string
+expires_at: string|null
+```
+
+The adapter receives `credential_ref` through a protected runtime channel. It must not serialize it into logs, context packets, candidate output, or user-visible traces.
+
+## 9. Provider run result
+
+Schema identifier: `govibe-provider-run-result/v1`
+
+```yaml
+schema: govibe-provider-run-result/v1
+run_result_id: string
+binding_id: string
+provider_request_id: string|null
+provider_session_id: string|null
+status: completed|failed|rate_limited|cancelled|timed_out
+started_at: string
+completed_at: string|null
+candidate:
+  schema: govibe-provider-candidate/v1
+  provider_id: string
+  provider_version: string|null
+  request_id: string
+  source_manifest: []
+  requested_scope: {}
+  assumptions: []
+  artifacts: []
+  relation_candidates: []
+  verification_hints: []
+provider_usage: {}
+normalized_errors: []
+retryable: boolean
+```
+
+The candidate must not contain trusted self-assigned canonical `gks:` identities.
+
+## 10. Usage event
+
+Schema identifier: `govibe-entitlement-usage-event/v1`
+
+```yaml
+schema: govibe-entitlement-usage-event/v1
+event_id: string
+organization_id: string
+user_id: string
+workspace_id: string
+project_id: string|null
+task_id: string
+run_id: string
+binding_id: string
+provider_id: string
+entitlement_id: string
+entitlement_type: string
+model_id: string
+reported_usage:
+  unit: request|credit|token|second|unknown
+  input_tokens: integer|null
+  cached_input_tokens: integer|null
+  output_tokens: integer|null
+  reasoning_tokens: integer|null
+  provider_credits: number|null
+  request_count: integer|null
+estimated_usage:
+  method: string|null
+  input_tokens: integer|null
+  output_tokens: integer|null
+  compute_weight: number|null
+  confidence: number|null
+unknown_fields: [string]
+affinity:
+  session_affinity_used: boolean
+  prompt_cache_ref_used: boolean
+  verified_result_cache_hit: boolean
+routing:
+  attempt: integer
+  fallback_used: boolean
+  previous_binding_id: string|null
+outcome:
+  status: completed|failed|rate_limited|cancelled|timed_out
+  duration_ms: integer|null
+recorded_at: string
+```
+
+A field must remain null or appear in `unknown_fields` when the provider does not expose it. GoVibe estimates must not populate `reported_usage`.
+
+## 11. Quota snapshot
+
+Schema identifier: `govibe-entitlement-quota-snapshot/v1`
+
+```yaml
+schema: govibe-entitlement-quota-snapshot/v1
+quota_snapshot_id: string
+entitlement_id: string
+provider_id: string
+visibility: detailed|partial|rate-limit-only|unknown
+reported:
+  remaining: number|null
+  unit: request|credit|token|second|unknown
+  resets_at: string|null
+observed_rate_limit:
+  limited: boolean
+  retry_after_seconds: integer|null
+estimated:
+  capacity_score: number|null
+  confidence: number|null
+source: provider|adapter|scheduler|unknown
+observed_at: string
+```
+
+A scheduler capacity score is an internal operational estimate and is not a provider quota claim.
+
+## 12. Retry and failover request
+
+Schema identifier: `govibe-execution-rebind-request/v1`
+
+```yaml
+schema: govibe-execution-rebind-request/v1
+rebind_request_id: string
+previous_binding_id: string
+context_id: string
+context_hash: string
+failure_code: string
+fallback_policy_id: string
+required_capabilities: [string]
+exclude_targets: [string]
+```
+
+A successful rebind must create a new binding ID, preserve context ID/hash, and re-evaluate authorization. A context change requires a new MSP context lineage, not a rebind.
+
+## 13. Failure codes
+
+Minimum normalized failure codes:
+
+- `NO_AUTHORIZED_ENTITLEMENT`
+- `ENTITLEMENT_REVOKED`
+- `CREDENTIAL_UNAVAILABLE`
+- `REQUIRED_CAPABILITY_UNAVAILABLE`
+- `CONTEXT_BUDGET_UNSATISFIED`
+- `TOOL_CONTRACT_INCOMPATIBLE`
+- `DATA_POLICY_INCOMPATIBLE`
+- `PROVIDER_RATE_LIMITED`
+- `PROVIDER_UNAVAILABLE`
+- `SESSION_AFFINITY_UNAVAILABLE`
+- `USAGE_SEMANTICS_UNKNOWN`
+- `CONTEXT_INTEGRITY_FAILED`
+- `BINDING_EXPIRED`
+
+## 14. Prohibited behavior
+
+- raw credential routing;
+- anonymous cross-user session reuse;
+- router-side context trimming;
+- treating a request count as an exact token quantity;
+- assuming provider cache behavior reduces subscription quota;
+- silently downgrading tools, model capability, privacy, residency, or context semantics;
+- provider adapter direct access to GKS or GenesisBlockDB;
+- canonical promotion from a run-result handler.
+
+## 15. Compatibility
+
+This contract extends:
+
+- API-004 Task-Scoped Context Packet Schema;
+- API-005 GoVibe Capability Contracts;
+- API-006 Vault Context and Replay Contracts;
+- API-007 Knowledge and Context Authority Contract.
+
+Where execution-resource behavior conflicts with context authority, API-007 and ADR-023 govern context, and ADR-024/API-008 govern resource binding.
