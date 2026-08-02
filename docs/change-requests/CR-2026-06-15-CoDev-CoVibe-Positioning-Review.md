@@ -11,7 +11,7 @@ related_docs:
   - "docs/architecture/C4-GoVibe-Platform.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md"
-  - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
 ---
 
 # Change Request: CoDev and CoVibe Positioning Review

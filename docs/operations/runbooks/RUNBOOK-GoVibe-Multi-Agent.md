@@ -1,11 +1,13 @@
 ---
 title: "RUNBOOK: GoVibe Multi-Agent Workflow"
 doc_id: "RUNBOOK-GOVIBE-MULTI-AGENT"
-status: "candidate"
-version: "0.1.0"
-updated: "2026-06-13"
+status: "draft"
+version: "0.2.0+draft"
+updated: "2026-08-03"
 owner: "GoVibe"
-source_of_truth: true
+source_of_truth: false
+document_role: "operational guidance"
+governing_standard: "docs/STD-Execution-Governance.md"
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
@@ -23,7 +25,7 @@ related_docs:
 
 ## 1. Purpose
 
-Define the canonical operating workflow for GoVibe multi-agent execution.
+Define operational guidance for GoVibe multi-agent execution. This runbook is not a source of truth: `docs/STD-Execution-Governance.md` is the canonical authority for execution-governance semantics.
 
 This runbook explains how a human owner, lead agent, planning agent, execution agents, QA, auditor, and external tool bridges coordinate work from approved document to verified delivery without hardcoding project state or bypassing governance.
 
@@ -41,9 +43,9 @@ Use this runbook when work includes one or more of the following:
 
 - Product and system intent already exists in approved human-readable SWE docs.
 - MemoryOS V3 state management active.
-- Work has a declared complexity level `C-0` to `C-3`.
-- Work has a declared context tier `H0` to `H6`.
-- Work declares `W-Scale` when breadth, branching, or decomposition fan-out matters.
+- Work has a declared process complexity level `C-0` to `C-3`.
+- Work has a declared Access Scope `H0` to `H4`; H is an executor tool/permission ceiling, not context depth.
+- Work declares retrieval radius (`R`), compaction/resolution depth (`D`), fan-out/branching width (`W`), Budget, and Risk as separate axes when applicable.
 - Agent-ID governance enforced (ADR-006/007/008).
 - Human access is governed by RBAC.
 - Agent, subagent, MCP, and service access is governed by ABAC.
@@ -62,7 +64,7 @@ Use this runbook when work includes one or more of the following:
 | Integration bridge | Connects third-party agents and services through API, MCP, webhook, local bridge, or file-based exchange |
 | Ollama sidecar | Executes bounded local atomic-task work through registry-driven context injection |
 
-## 5. Canonical Artifact Chain
+## 5. Operational Artifact Chain
 
 The multi-agent system must preserve this chain:
 
@@ -82,7 +84,7 @@ If any link is missing, the work is not considered complete.
 
 ```mermaid
 flowchart TD
-    A["Human Request or Change Trigger"] --> B["Execution Governance Classification<br/>C-level, H-tier, W-Scale, Risk"]
+    A["Human Request or Change Trigger"] --> B["Execution Governance Classification<br/>C, H, R, D, W, Budget, Risk"]
     B --> C["Approved Source Document Exists?"]
     C -->|No| D["Write or update human-first SWE doc"]
     D --> E["Human review and approval"]
@@ -110,8 +112,10 @@ The lead agent or human owner classifies the work using the execution governance
 
 The same intake must also declare:
 
-- `H0` to `H6` depth
+- Access Scope `H0` to `H4`
+- retrieval radius (`R`) and compaction/resolution depth (`D`) when applicable
 - `W2`, `W3`, `W4`, or `N/A` fan-out breadth
+- explicit Budget
 - risk level `LOW`, `MEDIUM`, or `HIGH`
 - primary PRD system
 
@@ -172,7 +176,7 @@ Before execution starts:
 - human assignment is checked with RBAC
 - agent assignment is checked with ABAC
 - scope, project, resource, and action context must match policy
-- the assigned agent or team receives only the context needed for its H-tier and task scope
+- the assigned agent or team receives only the context authorized by its packet; Access Scope (`H`) does not define retrieval or context breadth
 
 GoVibe coordinates the work. It does not take ownership of third-party billing, subscription, quota, or provider runtime controls.
 
@@ -181,6 +185,14 @@ Roadmap-board promotion is gated separately: planning docs must satisfy the road
 ### Step 6 - Execution and handoff
 
 Execution agents implement from approved docs and linked tasks.
+
+The runtime boundary remains:
+
+```text
+Executor / Claude Code -> GoVibe MCP -> MSP -> GKS -> GenesisBlockDB
+```
+
+GoVibe does not call GKS or GenesisBlockDB directly, and agents do not use direct runtime credentials for MSP, GKS, or GenesisBlockDB. A returned `gks:` value is an opaque reference, not connection authority.
 
 Expected handoff behavior:
 
@@ -237,7 +249,8 @@ Use selective context injection based on:
 
 - current PRD system
 - assigned scope or folder
-- declared `H` tier
+- declared Access Scope (`H`)
+- declared retrieval radius (`R`), compaction/resolution depth (`D`), Budget, and `contextProfile` where the packet requires them
 - declared `W-Scale`
 - role contract such as PM, QA, auditor, or implementation agent
 
@@ -262,6 +275,7 @@ For Ollama sidecars in v1:
 - No silent spec overrides by code, atoms, or generated artifacts.
 - No direct merge-to-done without QA and audit evidence for non-trivial work.
 - No unrestricted context dump to small local models when decomposition can reduce scope safely.
+- No use of `H` as an alias for retrieval radius, context profile, compaction depth, fan-out, Budget, or Risk.
 - No assumption that external agent providers share one billing or quota model.
 - No local sidecar execution outside bounded atomic-task scope in v1.
 
@@ -288,5 +302,11 @@ A multi-agent workflow run is complete when:
 
 ## 12. Related Follow-Up
 
-- Migrate remaining legacy references from `.agents/RUNBOOK-GoVibe-Multi-Agent.md` once all active contracts point here.
+- Audit remaining legacy references from `.agents/RUNBOOK-GoVibe-Multi-Agent.md` before any migration; this runbook does not authorize that change.
 - Add machine-readable workflow event schema if Mission Control needs real-time orchestration playback.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.2.0+draft | 2026-08-03 | ATHER | Reclassified as non-SOT operational guidance, aligned C/H/R/D/W/Budget/Risk semantics with the canonical execution-governance standard, and recorded the MSP runtime boundary. |

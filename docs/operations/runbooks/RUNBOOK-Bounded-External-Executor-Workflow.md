@@ -12,7 +12,7 @@ related_docs:
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md"
-  - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
   - ".agents/context/CONTEXT-Bounded-External-Executor.md"
 ---
 

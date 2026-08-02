@@ -1,3 +1,15 @@
+---
+title: "LANDING PAGE COPY TEMPLATE — GoVibe (Draft 1)"
+doc_id: "LANDING-COPY-TEMPLATE-GOVIBE-DRAFT1"
+status: "draft"
+version: "0.2.0+draft"
+updated: "2026-08-03"
+owner: "GoVibe"
+source_of_truth: false
+document_role: "non-normative copy template"
+governing_standard: "docs/STD-Execution-Governance.md"
+---
+
 # LANDING PAGE COPY TEMPLATE — GoVibe (Draft 1)
 
 > โครงสร้างคัดลอกจาก https://top-workshops-645528.framer.app/ (Norvin Agency)
@@ -56,7 +68,7 @@
 - AGENT TEAM MGMT — จัดการ identity, role, authority, handoff
 - RBAC + ABAC — คุม access ของคนและ agent แยกชั้น
 - GENESIS KNOWLEDGE — atom, symbol graph, JIT context (MemoryOS V3)
-- EXECUTION GOVERNANCE — จัด complexity (C0–C3) และ context tier (H0–H5)
+- EXECUTION GOVERNANCE — ระบุ process complexity (`C-0`–`C-3`) และ Access Scope (`H0`–`H4`); Retrieval radius (`R`), compaction/resolution depth (`D`), fan-out (`W`), Budget และ Risk แยกกันใน work packet ตาม `docs/STD-Execution-Governance.md`
 
 ## 6. FEATURED SERVICE 01 (แทน Brand Identity)
 - **Number:** 01

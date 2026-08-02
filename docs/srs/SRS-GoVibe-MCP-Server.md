@@ -11,7 +11,7 @@ related_docs:
   - "docs/PRD-GoVibe-MCP-Orchestration.md"
   - "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md"
   - "docs/features/governance-access/FEAT-RBAC-ABAC-Governance.md"
-  - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
   - "docs/adr/ADR-002-MCP-As-Primary-Orchestration-Interface.md"
 ---
 

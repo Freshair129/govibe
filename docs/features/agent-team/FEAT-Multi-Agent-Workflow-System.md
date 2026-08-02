@@ -207,14 +207,14 @@ Primary consumers:
 
 ## 10. Verification
 
-- Review against `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
+- Review against `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 - Review against `docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md`
 - Review against `docs/features/governance-access/FEAT-RBAC-ABAC-Governance.md`
 - Confirm event/schema coverage through `docs/api/API-003-Mission-Workflow-Event-Schema.md`
 
 ## 11. Related Docs
 
-- `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
+- `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 - `docs/srs/SRS-Ollama-Sidecar-Execution.md`
 - `docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md`
 - `docs/lld/LLD-Agent-Launcher-Execution-Router.md`

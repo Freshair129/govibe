@@ -9,7 +9,7 @@ source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
 related_docs:
   - "docs/srs/SRS-Ollama-Sidecar-Execution.md"
-  - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
   - "docs/api/API-003-Mission-Workflow-Event-Schema.md"
 ---
 

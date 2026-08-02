@@ -10,7 +10,7 @@ source_prd: "docs/PRD-GoVibe-Platform-Overview.md"
 related_docs:
   - "docs/srs/SRS-Ollama-Sidecar-Execution.md"
   - "docs/lld/LLD-Agent-Launcher-Execution-Router.md"
-  - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
 ---
 
 # SEQ: Ollama Sidecar Flow
@@ -65,7 +65,7 @@ sequenceDiagram
 |---|---|---|---|
 | bounded local sidecar execution | launcher scripts | execution router | `docs/lld/LLD-Agent-Launcher-Execution-Router.md` |
 | shared prompt-building path | launcher scripts | prompt builder | `docs/srs/SRS-Ollama-Sidecar-Execution.md` |
-| retry and escalation flow | multi-agent workflow | local sidecar executor | `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` |
+| retry and escalation flow | multi-agent workflow | local sidecar executor | `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` |
 
 ## Changelog
 

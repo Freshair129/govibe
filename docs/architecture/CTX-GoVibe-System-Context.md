@@ -109,7 +109,7 @@ flowchart LR
 | Platform architecture | `docs/architecture/C4-GoVibe-Platform.md` |
 | System design and doc pipeline | `docs/SDD-System-Design.md` |
 | MCP-first orchestration choice | `docs/adr/ADR-002-MCP-As-Primary-Orchestration-Interface.md` |
-| Multi-agent operations | `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` |
+| Multi-agent operations | `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` |
 
 ## 9. Acceptance Criteria
 - A new reader can identify GoVibe's platform boundary without reading the full C4 document.

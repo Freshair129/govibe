@@ -1,0 +1,237 @@
+{
+  "schema_version": "1.0",
+  "status": "executed_pending_independent_review",
+  "baseline_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+  "scope": {
+    "seeds": [
+      "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md",
+      "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+    ],
+    "excluded": [
+      "central registry",
+      "runtime/code behavior",
+      "unrelated legacy H-axis references",
+      "the self-referential result and rollback-evidence artifacts",
+      ".brain session materialization (non-canonical, not an active contract)"
+    ]
+  },
+  "forward_operations": [
+    {
+      "id": "P2S-01",
+      "kind": "content_rewrite",
+      "path": "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md",
+      "before": {"sha256": "fb8da4555e7ce7f931cc8e19d3f77e855790b6d48511504b0c882cbdefb8b4be", "bytes": 15456},
+      "after": {"sha256": "2b69d1860f117d8d83b600b610efd2a82775d747ae4b34e21ddd47f729f21089", "bytes": 16179},
+      "change": "Add draft/non-SOT template metadata; replace legacy C0-C3 plus context-tier H0-H5 copy with separated C/H/R/D/W/Budget/Risk wording.",
+      "inverse": "Restore exact blob 7c6ffde:docs/design/LANDING-Copy-Template-GoVibe-Draft1.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-02",
+      "kind": "move_and_content_rewrite",
+      "from": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "to": "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "before": {"sha256": "97fd37b66cde981c7ae182e3f7c9521bb27f128e097a9b22cd595fd345c6d5f0", "bytes": 10398},
+      "after": {"sha256": "176b2363c8b5f9f65d1c47991204e8fb57332734ea1102d3b74868afda5b5952", "bytes": 12067},
+      "change": "Move into the existing operational-runbooks taxonomy; mark draft/non-SOT guidance; align H0-H4 Access Scope and separated C/H/R/D/W/Budget/Risk semantics; retain the GoVibe MCP -> MSP -> GKS -> GenesisBlockDB boundary.",
+      "inverse": "Restore exact blob 7c6ffde:docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md and remove the destination only after its listed after SHA-256 is verified."
+    },
+    {
+      "id": "P2S-03",
+      "kind": "reference_rewrite",
+      "path": "GEMINI.md",
+      "before": {"sha256": "a216151943f059257e20777fbf6f50b042d261582eb12e5d49bf417013bfd407", "bytes": 5728},
+      "after": {"sha256": "efeb9b1b58cdff883b90bfdb2bb03dc5ffaf7b5760928e1d3848fc810827e6df", "bytes": 5880},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:GEMINI.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-04",
+      "kind": "reference_rewrite",
+      "path": "docs/api/API-003-Mission-Workflow-Event-Schema.md",
+      "before": {"sha256": "73fe797d4889187889f06c66411cb0beaf89a6f3e68798a488ea44c79f350de6", "bytes": 6930},
+      "after": {"sha256": "da6575e82624d69616a737bdaa5535e79acf5c87622a7740c124381b967aacb5", "bytes": 7200},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/api/API-003-Mission-Workflow-Event-Schema.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-05",
+      "kind": "reference_rewrite",
+      "path": "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md",
+      "before": {"sha256": "46fb7f4c8061928ea328b4a00a099695b071cb8b21420cafd4f4c0fb986f2c0f", "bytes": 8811},
+      "after": {"sha256": "b269fb9aa4c171f3853333defb237a29337c0df218c4f69483dff70549020b7a", "bytes": 9039},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-06",
+      "kind": "reference_rewrite",
+      "path": "docs/architecture/SEQ-Ollama-Sidecar-Flow.md",
+      "before": {"sha256": "b5033f01dadef042e5875853ec635e1d156518ea99e1f2889a0d025377819bef", "bytes": 3010},
+      "after": {"sha256": "03aa1cad337e19d5e112c4261f1a6100bb5bddd906e4d949665613826c9c8083", "bytes": 3106},
+      "rewrite": "Two exact path references updated to docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/architecture/SEQ-Ollama-Sidecar-Flow.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-07",
+      "kind": "reference_rewrite",
+      "path": "docs/architecture/CTX-GoVibe-System-Context.md",
+      "before": {"sha256": "c4c43ff51d356592a431dabdd2064e6d284a1714e802da83ea2851a9923fa975", "bytes": 6281},
+      "after": {"sha256": "5cd2fa197aa4cc1c652b26c2095cfb600cb70fc110439051343d040a1de67926", "bytes": 6409},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/architecture/CTX-GoVibe-System-Context.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-08",
+      "kind": "reference_rewrite",
+      "path": "docs/srs/SRS-Ollama-Sidecar-Execution.md",
+      "before": {"sha256": "41140d26b279b97e3099a5ef11b7739a905a69a8d337decae9949aedb71e7d8c", "bytes": 6727},
+      "after": {"sha256": "01a56919d51684fe143014dbf48ba4f33f24a0146eb8bc7ff231cd091e5dcbfc", "bytes": 6872},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/srs/SRS-Ollama-Sidecar-Execution.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-09",
+      "kind": "reference_rewrite",
+      "path": "docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md",
+      "before": {"sha256": "4d6aac381f9b7136f8f3e535d69465c88be3d6de72211bfcfbde40a095b8e23f", "bytes": 6307},
+      "after": {"sha256": "b5902fadc5c4c7da0c578530e22b3e0061bcf7f8b1e849e315c3be5d3a9cfa99", "bytes": 6452},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-10",
+      "kind": "reference_rewrite",
+      "path": "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md",
+      "before": {"sha256": "f991ce0308b08bb316c07a4d0fdb4ae611fdf1694b8f8396fd059d0da32c082f", "bytes": 10167},
+      "after": {"sha256": "de571261435f4a34143396d3031f5341afbe63b9aa0442208bf1339abe3533fa", "bytes": 10412},
+      "rewrite": "Two exact path references updated to docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-11",
+      "kind": "reference_rewrite",
+      "path": "docs/srs/SRS-GoVibe-MCP-Server.md",
+      "before": {"sha256": "17d9064b65abdd41d20a68df2d048c96849125005321aa3f3dcfb1d04a9e46e2", "bytes": 8257},
+      "after": {"sha256": "f5112f199a19e864cf54362973910c9bb7ec93f8b9f02ad4404ca7f26b28cee7", "bytes": 8429},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/srs/SRS-GoVibe-MCP-Server.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-12",
+      "kind": "reference_rewrite",
+      "path": "docs/change-control/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md",
+      "before": {"sha256": "fd1ae1154e95a6f1664284aea6ea9d2482075f70bc924ea0d7a4ddc7a7069928", "bytes": 7241},
+      "after": {"sha256": "b8dd8525d2298b015cda55c6f82604beaa1a3145cd057e3cee77412b71d97434", "bytes": 7416},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/change-control/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-13",
+      "kind": "reference_rewrite",
+      "path": "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md",
+      "before": {"sha256": "0efa460836ba9ef4ce154449c5725e573bc74cbd2c855d70e8893ba67376254c", "bytes": 8061},
+      "after": {"sha256": "9d118048776fe238da6f7382fe0ae9d6a46ac7f69a3db8dbf5d37927d86cf8b1", "bytes": 8319},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-14",
+      "kind": "reference_rewrite",
+      "path": "docs/lld/LLD-Agent-Launcher-Execution-Router.md",
+      "before": {"sha256": "7aeaa4e51bad2b8ef74ec30f4b3404fc48233c886c21983c46a98847c7f80785", "bytes": 4237},
+      "after": {"sha256": "3bb1e38935944f4904a742916df0b09cca5348f9503d3fee9ddcdfe8fb81dca5", "bytes": 4356},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/lld/LLD-Agent-Launcher-Execution-Router.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-15",
+      "kind": "reference_rewrite",
+      "path": "docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md",
+      "before": {"sha256": "86896d9d21ff5f953606f30a2224135031bb8c80681f170acc618551e234d62d", "bytes": 5434},
+      "after": {"sha256": "7d644574a4e5f03eb84413b3104a75da1654a6f3260b9da53d4c28fc8266e695", "bytes": 5617},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-16",
+      "kind": "reference_rewrite",
+      "path": "docs/architecture/C4-GoVibe-Platform.md",
+      "before": {"sha256": "75a4d878ef0e20acf451b1b97e5244f3e35c4fd8688133c610eb297b826296c1", "bytes": 18382},
+      "after": {"sha256": "a17aeb7c13f3471ff5599bb482397cbc98b64d60fd6f9cb99393c92323de0bd4", "bytes": 18959},
+      "rewrite": "Open-question wording changed from migration-to-canonical to the moved path's draft/non-SOT operational posture.",
+      "inverse": "Restore exact blob 7c6ffde:docs/architecture/C4-GoVibe-Platform.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-17",
+      "kind": "reference_rewrite",
+      "path": "docs/lld/LLD-GoVibe-MCP-Tools.md",
+      "before": {"sha256": "94054bc82b5df0906183d9caf490a3d3e527570979e45d13219ed5d705b40d32", "bytes": 8140},
+      "after": {"sha256": "ee44dca249b54543425850e9814544f6fe36b328fe88ea4eef49ccdab0954017", "bytes": 8460},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/lld/LLD-GoVibe-MCP-Tools.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-18",
+      "kind": "reference_rewrite",
+      "path": ".agents/context/CONTEXT-Bounded-External-Executor.md",
+      "before": {"sha256": "775a0a9dc497392145acd691e6563c86f162de8e6720c4067c98f9e75725d107", "bytes": 4346},
+      "after": {"sha256": "19a65a2b0487d336196b70fa79f8c1c34f2f6aeba54a58dc52d8ed3ea3c24e85", "bytes": 4493},
+      "rewrite": "Two exact path references updated to docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:.agents/context/CONTEXT-Bounded-External-Executor.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-19",
+      "kind": "reference_rewrite",
+      "path": ".agents/doc_writer/THESEUS.md",
+      "before": {"sha256": "520843df971645e927af08439d275715d8c7e8bfd5d9e35f1fa7ffe7831d78ab", "bytes": 6864},
+      "after": {"sha256": "554dd9d691e6cf3240f03e141c9892bd76056f55274bd52fe1b58c4c1db2a3fc", "bytes": 7005},
+      "rewrite": "Update path and replace obsolete canonical claim with draft/non-SOT operational-guidance posture.",
+      "inverse": "Restore exact blob 7c6ffde:.agents/doc_writer/THESEUS.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-20",
+      "kind": "reference_rewrite",
+      "path": ".agents/auditor/AGENT.md",
+      "before": {"sha256": "f9f9678facc30656d96f494f0f5e10e2bce263d5ab89efd655b6c498ab2cc3ed", "bytes": 9030},
+      "after": {"sha256": "4e14381368ae46afa38bf5f97189e0cb2e20bbf11883907d5f40b6cdd931ec68", "bytes": 9232},
+      "rewrite": "Update path and replace obsolete canonical claim with draft/non-SOT operational-guidance posture.",
+      "inverse": "Restore exact blob 7c6ffde:.agents/auditor/AGENT.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-21",
+      "kind": "reference_rewrite",
+      "path": ".agents/qa/AGENT.md",
+      "before": {"sha256": "71171b37ad00fdc4f5d9157e59b6a3bb393647c3ff8a72c3f4fbdd04eda985c4", "bytes": 6727},
+      "after": {"sha256": "07fde2a9d26f10c4eb6d67350528b06573723c4ad806a067f82bf881b8b4c19e", "bytes": 6883},
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:.agents/qa/AGENT.md after verifying the listed after SHA-256."
+    }
+  ],
+  "rollback_order": [
+    "P2S-03 through P2S-21: restore each exact baseline blob after verifying its listed after SHA-256.",
+    "P2S-02: restore the baseline runbook to docs/runbooks and remove the moved destination only after verifying its listed after SHA-256.",
+    "P2S-01: restore the exact baseline landing-template blob after verifying its listed after SHA-256.",
+    "Re-run the documentation and reference validators; prefer a non-destructive Git revert of the completed slice commit."
+  ],
+  "impact_analysis": {
+    "landing_template": {
+      "governing_relation": "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md -> docs/STD-Execution-Governance.md",
+      "distance": 1,
+      "inbound_references_discovered": 0,
+      "required_action": "retain at the original path, mark non-SOT/draft, and correct only the legacy H wording"
+    },
+    "multi_agent_runbook": {
+      "governing_relation": "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/STD-Execution-Governance.md",
+      "distance": 1,
+      "direct_backlinks": {"artifacts": 19, "reference_edges": 22},
+      "required_action": "rewrite every discovered active path reference to the collision-free operational-runbooks location",
+      "cycles": "No cycle found in the bounded direct-path reference set; traversal was capped at one inbound edge from the runbook seed and one governing-standard edge.",
+      "coverage": "Exact-path discovery over tracked Markdown, .agents contracts, and GEMINI.md at the baseline; it is bounded discovery evidence, not a canonical GKS graph-completeness claim.",
+      "unresolved": [
+        "No MSP-issued context packet or canonical GKS relation IDs were available.",
+        "Semantic correctness of unrelated legacy H/context references was intentionally excluded.",
+        "The generated result and rollback artifacts are not self-hashed inside this map to avoid a self-referential digest claim."
+      ]
+    }
+  }
+}
