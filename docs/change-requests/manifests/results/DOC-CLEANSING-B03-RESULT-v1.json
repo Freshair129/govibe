@@ -29,7 +29,8 @@
     "before_after_hash_equal": 43,
     "cross_batch_reference_occurrences": 54,
     "cross_batch_reference_targets": 31,
-    "relation_candidates": 5,
+    "relation_candidates": 2,
+    "unresolved_relation_candidates": 3,
     "unresolved": 2
   },
   "files": [
@@ -78,11 +79,13 @@
     {"path":"docs/features/traceability-audit/FEAT-Traceability-Audit-Verification.md","before_sha256":"7337e9e5badddbbb52df9ebc810ffa38d0de10262c05cb0b0e8ddedc6065a67e","after_sha256":"7337e9e5badddbbb52df9ebc810ffa38d0de10262c05cb0b0e8ddedc6065a67e","disposition":"kept_escalated_lifecycle_unknown"}
   ],
   "relation_candidates": [
-    {"candidate_link_id":"B03-R001","type":"DEFINES","source":"FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION","target":"FEAT-CODEV-MODULE","source_sha256":"34ff4bf38b0c87050a7434665ee22d56a4f3de470f03a11de7142cb55f5c45fb","provenance":"explicit related_docs link plus terminology definitions in source","confidence":0.95,"status":"candidate"},
-    {"candidate_link_id":"B03-R002","type":"DEFINES","source":"FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION","target":"FEAT-COVIBE-MODULE","source_sha256":"34ff4bf38b0c87050a7434665ee22d56a4f3de470f03a11de7142cb55f5c45fb","provenance":"explicit related_docs link plus terminology definitions in source","confidence":0.95,"status":"candidate"},
     {"candidate_link_id":"B03-R003","type":"CONFORMS_TO","source":"docs/features/execution-governance/FEAT-Execution-Governance-Standard.md","target":"docs/STD-Execution-Governance.md","source_sha256":"21b835fa095e5ac26712cfa9e38b3eec25d01019fbabe153c8e5034c1d24a187","provenance":"source line 34 explicitly identifies target as governing standard","confidence":0.98,"status":"candidate"},
-    {"candidate_link_id":"B03-R004","type":"CONFORMS_TO","source":"FEAT-DOCUMENT-VERSION-GOVERNANCE","target":"docs/STD-Document-Versioning-Governance.md","source_sha256":"bd75f62ceee5f18169e7b9082c5ab0403c2683235015f9272507babe1e0ffb90","provenance":"related_docs and verification section explicitly require target fields and syntax","confidence":0.98,"status":"candidate"},
-    {"candidate_link_id":"B03-R005","type":"CONFORMS_TO","source":"FEAT-TASK-SCOPED-CONTEXT-INJECTION","target":"docs/adr/ADR-013-Task-Scoped-Context-Injection.md","source_sha256":"a05706385962d132ed8fc0ab19a3c9ed44b02db9c662b8bba0ca8cb2bb47d60b","provenance":"explicit related_docs link; semantic direction requires reviewer confirmation","confidence":0.75,"status":"candidate"}
+    {"candidate_link_id":"B03-R004","type":"CONFORMS_TO","source":"FEAT-DOCUMENT-VERSION-GOVERNANCE","target":"docs/STD-Document-Versioning-Governance.md","source_sha256":"bd75f62ceee5f18169e7b9082c5ab0403c2683235015f9272507babe1e0ffb90","provenance":"source verification section explicitly requires review of target for required fields, canonical version syntax, and changelog requirements","confidence":0.98,"status":"candidate"}
+  ],
+  "unresolved_relation_candidates": [
+    {"candidate_link_id":"B03-R001","source":"FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION","target":"FEAT-CODEV-MODULE","source_observation":"Source explicitly links the module and states that the source defines CoDev terminology while detailed behavior remains in the module.","target_observation":"Target is the feature module named by the source; target semantics were not loaded beyond the B03-owned document itself.","candidate_relation_options":["DEFINES","IMPLEMENTS","CONFORMS_TO"],"provenance":"source related_docs lines 20-21 and body lines 31-33","escalation_reason":"missing_authority_or_direction","status":"unresolved_candidate"},
+    {"candidate_link_id":"B03-R002","source":"FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION","target":"FEAT-COVIBE-MODULE","source_observation":"Source explicitly links the module and states that the source defines CoVibe terminology while detailed behavior remains in the module.","target_observation":"Target is the feature module named by the source; target semantics were not loaded beyond the B03-owned document itself.","candidate_relation_options":["DEFINES","IMPLEMENTS","CONFORMS_TO"],"provenance":"source related_docs lines 20-21 and body lines 31-33","escalation_reason":"missing_authority_or_direction","status":"unresolved_candidate"},
+    {"candidate_link_id":"B03-R005","source":"FEAT-TASK-SCOPED-CONTEXT-INJECTION","target":"docs/adr/ADR-013-Task-Scoped-Context-Injection.md","source_observation":"Source frontmatter contains an explicit related_docs link to the ADR but does not state the semantic edge type or direction.","target_observation":"Target is outside B03 writable and context scope; its authority relation was not inspected or inferred.","candidate_relation_options":["DECIDES","DERIVES_FROM","CONFORMS_TO"],"provenance":"source related_docs line 18","escalation_reason":"missing_authority_or_direction","status":"unresolved_candidate"}
   ],
   "cross_batch_reference_targets": [
     "docs/adr/ADR-012-Visual-Agent-Fleet-Governance.md",
