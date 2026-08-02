@@ -2,13 +2,15 @@
 title: "CR: Document IA and Knowledge Graph Readiness"
 doc_id: "CR-2026-08-03-DOCUMENT-IA-KNOWLEDGE-GRAPH-READINESS"
 status: "draft"
-version: "0.2.1+draft"
+version: "0.3.0+draft"
 updated: "2026-08-03"
 owner: "Boss (Product Authority)"
 decision_owner: "Boss (Product Authority)"
 auditor: "ATHER"
 source_of_truth: true
 prd_system: "GOVIBE-PLATFORM"
+execution_authorized: false
+execution_complete: true
 related_docs:
   - "docs/STD-Execution-Governance.md"
   - "docs/STD-Document-Versioning-Governance.md"
@@ -99,8 +101,8 @@ or canonical knowledge without MSP authorization and GKS materialization.
 
 Exit requires the validation commands to pass, an integration commit to exist,
 and the Parent Final Gate to receive the manifest hashes, review status,
-validation logs, rollback plan, version diff and unresolved queue. Phase 1-A
-does not authorize any further corpus mutation or Phase 2 work.
+validation logs, rollback plan, version diff and unresolved queue. The
+completed Phase 1B / Phase 2 integration does not authorize further mutation.
 
 ## 7. Owner-Approved Phase 1-A Execution Record
 
@@ -121,6 +123,30 @@ and changelog provenance is retained unchanged.
 No additional mutation is authorized: `execution_authorized=false` for every
 remaining candidate until a separate owner-approved packet is accepted.
 
+## 8. Owner-Approved Phase 1B and Phase 2 Integration Record
+
+The owner approved the selected Phase 1B and Phase 2 dispositions and delegated
+execution to this cleansing workflow. Six independently reviewed commits were
+accepted and integrated in dependency order. Phase 1B normalized all eight
+metadata records in place, then corrected GVDOC-1004 to draft `2.3.0+draft`
+with H0-H4 access semantics and separately declared packet controls. Phase 2
+retained the divergent TDD pair, archived the byte-identical duplicate and
+legacy outline without payload loss, retained and normalized the LANDING copy
+template, and moved the multi-agent runbook to
+`docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` while preserving its
+resource URI as draft, non-SOT guidance.
+
+`DOC-CLEANSING-PHASE1B-PHASE2-INTEGRATION-RESULT-v1.json` is the integration
+authority record for accepted commits, review `ACCEPT` evidence, final Git blob
+identities, rollback chains, validation results, and exclusions. It preserves
+intermediate slice identities; it does not assign canonical GKS identity or
+assert an MSP/GKS materialization.
+
+The unresolved queue remains deliberately separate: 77 criteria-structure
+warnings, 14 legacy roadmap-quality warnings, and six baseline runtime test
+failures are not fixed, reclassified, or implied complete by this document
+cleansing execution.
+
 ## 6. Unresolved Baseline Discrepancy
 
 The approved planning estimate was 206 files. The pinned tracked baseline has
@@ -133,6 +159,7 @@ Worker batches contain only the 195 tracked processable files.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0+draft | 2026-08-03 | Boss / ATHER | Recorded owner-approved, review-accepted Phase 1B and Phase 2 integration; linked final identity/rollback evidence and kept criteria, roadmap, and runtime queues unresolved. |
 | 0.2.1+draft | 2026-08-03 | ATHER | Corrected the Phase 1-A B04 factual content-state record to the accepted rollback evidence: 18 byte-preserved and 13 intentionally rewritten. |
 | 0.2.0+draft | 2026-08-03 | Boss / ATHER | Recorded owner-approved Phase 1-A execution: 45 reversible moves, rollback evidence, active-reference reconciliation, deferred metadata, exclusions, and closed further-mutation authority. |
 | 0.1.0+draft | 2026-08-03 | Boss / ATHER | Recorded the approved Phase 1 cleansing boundary, isolated execution gates, AC/SC, and baseline-count discrepancy. |

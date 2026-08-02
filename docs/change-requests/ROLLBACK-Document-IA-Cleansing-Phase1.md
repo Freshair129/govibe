@@ -2,10 +2,12 @@
 title: "Rollback Plan: Document IA Cleansing Phase 1"
 doc_id: "ROLLBACK-DOCUMENT-IA-CLEANSING-PHASE1"
 status: "draft"
-version: "0.2.1+draft"
+version: "0.3.0+draft"
 updated: "2026-08-03"
 owner: "ATHER"
 source_of_truth: true
+execution_authorized: false
+execution_complete: true
 related_docs:
   - "docs/change-requests/CR-2026-08-03-Document-IA-and-Knowledge-Graph-Readiness.md"
   - "docs/migration/MIGRATION-Document-IA-and-Graph-Readiness.md"
@@ -17,8 +19,11 @@ related_docs:
 
 Baseline commit: `a5f2c938ab285b23b803d37c9786537a77dfdc9d`.
 Phase 1-A performed 45 owner-approved reversible path operations (B04: 31;
-B05: 14), with no deletion, merge, or semantic authority change. Rollback
-targets the isolated integration branch and never the dirty root worktree.
+B05: 14). The completed Phase 1B / Phase 2 integration adds eight in-place
+metadata normalizations, one GVDOC semantic correction, five structural source
+dispositions, and 22 semantic operations. No operation assigns canonical GKS
+identity or requires a runtime repair. Rollback targets the isolated integration
+branch and never the dirty root worktree.
 
 ## 2. Evidence Required Before Future Path Operations
 
@@ -53,15 +58,25 @@ bytewise record ordering, compact JSON serialization, and external skip evidence
 No recursive deletion, hard reset, root-worktree checkout, or map clearing is
 authorized by this plan.
 
-## 5. Committed Phase 1-A Maps
+## 5. Committed Maps and Integration Recovery
 
 - `docs/change-requests/manifests/results/DOC-CLEANSING-B04-ROLLBACK-MAP-v1.json`
   records 31 inverse pairs and content states `18 byte_preserved + 13 intentionally_rewritten`.
 - `docs/change-requests/manifests/results/DOC-CLEANSING-B05-ROLLBACK-MAP-v1.json`
   records 14 inverse pairs and content states `13 byte_preserved + 1 intentionally_rewritten`.
 
-The eight metadata candidates and all excluded archive, duplicate, authority,
-H-axis, schema/runtime, and Phase 2 work remain `execution_authorized=false`.
+The Phase 1B maps, Phase 2 structural/semantic result maps, and
+`DOC-CLEANSING-PHASE1B-PHASE2-INTEGRATION-RESULT-v1.json` form one ordered
+recovery chain. The integration result records every final target's Git blob
+and SHA-256 basis, including the CoDev CR and GVDOC-1004 cross-slice targets
+whose final identity differs from an intermediate checkpoint.
+
+Rollback order is: integration-only registry/control documents; Phase 2 stable
+resource repair; Phase 2 reference rewrites; runbook move; LANDING rewrite;
+Phase 2 structural moves; Phase 1B semantic correction; then Phase 1B metadata
+normalizations. Verify each listed post-state before applying its inverse and
+rerun the validators. The 77 criteria warnings, 14 roadmap warnings, and six
+runtime test failures are exclusions, not rollback prerequisites.
 
 ## 4. Acceptance Criteria
 
@@ -74,6 +89,7 @@ H-axis, schema/runtime, and Phase 2 work remain `execution_authorized=false`.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0+draft | 2026-08-03 | Boss / ATHER | Added Phase 1B / Phase 2 integrated rollback chain, final-identity requirement, and explicit unresolved exclusions. |
 | 0.2.1+draft | 2026-08-03 | ATHER | Corrected the final accepted B04 content-state evidence to 18 byte-preserved and 13 intentionally rewritten. |
 | 0.2.0+draft | 2026-08-03 | ATHER | Recorded the committed Phase 1-A rollback authorities, 45 reversible operations, content states, and no-further-mutation gate. |
 | 0.1.1+draft | 2026-08-03 | ATHER | Bound rollback evidence to the deterministic manifest verifier and explicit external-root handling. |

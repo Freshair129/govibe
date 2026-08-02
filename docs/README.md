@@ -2,7 +2,7 @@
 title: "GoVibe Documentation Navigation Hub"
 doc_id: "DOCS-NAVIGATION-HUB"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.2.0+draft"
 updated: "2026-08-03"
 owner: "THESEUS / ATHER"
 source_of_truth: true
@@ -50,9 +50,21 @@ blueprint and migration plan. Do not move files from this index alone.
 - `docs/change-requests/manifests/DOC-CLEANSING-INVENTORY-v1.json`
 - `docs/change-requests/manifests/DOC-CLEANSING-B01-v1.json` through
   `docs/change-requests/manifests/DOC-CLEANSING-B05-v1.json`
+- `docs/change-requests/CR-2026-08-03-Phase1B-Metadata-Decision-Packet.md`
+- `docs/change-requests/CR-2026-08-03-Phase2-Semantic-Authority-Decision-Packet.md`
+- `docs/change-requests/manifests/results/DOC-CLEANSING-PHASE1B-PHASE2-INTEGRATION-RESULT-v1.json`
+
+Phase 1B / Phase 2 document-cleansing execution is complete and closed to
+further mutation. The active multi-agent guidance is
+`docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`; old active runbook
+paths are retained only in historical manifests, results, rollback evidence, or
+non-canonical `.brain` history. The integration result preserves the accepted
+maps and exact recovery chain. It does not close the separate 77 criteria, 14
+legacy-roadmap, or six runtime-test follow-up queues.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0+draft | 2026-08-03 | THESEUS / ATHER | Added Phase 1B / Phase 2 completion, current runbook navigation, integration evidence, and explicit unresolved-queue boundaries. |
 | 0.1.0+draft | 2026-08-03 | THESEUS / ATHER | Added the human navigation hub and cleansing control-packet entry points without changing canonical paths. |

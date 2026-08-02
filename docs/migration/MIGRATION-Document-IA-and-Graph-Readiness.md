@@ -2,10 +2,12 @@
 title: "Migration Plan: Document IA and Graph Readiness"
 doc_id: "MIGRATION-DOCUMENT-IA-GRAPH-READINESS"
 status: "draft"
-version: "0.2.0+draft"
+version: "0.3.0+draft"
 updated: "2026-08-03"
 owner: "LYRA / ATHER"
 source_of_truth: true
+execution_authorized: false
+execution_complete: true
 related_docs:
   - "docs/change-requests/CR-2026-08-03-Document-IA-and-Knowledge-Graph-Readiness.md"
   - "docs/change-requests/manifests/DOC-CLEANSING-INVENTORY-v1.json"
@@ -17,9 +19,10 @@ related_docs:
 
 ## 1. Baseline And Non-Mutation Gate
 
-Phase 1 is pinned to `a5f2c938ab285b23b803d37c9786537a77dfdc9d`.
-It creates planning artifacts only. The corpus must not be moved or renamed
-until a complete dry-run map passes Noise Review and receives separate approval.
+The planning baseline is pinned to `a5f2c938ab285b23b803d37c9786537a77dfdc9d`.
+Phase 1-A, Phase 1B, and the bounded Phase 2 selections are complete under the
+owner-approved execution record. Further corpus mutation is closed unless a new
+complete dry-run map passes review and receives separate owner approval.
 
 Tracked evidence hashes are SHA-256 over the exact Git blob bytes resolved by
 `git rev-parse <baseline>:<path>` and read by `git cat-file blob <object-id>`.
@@ -83,7 +86,8 @@ diff receives the same review before Parent Final Gate.
 5. Resolve cross-batch references only from the accepted dry-run map.
 6. Run bounded backlink impact analysis and all validation gates.
 7. Send compact evidence to Parent Final Gate; do not mutate beyond approved operations.
-8. Open separate Phase 2 packets for semantic and authority corrections.
+8. Record the completed Phase 1B and Phase 2 integration, preserve its final
+   identities and rollback chain, and close further mutation.
 
 ## 5. Failure And Stop Conditions
 
@@ -99,21 +103,32 @@ Never widen context or guess a disposition to clear a gate.
 - Every integrated commit has an accepted review record.
 - Phase 1-A performs only the owner-approved 45 reversible path operations;
   no semantic authority edit or unapproved mutation is allowed.
+- Phase 1B and Phase 2 use only the owner-selected dispositions and accepted
+  commits recorded in the integration result; no runtime repair is implied.
 - Validation and rollback evidence are complete before Final Gate.
 
-## 7. Phase 1-A Integrated Execution
+## 7. Integrated Execution and Closure
 
 Accepted B04 and B05 execution heads are integrated with their committed rollback
 maps. The integrated scope is 45 reversible operations (B04: 31; B05: 14), with
 metadata normalization deferred for 8 candidates. Archive candidates, duplicate
 review, lifecycle/authority decisions, H-axis correction, schemas/runtime, and
-Phase 2 remain excluded. Remaining candidates have
-`execution_authorized=false` pending a separate owner decision.
+Phase 2 remained excluded at that point. The subsequent owner-approved Phase
+1B and Phase 2 records are now integrated: eight metadata normalizations, one
+GVDOC semantic correction, five structural source dispositions, and 22 semantic
+operations (including the stable runbook resource repair). The exact source and
+final accounting, review `ACCEPT` evidence, and rollback sequence are in
+`DOC-CLEANSING-PHASE1B-PHASE2-INTEGRATION-RESULT-v1.json`. New work remains
+`execution_authorized=false` until separately approved.
+
+The 77 criteria warnings, 14 legacy roadmap warnings, and six baseline runtime
+test failures are excluded follow-up queues, not migration completion claims.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0+draft | 2026-08-03 | Boss / LYRA / ATHER | Recorded completed owner-approved Phase 1B / Phase 2 integration, exact evidence location, and closure against further mutation. |
 | 0.2.0+draft | 2026-08-03 | LYRA / ATHER | Recorded Phase 1-A integrated execution scope, exclusions, deferred metadata, and no-further-mutation gate. |
 | 0.1.1+draft | 2026-08-03 | LYRA / ATHER | Added the executable deterministic projection, Git-blob, batch, and optional external-filesystem verification contract. |
 | 0.1.0+draft | 2026-08-03 | LYRA / ATHER | Defined the five exact cleansing batches, isolation, noise review, integration, stop, and final-gate sequence. |
