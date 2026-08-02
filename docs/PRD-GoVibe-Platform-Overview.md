@@ -2,11 +2,12 @@
 title: "PRD: GoVibe Platform Overview"
 doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
 status: "draft"
-version: "0.4.3+draft"
-updated: "2026-06-23"
+version: "0.5.0+draft"
+updated: "2026-08-02"
 owner: "Rwang (Senior Dev)"
 source_of_truth: true
-related_adrs: ["ADR-015", "ADR-016", "ADR-017", "ADR-018", "ADR-019"]
+related_issue: 52
+related_adrs: ["ADR-015", "ADR-016", "ADR-017", "ADR-018", "ADR-019", "ADR-020"]
 block_manifest:
   core:
     id: "[[DOC::PRD_PLATFORM_OVERVIEW]]"
@@ -18,114 +19,230 @@ block_manifest:
 
 **Status:** `DRAFT`
 **Author:** Rwang (Senior Dev)
-**Date:** 2026-06-06
-**Updated:** 2026-06-20
+**Updated:** 2026-08-02
 
 ## 1. Product Vision
-GoVibe is the **governance + interoperability layer** for multi-agent software development — a rule-keeper and translator that lets developers' AI agent teams build to one shared, enforced, traceable standard, riding open protocols (MCP/A2A) instead of replacing the tools they already use. It reads **code** (the universal artifact) and decomposes it into GKS atoms (universal code-in, `ADR-019`), then translates between each team's own conventions through GKS as an internal pivot (`ADR-017`). It is **not** a coding agent, an orchestrator, or a database competitor. It leverages MemoryOS V3 (Native Runtime / GenesisBlockDB).
 
-The platform is built around two operating loops:
+GoVibe turns incomplete, fragmented, or weakly related software intent into **validated, traceable, agent-usable knowledge**, then governs how the correct subset of that knowledge is used across agents, tasks, sessions, teams, and owners.
 
-- **Docs to Code:** approved human-readable SWE documents become the source for tasks, agent assignments, implementation context, review criteria, and verification.
-- **Diagram to Doc:** architecture diagrams, flow diagrams, entity diagrams, site maps, and sequence diagrams can be transformed into structured documentation before implementation begins.
+The shared failure pattern is:
 
-GoVibe keeps the visual identity of Mission Control, but the product center is governance + translation: enforced standards, provenance, knowledge retrieval, and delivery visibility across teams.
+```text
+incomplete or weakly related intent
+  -> missing WHY / scope / authority / constraints
+  -> agent fills gaps from model priors
+  -> scope or architecture drift
+  -> inconsistent artifacts and rework
+```
 
-**Adoption is tiered (`ADR-016`):** the mandatory core is **GoVibe + MSP** (governance + memory passport, so provenance is never hollow). The **full eco** — GenesisBlockDB, the visual GKS UI (ERD / DAG / node graph), the `.agents` orchestrator, native-GKS rendering — is optional; partial adopters run the core over their own orchestration and lose only the full-eco features.
+GoVibe does not attempt to make agents guess better. It preserves the relations and context required so they do not need to guess.
 
-The platform uses three coordinated surfaces:
+Architecturally, GoVibe remains the **governance + interoperability layer** for multi-agent software development. It rides MCP/A2A instead of replacing coding tools or orchestrators. It is not a coding agent, a database competitor, or merely a knowledge graph viewer.
 
-- `Mission Control UI` as the visual control plane
-- `MCP Server` as the primary orchestration interface
-- `GoVibe CLI` as a thin human/operator and automation surface
+### 1.1 Core authority chain
+
+```text
+Human intent / documents / diagrams / code / evidence
+  -> GoVibe validation and governed execution surface
+  -> MSP memory and context authority
+  -> GKS canonical knowledge and relation authority
+  -> GenesisBlockDB storage and graph/vector execution
+```
+
+Return path:
+
+```text
+GKS canonical knowledge
+  -> MSP task/session-specific selection, authorization, compaction, and continuity
+  -> GoVibe task/context packet and convention rendering
+  -> Agent execution
+  -> candidate output, verification, and traceability
+```
+
+- **GKS** answers what knowledge exists, where it came from, and how it is related.
+- **MSP** answers which subset must be used now, by which agent, under what scope, permission, source version, relation policy, budget, and continuity rules.
+- **GoVibe** validates input, detects missing relations, packages governed work, routes execution, validates candidate output, and preserves traceability.
+
+GKS is below MSP because a complete relation graph is not automatically a usable context. Unrestricted graph traversal is too broad; optional retrieval allows agents to ignore the relevant WHY.
+
+### 1.2 Operating loops
+
+- **Docs to Code:** human documents are validated, decomposed into candidate knowledge and relations, promoted through MSP into GKS, then rendered as bounded context, tasks, review criteria, and verification requirements.
+- **Diagram to Doc:** diagrams become candidate structured knowledge and documentation, preserving source/provenance and requiring review before canonical promotion.
+- **Code to Knowledge:** existing code and artifacts may be decomposed without forcing migration of the team's current documents.
+
+### 1.3 Adoption model
+
+The mandatory core is **GoVibe + MSP**. GKS and its canonical materialization authority are part of the governed knowledge lifecycle; GenesisBlockDB is swappable storage infrastructure behind GKS. Visual graph UI and native orchestration remain optional full-eco capabilities.
+
+The platform exposes three coordinated surfaces:
+
+- `Mission Control UI` as the human visual control plane
+- `MCP Server` as the primary governed orchestration interface
+- `GoVibe CLI` as a thin operator and automation surface
 
 ## 2. Product Positioning
-GoVibe is a **governance + interop (translator) layer**, not a coding agent, orchestrator, memory, or database competitor. It sits above/across those tools and rides MCP/A2A. **Orchestration (via the `.agents` system) and the visual GKS/GenesisBlockDB UI are full-eco capabilities, not the positioning or moat** — the moat is governance + provenance + translation fidelity.
 
-### 2.1 Goals
-- Provide a single visual surface for CoDev project planning, execution, review, and progress tracking.
-- Let agent-written PRD, SRD, SRS, SDD, LLD, API contracts, runbooks, and test plans drive UI state and implementation tasks.
-- Let diagrams become first-class project inputs that can generate or update documentation.
-- Coordinate multiple developer-owned agent teams without taking over third-party billing, subscriptions, or runtime quotas.
-- Reduce developer frontier-model token/quota spend by routing bounded, atomic work to local SLMs while reserving frontier models for planning, review, and ambiguous work (`FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION`), keeping execution on-device for cost efficiency and data residency.
-- Support RBAC for human users and ABAC for agents, subagents, MCP clients, and services.
-- Extract internal knowledge atoms from approved SWE documents for AI context retrieval, graph linking, Mission Control visualization, and progress tracking via MemoryOS V3.
-- Translate between teams' own doc/code conventions through the GKS pivot (N mappings, not N²) so heterogeneous swarms interoperate without migrating their docs (`ADR-017`).
+GoVibe targets builders and delivery groups whose AI execution capacity has outgrown their ability to define, validate, relate, preserve, and safely reuse software knowledge.
 
-### 2.2 Non-goals
-- GoVibe does not own or manage your provider's billing or subscription (Claude Code, Gemini CLI, OpenClaw, Hermes, etc.) — it is designed to *reduce* that spend via hybrid-local execution, not to take it over.
-- GoVibe does not replace third-party AI coding tools.
-- GoVibe does not require human developers to write Genesis atoms directly.
-- GoVibe does not make atom files the canonical source of truth when a human-readable SWE document exists.
-- GoVibe does not build per-framework adapters or bridges (e.g. a LangGraph bridge); cross-team interop is via the GKS semantic pivot (N mappings, not N²).
-- GoVibe does not position as an orchestrator, memory, or database product; those are full-eco capabilities or composed tools, not the market identity.
+This target condition can occur in a solo project, SME, agency, product team, vendor network, or enterprise unit. Company size is not the canonical segmentation rule.
 
-### 2.3 Collaboration Terminology
-`CoDev` and `CoVibe` are narrow GoVibe collaboration terms that sit on top of the current platform system map.
-Detailed module behavior is captured in:
+### 2.1 CoVibe and CoDev
 
-- `docs/features/agent-team/FEAT-CoDev-Module.md`
+- **CoVibe:** single-authority collaboration. One primary human owner or authority controls the lane while agents, agent teams, or bounded support executors participate.
+- **CoDev:** multi-authority collaboration. Multiple human-owned teams, clients, vendors, or organizations coordinate while retaining separate ownership and local conventions.
+
+A small agency may need CoDev. An enterprise innovation unit may use CoVibe. The distinction is authority boundary, not firm size.
+
+Detailed behavior:
+
 - `docs/features/agent-team/FEAT-CoVibe-Module.md`
+- `docs/features/agent-team/FEAT-CoDev-Module.md`
+- `docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md`
 
-- `CoDev` means the inter-owner or inter-team coordination mode where multiple human-owned delivery parties and their agent teams collaborate through GoVibe.
-- `CoVibe` means the intra-owner orchestration mode where one primary owner or lead agent coordinates bounded support agents or bounded external executors.
-- Both terms are terminology layers over `SYSTEM-05::Agent-Team-Management-System` with supporting bridge behavior through `SYSTEM-06::Integration-Bridge-System`.
-- This terminology refinement does not add a new top-level PRD system, does not replace `MCP`, and does not change C4 scope in this phase.
+### 2.2 Goals
+
+- Validate human intent and software documents before agent execution.
+- Detect missing requirements, constraints, actors, decisions, reason relations, assumptions, scope boundaries, and acceptance criteria.
+- Preserve traceability from insight and issue through decision, ADR, requirement, feature, task, code, test, and evidence.
+- Construct MSP-issued bounded context for each agent/task/session/turn.
+- Keep external skills and generators replaceable while treating their outputs as candidates.
+- Translate between team conventions through GKS without vocabulary migration.
+- Coordinate CoVibe and CoDev collaboration without replacing provider billing or orchestrators.
+- Support RBAC for humans and ABAC for agents/services.
+- Reduce frontier-model usage by routing bounded work to suitable local or lower-cost executors.
+
+### 2.3 Non-goals
+
+- GoVibe does not replace third-party AI coding tools.
+- GoVibe does not require users to write GKS atoms directly.
+- GoVibe does not treat vector similarity, raw graph traversal, or a second-brain link network as sufficient runtime context policy.
+- GoVibe does not allow external skills to assign canonical GKS identity or bypass MSP promotion.
+- GoVibe does not build per-framework adapters where artifact and MCP contracts suffice.
+- GoVibe does not infer missing WHY silently from model priors.
+- GoVibe does not position CoVibe as an SME edition or CoDev as an enterprise edition.
 
 ## 3. Target Audience
-- **Human Developers:** Working with personal or team AI agents during normal software delivery.
-- **Tech Leads and Architects:** Managing multiple agent-assisted workstreams, access boundaries, technical decisions, and delivery risk.
-- **Product and Project Owners:** Tracking roadmap state, blockers, ownership, artifacts, and release progress.
-- **AI Agent Operators:** Connecting Claude Code, Gemini CLI, OpenClaw, Hermes, MCP servers, local bridges, and other automation surfaces.
 
-## 4. Key Features
-### 4.1 Mission Control Center
-- Real-time project, agent, task, artifact, and system status.
-- Visual domain navigation for Project Overview, Genesis Knowledge, Block DB, and AI Benchmark.
-- Floating terminal for direct command interaction and operational feedback.
+Problem-qualified users include:
 
-### 4.2 Docs to Code Workflow
-- Human-first SWE documents remain the canonical planning and design surface.
-- PRD, SRD, SDD, LLD, API Contract, Runbook, and Test Plan documents can drive task generation and agent assignments.
-- Roadmap and task progress can be rendered from approved Markdown or HTML documents instead of hardcoded UI data.
-- Review status, implementation status, blockers, and test evidence can be tracked against document sections.
+- founders, operators, or product owners with incomplete software-engineering vocabulary;
+- solo developers performing product, BA, SA, architecture, and implementation roles simultaneously;
+- teams receiving incomplete or heterogeneous requirements;
+- agencies coordinating with clients or external delivery partners;
+- teams using multiple agents, tools, or providers;
+- regulated or high-risk teams requiring traceability and replay.
 
-### 4.3 Diagram to Doc Workflow
-- Architecture diagrams, sequence diagrams, flow diagrams, ERDs, and site maps can become structured documentation.
-- Generated documentation must be reviewed before it becomes canonical.
-- Diagram-derived docs can feed the same Docs to Code pipeline as manually written docs.
+Anti-targets include disposable prototypes, isolated low-risk tasks, and teams that do not value durable knowledge, scope control, or traceability.
 
-### 4.4 Agent Team Management
-- Agent roster, agent team assignment, capability metadata, and current work state.
-- Agent media and status panels for operator confidence.
-- Visual Agent Fleet governance maps agent identity to fleet role, job-title equivalent, domain, cluster, responsibility, authority boundary, source refs, and scope status.
-- Protected human-dev workflow material is used as upstream context only; derived agent context must preserve source refs and must not mutate the protected source.
-- Scope expansion is routed through change-control impact assessment before LYRA accepts it into a plan.
-- External agent integration through API, MCP, webhook, local bridge, or file-based workflows.
+## 4. Agent-Usable Knowledge Contract
 
-### 4.5 Governance and Access Control
-- RBAC governs human user access.
-- ABAC governs agents, subagents, MCP clients, services, and scheduled jobs.
-- Policy decisions should be auditable and traceable to project, task, resource, action, and context.
+A document existing in the repository does not make it agent-usable.
 
-### 4.6 Genesis Knowledge and GenesisBlock DB (MemoryOS V3)
-- Human-readable SWE documents are transformed into internal knowledge atoms only after authoring.
-- Atoms such as `CONCEPT`, `MOD`, `FEAT`, `FLOW`, `ALGO`, `ENTITY`, `GUARD`, `API`, and `MCP` are derived knowledge artifacts stored in MemoryOS V3.
-- The knowledge layer supports graph retrieval, context compaction, symbol linking, and Mission Control visualization.
-- Hybrid Just-In-Time Context Rendering loads the minimum useful document, atom, and graph context for each agent task from the Native Runtime.
+For governed execution, the source set must provide or explicitly mark unresolved:
 
-### 4.7 Execution Governance and Multi-Agent Operations
-- The Execution Governance Standard classifies work by complexity (`C-0` to `C-3`) and context tier (`H0` to `H6`) before execution.
-- Multi-agent operations define team roles, plan approval, task claiming, file locking, PR handoff, review, and conflict resolution.
-- Complex work must preserve traceability from source document to task, agent assignment, artifact, review, and verification evidence.
+- source identity, version, hash, owner, and authority state;
+- originating insight, issue, request, or evidence;
+- actors, goals, functional requirements, and non-functional requirements;
+- business rules, constraints, dependencies, and scope exclusions;
+- decisions and ADR relations;
+- assumptions and unresolved questions;
+- acceptance criteria and expected verification evidence;
+- affected systems/modules and impact relations.
 
-### 4.8 Orchestration Interfaces
-- MCP is the primary orchestration interface for governed tools, resources, state mutation, and agent execution.
-- Mission Control consumes orchestration capabilities as a visual control plane and should not own business rules for execution policy or roadmap mutation.
-- GoVibe CLI is a thin operator and automation surface over the same orchestration rules.
+When required information is missing, GoVibe must ask, propose a bounded candidate, or escalate. It must not silently convert plausible inference into approved knowledge.
 
-## 5. Platform System Map
-GoVibe is composed of ten product systems. Each system may have its own SRS, SRD, SDD, LLD, API Contract, Runbook, or Test Plan when implementation detail is required.
+## 5. Core User Journey
+
+```text
+User supplies intent, document, diagram, code, or change request
+  -> GoVibe identifies sources and versions
+  -> decomposes content into candidate atoms and relations
+  -> validates completeness, ambiguity, conflicts, authority, and scope
+  -> requests or proposes bounded clarification
+  -> human/policy approval
+  -> MSP authorizes canonical promotion
+  -> GKS assigns canonical identities and relations
+  -> MSP selects and compacts task-specific context
+  -> GoVibe renders task/context packet in the destination convention
+  -> agent executes within approved scope
+  -> output returns as candidate artifact/evidence
+  -> verification, impact analysis, and canonical update
+```
+
+## 6. Key Features
+
+### 6.1 Mission Control Center
+
+- project, task, agent, artifact, source, context, and verification status;
+- visible WHY/source chain for governed work;
+- unresolved assumption, missing relation, scope, and approval indicators;
+- context packet and replay lineage inspection.
+
+### 6.2 Docs to Code Workflow
+
+- validate documents before extracting implementation tasks;
+- separate feature, functional requirement, NFR, business rule, constraint, decision, and evidence concepts;
+- preserve source/provenance and reason relations;
+- construct candidates rather than immediately declaring canonical knowledge;
+- generate MSP-scoped task/context packets;
+- track implementation and verification against canonical relations.
+
+### 6.3 Diagram to Doc Workflow
+
+- normalize architecture, sequence, flow, ERD, and site-map inputs;
+- preserve source image/frame/node references and provenance;
+- produce candidate docs and relation sets;
+- require human/policy review before promotion;
+- feed the same governed Docs-to-Code pipeline.
+
+### 6.4 Agent Team Management
+
+- agent identity, capability, role, owner, authority boundary, task state, and handoff;
+- CoVibe single-authority and CoDev multi-authority modes;
+- bounded external executor packets;
+- scope expansion routed through change control rather than executor inference.
+
+### 6.5 Governance and Access Control
+
+- RBAC for humans and ABAC for agents/services;
+- fail-closed behavior when authority, source, scope, or relation requirements are unresolved;
+- auditable permit/deny/obligation decisions.
+
+### 6.6 Genesis Knowledge System
+
+- candidate-to-canonical materialization through MSP;
+- canonical atoms, containment, relations, backlinks, provenance, and graph versions;
+- explicit unresolved-link evidence;
+- GKS is knowledge/relation authority, not direct context authority.
+
+### 6.7 MSP Context and Memory OS
+
+- task, agent, workspace, run, session, and turn identity;
+- source-version and hash binding;
+- context profiles, permissions, privacy, relation allowlists, exclusions, radius, depth, width, and budget;
+- compaction, ordering, continuity, cache, and replay lineage;
+- required WHY/source chains and unresolved assumptions.
+
+### 6.8 Execution Governance
+
+- C-level complexity, H0-H4 access scope, R retrieval radius, D resolution/compaction depth, W fan-out, Budget, and Risk are explicit axes;
+- task packets cannot widen their own context or permission;
+- verification and impact analysis are required before closure for semantic/runtime changes.
+
+### 6.9 External Provider Boundary
+
+```text
+External skill / parser / generator
+  -> bounded candidate output
+  -> GoVibe normalization and validation
+  -> MSP authority/context/promotion gate
+  -> GKS canonical materialization
+```
+
+Providers may improve generation quality but do not replace the governed lifecycle.
+
+## 7. Platform System Map
 
 ```text
 PRD::GoVibe-Platform
@@ -141,119 +258,58 @@ PRD::GoVibe-Platform
 +-- SYSTEM-10::Execution-Governance-System
 ```
 
-### 5.1 System Module Map
-
-This map defines product-level modules only. Detailed implementation ownership, schemas, and runtime contracts belong in each system's FEAT, SRS, SDD, API, LLD, or RUNBOOK documents.
-
-| System | Responsibility | Product Modules | Primary Inputs | Primary Outputs | Primary Consumers |
-|---|---|---|---|---|---|
-| `SYSTEM-01::Mission-Control-Experience-System` | Visual control plane for the human-facing GoVibe workspace. | `A1 Dashboard Shell`, `A2 Development Roadmap Board`, `A5 Agent Management`, `Command Reactor`, `Status/Telemetry Surface`, `Template-Parity View Contracts` | roadmap snapshots, agent registry, mission events, telemetry, verification evidence | rendered board state, command events, user decisions, UI evidence | human developer, product owner, agent operator |
-| `SYSTEM-02::Project-Roadmap-Management-System` | Source-governed planning and board promotion for phases, sprints, tasks, and implementation packets. | `Master Plan Source`, `Roadmap Source`, `Backlog Source`, `Sprint/Task Container`, `Roadmap Promotion Gate`, `Roadmap Snapshot`, `Progress Calculation`, `Bi-Temporal Roadmap History` | PRD changes, approved master plans, backlog docs, task containers, change requests | board-eligible roadmap snapshot, task state, progress metrics, promotion evidence | LYRA, A2, ATHER, GHOST |
-| `SYSTEM-03::Docs-to-Code-System` | Convert approved human SWE documents into bounded implementation context and symbol-linked tasks. | `Human SWE Document Ingestion`, `Spec-to-Task Extraction`, `Symbol Link Extraction`, `Task Packet Generation`, `Context Packet Assembly`, `Doc/Code Drift Detection` | PRD, FEAT, SRS, SDD, API, LLD, runbooks, protected source docs | task packets, context containers, symbol links, drift findings | THESEUS, system parent agents, module workers |
-| `SYSTEM-04::Diagram-to-Doc-System` | Convert diagrams and visual architecture references into reviewable system documentation. | `Architecture Diagram Intake`, `Flow/Sequence Intake`, `ERD/Site Map Intake`, `Diagram Normalization`, `Generated Doc Draft`, `Human Review Gate` | screenshots, Figma/HTML prototypes, ERDs, sequence diagrams, site maps | candidate docs, diagram-derived context, architecture review prompts | architect, doc writer, system parent agents |
-| `SYSTEM-05::Agent-Team-Management-System` | Coordinate agent identity, role metadata, team handoff, and CoDev/CoVibe collaboration modes. | `Role Registry`, `System Parent Agent Routing`, `Module Worker Dispatch`, `Visual Agent Fleet Metadata`, `Handoff State`, `CoDev Mode`, `CoVibe Mode`, `CoDev Module`, `CoVibe Module`, `Bounded Support Executor Contract` | agent registry, role contracts, task packets, context containers, handoff events | assignments, handoff state, executor constraints, role visibility | LYRA, ARCHON, THESEUS, ATHER, GHOST, VIBE, KIN |
-| `SYSTEM-06::Integration-Bridge-System` | Bridge GoVibe with MCP, CLI, local sidecars, external agent CLIs, webhooks, and future service gateways. | `MCP Server`, `GoVibe CLI`, `Webhook/File Bridge`, `External Agent Connector`, `Gemini CLI Bounded Executor`, `Ollama/Local Sidecar`, `Mission Event Gateway` | governed tool calls, CLI commands, context packets, external executor output | mission events, tool results, execution logs, external feedback packets | external tools, lead agent, system parent agents |
-| `SYSTEM-07::Governance-Access-Control-System` | Enforce human and agent access rules before governed reads, writes, assignments, and tool calls. | `Human RBAC`, `Agent ABAC`, `Policy Decision Point`, `Policy Enforcement Point`, `Tenant/Vault Boundary`, `Approval Owner Rules`, `Permission Evidence` | subject, resource, action, context, tenant/vault metadata, approval rules | permit/deny decisions, obligations, approval routing, audit evidence | human owner, auditor, integration bridge |
-| `SYSTEM-08::Genesis-Knowledge-HCS-System` | Knowledge substrate for atoms, symbol graph, retrieval, compaction, and MemoryOS/GenesisBlock context delivery. | `GenesisBlockDB`, `Knowledge Atom Registry`, `Hector/H-Tier Compaction`, `HNSW/Vector Retrieval`, `Hybrid JIT Context Renderer`, `Symbol Graph`, `Knowledge Taxonomy`, `MemoryOS V3 Adapter` | approved docs, atoms, code symbols, embeddings, graph edges, context requests | retrieved context, atom graph, symbol communities, compressed context packets | docs-to-code, agents, Mission Control knowledge views |
-| `SYSTEM-09::Traceability-Audit-Verification-System` | Prove that requirements, docs, code, tasks, execution, and verification stay traceable. | `Document Version Registry`, `Change Request Ledger`, `RCA Ledger`, `Diff Check`, `Source-to-Code Trace`, `Verification Evidence`, `Audit Report`, `Promotion Certification` | doc registry, diffs, task state, test results, RCA/CR records, source refs | audit verdicts, drift reports, certification evidence, blocked-work reasons | ATHER, GHOST, release owner |
-| `SYSTEM-10::Execution-Governance-System` | Define complexity, context, fan-out, gates, and closure rules for governed execution. | `C-Level Complexity Classification`, `H0-H6 Context Tiering`, `W-Scale Fan-Out Control`, `Task/Packet State Machine`, `Review Gate`, `QA Gate`, `Closure Criteria`, `Runtime Guardrail Policy` | work request, complexity inputs, scope boundaries, agent capacity, approval state | execution policy, task lifecycle state, gate decisions, DoD closure state | all system agents and reviewer agents |
-
-### 5.2 System Detail Registry
-
-Each system must eventually have a canonical document set. Missing documents are allowed during MVP discovery, but the missing document must be visible as a gap rather than inferred from UI or code.
-
-| System | Canonical Feature Folder | Required Detail Docs | Current MVP Detail Status |
-|---|---|---|---|
-| `SYSTEM-01` | `docs/features/mission-control/` | FEAT, SDD or design spec, UI verification plan | partial; UI migration and design docs exist, template parity still needs tighter contract |
-| `SYSTEM-02` | `docs/features/project-roadmap/` | FEAT, roadmap promotion contract, task-container contract, parser/export contract | active; document-driven source and promotion contract exist |
-| `SYSTEM-03` | `docs/features/docs-to-code/` | FEAT, extraction contract, context-container contract, drift-check plan | partial; extraction direction exists, context packet contract needs consolidation |
-| `SYSTEM-04` | `docs/features/diagram-to-doc/` | FEAT, diagram intake schema, review gate, generated-doc template | early; feature exists but implementation detail remains thin |
-| `SYSTEM-05` | `docs/features/agent-team/` | FEAT, role registry contract, handoff contract, Visual Agent Fleet context | active; multi-agent workflow and role taxonomy docs exist |
-| `SYSTEM-06` | `docs/features/integration-bridge/` | FEAT, MCP/API contract, CLI contract, external executor runbook | active; MCP bridge and bounded executor docs exist |
-| `SYSTEM-07` | `docs/features/governance-access/` | FEAT, policy model, RBAC/ABAC decision contract, denial evidence format | partial; governance feature exists, PDP/PEP detail should be derived from inbound UCF/ABAC sources |
-| `SYSTEM-08` | `docs/features/genesis-knowledge-system/` | FEAT, knowledge atom contract, retrieval contract, symbol graph contract, HCS/JIT design | partial; HCS/JIT docs exist, MSP v3/UCF source packets need derived GoVibe design |
-| `SYSTEM-09` | `docs/features/traceability-audit/` | FEAT, doc version registry, diff-check contract, RCA/CR ledger contract | active; document version governance and traceability docs exist |
-| `SYSTEM-10` | `docs/features/execution-governance/` | FEAT, C/H/W classification, task state machine, gate policy, closure criteria | active; standard exists, enforcement needs broader validator coverage |
-
-### 5.3 Cross-System Dependency Map
-
-System dependencies must be explicit so a change request can identify affected systems before implementation starts.
-
-| Source System | Depends On | Dependency Reason |
+| System | Responsibility | Required alignment |
 |---|---|---|
-| `SYSTEM-01` | `SYSTEM-02`, `SYSTEM-05`, `SYSTEM-06`, `SYSTEM-09` | Mission Control renders roadmap state, agent state, command/tool events, and audit evidence. |
-| `SYSTEM-02` | `SYSTEM-03`, `SYSTEM-09`, `SYSTEM-10` | Roadmap promotion relies on parsed docs, traceability, and execution gate status. |
-| `SYSTEM-03` | `SYSTEM-08`, `SYSTEM-09`, `SYSTEM-10` | Docs-to-code needs knowledge retrieval, symbol links, traceability, and bounded task packets. |
-| `SYSTEM-04` | `SYSTEM-03`, `SYSTEM-08`, `SYSTEM-09` | Diagram-derived docs become docs-to-code inputs and need knowledge/audit provenance. |
-| `SYSTEM-05` | `SYSTEM-06`, `SYSTEM-07`, `SYSTEM-10` | Agent routing requires integration surfaces, access decisions, and execution governance. |
-| `SYSTEM-06` | `SYSTEM-05`, `SYSTEM-07`, `SYSTEM-09` | External tool calls need agent identity, authorization, and event/audit capture. |
-| `SYSTEM-07` | `SYSTEM-05`, `SYSTEM-08`, `SYSTEM-09` | Policy decisions need subject identity, resource metadata, and auditable evidence. |
-| `SYSTEM-08` | `SYSTEM-03`, `SYSTEM-07`, `SYSTEM-09` | Knowledge retrieval is populated by docs-to-code, filtered by policy, and audited by traceability. |
-| `SYSTEM-09` | all systems | Audit must trace source, decision, artifact, and verification across every governed system. |
-| `SYSTEM-10` | `SYSTEM-02`, `SYSTEM-05`, `SYSTEM-07`, `SYSTEM-09` | Execution gates depend on work scope, agent routing, access policy, and evidence state. |
+| SYSTEM-01 | Human visual control plane | Show source/WHY/context/authority and unresolved state, not feature status alone |
+| SYSTEM-02 | Roadmap and task promotion | Preserve issue/insight/decision relations and promotion evidence |
+| SYSTEM-03 | Docs-to-Code | Validate agent-usable knowledge, create candidates, assemble MSP-scoped packets |
+| SYSTEM-04 | Diagram-to-Doc | Produce provenance-bound candidate docs/relations and review gates |
+| SYSTEM-05 | Agent-team collaboration | Apply CoVibe/CoDev authority boundaries and bounded handoffs |
+| SYSTEM-06 | MCP/CLI/external bridges | Accept governed packets; never grant providers canonical authority |
+| SYSTEM-07 | RBAC/ABAC and policy | Enforce access, authority, privacy, source, and approval obligations |
+| SYSTEM-08 | GKS/MSP knowledge-context substrate | Separate canonical graph authority from task context authority |
+| SYSTEM-09 | Traceability/audit/verification | Prove insight-to-evidence relations, context lineage, drift, and impact |
+| SYSTEM-10 | Execution governance | Enforce C/H/R/D/W/Budget/Risk, scope, escalation, and closure gates |
 
-### 5.4 System-Based Execution And Role-Based Review
+## 8. Cross-System Authority and Dependency Rules
 
-GoVibe uses systems as the primary execution routing structure and roles as the review/governance layer.
+- SYSTEM-03 and SYSTEM-04 produce candidate knowledge, not canonical identities.
+- MSP mediates context and promotion before SYSTEM-08/GKS canonical materialization.
+- SYSTEM-06 external providers consume bounded context and return candidate output.
+- SYSTEM-09 records source, reason, context, candidate, promotion, implementation, and verification lineage.
+- SYSTEM-10 prevents workers and providers from widening scope, permission, retrieval radius, or authority.
+- Any non-trivial change must name primary/supporting systems, source issue/insight, decision/ADR relation, owner, reviewers, expected evidence, and impact scope.
 
-```text
-PRD change or approved request
-  -> impacted SYSTEM parent
-  -> module worker or bounded support executor
-  -> role reviewer gate
-  -> verification and audit evidence
-  -> approved board/runtime state
-```
+## 9. Success Criteria
 
-Execution ownership:
+- a new reader can identify the originating user/problem insight before reading the feature map;
+- core features trace to issue/insight/decision/ADR relations;
+- required context packets bind source versions, scope, exclusions, and WHY chains;
+- agents escalate rather than invent missing authority or rationale;
+- out-of-scope implementation and rework decrease;
+- external providers cannot create canonical knowledge;
+- CoVibe/CoDev are selected by authority boundary;
+- replay distinguishes context reproducibility, execution reproducibility, and identical output.
 
-- System parent agents own execution routing inside their system boundary.
-- Module workers own bounded implementation or analysis packets.
-- External support executors are bounded by context packets and never become final approvers.
+## 10. Definition of Done for Product-Level Semantic Changes
 
-Review ownership:
-
-- `LYRA` reviews planning completeness, sequencing, and scope routing.
-- `ARCHON` reviews architecture and cross-system trade-offs.
-- `THESEUS` reviews documentation structure and source-of-truth hygiene.
-- `ATHER` reviews governance, auditability, and promotion readiness.
-- `GHOST` reviews QA evidence, UI behavior, and regression risk.
-
-### 5.5 System Change Routing Rule
-
-Every non-trivial change request must name:
-
-- primary impacted system
-- supporting impacted systems
-- affected product modules
-- source-of-truth document path
-- execution owner or system parent
-- role reviewers and approval owner
-- verification evidence expected before close-out
-
-If a change affects more than one system and lacks this routing, `LYRA` must hold the work in planning state until the missing routing is supplied.
-
-### 5.6 Module Detail Rule
-
-The PRD module map is intentionally high level. A module becomes implementation-ready only when its owning system document defines:
-
-- source-of-truth document path
-- owner and reviewer roles
-- accepted inputs and outputs
-- state model or event contract
-- symbol links to docs, code, tests, and evidence
-- acceptance criteria, success criteria, and definition of done
-
-*(Remaining sections preserved...)*
+- authority issue/change request exists;
+- BRD, PRD, related ADRs, FEAT docs, AGENTS contract, C4/API projections, and registry are impact-reviewed;
+- all must-update documents are changed;
+- review-only documents carry a recorded decision;
+- docs validation and CI pass;
+- approval evidence is linked before canonical promotion.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
-| 0.4.2+draft | 2026-06-22 | Rwang (Senior Dev) | Repositioned §1/§2 to the governance + interop (translator) identity per ADR-016/017/019: code-in→GKS pivot, no per-framework adapters, tiered adoption (GoVibe+MSP core mandatory; full eco optional), orchestration/visual UI = full-eco capability not moat. |
-| 0.4.1+draft | 2026-06-20 | Rwang (Senior Dev) | Frontmatter/title normalization and context-tier range reconciliation. |
-| 0.4.0 | 2026-06-16 | Rwang (Senior Dev) | Expanded the Platform System Map with system responsibilities, inputs, outputs, detail-doc registry, dependencies, and change-routing rules. |
-| 0.3.0 | 2026-06-16 | Rwang (Senior Dev) | Expanded the Platform System Map with product-level modules, system-based execution routing, and role-based review ownership. |
-| 0.2.1 | 2026-06-17 | Rwang (Senior Dev) | Added module-level CoDev and CoVibe references under the existing Agent-Team Management system without changing the top-level system map. |
-| 0.2.0 | 2026-06-16 | Rwang (Senior Dev) | Added the narrow CoDev and CoVibe terminology subsection under product positioning without changing the current system map. |
-| 0.1.0 | 2026-06-15 | Rwang (Senior Dev) | Added canonical doc_id metadata to align the PRD with the document versioning governance standard. |
+| 0.5.0+draft | 2026-08-02 | Rwang / Boss | Added shared failure pattern, agent-usable knowledge contract, GKS/MSP authority boundary, authority-based CoVibe/CoDev segmentation, core user journey, and provider candidate boundary. |
+| 0.4.3+draft | 2026-06-23 | Rwang | Previous platform overview and ten-system map. |
+| 0.4.2+draft | 2026-06-22 | Rwang | Repositioned governance + interop identity per ADR-016/017/019. |
+| 0.4.1+draft | 2026-06-20 | Rwang | Frontmatter/title normalization. |
+| 0.4.0 | 2026-06-16 | Rwang | Expanded Platform System Map. |
+| 0.3.0 | 2026-06-16 | Rwang | Added product-level modules and routing. |
+| 0.2.1 | 2026-06-17 | Rwang | Added CoDev/CoVibe module references. |
+| 0.2.0 | 2026-06-16 | Rwang | Added CoDev/CoVibe terminology. |
+| 0.1.0 | 2026-06-15 | Rwang | Added canonical doc_id metadata. |
