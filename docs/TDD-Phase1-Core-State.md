@@ -1,4 +1,22 @@
-# TDD: Phase 1 — Core Logic & Global State
+---
+title: "TDD: Phase 1 - Core Logic and Global State (MissionGateway Reference)"
+doc_id: "TDD-PHASE1-CORE-STATE-MISSION-GATEWAY-REFERENCE"
+status: "deprecated"
+version: "0.1.0-deprecated+legacy"
+updated: "2026-08-03"
+owner: "Boss (historical author)"
+source_of_truth: false
+document_role: "non-canonical current-code-aligned implementation reference"
+identity_scope: "cleansing candidate; not a canonical GKS identity"
+evidence:
+  - "git commit 4959150dd09aab28dca561e8c679e09b4f30c14c explicitly syncs this file to MissionGateway"
+  - "src/mission/gateway.ts provides ReliableMissionGateway and src/mission.ts re-exports it as MissionGateway"
+related_docs:
+  - "src/mission/gateway.ts"
+  - "src/mission.ts"
+---
+
+# TDD: Phase 1 - Core Logic and Global State (MissionGateway Reference)
 
 **Feature ID:** `GV-S101`
 **Status:** `COMPLETED`
@@ -27,3 +45,9 @@ Smooth transitions are achieved via a custom `useAgentMotion` hook (referenced a
 
 ## 4. Deployment
 Deployed to `@govibe-mission-control` and utilized directly in the dashboard via `MissionGateway` singleton.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0-deprecated+legacy | 2026-08-03 | Boss (historical author) | Classified the MissionGateway-aligned variant as a non-canonical, deprecated implementation reference; the underlying historical narrative is retained. |
