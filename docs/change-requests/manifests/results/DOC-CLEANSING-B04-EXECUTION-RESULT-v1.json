@@ -40,10 +40,10 @@
     ["docs/rca/RCA-20260613-Local-Model-Friction.md","docs/change-control/rca/RCA-20260613-Local-Model-Friction.md","113b7f8695dd00db8140514e28f382cddf58fe25","113b7f8695dd00db8140514e28f382cddf58fe25"],
     ["docs/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md","docs/assurance/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md","18adf0af3aa192ae9792fe0cc23521d90ad0eec4","18adf0af3aa192ae9792fe0cc23521d90ad0eec4"]
   ],
-  "internal_reference_updates": {"files":10,"occurrences":20,"status":"executed"},
+  "internal_reference_updates": {"rewritten_target_files":11,"occurrences":20,"status":"executed","note":"11 target blobs were intentionally rewritten only to update B04-owned path references; 20 is the number of replacement occurrences across those 11 files."},
   "cross_batch_reference_updates": {"status":"deferred_for_integrator","referencers":"docs/DOC-VERSION-REGISTRY.md; docs/change-requests/manifests/DOC-CLEANSING-INVENTORY-v1.json; B01/B02/B03 artifacts; ADR/architecture/roadmap/SRS/features files","reason":"referencing paths are outside B04 writable ownership"},
   "unresolved": ["B04-U01","B04-U02","B04-U03","B04-U04","B04-U05","B04-U06"],
-  "rollback": {"command":"foreach ($p in (Get-Content -Raw .file-organizer-map.json | ConvertFrom-Json)) { git mv -- $p.to $p.from }","evidence":"all 31 inverse pairs remain in the preserved local map; pre-move source blobs are recorded above"},
+  "rollback": {"committed_map":"docs/change-requests/manifests/results/DOC-CLEANSING-B04-ROLLBACK-MAP-v1.json","command":"read committed map pairs in ascending rollback_order and apply each inverse from -> to","evidence":"the committed map is the canonical rollback authority; the hidden local map is not required"},
   "validations": {
     "json_parse":"pass",
     "diff_check":"pass",

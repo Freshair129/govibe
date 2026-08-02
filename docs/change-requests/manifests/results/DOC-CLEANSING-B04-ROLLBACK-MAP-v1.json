@@ -1,0 +1,636 @@
+{
+  "schema_version": "1.0.0",
+  "map_id": "DOC-CLEANSING-B04-ROLLBACK-MAP-v1",
+  "batch_id": "B04",
+  "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
+  "execution_commit": "5547c1fe33e375818e94d1c4d347cc517608468c",
+  "operation_count": 31,
+  "content_state_counts": {
+    "byte_preserved": 20,
+    "intentionally_rewritten": 11
+  },
+  "rollback_execution": "apply inverse operations in ascending rollback_order (the original forward order reversed); do not execute from this evidence artifact without authorization",
+  "verifier_evidence": "pass: parsed committed map; 31 unique forward/inverse pairs; all final targets present; all rollback destinations absent; exact inverse symmetry; rollback orders 1..31; final Git blob and SHA-256 match; rollback was not executed",
+  "pairs": [
+    {
+      "forward": {
+        "from": "docs/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md",
+        "to": "docs/assurance/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md"
+      },
+      "inverse": {
+        "from": "docs/assurance/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md",
+        "to": "docs/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md"
+      },
+      "pre": {
+        "git_blob": "ba43784ae9617b348dd2eb45997f6ab72f46ec95",
+        "sha256": "4637ca2d45bf4bd074a86790f2e2a6aeb53460ee2598cbc811ca1d896629fdcc"
+      },
+      "post": {
+        "git_blob": "ba43784ae9617b348dd2eb45997f6ab72f46ec95",
+        "sha256": "4637ca2d45bf4bd074a86790f2e2a6aeb53460ee2598cbc811ca1d896629fdcc"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 31
+    },
+    {
+      "forward": {
+        "from": "docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md",
+        "to": "docs/assurance/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md"
+      },
+      "inverse": {
+        "from": "docs/assurance/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md",
+        "to": "docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md"
+      },
+      "pre": {
+        "git_blob": "e2c3f373f2d2f7208d647eab7bc1d4261d915256",
+        "sha256": "6f40a69e26e7e184a2cb9b82edf768734d9b007abed5e5c1e0267ca3146b3a13"
+      },
+      "post": {
+        "git_blob": "e2c3f373f2d2f7208d647eab7bc1d4261d915256",
+        "sha256": "6f40a69e26e7e184a2cb9b82edf768734d9b007abed5e5c1e0267ca3146b3a13"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 30
+    },
+    {
+      "forward": {
+        "from": "docs/audit/POC-5-Axis-Coverage.md",
+        "to": "docs/assurance/audit/POC-5-Axis-Coverage.md"
+      },
+      "inverse": {
+        "from": "docs/assurance/audit/POC-5-Axis-Coverage.md",
+        "to": "docs/audit/POC-5-Axis-Coverage.md"
+      },
+      "pre": {
+        "git_blob": "0510b50f96bc886e66cf4f678ffe473bd0c329b5",
+        "sha256": "cee04ba7dd65e7bf10a67efeb845e78715b5badc5136146d8038f864ae1b9e2e"
+      },
+      "post": {
+        "git_blob": "0510b50f96bc886e66cf4f678ffe473bd0c329b5",
+        "sha256": "cee04ba7dd65e7bf10a67efeb845e78715b5badc5136146d8038f864ae1b9e2e"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 29
+    },
+    {
+      "forward": {
+        "from": "docs/audit/POC-H6-Budget-Sufficiency.md",
+        "to": "docs/assurance/audit/POC-H6-Budget-Sufficiency.md"
+      },
+      "inverse": {
+        "from": "docs/assurance/audit/POC-H6-Budget-Sufficiency.md",
+        "to": "docs/audit/POC-H6-Budget-Sufficiency.md"
+      },
+      "pre": {
+        "git_blob": "4b7d4f4b48fb7917b38f7fcf378a0bf578f758b2",
+        "sha256": "bcf51de380fdc52891bd0f6959dc8d4f8bd1a93b5e58866159976348a4646a48"
+      },
+      "post": {
+        "git_blob": "4b7d4f4b48fb7917b38f7fcf378a0bf578f758b2",
+        "sha256": "bcf51de380fdc52891bd0f6959dc8d4f8bd1a93b5e58866159976348a4646a48"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 28
+    },
+    {
+      "forward": {
+        "from": "docs/audits/AUDIT-2026-08-01-GoVibe-Canonical-Architecture-Alignment-WP01.md",
+        "to": "docs/assurance/audit/AUDIT-2026-08-01-GoVibe-Canonical-Architecture-Alignment-WP01.md"
+      },
+      "inverse": {
+        "from": "docs/assurance/audit/AUDIT-2026-08-01-GoVibe-Canonical-Architecture-Alignment-WP01.md",
+        "to": "docs/audits/AUDIT-2026-08-01-GoVibe-Canonical-Architecture-Alignment-WP01.md"
+      },
+      "pre": {
+        "git_blob": "48fb7019a1a021e8782039765ab0a217ee0651ec",
+        "sha256": "56ca9f42327126cdb7a534e3c1b449e14128c397ddefd71745c646cbbb9562ea"
+      },
+      "post": {
+        "git_blob": "1b063876f6375aec0781662d92780dd0e14353ab",
+        "sha256": "b5fddde9f60a87409e604e5a8be2aa3d20b1a9d40662982cfb1a7e42949027bf"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 27
+    },
+    {
+      "forward": {
+        "from": "docs/audits/AUDIT-2026-08-01-H-Axis-and-STD-Inventory.md",
+        "to": "docs/assurance/audit/AUDIT-2026-08-01-H-Axis-and-STD-Inventory.md"
+      },
+      "inverse": {
+        "from": "docs/assurance/audit/AUDIT-2026-08-01-H-Axis-and-STD-Inventory.md",
+        "to": "docs/audits/AUDIT-2026-08-01-H-Axis-and-STD-Inventory.md"
+      },
+      "pre": {
+        "git_blob": "5f6003f915d197eb92fe338d432aa39b53cddef6",
+        "sha256": "1dcf96064b05896c2593233b4ecfb5148a91b2e57ca7dab91ca72ab8a88d8ab4"
+      },
+      "post": {
+        "git_blob": "074d1c7e77a265145d9cfed603707cf31ddd836d",
+        "sha256": "0cc629c7033ca06fa973e3a96a93e2b946f101f42392118bd472eb001fac81ff"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 26
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md",
+        "to": "docs/change-control/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md",
+        "to": "docs/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md"
+      },
+      "pre": {
+        "git_blob": "fcb7b6f5e120281b3db852dcf11488129041d5e0",
+        "sha256": "abfb7106245a00fbbd5d3da79f77f7eb0f69e4a93395883bd229a885c67897fb"
+      },
+      "post": {
+        "git_blob": "19c07761a6803afca020b8043e5f177e2a3cceb5",
+        "sha256": "72c7d460d5c51ffe952c0f6d93834f83aeba37594292f2f9fc15ed9a03be1ef6"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 25
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md",
+        "to": "docs/change-control/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md",
+        "to": "docs/change-requests/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review.md"
+      },
+      "pre": {
+        "git_blob": "dec0ca1e26527bf8156660153995052106b400e4",
+        "sha256": "074e0f6e948518bff05eb379a78158d1eca575140919d875b35ef0fdb75fe1e6"
+      },
+      "post": {
+        "git_blob": "7d429cc94f881e999b6d4fc251f7b354fec38797",
+        "sha256": "7fbc71ed1747c4c05f0316d1b62e57e20e8ae8adae9ee4a2029995f7a63a9521"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 24
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md",
+        "to": "docs/change-control/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md",
+        "to": "docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md"
+      },
+      "pre": {
+        "git_blob": "ef9ba88e3db3fd8f9f1230830048bd4d86f1566f",
+        "sha256": "2db3dac720be2cb73984932af8b1612b5d178b2002972bbd89831835bae0f01d"
+      },
+      "post": {
+        "git_blob": "f59e7381981e3c976d70910194fd4f2659e36d20",
+        "sha256": "79789b6e004b235669f6645c9286db0fe7c3a448b4b767f8737057d84210e732"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 23
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md",
+        "to": "docs/change-control/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md",
+        "to": "docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md"
+      },
+      "pre": {
+        "git_blob": "3712970d64e2943f2f8a3a28fd5c283fe56b1ac8",
+        "sha256": "bc71245296636e9e2315cf0da03bd11843b93c75fac6c749d4a0730427b44b3b"
+      },
+      "post": {
+        "git_blob": "3712970d64e2943f2f8a3a28fd5c283fe56b1ac8",
+        "sha256": "bc71245296636e9e2315cf0da03bd11843b93c75fac6c749d4a0730427b44b3b"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 22
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md",
+        "to": "docs/change-control/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md",
+        "to": "docs/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md"
+      },
+      "pre": {
+        "git_blob": "347e6f1be06c1abc7832f481d9521ffa2fe0a727",
+        "sha256": "93d2eee30e4c29e111462a53eb3147dc6c95070f451c0ab87cedb28d76c34b10"
+      },
+      "post": {
+        "git_blob": "347e6f1be06c1abc7832f481d9521ffa2fe0a727",
+        "sha256": "93d2eee30e4c29e111462a53eb3147dc6c95070f451c0ab87cedb28d76c34b10"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 21
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md",
+        "to": "docs/change-control/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md",
+        "to": "docs/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
+      },
+      "pre": {
+        "git_blob": "32a5fe3754c7e150e2bc69d425a8920a3f638371",
+        "sha256": "fd28f2d4b0c82ff498677343d06711a2799fd27cec7e95d1a5c151610fc61135"
+      },
+      "post": {
+        "git_blob": "32a5fe3754c7e150e2bc69d425a8920a3f638371",
+        "sha256": "fd28f2d4b0c82ff498677343d06711a2799fd27cec7e95d1a5c151610fc61135"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 20
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md",
+        "to": "docs/change-control/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md",
+        "to": "docs/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md"
+      },
+      "pre": {
+        "git_blob": "527debbf4d1555c40a0371a6bb4a470220392d4b",
+        "sha256": "9b9e32876c8077dafe792e07847f71c888831f24979716387e49ea63e190d211"
+      },
+      "post": {
+        "git_blob": "527debbf4d1555c40a0371a6bb4a470220392d4b",
+        "sha256": "9b9e32876c8077dafe792e07847f71c888831f24979716387e49ea63e190d211"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 19
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/amendments/AMENDMENT-2026-08-01-H-Axis-Definition-and-CR-Correction.md",
+        "to": "docs/change-control/change-requests/amendments/AMENDMENT-2026-08-01-H-Axis-Definition-and-CR-Correction.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/amendments/AMENDMENT-2026-08-01-H-Axis-Definition-and-CR-Correction.md",
+        "to": "docs/change-requests/amendments/AMENDMENT-2026-08-01-H-Axis-Definition-and-CR-Correction.md"
+      },
+      "pre": {
+        "git_blob": "e947cf1bf98737e698a42850afcb12ec89e90d58",
+        "sha256": "fcc3221aa536bcbcd9fd92a4d832b00b6d59435956719ddf3d20e0cd3aa632b7"
+      },
+      "post": {
+        "git_blob": "c5229991e8a63eff26d74a2d8da8950dd305a20b",
+        "sha256": "6604d3d85535fdbb6218b7e7a8d1ac54ead53c1298a4d6002584ed46f62a9731"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 18
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md",
+        "to": "docs/change-control/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md",
+        "to": "docs/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md"
+      },
+      "pre": {
+        "git_blob": "050de074a58f25f9b2227365056e676024f7ccb8",
+        "sha256": "9649ce5060b5e7780eb617019079586312c51a6b40a04322276b30ba5d7aea4a"
+      },
+      "post": {
+        "git_blob": "97baafdb69a76692bde78ff0ed8734cc9db8e37e",
+        "sha256": "31fe6c34fe5580fc48a5535705cc4698f1e7a5fd5a7e83804f9909a32650a96f"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 17
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md",
+        "to": "docs/change-control/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md",
+        "to": "docs/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md"
+      },
+      "pre": {
+        "git_blob": "cc9e19166e7e72639be52987b5ca404a43535048",
+        "sha256": "54289e80c99d2c69029e77f9caafe9de300c569b39e1113160025ecdfdcd5705"
+      },
+      "post": {
+        "git_blob": "cc9e19166e7e72639be52987b5ca404a43535048",
+        "sha256": "54289e80c99d2c69029e77f9caafe9de300c569b39e1113160025ecdfdcd5705"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 16
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/feedback/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review-feedback.md",
+        "to": "docs/change-control/change-requests/feedback/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review-feedback.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/feedback/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review-feedback.md",
+        "to": "docs/change-requests/feedback/CR-2026-06-16-PILOT-01-PRD-Terminology-External-Executor-Review-feedback.md"
+      },
+      "pre": {
+        "git_blob": "8768d8cf5f24fc83738713a8a53053fd2973d063",
+        "sha256": "107e187e921df62dbc82b8e29480b6df6daf290b5f043685c40778eb534ec5f4"
+      },
+      "post": {
+        "git_blob": "72b2eda3ea6fb0318d3f4c2708fbbcd3645e89a2",
+        "sha256": "2e30a35358bd443d658f3f9079526d611a3653426a2880ca5ffdd33bfbfb41bf"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 15
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/feedback/CR-2026-06-16-Project-Agent-Reality-Check-feedback.md",
+        "to": "docs/change-control/change-requests/feedback/CR-2026-06-16-Project-Agent-Reality-Check-feedback.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/feedback/CR-2026-06-16-Project-Agent-Reality-Check-feedback.md",
+        "to": "docs/change-requests/feedback/CR-2026-06-16-Project-Agent-Reality-Check-feedback.md"
+      },
+      "pre": {
+        "git_blob": "4302b65b2745818b30d6dc9027e70f4c86fbf8e8",
+        "sha256": "f36099de037e52b5ccb04145d8cf28aaccd8a478bd6ed772212e649fa8bded33"
+      },
+      "post": {
+        "git_blob": "4302b65b2745818b30d6dc9027e70f4c86fbf8e8",
+        "sha256": "f36099de037e52b5ccb04145d8cf28aaccd8a478bd6ed772212e649fa8bded33"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 14
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/feedback/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor-feedback.md",
+        "to": "docs/change-control/change-requests/feedback/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor-feedback.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/feedback/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor-feedback.md",
+        "to": "docs/change-requests/feedback/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor-feedback.md"
+      },
+      "pre": {
+        "git_blob": "8391b946e49eb4a7d70bf9bca34b6fb67e445e48",
+        "sha256": "3f8651d63512e8ae8306fd9e1d875119009ac0a7b9019d11076316cc8ef1bf48"
+      },
+      "post": {
+        "git_blob": "446ae77093484de2ee7ccabe05d3a8fac4fde45d",
+        "sha256": "95188807d60793400f3a323c19690a5960063c23ea944d6207468b44b5191db5"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 13
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/feedback/FEAT-CoDev-CoVibe-Terminology-Definition-feedback.md",
+        "to": "docs/change-control/change-requests/feedback/FEAT-CoDev-CoVibe-Terminology-Definition-feedback.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/feedback/FEAT-CoDev-CoVibe-Terminology-Definition-feedback.md",
+        "to": "docs/change-requests/feedback/FEAT-CoDev-CoVibe-Terminology-Definition-feedback.md"
+      },
+      "pre": {
+        "git_blob": "7db659664be32b5edf1d2342fadd7b86a772951e",
+        "sha256": "6b7632d3a24552b4c1928701d5f7e536660bd11841109ce748841aa00b1ec6f6"
+      },
+      "post": {
+        "git_blob": "90d48447ed451c5eeb237ef6e20c94d41c8eb539",
+        "sha256": "6fb99289ea94bb4ee51fd3940f43d06b455841328729464ed9d81e533f5c7300"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 12
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md",
+        "to": "docs/change-control/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md",
+        "to": "docs/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md"
+      },
+      "pre": {
+        "git_blob": "24db4e64e62d190343146331f4d0856e51ec1e5e",
+        "sha256": "e676a2b9ca51290e9de7c7ef2f1a04e06159119b19ce48d6a87664129c40e372"
+      },
+      "post": {
+        "git_blob": "24db4e64e62d190343146331f4d0856e51ec1e5e",
+        "sha256": "e676a2b9ca51290e9de7c7ef2f1a04e06159119b19ce48d6a87664129c40e372"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 11
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/work-packets/WP-01-Canonical-Document-Audit.md",
+        "to": "docs/change-control/change-requests/work-packets/WP-01-Canonical-Document-Audit.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/work-packets/WP-01-Canonical-Document-Audit.md",
+        "to": "docs/change-requests/work-packets/WP-01-Canonical-Document-Audit.md"
+      },
+      "pre": {
+        "git_blob": "a0b79c5e513337ca6fe0c089fc46418ac41670bf",
+        "sha256": "5e2552fce0f80faf2323da284d279c04fef3c4bf18fbf680bb92072045d48d8b"
+      },
+      "post": {
+        "git_blob": "64371f0e7d9d111dda089f80b879f79d0de52d22",
+        "sha256": "e6649c6ea57fbacce6722f3b9373c80e2e727584de1bc1ac9a711fc3f5796184"
+      },
+      "content_state": "intentionally_rewritten",
+      "rollback_order": 10
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/work-packets/WP-02-H-Axis-Canonical-Propagation.md",
+        "to": "docs/change-control/change-requests/work-packets/WP-02-H-Axis-Canonical-Propagation.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/work-packets/WP-02-H-Axis-Canonical-Propagation.md",
+        "to": "docs/change-requests/work-packets/WP-02-H-Axis-Canonical-Propagation.md"
+      },
+      "pre": {
+        "git_blob": "be06d6cfb4256c6a4085de39a98ad4b511275950",
+        "sha256": "ca637d6c25ae8fcd143038cc98341c0938b7822fc867767846f58d0413accef4"
+      },
+      "post": {
+        "git_blob": "be06d6cfb4256c6a4085de39a98ad4b511275950",
+        "sha256": "ca637d6c25ae8fcd143038cc98341c0938b7822fc867767846f58d0413accef4"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 9
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/work-packets/WP-03-Vault-Context-Replay.md",
+        "to": "docs/change-control/change-requests/work-packets/WP-03-Vault-Context-Replay.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/work-packets/WP-03-Vault-Context-Replay.md",
+        "to": "docs/change-requests/work-packets/WP-03-Vault-Context-Replay.md"
+      },
+      "pre": {
+        "git_blob": "a8963cf2f35a64ab31b8efb7e53e2e49508947c1",
+        "sha256": "04ed671db9b1ee4eed6f76af17de43217711e999014246dd03f4510081be36c6"
+      },
+      "post": {
+        "git_blob": "a8963cf2f35a64ab31b8efb7e53e2e49508947c1",
+        "sha256": "04ed671db9b1ee4eed6f76af17de43217711e999014246dd03f4510081be36c6"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 8
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/work-packets/WP-04-Vault-Context-MCP-Command-Surface.md",
+        "to": "docs/change-control/change-requests/work-packets/WP-04-Vault-Context-MCP-Command-Surface.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/work-packets/WP-04-Vault-Context-MCP-Command-Surface.md",
+        "to": "docs/change-requests/work-packets/WP-04-Vault-Context-MCP-Command-Surface.md"
+      },
+      "pre": {
+        "git_blob": "dfe66dc188acf6432a184f75a92a8b7b84de8620",
+        "sha256": "455cdbaf07db7a73c1647f7187f10e5a65f74d8a3e7186bf8a4cebf0132c36ac"
+      },
+      "post": {
+        "git_blob": "dfe66dc188acf6432a184f75a92a8b7b84de8620",
+        "sha256": "455cdbaf07db7a73c1647f7187f10e5a65f74d8a3e7186bf8a4cebf0132c36ac"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 7
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/work-packets/WP-05-Runtime-Propagation-and-Typed-MSP-Contracts.md",
+        "to": "docs/change-control/change-requests/work-packets/WP-05-Runtime-Propagation-and-Typed-MSP-Contracts.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/work-packets/WP-05-Runtime-Propagation-and-Typed-MSP-Contracts.md",
+        "to": "docs/change-requests/work-packets/WP-05-Runtime-Propagation-and-Typed-MSP-Contracts.md"
+      },
+      "pre": {
+        "git_blob": "7ec09e0cf714574278cbb1698f9abd1fb7c5050a",
+        "sha256": "da615c4faec00e7c542c028ede2a870d6d88bee3f89bb474e2e3cdca9ac8e976"
+      },
+      "post": {
+        "git_blob": "7ec09e0cf714574278cbb1698f9abd1fb7c5050a",
+        "sha256": "da615c4faec00e7c542c028ede2a870d6d88bee3f89bb474e2e3cdca9ac8e976"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 6
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/work-packets/WP-07-Mission-Control-Context-Operations-UI.md",
+        "to": "docs/change-control/change-requests/work-packets/WP-07-Mission-Control-Context-Operations-UI.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/work-packets/WP-07-Mission-Control-Context-Operations-UI.md",
+        "to": "docs/change-requests/work-packets/WP-07-Mission-Control-Context-Operations-UI.md"
+      },
+      "pre": {
+        "git_blob": "b3c132a601d05aa372eef1f06a813ff9d4063301",
+        "sha256": "c1631e4fb11209cc78a9a848c16f78fd22e80ac59353d23c2d5e1c3af97cbd41"
+      },
+      "post": {
+        "git_blob": "b3c132a601d05aa372eef1f06a813ff9d4063301",
+        "sha256": "c1631e4fb11209cc78a9a848c16f78fd22e80ac59353d23c2d5e1c3af97cbd41"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 5
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/work-packets/WP-08-GKS-Canonical-Integration-and-Materialization.md",
+        "to": "docs/change-control/change-requests/work-packets/WP-08-GKS-Canonical-Integration-and-Materialization.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/work-packets/WP-08-GKS-Canonical-Integration-and-Materialization.md",
+        "to": "docs/change-requests/work-packets/WP-08-GKS-Canonical-Integration-and-Materialization.md"
+      },
+      "pre": {
+        "git_blob": "58a0970826f786611979d6b44dee31146292ffb5",
+        "sha256": "221855ef07c75b46e9ed6c6f5b3ed00b8cbd989c7eab51f6eb930701e1e93b6f"
+      },
+      "post": {
+        "git_blob": "58a0970826f786611979d6b44dee31146292ffb5",
+        "sha256": "221855ef07c75b46e9ed6c6f5b3ed00b8cbd989c7eab51f6eb930701e1e93b6f"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 4
+    },
+    {
+      "forward": {
+        "from": "docs/change-requests/work-packets/WP-09-Production-Replay-and-KV-Provider-Integration.md",
+        "to": "docs/change-control/change-requests/work-packets/WP-09-Production-Replay-and-KV-Provider-Integration.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/change-requests/work-packets/WP-09-Production-Replay-and-KV-Provider-Integration.md",
+        "to": "docs/change-requests/work-packets/WP-09-Production-Replay-and-KV-Provider-Integration.md"
+      },
+      "pre": {
+        "git_blob": "b525ac70b5524076f5fdcb0dc6d6f1f563c153eb",
+        "sha256": "93a3be18fbf2183915e72ff1f33f0ed0ebeb5dad6d59b470e5b67433405b8f29"
+      },
+      "post": {
+        "git_blob": "b525ac70b5524076f5fdcb0dc6d6f1f563c153eb",
+        "sha256": "93a3be18fbf2183915e72ff1f33f0ed0ebeb5dad6d59b470e5b67433405b8f29"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 3
+    },
+    {
+      "forward": {
+        "from": "docs/rca/RCA-20260613-Local-Model-Friction.md",
+        "to": "docs/change-control/rca/RCA-20260613-Local-Model-Friction.md"
+      },
+      "inverse": {
+        "from": "docs/change-control/rca/RCA-20260613-Local-Model-Friction.md",
+        "to": "docs/rca/RCA-20260613-Local-Model-Friction.md"
+      },
+      "pre": {
+        "git_blob": "113b7f8695dd00db8140514e28f382cddf58fe25",
+        "sha256": "31978fe7c1d156b914e3a5e0b5fff9b5191bfc405910e58b5d2ba8822b563caa"
+      },
+      "post": {
+        "git_blob": "113b7f8695dd00db8140514e28f382cddf58fe25",
+        "sha256": "31978fe7c1d156b914e3a5e0b5fff9b5191bfc405910e58b5d2ba8822b563caa"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 2
+    },
+    {
+      "forward": {
+        "from": "docs/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md",
+        "to": "docs/assurance/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md"
+      },
+      "inverse": {
+        "from": "docs/assurance/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md",
+        "to": "docs/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md"
+      },
+      "pre": {
+        "git_blob": "18adf0af3aa192ae9792fe0cc23521d90ad0eec4",
+        "sha256": "8ba3d6a3010080f77a2cbed95509bfc55a86324261c35d4d521ab88203144ae1"
+      },
+      "post": {
+        "git_blob": "18adf0af3aa192ae9792fe0cc23521d90ad0eec4",
+        "sha256": "8ba3d6a3010080f77a2cbed95509bfc55a86324261c35d4d521ab88203144ae1"
+      },
+      "content_state": "byte_preserved",
+      "rollback_order": 1
+    }
+  ]
+}
