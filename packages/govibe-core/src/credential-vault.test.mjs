@@ -1,0 +1,139 @@
+import { describe, expect, it, vi } from "vitest";
+import { createCredentialVault, CredentialVaultError } from "./credential-vault.mjs";
+
+function fixture(clock = () => new Date("2026-08-03T00:00:00.000Z")) {
+  let id = 0;
+  return createCredentialVault({ clock, idFactory: () => `id-${++id}`, defaultGrantTtlMs: 1_000 });
+}
+
+const baseCredential = {
+  credential_ref: "cred:openai:user-1",
+  entitlement_id: "ent-1",
+  owner_id: "user-1",
+  provider_id: "openai",
+  secret: "super-secret-token",
+};
+
+const baseGrant = {
+  credential_ref: "cred:openai:user-1",
+  entitlement_id: "ent-1",
+  principal_id: "user-1",
+  run_id: "run-1",
+  binding_id: "binding-1",
+  provider_id: "openai",
+};
+
+describe("credential vault", () => {
+  it("returns opaque metadata and never exposes secret through inspection", () => {
+    const vault = fixture();
+    vault.registerCredential(baseCredential);
+    const snapshot = vault.inspect();
+
+    expect(JSON.stringify(snapshot)).not.toContain("super-secret-token");
+    expect(snapshot.credentials[0]).toEqual({
+      credential_ref: "cred:openai:user-1",
+      entitlement_id: "ent-1",
+      owner_id: "user-1",
+      provider_id: "openai",
+      state: "active",
+      valid_until: null,
+    });
+  });
+
+  it("issues a run-scoped one-time grant and consumes it", async () => {
+    const vault = fixture();
+    vault.registerCredential(baseCredential);
+    const grant = vault.issueGrant(baseGrant);
+    const consumer = vi.fn(async (bytes) => new TextDecoder().decode(bytes));
+
+    await expect(vault.withCredential(grant.grant_id, baseGrant, consumer)).resolves.toBe("super-secret-token");
+    expect(consumer).toHaveBeenCalledOnce();
+    await expect(vault.withCredential(grant.grant_id, baseGrant, consumer)).rejects.toMatchObject({
+      code: "CREDENTIAL_GRANT_CONSUMED",
+    });
+  });
+
+  it.each([
+    ["entitlement_id", "ent-2"],
+    ["principal_id", "user-2"],
+    ["run_id", "run-2"],
+    ["binding_id", "binding-2"],
+    ["provider_id", "anthropic"],
+  ])("rejects grant scope mismatch for %s", async (field, value) => {
+    const vault = fixture();
+    vault.registerCredential(baseCredential);
+    const grant = vault.issueGrant(baseGrant);
+
+    await expect(
+      vault.withCredential(grant.grant_id, { ...baseGrant, [field]: value }, async () => true),
+    ).rejects.toMatchObject({ code: "CREDENTIAL_GRANT_SCOPE_MISMATCH" });
+  });
+
+  it("rejects entitlement substitution at grant issuance", () => {
+    const vault = fixture();
+    vault.registerCredential(baseCredential);
+    expect(() => vault.issueGrant({ ...baseGrant, entitlement_id: "ent-evil" })).toThrowError(
+      expect.objectContaining({ code: "ENTITLEMENT_SUBSTITUTION_DENIED" }),
+    );
+  });
+
+  it("rejects cross-user credential use", () => {
+    const vault = fixture();
+    vault.registerCredential(baseCredential);
+    expect(() => vault.issueGrant({ ...baseGrant, principal_id: "user-2" })).toThrowError(
+      expect.objectContaining({ code: "CREDENTIAL_PRINCIPAL_MISMATCH" }),
+    );
+  });
+
+  it("revokes active grants when the credential is revoked", async () => {
+    const vault = fixture();
+    vault.registerCredential(baseCredential);
+    const grant = vault.issueGrant(baseGrant);
+    vault.revokeCredential(baseCredential.credential_ref);
+
+    await expect(vault.withCredential(grant.grant_id, baseGrant, async () => true)).rejects.toMatchObject({
+      code: "CREDENTIAL_GRANT_REVOKED",
+    });
+  });
+
+  it("rejects expired grants", async () => {
+    let current = new Date("2026-08-03T00:00:00.000Z");
+    const vault = fixture(() => current);
+    vault.registerCredential(baseCredential);
+    const grant = vault.issueGrant({ ...baseGrant, ttl_ms: 500 });
+    current = new Date("2026-08-03T00:00:01.000Z");
+
+    await expect(vault.withCredential(grant.grant_id, baseGrant, async () => true)).rejects.toMatchObject({
+      code: "CREDENTIAL_GRANT_EXPIRED",
+    });
+  });
+
+  it("rejects expired credentials before grant issuance", () => {
+    let current = new Date("2026-08-03T00:00:00.000Z");
+    const vault = fixture(() => current);
+    vault.registerCredential({ ...baseCredential, valid_until: "2026-08-03T00:00:01.000Z" });
+    current = new Date("2026-08-03T00:00:02.000Z");
+
+    expect(() => vault.issueGrant(baseGrant)).toThrowError(expect.objectContaining({ code: "CREDENTIAL_EXPIRED" }));
+  });
+
+  it("does not include credential references in grant inspection", () => {
+    const vault = fixture();
+    vault.registerCredential(baseCredential);
+    vault.issueGrant(baseGrant);
+
+    const snapshot = vault.inspect();
+    expect(snapshot.grants[0]).not.toHaveProperty("credential_ref");
+  });
+
+  it("uses bounded error metadata without secret material", () => {
+    const vault = fixture();
+    try {
+      vault.issueGrant(baseGrant);
+    } catch (error) {
+      expect(error).toBeInstanceOf(CredentialVaultError);
+      expect(JSON.stringify(error)).not.toContain("super-secret-token");
+      expect(error.code).toBe("CREDENTIAL_NOT_FOUND");
+    }
+  });
+});
