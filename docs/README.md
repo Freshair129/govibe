@@ -32,9 +32,9 @@ related_docs:
 | Architecture and decisions | `docs/architecture/`, `docs/adr/`, `docs/blueprints/`, `docs/lld/` |
 | Interfaces | `docs/api/` |
 | Planning | `docs/roadmap/` |
-| Operations | `docs/runbooks/`, `docs/handover/` |
-| Change and failure control | `docs/change-requests/`, `docs/rca/`, `docs/migration/` |
-| Assurance | `docs/audit/`, `docs/audits/`, `docs/security/` |
+| Operations | `docs/operations/runbooks/`, `docs/handover/` |
+| Change and failure control | `docs/change-control/change-requests/`, `docs/change-control/rca/`, `docs/migration/` |
+| Assurance | `docs/assurance/audit/`, `docs/assurance/security/` |
 | Historical candidates | `docs/archive/` |
 
 These are current paths, not canonical graph identities. The proposed target

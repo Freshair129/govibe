@@ -10,7 +10,7 @@ related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/genesis-knowledge-system/FEAT-Hybrid-JIT-Context-System.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
 ---
 
 # ADR: Task-Scoped Context Injection
@@ -110,10 +110,9 @@ GoVibe will adopt a refine-from-existing approach for context injection.
 - `docs/PRD-GoVibe-Platform-Overview.md`
 - `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md`
 - `docs/features/genesis-knowledge-system/FEAT-Hybrid-JIT-Context-System.md`
-- `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
+- `docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
 
 ## Changelog
-
 | Version | Date | Summary |
 |---|---|---|
 | 0.1.0 | 2026-06-19 | Accepted task-scoped context injection strategy using reuse-plus-refinement instead of full rewrite or wholesale import. |

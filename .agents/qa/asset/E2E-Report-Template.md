@@ -11,8 +11,8 @@
 - [ ] `docs/design/DESIGN_SYSTEM.md`
 - [ ] `docs/design/SITE_MAP.md`
 - [ ] `docs/design/DOMAIN_DETAILS.md`
-- [ ] `docs/design/TEMPLATE_MODULARIZATION.md`
-- [ ] `docs/design/TEMPLATE_REFERENCE.md`
+- [ ] `docs/references/templates/TEMPLATE_MODULARIZATION.md`
+- [ ] `docs/references/templates/TEMPLATE_REFERENCE.md`
 - [ ] `docs/PRD-GoVibe-Platform-Overview.md`
 - [ ] `docs/architecture/C4-GoVibe-Platform.md`
 

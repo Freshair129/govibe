@@ -14,14 +14,14 @@ supporting_prd_systems:
   - "SYSTEM-10::Execution-Governance-System"
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
-  - "docs/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
+  - "docs/change-control/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
   - "docs/architecture/C4-GoVibe-Platform.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/agent-team/FEAT-CoDev-Module.md"
   - "docs/features/agent-team/FEAT-CoVibe-Module.md"
   - "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md"
   - "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md"
-  - "docs/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md"
+  - "docs/change-control/change-requests/feedback/CR-2026-06-15-CoDev-CoVibe-Positioning-Review-feedback.md"
 ---
 
 # FEAT: CoDev and CoVibe Terminology Definition
@@ -197,7 +197,6 @@ If a proposal changes system ownership, the MSP/GKS boundary, runtime authority,
 - `docs:validate` passes.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.2.0 | 2026-08-02 | THESEUS / Boss | Reclassified CoVibe and CoDev by single-versus-multiple authority; rejected SME/enterprise segmentation; added MSP/GKS context and relation-preservation rules. |

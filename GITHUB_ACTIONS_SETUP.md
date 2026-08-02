@@ -161,7 +161,7 @@ git push origin main
 Workflows only run if these files changed:
 ```
 e2e/**
-docs/design/LANDING-GoVibe-Mockup.html
+docs/references/fixtures/LANDING-GoVibe-Mockup.html
 package.json
 playwright.config.ts
 .github/workflows/*

@@ -10,8 +10,8 @@ prd_system: "SYSTEM-09::Traceability-Audit-Verification-System"
 related_docs:
   - "docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md"
   - "docs/architecture/MSP-GKS-Taxonomy-Mapping.md"
-  - "docs/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md"
-  - "docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md"
+  - "docs/assurance/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md"
+  - "docs/operations/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md"
 source_refs:
   - ".brain/inbound/FRAMEWORK--MSP-ARCHITECTURE-V2.md"
 ---
@@ -158,7 +158,6 @@ These remain reference-only until a separate GoVibe feature contract maps them t
 - No inbound source file is modified.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.1 | 2026-06-21 | ARCHON / KIN / ATHER | Signed off; promoted draft -> approved (MSP/GKS gate decision recorded in ADR-014). |

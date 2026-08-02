@@ -2,7 +2,7 @@
 title: "CR: Document IA and Knowledge Graph Readiness"
 doc_id: "CR-2026-08-03-DOCUMENT-IA-KNOWLEDGE-GRAPH-READINESS"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.2.0+draft"
 updated: "2026-08-03"
 owner: "Boss (Product Authority)"
 decision_owner: "Boss (Product Authority)"
@@ -23,8 +23,7 @@ related_docs:
 
 The owner approved preparation of a governed document-cleansing workflow on
 2026-08-03. Phase 1 creates the control packet, immutable baseline inventory,
-isolated work batches, review gates, and rollback evidence. It does not move,
-rename, archive, deduplicate, or semantically rewrite the document corpus.
+isolated work batches, review gates, and rollback evidence.
 
 The goal is a document information architecture that remains useful to humans
 while producing typed, provenance-bearing knowledge candidates for the existing
@@ -74,8 +73,8 @@ or canonical knowledge without MSP authorization and GKS materialization.
   batch or in the exclusion manifest
 - AC-02: each batch contains at most 50 files and writable paths do not overlap
 - AC-03: each file record includes path, bytes, SHA-256, disposition and batch
-- AC-04: every proposed move has an approved before/after map and rollback entry
-  before execution; Phase 1 contains no executed moves
+- AC-04: every approved Phase 1-A move has a before/after map, committed inverse
+  entry, collision evidence, and final Git-blob identity
 - AC-05: workers receive only their packet, file list, canonical references and
   source hashes; no sibling scratchpads or private history are shared
 - AC-06: every relation output remains a candidate with type, source, target,
@@ -100,8 +99,27 @@ or canonical knowledge without MSP authorization and GKS materialization.
 
 Exit requires the validation commands to pass, an integration commit to exist,
 and the Parent Final Gate to receive the manifest hashes, review status,
-validation logs, rollback plan, version diff and unresolved queue. Phase 1 does
-not authorize Phase 2 or corpus migration.
+validation logs, rollback plan, version diff and unresolved queue. Phase 1-A
+does not authorize any further corpus mutation or Phase 2 work.
+
+## 7. Owner-Approved Phase 1-A Execution Record
+
+Owner-approved Phase 1-A execution integrated 45 reversible document path
+operations: B04 contributed 31 and B05 contributed 14. The content-state
+evidence is B04 `20 byte_preserved + 11 intentionally_rewritten` and B05
+`13 byte_preserved + 1 intentionally_rewritten`. Eight metadata candidates
+remain deferred; duplicate, archive-review, lifecycle/authority, H-axis, and
+all Phase 2 items remain excluded.
+
+The approved execution evidence is the B04/B05 execution results and committed
+rollback maps under `docs/change-requests/manifests/results/`. Active
+cross-batch references, registry rows, `.agents` references, documentation
+navigation, and moved-document `canonical_path` fields are reconciled only from
+those accepted maps. Historical `before_path`, `source_path`, rollback, result,
+and changelog provenance is retained unchanged.
+
+No additional mutation is authorized: `execution_authorized=false` for every
+remaining candidate until a separate owner-approved packet is accepted.
 
 ## 6. Unresolved Baseline Discrepancy
 
@@ -115,4 +133,5 @@ Worker batches contain only the 195 tracked processable files.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0+draft | 2026-08-03 | Boss / ATHER | Recorded owner-approved Phase 1-A execution: 45 reversible moves, rollback evidence, active-reference reconciliation, deferred metadata, exclusions, and closed further-mutation authority. |
 | 0.1.0+draft | 2026-08-03 | Boss / ATHER | Recorded the approved Phase 1 cleansing boundary, isolated execution gates, AC/SC, and baseline-count discrepancy. |

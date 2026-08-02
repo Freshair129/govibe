@@ -9,7 +9,7 @@ auditor: "ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-08::Genesis-Knowledge-System"
 related_docs:
-  - "docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md"
+  - "docs/assurance/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md"
   - "docs/srs/SRS-GoVibe-Translator-Core-Slice.md"
   - "docs/architecture/BLUEPRINT-Translator-Core-Slice.md"
   - "docs/lld/LLD-Translator-Core-Slice.md"
@@ -106,7 +106,6 @@ Make GoVibe's translator positioning runnable end-to-end: ingest any repo's code
 - [ ] Mission Control can trace roadmap item -> source module / audit finding.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.0 | 2026-06-22 | LYRA | Promoted draft → approved for Mission Control roadmap consumption. |

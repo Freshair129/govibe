@@ -175,7 +175,7 @@ Runtime              : 10-15 minutes
 Test    : "should have proper meta tags"
 Status  : ❌ FAILING
 Cause   : Missing meta tags in HTML
-Fix     : Add to docs/design/LANDING-GoVibe-Mockup.html:
+Fix     : Add to docs/references/fixtures/LANDING-GoVibe-Mockup.html:
           <meta name="description" content="...">
           <meta name="keywords" content="...">
 ```
@@ -502,7 +502,7 @@ Add to your GitHub Actions workflow:
 
 - **Main config**: `playwright.config.ts`
 - **Tests**: `e2e/landing-page.spec.ts`
-- **Page**: `docs/design/LANDING-GoVibe-Mockup.html`
+- **Page**: `docs/references/fixtures/LANDING-GoVibe-Mockup.html`
 - **Package config**: `package.json` (scripts section)
 - **Reports**: `playwright-report/index.html`
 

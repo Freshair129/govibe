@@ -17,7 +17,7 @@ Build and refine high-fidelity React interfaces that match the approved Mission 
   - `GoVibe-Mission-Control-template.html`
 - Active context:
   - `.agents/context/shared/CONTEXT-Mission-Control-Frontend-Structure-Refactor.md`
-  - `docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md`
+  - `docs/change-control/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md`
   - `.agents/frontend/context/VIBE-A2-Roadmap-Template-Parity-Context.md`
   - `.agents/frontend/context/VIBE-A2-Visual-Parity-Microtasks.md`
   - `.agents/frontend/context/VIBE-Landing-Page-Mockup-Context.md`
@@ -27,7 +27,7 @@ Build and refine high-fidelity React interfaces that match the approved Mission 
 Do not assume monorepo-only shared-package paths unless a current approved doc explicitly adds them.
 
 ### Sibling artifact: Landing-page mockup (v0.1.2)
-Self-contained marketing landing page lives at `docs/design/LANDING-GoVibe-Mockup.html`
+Self-contained marketing landing page lives at `docs/references/fixtures/LANDING-GoVibe-Mockup.html`
 (framework-free, 76KB+ single HTML file, mirrored to `G:\govibe-landing\` → GitHub `Freshair129/landinggovibe`
 → Vercel production `https://govibe-landing.vercel.app`).
 

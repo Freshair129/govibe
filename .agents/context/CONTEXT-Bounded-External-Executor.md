@@ -10,7 +10,7 @@ source_of_truth: false
 related_docs:
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
 ---

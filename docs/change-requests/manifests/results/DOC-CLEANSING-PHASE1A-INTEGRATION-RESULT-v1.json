@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "result_id": "DOC-CLEANSING-PHASE1A-INTEGRATION-RESULT-v1",
+  "phase": "1-A",
+  "accepted_sync_base": "5520eb09df382a539f40fba527efab64e74ca282",
+  "accepted_source_heads": {
+    "B04": "905d1e99660f3a4619397ab7d94df1633f2b4152",
+    "B05": "0b026c1379450dfddcb25904fcf4b47ab060a159"
+  },
+  "integrated_commits": [
+    "dec7477", "33f9905", "88b0b54", "da1bbea", "c41e103", "39b4430"
+  ],
+  "operation_count": 45,
+  "content_states": {
+    "B04": {"byte_preserved": 20, "intentionally_rewritten": 11},
+    "B05": {"byte_preserved": 13, "intentionally_rewritten": 1}
+  },
+  "rollback_maps": {
+    "B04": "docs/change-requests/manifests/results/DOC-CLEANSING-B04-ROLLBACK-MAP-v1.json",
+    "B05": "docs/change-requests/manifests/results/DOC-CLEANSING-B05-ROLLBACK-MAP-v1.json"
+  },
+  "active_reference_reconciliation": {
+    "B04_replacements": 25,
+    "B05_replacements": 75,
+    "historical_evidence_preserved": true,
+    "historical_changelog_paths_preserved": true
+  },
+  "metadata_candidates_deferred": 8,
+  "exclusions": [
+    "duplicate and archive-review candidates",
+    "authority/lifecycle and H-axis semantic review",
+    "Phase 2 work",
+    "schemas and runtime",
+    "ignored or untracked root material"
+  ],
+  "review_heads": {"B04": "accepted", "B05": "accepted"},
+  "execution_authorized": false,
+  "canonical_ids_assigned": false,
+  "validations": {
+    "manifest_verifier": "pass: 201 tracked Git blobs and 5 external exclusions",
+    "docs_validate": "pass_with_pre_existing_warnings",
+    "roadmap_validate": "pass_with_14_pre_existing_warnings",
+    "diff_check": "pass",
+    "graph_impact_schema": "not_run: no schema or runtime change in scope"
+  },
+  "unresolved_queue": [
+    "metadata_normalization_queue",
+    "archive_authority_review",
+    "authority_lifecycle_conflict",
+    "phase2_semantic_review",
+    "missing_runtime_context_identity"
+  ]
+}

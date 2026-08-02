@@ -109,7 +109,7 @@ Flag missing links as drift.
 - Confirm third-party agent integrations do not imply GoVibe manages provider billing, subscription, quota, or runtime ownership.
 
 ### 7. Design and UI Compliance Audit
-- Compare UI changes with `docs/design/DESIGN_SYSTEM.md`, `docs/design/SITE_MAP.md`, `docs/design/DOMAIN_DETAILS.md`, `docs/design/TEMPLATE_REFERENCE.md`, and `docs/design/TEMPLATE_MODULARIZATION.md`.
+- Compare UI changes with `docs/design/DESIGN_SYSTEM.md`, `docs/design/SITE_MAP.md`, `docs/design/DOMAIN_DETAILS.md`, `docs/references/templates/TEMPLATE_REFERENCE.md`, and `docs/references/templates/TEMPLATE_MODULARIZATION.md`.
 - Confirm Mission Control changes preserve the approved visual identity unless a design doc explicitly approves a change.
 - Confirm frontend work is verified on relevant desktop/mobile viewports when visual behavior changes.
 - Confirm A5 Agent Management preserves `interactive-card`, Raycast 3D Agent Card, Agent drag follow-cursor, cursor glow, 3D tilt, EVA video loop, no nested-card layout, and mobile adaptation when those surfaces are changed.

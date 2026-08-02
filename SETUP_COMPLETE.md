@@ -242,7 +242,7 @@ npx playwright show-report playwright-report/
 - Lines 349-378: System Dock tests
 
 ### To Understand the HTML
-- File: `docs/design/LANDING-GoVibe-Mockup.html`
+- File: `docs/references/fixtures/LANDING-GoVibe-Mockup.html`
 - Look for `.hero2`, `.site-header`, `.menu-btn` classes
 - Check for anchor IDs: id="approach", id="capabilities", etc.
 

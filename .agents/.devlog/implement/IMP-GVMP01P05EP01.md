@@ -18,7 +18,7 @@ source_refs:
   - C:/Users/freshair/Downloads/p1-mvp-core-.json
   - G:/govibe/GoVibe-Mission-Control-template.html
   - G:/govibe/docs/design/DESIGN_SYSTEM.md
-  - G:/govibe/docs/design/TEMPLATE_REFERENCE.md
+  - G:/govibe/docs/references/templates/TEMPLATE_REFERENCE.md
   - G:/govibe/docs/design/DOMAIN_DETAILS.md
   - G:/govibe/docs/design/SITE_MAP.md
 target_artifacts:
@@ -50,7 +50,7 @@ This implementation record covers the doc-first repair for the A2 roadmap detail
 ## Design Artifacts Updated
 
 - `docs/design/DESIGN_SYSTEM.md`: added the A2 Task Container contract and display rules.
-- `docs/design/TEMPLATE_REFERENCE.md`: expanded the A2 task dropdown reference.
+- `docs/references/templates/TEMPLATE_REFERENCE.md`: expanded the A2 task dropdown reference.
 - `docs/design/DOMAIN_DETAILS.md`: added A2 Task Container verification checks.
 - `docs/design/SITE_MAP.md`: clarified that A2 consumes roadmap hierarchy plus task detail containers.
 - `docs/roadmap/BACKLOG-p1-mvp-core.md`: created a roadmap source with task containers mapped from the P1 MVP Core export.

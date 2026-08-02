@@ -61,7 +61,7 @@ approver: LEAD
 auditor: ATHER
 symbol_links:
   code: src/__fixtures__/example.ts
-  doc: docs/design/TEMPLATE_REFERENCE.md
+  doc: docs/references/templates/TEMPLATE_REFERENCE.md
   test: src/__fixtures__/BACKLOG-parser-fixture.md
 definition_of_done:
   acceptance_criteria:
@@ -111,7 +111,7 @@ approver: LEAD
 auditor: ATHER
 symbol_links:
   code: src/__fixtures__/example.ts
-  doc: docs/design/TEMPLATE_REFERENCE.md
+  doc: docs/references/templates/TEMPLATE_REFERENCE.md
   test: src/__fixtures__/BACKLOG-parser-fixture.md
 definition_of_done:
   acceptance_criteria:

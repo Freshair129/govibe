@@ -10,7 +10,7 @@ related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md"
   - "docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md"
-  - "docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md"
+  - "docs/operations/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md"
   - "docs/architecture/MSP-GKS-Taxonomy-Mapping.md"
 ---
 
@@ -153,7 +153,6 @@ govibe_decision:
 - No inbound source files are modified by this audit.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.1 | 2026-06-21 | ATHER / LYRA | Signed off; promoted draft -> approved (MSP/GKS gate decision recorded in ADR-014). |

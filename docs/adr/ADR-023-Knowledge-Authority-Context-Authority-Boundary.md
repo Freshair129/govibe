@@ -123,14 +123,13 @@ SME, solo developer, agency, product team, and enterprise unit are adoption exam
 ## 5. Related
 
 - Issue #52
-- `docs/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md`
+- `docs/change-control/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md`
 - `docs/BRD-GoVibe-Platform.md`
 - `docs/PRD-GoVibe-Platform-Overview.md`
 - `ADR-017`, `ADR-018`, `ADR-019`
 - `AGENTS.md`
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.0 | 2026-08-02 | Boss (CEO) | Established GKS as canonical knowledge/relation authority and MSP as governed task/session context authority. |

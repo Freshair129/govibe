@@ -2,7 +2,7 @@
 title: "Migration Plan: Document IA and Graph Readiness"
 doc_id: "MIGRATION-DOCUMENT-IA-GRAPH-READINESS"
 status: "draft"
-version: "0.1.1+draft"
+version: "0.2.0+draft"
 updated: "2026-08-03"
 owner: "LYRA / ATHER"
 source_of_truth: true
@@ -82,7 +82,7 @@ diff receives the same review before Parent Final Gate.
 4. Integrate accepted commits in one `W-ctx` workflow.
 5. Resolve cross-batch references only from the accepted dry-run map.
 6. Run bounded backlink impact analysis and all validation gates.
-7. Send compact evidence to Parent Final Gate; do not migrate automatically.
+7. Send compact evidence to Parent Final Gate; do not mutate beyond approved operations.
 8. Open separate Phase 2 packets for semantic and authority corrections.
 
 ## 5. Failure And Stop Conditions
@@ -97,12 +97,23 @@ Never widen context or guess a disposition to clear a gate.
 - Inventory and batch manifests reproduce 201 = 195 included + 6 excluded.
 - All batch counts are at most 50 and included paths are unique.
 - Every integrated commit has an accepted review record.
-- No Phase 1 commit performs a corpus path operation or semantic authority edit.
+- Phase 1-A performs only the owner-approved 45 reversible path operations;
+  no semantic authority edit or unapproved mutation is allowed.
 - Validation and rollback evidence are complete before Final Gate.
+
+## 7. Phase 1-A Integrated Execution
+
+Accepted B04 and B05 execution heads are integrated with their committed rollback
+maps. The integrated scope is 45 reversible operations (B04: 31; B05: 14), with
+metadata normalization deferred for 8 candidates. Archive candidates, duplicate
+review, lifecycle/authority decisions, H-axis correction, schemas/runtime, and
+Phase 2 remain excluded. Remaining candidates have
+`execution_authorized=false` pending a separate owner decision.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0+draft | 2026-08-03 | LYRA / ATHER | Recorded Phase 1-A integrated execution scope, exclusions, deferred metadata, and no-further-mutation gate. |
 | 0.1.1+draft | 2026-08-03 | LYRA / ATHER | Added the executable deterministic projection, Git-blob, batch, and optional external-filesystem verification contract. |
 | 0.1.0+draft | 2026-08-03 | LYRA / ATHER | Defined the five exact cleansing batches, isolation, noise review, integration, stop, and final-gate sequence. |

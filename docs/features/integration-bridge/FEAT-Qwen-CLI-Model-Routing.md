@@ -16,7 +16,7 @@ related_docs:
   - ".agents/context/shared/CONTEXT-GoVibe-Shared-External-Agent.md"
   - ".agents/context/shared/CONTEXT-GoVibe-Git-Hygiene.md"
   - ".agents/context/CONTEXT-Bounded-External-Executor.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md"
   - "docs/STD-Execution-Governance.md"
 ---
@@ -170,7 +170,6 @@ confidence:
 - `npm run docs:validate` passes.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.3 | 2026-06-20 | KIN / LYRA / ATHER | Signed off; promoted draft -> approved. |

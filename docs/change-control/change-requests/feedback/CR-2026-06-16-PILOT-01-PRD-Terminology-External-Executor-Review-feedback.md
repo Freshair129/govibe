@@ -12,7 +12,7 @@ related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - ".agents/context/CONTEXT-Bounded-External-Executor.md"
 ---
 
@@ -34,7 +34,7 @@ Reviewed inputs:
 - `docs/PRD-GoVibe-Platform-Overview.md`
 - `docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md`
 - `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md`
-- `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
+- `docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
 - `.agents/context/CONTEXT-Bounded-External-Executor.md`
 
 ## 2. Gemini Structured Response

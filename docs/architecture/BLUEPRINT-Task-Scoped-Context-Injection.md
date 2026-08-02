@@ -18,7 +18,7 @@ related_docs:
   - "docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md"
   - "docs/adr/ADR-013-Task-Scoped-Context-Injection.md"
   - "docs/design/GoVibe-Document-Hierarchy.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
 ---
 
 # BLUEPRINT: Task-Scoped Context Injection
@@ -411,7 +411,6 @@ structured result
 - No runtime code or schema is changed in this round.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.1 | 2026-06-20 | ARCHON / ATHER | Signed off; promoted draft -> approved. |

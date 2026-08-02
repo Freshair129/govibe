@@ -11,7 +11,7 @@ related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/STD-Execution-Governance.md"
   - "docs/design/DOMAIN_DETAILS.md"
-  - "docs/design/TEMPLATE_REFERENCE.md"
+  - "docs/references/templates/TEMPLATE_REFERENCE.md"
   - ".agents/context/shared/CONTEXT-Mission-Control-Frontend-Structure-Refactor.md"
   - ".agents/cto/AGENT.md"
   - ".agents/frontend/AGENT.md"
@@ -104,7 +104,7 @@ This CR does not pre-approve a specific folder tree. `ARCHON` must first approve
 - new or updated frontend modules under `src/`
 - `.agents/frontend/context/` only if the active worker packet must be updated after structure approval
 - `docs/design/DOMAIN_DETAILS.md`
-- `docs/design/TEMPLATE_REFERENCE.md`
+- `docs/references/templates/TEMPLATE_REFERENCE.md`
 - any required ADR or implementation plan created from this CR
 
 ## 8. Explicit Out Of Scope
@@ -176,7 +176,6 @@ Return Markdown with these sections:
 - recommended PM routing context: `.agents/pm/context/LYRA-Scope-Control-Context.md`
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.1 | 2026-06-20 | LYRA | Added changelog footer per versioning standard. |

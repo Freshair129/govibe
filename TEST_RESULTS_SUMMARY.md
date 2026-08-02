@@ -127,7 +127,7 @@ Mobile    : 12 pass, 18 fail  (40% pass rate)
 
 ### Priority 1 (Critical)
 1. **Meta tags validation**
-   - File: `docs/design/LANDING-GoVibe-Mockup.html`
+   - File: `docs/references/fixtures/LANDING-GoVibe-Mockup.html`
    - Add: `<meta name="description">` and other missing tags
 
 2. **Navbar hide animation**
@@ -161,7 +161,7 @@ Mobile    : 12 pass, 18 fail  (40% pass rate)
 1. ✅ **Review HTML** for missing meta tags
    ```bash
    # Check what's in the HTML
-   grep -i "meta" docs/design/LANDING-GoVibe-Mockup.html
+   grep -i "meta" docs/references/fixtures/LANDING-GoVibe-Mockup.html
    ```
 
 2. ✅ **Run tests in headed mode** to visually debug
@@ -195,7 +195,7 @@ Mobile    : 12 pass, 18 fail  (40% pass rate)
 
 - **Tests**: `e2e/landing-page.spec.ts`
 - **Config**: `playwright.config.ts`
-- **HTML**: `docs/design/LANDING-GoVibe-Mockup.html`
+- **HTML**: `docs/references/fixtures/LANDING-GoVibe-Mockup.html`
 - **Reports**: `playwright-report/index.html`
 
 ---

@@ -15,7 +15,7 @@ supporting_prd_systems:
   - "SYSTEM-10::Execution-Governance-System"
 related_adrs: ["ADR-016", "ADR-017", "ADR-019"]
 related_docs:
-  - "docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md"
+  - "docs/assurance/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md"
   - "docs/CONCEPT--HYBRID-JIT-CONTEXT.md"
   - "docs/features/genesis-knowledge-system/FEAT-Doc-Format-Template-Extraction.md"
   - "docs/api/API-002-Symbol-Linking.md"
@@ -100,7 +100,6 @@ Specify the **smallest end-to-end vertical slice** that turns GoVibe's translato
 Downstream design: `BLUEPRINT-Translator-Core-Slice` (architecture) and `LLD-Translator-Core-Slice` (tool contracts + algorithms).
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.1+draft | 2026-06-22 | Boss (CEO) | Resolved the three open questions: language-pack curation = hybrid (auto-draft + confirm low-confidence); fidelity = both (round-trip + semantic threshold); provenance = local jsonl interim → migrate to MSP. Linked downstream Blueprint + LLD. |

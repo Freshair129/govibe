@@ -12,7 +12,7 @@ related_docs:
   - "docs/adr/ADR-013-Task-Scoped-Context-Injection.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/genesis-knowledge-system/FEAT-Hybrid-JIT-Context-System.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
 ---
 
 # SRS: GoVibe Task-Scoped Context Injection
@@ -159,7 +159,7 @@ The system must expose enough metadata for a lead reviewer to:
 | Requirement | PRD Goal/System | Related Doc | Verification Direction |
 |---|---|---|---|
 | FR-001 to FR-004 | SYSTEM-05 bounded execution and SYSTEM-03 docs-to-code scoping | `docs/adr/ADR-013-Task-Scoped-Context-Injection.md` | packet schema and source-ref validation |
-| FR-005 to FR-008 | bounded packet safety and escalation | `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` | packet assembly tests and escalation-path checks |
+| FR-005 to FR-008 | bounded packet safety and escalation | `docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` | packet assembly tests and escalation-path checks |
 | FR-009 to FR-012 | reviewability and traceability | `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md` | structured result contract and audit-link verification |
 
 ## 9. Open Questions
@@ -189,7 +189,6 @@ The system must expose enough metadata for a lead reviewer to:
 - A later blueprint can derive component boundaries from this SRS without redefining product intent.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.0 | 2026-06-20 | ARCHON / ATHER | Signed off; promoted draft -> approved. |

@@ -14,10 +14,10 @@ supporting_prd_systems:
   - "SYSTEM-10::Execution-Governance-System"
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
-  - "docs/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
+  - "docs/change-control/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md"
 ---
 
@@ -174,7 +174,6 @@ If governing relations, authority ownership, or scope conflict is unresolved, Co
 - `docs:validate` passes after registry propagation.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.2.0 | 2026-08-02 | THESEUS / Boss | Refined CoDev from a company-size-shaped collaboration description to the canonical multi-authority mode; added relation preservation, MSP-scoped context, GKS convention translation, conflict routing, and candidate-only external skills. |

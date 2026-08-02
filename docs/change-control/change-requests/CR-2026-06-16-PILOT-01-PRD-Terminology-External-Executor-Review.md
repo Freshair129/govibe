@@ -11,7 +11,7 @@ related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - ".agents/context/CONTEXT-Bounded-External-Executor.md"
 ---
 
@@ -44,7 +44,7 @@ This pilot validates packet quality, scope control, and token telemetry capture 
 - `docs/PRD-GoVibe-Platform-Overview.md`
 - `docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md`
 - `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md`
-- `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
+- `docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
 - `.agents/context/CONTEXT-Bounded-External-Executor.md`
 
 ## 5. Task For Gemini CLI
@@ -97,7 +97,6 @@ Return YAML only with these keys:
 - Scope-control notes are appended to the session trace.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.0 | 2026-06-20 | LYRA | Added changelog footer per versioning standard. |

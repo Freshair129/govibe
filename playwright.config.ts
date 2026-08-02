@@ -13,7 +13,7 @@ export default defineConfig({
     ['list'],
   ],
   use: {
-    baseURL: new URL('./docs/design/LANDING-GoVibe-Mockup.html', import.meta.url).href,
+    baseURL: new URL('./docs/references/fixtures/LANDING-GoVibe-Mockup.html', import.meta.url).href,
     reducedMotion: 'reduce', // kills WebGL rAF loop (fixes teardown timeouts), disables smooth-scroll & magnetic CTAs
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',

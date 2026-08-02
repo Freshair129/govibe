@@ -187,7 +187,7 @@ Location    Scroll Indicator  Agent Chip  Help
 
 ### Tests timeout
 - Increase `waitForTimeout()` values in specific tests
-- Check if BASE_URL is correct: `file:///G:/govibe/docs/design/LANDING-GoVibe-Mockup.html`
+- Check if BASE_URL is correct: `file:///G:/govibe/docs/references/fixtures/LANDING-GoVibe-Mockup.html`
 
 ### Links not found
 - Verify href attributes in HTML match test selectors

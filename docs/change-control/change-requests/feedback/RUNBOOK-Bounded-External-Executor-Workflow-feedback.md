@@ -8,7 +8,7 @@ owner: "CODEX"
 auditor: "ATHER"
 source_of_truth: true
 related_docs:
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - ".agents/context/CONTEXT-Bounded-External-Executor.md"
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
 ---
@@ -27,7 +27,7 @@ Gemini model routing:
 
 Reviewed inputs:
 
-- `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
+- `docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
 - `.agents/context/CONTEXT-Bounded-External-Executor.md`
 - `docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md`
 - `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md`
