@@ -2,7 +2,7 @@
 title: "GoVibe Universal Agent Operating Contract"
 summary: "สัญญาการทำงานสากลและการควบคุมจริยธรรมของ AI Agents ในโครงการ GoVibe"
 doc_id: "AGENTS-CORE-001"
-version: "1.8.0"
+version: "1.9.0"
 updated: "2026-08-02"
 owner: "THESEUS"
 type: "agents"
@@ -129,6 +129,14 @@ Executor / Claude Code -> GoVibe MCP -> MSP -> GKS -> GenesisBlockDB
 - Producing scan stages สร้าง candidate knowledge แล้วส่งให้ MSP promotion gate
 - `gks:` reference ที่ถูกส่งกลับเป็น opaque reference ไม่ใช่ connection capability
 
+### 7.1 Knowledge authority versus context authority
+
+- GKS คือ canonical knowledge and relation authority: ระบุว่า knowledge ใดมีอยู่, identity ใด canonical และ relation ใดเชื่อมกันอย่างไร
+- MSP คือ memory and context authority: ระบุว่า Agent/Task/Workspace/Session/Turn นี้ต้องรู้, อาจรู้, ห้ามรู้ หรือไม่จำเป็นต้องรู้อะไร
+- Relation graph ทั้งก้อนไม่ใช่ context packet. Agent ห้ามไล่ GKS graph แบบ unrestricted หรือขยาย retrieval radius เอง
+- Context packet ต้องมาจาก MSP พร้อม task identity, source versions/hashes, relation policy, exclusions, permissions, budget, compaction และ lineage
+- เมื่อ context scope หรือ governing relation ไม่พอ Agent ต้อง escalate และรายงาน `missing_relation`, `missing_authority`, `missing_scope` หรือ `unresolved_assumption`; ห้ามเติม WHY เองจาก model prior
+
 ## 8. Knowledge, link, backlink and impact contract
 
 ### 8.1 Knowledge construction
@@ -168,6 +176,29 @@ changed seed
 
 Agent ต้องแก้ทุก `must_update`; ต้องตรวจและตัดสินทุก `review_and_update`; และต้องบันทึกเหตุผลเมื่อไม่แก้รายการ `review`.
 
+### 8.4 Relation-first interpretation and execution
+
+ก่อนเสนอ implementation posture Agent ต้อง resolve relation chain ที่เกี่ยวข้องตามความเสี่ยงของงาน เช่น:
+
+```text
+insight / observation
+  -> issue
+  -> decision / approval
+  -> ADR
+  -> BRD / PRD requirement
+  -> feature / architecture / API
+  -> task / code / test / evidence
+```
+
+กฎบังคับ:
+
+- ห้ามอนุมานเหตุผลของ feature, system หรือ document จากชื่อหรือเนื้อหา isolated เพียงชิ้นเดียว
+- ห้ามถือว่าเอกสาร usable เพียงเพราะไฟล์มีอยู่หรือ status เป็น approved; ต้องตรวจ governing relations, source version, scope, acceptance criteria และ unresolved assumptions
+- ถ้า WHY, authority หรือ source relation ขาด ให้หยุดส่วนที่ต้องเดาและรายงานช่องว่าง
+- External skill output เป็น provider output หรือ candidate เท่านั้น จนกว่าจะ normalize, validate, authorize และ materialize ผ่าน GoVibe -> MSP -> GKS
+- External skill ห้าม assign canonical GKS identity, promote knowledge, ขยาย scope หรือกำหนด relation traversal policy เอง
+- CoVibe/CoDev classification ใช้จำนวนและขอบเขต authority ไม่ใช่ขนาดองค์กร: CoVibe = single-authority; CoDev = multi-authority
+
 ## 9. Agent role directory
 
 | Agent | Role | Specialized SSOT |
@@ -187,6 +218,9 @@ Agent ต้องแก้ทุก `must_update`; ต้องตรวจแ�
 - Parent-only Boundary: ห้ามเพิ่ม `GOVIBE_GKS_*`, direct GKS client หรือ GenesisBlockDB port ใน runtime path ใหม่
 - Exact Context Retention: ก่อน dispatch ต้อง persist cache และ injection lineage
 - Private Memory Discipline: raw private episode ไม่ใช่ durable global memory และไม่ใช่ shared truth
+- Relation Before Interpretation: ต้อง resolve WHY/source/authority relations ก่อนตีความ implementation posture
+- MSP-Scoped Retrieval: ห้ามใช้ unrestricted GKS traversal หรือประกอบ context เองนอก MSP policy
+- Candidate Before Canonical: external skill, scan และ agent output เป็น candidate จนผ่าน MSP/GKS materialization
 - Impact Before Completion: semantic/schema/authority/runtime change ต้องผ่าน backlink impact analysis
 - Canonical Over Mirror: เมื่อ canonical กับ mirror ขัดกัน ให้ canonical ชนะและ fail closed จนกว่า drift จะถูกแก้
 - Escalate, Do Not Widen: context หรือ permission ไม่พอให้ escalate ไม่ใช่ขยายเอง
@@ -196,6 +230,7 @@ Agent ต้องแก้ทุก `must_update`; ต้องตรวจแ�
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.9.0 | 2026-08-02 | THESEUS / Boss | Added GKS knowledge authority versus MSP context authority, relation-first interpretation, fail-closed missing-WHY handling, MSP-scoped graph retrieval, external-skill candidate boundaries, and authority-based CoVibe/CoDev classification. |
 | 1.8.0 | 2026-08-02 | THESEUS / Boss | Declared GoVibe Execution Governance as canonical SOT, RWANG-PROMAX as mirror, and added fail-closed authority/drift resolution. |
 | 1.7.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Added Deep Scan candidate ownership, wikilink/crosslink/symbol-link/backlink semantics, and mandatory explainable impact analysis before completion. |
 | 1.6.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Added Shared/Workspace Private/Global Private vault rules, T/V/W/M context profiles, context/cache/KV/replay lineage, private-memory promotion discipline, and MSP-only runtime boundary. |
