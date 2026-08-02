@@ -8,6 +8,14 @@ export class MspUnavailableError extends Error {
   }
 }
 
+export class MspConfigurationError extends Error {
+  constructor(message, code = "MSP_CONFIGURATION_INVALID") {
+    super(message);
+    this.name = "MspConfigurationError";
+    this.code = code;
+  }
+}
+
 const HASH = /^[a-f0-9]{64}$/i;
 const KNOWLEDGE_FIELDS = ["atoms", "symbols", "relations", "nodes", "edges", "communities", "processes", "context_snapshots"];
 
@@ -155,14 +163,53 @@ export function createUnavailableMspClient() {
   return new MspClient(undefined);
 }
 
-export function createMspClientFromEnvironment(env = process.env) {
-  if (!env.GOVIBE_MSP_COMMAND) return createUnavailableMspClient();
+function parseMspConfiguration(env = process.env) {
+  const command = env.GOVIBE_MSP_COMMAND;
+  if (command == null || command === "") return { status: "unconfigured", command: null, args: [], cwd: null };
+  if (typeof command !== "string" || !command.trim()) {
+    throw new MspConfigurationError("GOVIBE_MSP_COMMAND must be a non-empty string.");
+  }
   let args = [];
   if (env.GOVIBE_MSP_ARGS) {
-    args = JSON.parse(env.GOVIBE_MSP_ARGS);
+    try {
+      args = JSON.parse(env.GOVIBE_MSP_ARGS);
+    } catch {
+      throw new MspConfigurationError("GOVIBE_MSP_ARGS must be valid JSON.");
+    }
     if (!Array.isArray(args) || args.some((item) => typeof item !== "string")) {
-      throw new Error("GOVIBE_MSP_ARGS must be a JSON array of strings.");
+      throw new MspConfigurationError("GOVIBE_MSP_ARGS must be a JSON array of strings.");
     }
   }
-  return new MspClient(createMspStdioCaller({ command: env.GOVIBE_MSP_COMMAND, args, cwd: env.GOVIBE_MSP_CWD, env }));
+  if (env.GOVIBE_MSP_CWD != null && (typeof env.GOVIBE_MSP_CWD !== "string" || !env.GOVIBE_MSP_CWD.trim())) {
+    throw new MspConfigurationError("GOVIBE_MSP_CWD must be a non-empty string when provided.");
+  }
+  return { status: "configured", command: command.trim(), args, cwd: env.GOVIBE_MSP_CWD?.trim() ?? null };
+}
+
+/**
+ * Configuration-only preflight. A configured transport is not evidence that
+ * the MSP process is running or that its downstream GKS/storage is healthy.
+ */
+export function inspectMspConfiguration(env = process.env) {
+  try {
+    const configuration = parseMspConfiguration(env);
+    return {
+      ...configuration,
+      dispatchable: false,
+      reason: configuration.status === "configured" ? "msp_parent_not_probed" : "msp_command_missing",
+    };
+  } catch (error) {
+    return {
+      status: "invalid",
+      dispatchable: false,
+      reason: error instanceof MspConfigurationError ? error.code.toLowerCase() : "msp_configuration_invalid",
+      diagnostics: [error instanceof Error ? error.message : String(error)],
+    };
+  }
+}
+
+export function createMspClientFromEnvironment(env = process.env) {
+  const configuration = parseMspConfiguration(env);
+  if (configuration.status === "unconfigured") return createUnavailableMspClient();
+  return new MspClient(createMspStdioCaller({ command: configuration.command, args: configuration.args, cwd: configuration.cwd ?? undefined, env }));
 }
