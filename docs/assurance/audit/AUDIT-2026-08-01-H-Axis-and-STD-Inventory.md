@@ -2,8 +2,8 @@
 title: "Audit: H-Axis and Execution-Governance STD Inventory"
 doc_id: "AUDIT-2026-08-01-H-AXIS-STD-INVENTORY"
 status: "under-review"
-version: "0.1.0"
-updated: "2026-08-01"
+version: "0.1.1"
+updated: "2026-08-03"
 owner: "ATHER"
 source_of_truth: false
 canonical_authority:
@@ -48,7 +48,7 @@ Retrieval distance, representation depth, context budget, W-scale, risk, and ope
 | `docs/adr/ADR-020-Per-Agent-Memory-Unit.md` | proposed ADR | Contains legacy `D/H` spatial wording and H-vs-D references | residual correction required before acceptance |
 | `docs/api/API-004-Task-Scoped-Context-Packet-Schema.md` | approved API | Does not currently encode H, R, or budget fields; no semantic collision | no change required in this PR |
 | `docs/change-control/change-requests/CR-2026-08-01-GoVibe-Architecture-Alignment-and-Operating-Mode-Implementation.md` | parent CR | Previously used H5 and H0-H6 context expansion | corrected to C-3/H4 and separated axes |
-| `docs/adr/ADR-020-H-Axis-Access-Scope-Semantic-Separation.md` | newly created but colliding | ADR number collided with existing ADR-020 | replaced by ADR-021 |
+| historical `ADR-020-H-Axis-Access-Scope-Semantic-Separation.md` collision reference | newly created but colliding | ADR number collided with existing ADR-020 | replaced by existing [`ADR-021`](../../adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md) |
 
 ## 4. Active corrections completed
 
@@ -91,4 +91,5 @@ npm run docs:validate
 
 | Version | Date | Status | Summary |
 |---|---|---|---|
+| 0.1.1 | 2026-08-03 | under-review | Preserved the historical ADR-020 collision record and normalized its active reference to existing ADR-021. |
 | 0.1.0 | 2026-08-01 | under-review | Recorded H/STD authority, reviewed known active files, completed bounded document corrections, and listed residual validation debt. |

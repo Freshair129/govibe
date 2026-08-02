@@ -2,7 +2,7 @@
 title: "CR: Document IA and Knowledge Graph Readiness"
 doc_id: "CR-2026-08-03-DOCUMENT-IA-KNOWLEDGE-GRAPH-READINESS"
 status: "draft"
-version: "0.2.0+draft"
+version: "0.2.1+draft"
 updated: "2026-08-03"
 owner: "Boss (Product Authority)"
 decision_owner: "Boss (Product Authority)"
@@ -106,7 +106,7 @@ does not authorize any further corpus mutation or Phase 2 work.
 
 Owner-approved Phase 1-A execution integrated 45 reversible document path
 operations: B04 contributed 31 and B05 contributed 14. The content-state
-evidence is B04 `20 byte_preserved + 11 intentionally_rewritten` and B05
+evidence is B04 `18 byte_preserved + 13 intentionally_rewritten` and B05
 `13 byte_preserved + 1 intentionally_rewritten`. Eight metadata candidates
 remain deferred; duplicate, archive-review, lifecycle/authority, H-axis, and
 all Phase 2 items remain excluded.
@@ -133,5 +133,6 @@ Worker batches contain only the 195 tracked processable files.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.1+draft | 2026-08-03 | ATHER | Corrected the Phase 1-A B04 factual content-state record to the accepted rollback evidence: 18 byte-preserved and 13 intentionally rewritten. |
 | 0.2.0+draft | 2026-08-03 | Boss / ATHER | Recorded owner-approved Phase 1-A execution: 45 reversible moves, rollback evidence, active-reference reconciliation, deferred metadata, exclusions, and closed further-mutation authority. |
 | 0.1.0+draft | 2026-08-03 | Boss / ATHER | Recorded the approved Phase 1 cleansing boundary, isolated execution gates, AC/SC, and baseline-count discrepancy. |
