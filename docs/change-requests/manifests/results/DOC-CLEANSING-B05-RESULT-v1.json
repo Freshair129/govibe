@@ -1,0 +1,295 @@
+{
+  "schema_version": "1.0.0",
+  "result_id": "DOC-CLEANSING-B05-RESULT-v1",
+  "batch_id": "B05",
+  "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
+  "context_profile": "T-ctx",
+  "context": {
+    "contextId": "not_issued_by_runtime",
+    "cacheId": "not_issued_by_runtime",
+    "sourceManifestHash": "f5b16968f3bace10177d11849d60f7aaf7bf287ef3c9645becbb0e11eb3d99b6",
+    "contextHash": "not_issued_by_runtime",
+    "kvId": "not_issued_by_runtime"
+  },
+  "mode": "phase1_dry_run_analysis_only",
+  "accounting": {
+    "expected": 22,
+    "analyzed": 22,
+    "mutated_corpus_files": 0,
+    "disposition_coverage": "100_percent"
+  },
+  "constraints": {
+    "cross_batch_reads": "not_performed",
+    "inbound_reference_coverage": "not_assessed_due_to_t_ctx_isolation",
+    "canonical_identity_assignment": "not_performed",
+    "path_operations": "not_executed"
+  },
+  "files": [
+    {
+      "path": "docs/archive/candidate/README.md",
+      "git_object_id": "f3930fd13831026dffe6cffbf4a575b48c45592c",
+      "bytes": 1441,
+      "sha256": "22093864fef1c9910e5d9d3f2afd024ff8e50a0bb140f59eb544eb163fac4049",
+      "disposition": "propose_relocate",
+      "evidence": ["Archive index explicitly classifies all three HTML files as reference-only and not source of truth", "Blueprint target projection uses docs/archive/candidates plural"],
+      "proposed_target": "docs/archive/candidates/README.md",
+      "rollback": {"operation": "move", "from": "docs/archive/candidates/README.md", "to": "docs/archive/candidate/README.md", "source_sha256": "22093864fef1c9910e5d9d3f2afd024ff8e50a0bb140f59eb544eb163fac4049"},
+      "reference_impact": {"outbound_explicit": ["docs/CONCEPT--HYBRID-JIT-CONTEXT.md", "docs/CONCEPT--HYBRID-RETRIEVAL-FTS-LAYER.md", "docs/STD-Execution-Governance.md", "docs/features/genesis-knowledge-system/FEAT-GenesisBlockDB-Core.md", "docs/features/genesis-knowledge-system/FEAT-HNSW-Vector-Space.md"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "rewrite accepted references to the plural archive path during integration"}
+    },
+    {
+      "path": "docs/archive/candidate/data-architecture-hnsw-explorer.html",
+      "git_object_id": "e3e90176167771e5d26250fc4982afaebdeec482",
+      "bytes": 34388,
+      "sha256": "6dc3257ac751af8c56864cfa0b3d08a61bae688430a1cd3dcc6474af21a6dc38",
+      "disposition": "propose_relocate",
+      "evidence": ["HTML title identifies a Data Architecture and HNSW explorer", "B05 archive index classifies it as a legacy explainer/demo and archive-only"],
+      "proposed_target": "docs/archive/candidates/data-architecture-hnsw-explorer.html",
+      "rollback": {"operation": "move", "from": "docs/archive/candidates/data-architecture-hnsw-explorer.html", "to": "docs/archive/candidate/data-architecture-hnsw-explorer.html", "source_sha256": "6dc3257ac751af8c56864cfa0b3d08a61bae688430a1cd3dcc6474af21a6dc38"},
+      "reference_impact": {"outbound_explicit": ["https://cdn.tailwindcss.com", "https://cdn.jsdelivr.net/npm/chart.js"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "retain external prototype dependencies as archival evidence; update only repository path references"}
+    },
+    {
+      "path": "docs/archive/candidate/genesisdb-obsidian-production-workflow.html",
+      "git_object_id": "9341f95d716367d919515477cc31727fcc1306c7",
+      "bytes": 32945,
+      "sha256": "279dd1417a2a0860d71865647d0ce261c8d2749957d7d6899219917df7801fff",
+      "disposition": "propose_relocate",
+      "evidence": ["HTML title identifies a GenesisDB and Obsidian production workflow", "B05 archive index classifies it as a workflow prototype retained only as reference"],
+      "proposed_target": "docs/archive/candidates/genesisdb-obsidian-production-workflow.html",
+      "rollback": {"operation": "move", "from": "docs/archive/candidates/genesisdb-obsidian-production-workflow.html", "to": "docs/archive/candidate/genesisdb-obsidian-production-workflow.html", "source_sha256": "279dd1417a2a0860d71865647d0ce261c8d2749957d7d6899219917df7801fff"},
+      "reference_impact": {"outbound_explicit": ["https://cdn.tailwindcss.com", "https://fonts.googleapis.com", "https://fonts.gstatic.com"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "retain external prototype dependencies as archival evidence; update only repository path references"}
+    },
+    {
+      "path": "docs/archive/candidate/hector-compaction-explorer.html",
+      "git_object_id": "2709cb40238af4302a55662cec12b1536c6652ff",
+      "bytes": 32907,
+      "sha256": "aa89ed4f4794631598b137b4e689f57412ce78b3fbc8de588ad9ccda70658803",
+      "disposition": "propose_relocate",
+      "evidence": ["HTML title identifies a GKS Framework and Hector Compaction explorer", "B05 archive index classifies it as a legacy concept/demo and archive-only"],
+      "proposed_target": "docs/archive/candidates/hector-compaction-explorer.html",
+      "rollback": {"operation": "move", "from": "docs/archive/candidates/hector-compaction-explorer.html", "to": "docs/archive/candidate/hector-compaction-explorer.html", "source_sha256": "aa89ed4f4794631598b137b4e689f57412ce78b3fbc8de588ad9ccda70658803"},
+      "reference_impact": {"outbound_explicit": ["https://cdn.tailwindcss.com", "https://cdn.jsdelivr.net/npm/chart.js"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "retain external prototype dependencies as archival evidence; update only repository path references"}
+    },
+    {
+      "path": "docs/archive/legacy-p1-mvp-import-reference.md",
+      "git_object_id": "4b6031b0e030cef5fcee4856d04a5f8a71bea3ea",
+      "bytes": 5739,
+      "sha256": "c76b255e3e2ebd4a164c2e83732e6b547ac23b1bbd73607e94ca2c3e791f195a",
+      "disposition": "propose_relocate",
+      "evidence": ["Heading and status label identify a legacy reference-only import plan", "Blueprint target projection provides docs/archive/legacy"],
+      "proposed_target": "docs/archive/legacy/legacy-p1-mvp-import-reference.md",
+      "rollback": {"operation": "move", "from": "docs/archive/legacy/legacy-p1-mvp-import-reference.md", "to": "docs/archive/legacy-p1-mvp-import-reference.md", "source_sha256": "c76b255e3e2ebd4a164c2e83732e6b547ac23b1bbd73607e94ca2c3e791f195a"},
+      "reference_impact": {"outbound_explicit": [], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "review inbound links before nesting under archive/legacy"}
+    },
+    {
+      "path": "docs/design/DESIGN_SYSTEM.md",
+      "git_object_id": "49493f567c5f5722a41727f65203ead9b3ee3e80",
+      "bytes": 11882,
+      "sha256": "249cc68225ef5a44c24b02ba00bfea376cdb9a8c87b51846942864fc5f95b406",
+      "disposition": "keep_in_place",
+      "evidence": ["Descriptive design-system name", "Content is an active implementation reference for Mission Control UI and includes a changelog"],
+      "proposed_target": "docs/design/DESIGN_SYSTEM.md",
+      "rollback": {"operation": "none", "from": "docs/design/DESIGN_SYSTEM.md", "to": "docs/design/DESIGN_SYSTEM.md", "source_sha256": "249cc68225ef5a44c24b02ba00bfea376cdb9a8c87b51846942864fc5f95b406"},
+      "reference_impact": {"outbound_explicit": ["src/App.tsx", "src/mission.ts"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "none for path; queue metadata normalization separately"}
+    },
+    {
+      "path": "docs/design/DOMAIN_DETAILS.md",
+      "git_object_id": "5166ffddf2d556d2b0c3e64b8d3f5d9bd3a78bce",
+      "bytes": 10842,
+      "sha256": "db5c9314442efbdf10083470c02e821ff4120b207a7b374e767788bcb3f398f3",
+      "disposition": "keep_in_place",
+      "evidence": ["Descriptive verification-matrix name", "Content validates design domains against SITE_MAP and runtime types and includes a changelog"],
+      "proposed_target": "docs/design/DOMAIN_DETAILS.md",
+      "rollback": {"operation": "none", "from": "docs/design/DOMAIN_DETAILS.md", "to": "docs/design/DOMAIN_DETAILS.md", "source_sha256": "db5c9314442efbdf10083470c02e821ff4120b207a7b374e767788bcb3f398f3"},
+      "reference_impact": {"outbound_explicit": ["docs/design/SITE_MAP.md", "docs/roadmap/BACKLOG-p1-mvp-core.md", "src/App.tsx", "src/mission.ts", "src/roadmapExport.ts"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "none for path; queue metadata normalization separately"}
+    },
+    {
+      "path": "docs/design/GoVibe-Document-Hierarchy.md",
+      "git_object_id": "a55c38a45a2dc720fcb1d63f63b3b04598c41258",
+      "bytes": 5833,
+      "sha256": "4659d0c03628d03f4d4d7d162707a70c131db56d57d91a6204267ec95b0d7f53",
+      "disposition": "keep_in_place",
+      "evidence": ["CR and blueprint cite this exact path as a governing design document", "Frontmatter provides doc_id, lifecycle, authority and source-of-truth metadata"],
+      "proposed_target": "docs/design/GoVibe-Document-Hierarchy.md",
+      "rollback": {"operation": "none", "from": "docs/design/GoVibe-Document-Hierarchy.md", "to": "docs/design/GoVibe-Document-Hierarchy.md", "source_sha256": "4659d0c03628d03f4d4d7d162707a70c131db56d57d91a6204267ec95b0d7f53"},
+      "reference_impact": {"outbound_explicit": ["docs/DOC-VERSION-REGISTRY.md", "docs/PRD-GoVibe-Platform-Overview.md", "docs/STD-Document-Versioning-Governance.md", "docs/STD-Execution-Governance.md", "docs/blueprints/BLUEPRINT-Document-Information-Architecture-and-Graph-Contract.md"], "inbound": "known_governing_anchor_from_cr_and_blueprint; broader_inbound_not_assessed_due_to_t_ctx_isolation", "required_action": "protect canonical path"}
+    },
+    {
+      "path": "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md",
+      "git_object_id": "7236e732f714db996f739f5e5c6cdc888275e446",
+      "bytes": 15456,
+      "sha256": "fb8da4555e7ce7f931cc8e19d3f77e855790b6d48511504b0c882cbdefb8b4be",
+      "disposition": "propose_relocate_with_phase2_flag",
+      "evidence": ["Heading explicitly identifies a landing-page copy template", "Blueprint target projection provides docs/references/templates", "Content contains legacy H-tier terminology requiring separate semantic review"],
+      "proposed_target": "docs/references/templates/LANDING-Copy-Template-GoVibe-Draft1.md",
+      "rollback": {"operation": "move", "from": "docs/references/templates/LANDING-Copy-Template-GoVibe-Draft1.md", "to": "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md", "source_sha256": "fb8da4555e7ce7f931cc8e19d3f77e855790b6d48511504b0c882cbdefb8b4be"},
+      "reference_impact": {"outbound_explicit": ["docs/PRD-GoVibe-Platform-Overview.md", "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "complete Phase 2 terminology review before any content promotion; rewrite accepted path references during integration"}
+    },
+    {
+      "path": "docs/design/LANDING-GoVibe-Mockup.html",
+      "git_object_id": "d6a7381aa6e06555d42bf784e0724277c76cdd94",
+      "bytes": 89722,
+      "sha256": "5ede6c891903f834b13fdce0551bc778ba29fcea888e6b3ee62bfb37c1cb3450",
+      "disposition": "propose_relocate",
+      "evidence": ["HTML is a standalone landing-page mockup/fixture", "Blueprint target projection provides docs/references/fixtures"],
+      "proposed_target": "docs/references/fixtures/LANDING-GoVibe-Mockup.html",
+      "rollback": {"operation": "move", "from": "docs/references/fixtures/LANDING-GoVibe-Mockup.html", "to": "docs/design/LANDING-GoVibe-Mockup.html", "source_sha256": "5ede6c891903f834b13fdce0551bc778ba29fcea888e6b3ee62bfb37c1cb3450"},
+      "reference_impact": {"outbound_explicit": [], "inbound": "assigned_B05_release_notes_reference_this_path; broader_inbound_not_assessed_due_to_t_ctx_isolation", "required_action": "update the accepted release-note reference and review broader inbound links before move"}
+    },
+    {
+      "path": "docs/design/LANDING-GoVibe-Release-Notes-v0.1.2.md",
+      "git_object_id": "699aaf6c0d23ac879592490e1cd544ea8009f49a",
+      "bytes": 5751,
+      "sha256": "20f693432e48646868e8ac19bd7a059067482e87542d87bbd333cdfacb6b012b",
+      "disposition": "propose_relocate",
+      "evidence": ["Document records a historical v0.1.2 release and external deployment", "It is release evidence rather than a current design contract"],
+      "proposed_target": "docs/archive/legacy/LANDING-GoVibe-Release-Notes-v0.1.2.md",
+      "rollback": {"operation": "move", "from": "docs/archive/legacy/LANDING-GoVibe-Release-Notes-v0.1.2.md", "to": "docs/design/LANDING-GoVibe-Release-Notes-v0.1.2.md", "source_sha256": "20f693432e48646868e8ac19bd7a059067482e87542d87bbd333cdfacb6b012b"},
+      "reference_impact": {"outbound_explicit": ["docs/design/LANDING-GoVibe-Mockup.html"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "rewrite the mockup reference to its accepted fixture path and review inbound links"}
+    },
+    {
+      "path": "docs/design/MOCKUP-A2-Roadmap-Board.html",
+      "git_object_id": "148f3c159bb17707594e1965ae20bb1c7b64203b",
+      "bytes": 32820,
+      "sha256": "9da44e6e05b891681732956aa5568f26173988387a3396fbfd3953a03df19553",
+      "disposition": "propose_relocate",
+      "evidence": ["Filename and HTML content identify an A2 Roadmap Board mockup", "Blueprint target projection provides docs/references/fixtures"],
+      "proposed_target": "docs/references/fixtures/MOCKUP-A2-Roadmap-Board.html",
+      "rollback": {"operation": "move", "from": "docs/references/fixtures/MOCKUP-A2-Roadmap-Board.html", "to": "docs/design/MOCKUP-A2-Roadmap-Board.html", "source_sha256": "9da44e6e05b891681732956aa5568f26173988387a3396fbfd3953a03df19553"},
+      "reference_impact": {"outbound_explicit": ["docs/compatibility_report.md", "src/App.tsx"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "verify stale compatibility-report reference and rewrite accepted inbound paths before move"}
+    },
+    {
+      "path": "docs/design/SITE_MAP.md",
+      "git_object_id": "8c3c57dc351276017b6b7d64261161c6546c1dd9",
+      "bytes": 3737,
+      "sha256": "b1ffa331febb0c5864f11e7b88a2eb77f961aa664e4b1a9265d7c5fab42ff025",
+      "disposition": "keep_in_place",
+      "evidence": ["Descriptive site-map name", "Content defines current Mission Control navigation and includes a changelog"],
+      "proposed_target": "docs/design/SITE_MAP.md",
+      "rollback": {"operation": "none", "from": "docs/design/SITE_MAP.md", "to": "docs/design/SITE_MAP.md", "source_sha256": "b1ffa331febb0c5864f11e7b88a2eb77f961aa664e4b1a9265d7c5fab42ff025"},
+      "reference_impact": {"outbound_explicit": ["src/App.tsx", "src/mission.ts"], "inbound": "assigned_B05_domain_details_and_wireframe_reference_this_path; broader_inbound_not_assessed_due_to_t_ctx_isolation", "required_action": "protect current path; queue metadata normalization separately"}
+    },
+    {
+      "path": "docs/design/TEMPLATE_MODULARIZATION.md",
+      "git_object_id": "d5e5dfd3f279c08664813fffbf810c3bec632354",
+      "bytes": 2065,
+      "sha256": "bb4ff87c648e48910bf11c4776df0d0c0879ca82b90d8866447d311977232c9a",
+      "disposition": "propose_relocate",
+      "evidence": ["Document is an extraction reference for a legacy template", "Blueprint target projection provides docs/references/templates"],
+      "proposed_target": "docs/references/templates/TEMPLATE_MODULARIZATION.md",
+      "rollback": {"operation": "move", "from": "docs/references/templates/TEMPLATE_MODULARIZATION.md", "to": "docs/design/TEMPLATE_MODULARIZATION.md", "source_sha256": "bb4ff87c648e48910bf11c4776df0d0c0879ca82b90d8866447d311977232c9a"},
+      "reference_impact": {"outbound_explicit": ["scripts/extract-mission-template.mjs"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "verify generator documentation links before move"}
+    },
+    {
+      "path": "docs/design/TEMPLATE_REFERENCE.md",
+      "git_object_id": "fe07a1da73b006aa41150225575ade775a228376",
+      "bytes": 12471,
+      "sha256": "85e4624d0cb7ff7f788adb1540bed5da65601721970aeb6c4cce0ec6a1e49c1b",
+      "disposition": "propose_relocate",
+      "evidence": ["Heading identifies a Mission Control template reference", "Blueprint target projection provides docs/references/templates"],
+      "proposed_target": "docs/references/templates/TEMPLATE_REFERENCE.md",
+      "rollback": {"operation": "move", "from": "docs/references/templates/TEMPLATE_REFERENCE.md", "to": "docs/design/TEMPLATE_REFERENCE.md", "source_sha256": "85e4624d0cb7ff7f788adb1540bed5da65601721970aeb6c4cce0ec6a1e49c1b"},
+      "reference_impact": {"outbound_explicit": ["src/mission.ts"], "inbound": "assigned_B05_wireframe_references_this_path; broader_inbound_not_assessed_due_to_t_ctx_isolation", "required_action": "rewrite the accepted wireframe reference and broader inbound paths before move"}
+    },
+    {
+      "path": "docs/design/WIREFRAME-A2-Roadmap-Board.md",
+      "git_object_id": "ca8e328623c5260d8b69484b32993f376c8aaa7a",
+      "bytes": 15338,
+      "sha256": "4140f5d0b7a6356926a9e6b877064f3b15d7a7daf9b012da4cd4e2f1f6bdc021",
+      "disposition": "keep_in_place",
+      "evidence": ["Frontmatter identifies a non-canonical design wireframe", "The document remains a human design artifact rather than a reusable template or fixture"],
+      "proposed_target": "docs/design/WIREFRAME-A2-Roadmap-Board.md",
+      "rollback": {"operation": "none", "from": "docs/design/WIREFRAME-A2-Roadmap-Board.md", "to": "docs/design/WIREFRAME-A2-Roadmap-Board.md", "source_sha256": "4140f5d0b7a6356926a9e6b877064f3b15d7a7daf9b012da4cd4e2f1f6bdc021"},
+      "reference_impact": {"outbound_explicit": ["docs/design/DOMAIN_DETAILS.md", "docs/design/SITE_MAP.md", "docs/design/TEMPLATE_REFERENCE.md", "docs/roadmap/GoVibe-Mission-Control-template.html"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "update TEMPLATE_REFERENCE path only if its proposed relocation is approved"}
+    },
+    {
+      "path": "docs/fontend/desigh/desigh system/desigh system.md",
+      "git_object_id": "bbfd21e5d7084fe46968b568235e45530838955a",
+      "bytes": 2129,
+      "sha256": "2f3556c5f9685007540e8eb322546d20fb97f61a5dace316f3df9924cd8aaa9c",
+      "disposition": "propose_archive_after_authority_review",
+      "evidence": ["Path contains repeated spelling errors: fontend/desigh/desigh system", "Content is an incomplete legacy navigation outline without frontmatter", "SITE_MAP.md contains the current structured navigation contract"],
+      "proposed_target": "docs/archive/legacy/legacy-domain-navigation-outline.md",
+      "rollback": {"operation": "move", "from": "docs/archive/legacy/legacy-domain-navigation-outline.md", "to": "docs/fontend/desigh/desigh system/desigh system.md", "source_sha256": "2f3556c5f9685007540e8eb322546d20fb97f61a5dace316f3df9924cd8aaa9c"},
+      "reference_impact": {"outbound_explicit": [], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "confirm SITE_MAP authority and inbound coverage before archival move; never merge this outline into SITE_MAP automatically"}
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK--CODEX-HYBRID-SAVINGS-TEST.md",
+      "git_object_id": "6d9fc5ab76d074f039217562bf4960a5a3a8f6c9",
+      "bytes": 4777,
+      "sha256": "4295f209f90fb266c9d14e3816d5af86c254b3f629e696b546ebc3dbe0afcc65",
+      "disposition": "propose_relocate_and_recover_name",
+      "evidence": ["Document is an active runbook with governed metadata", "Filename contains an accidental double separator after RUNBOOK", "Blueprint target projection provides docs/operations/runbooks"],
+      "proposed_target": "docs/operations/runbooks/RUNBOOK-Codex-Hybrid-Savings-Test.md",
+      "rollback": {"operation": "move", "from": "docs/operations/runbooks/RUNBOOK-Codex-Hybrid-Savings-Test.md", "to": "docs/runbooks/RUNBOOK--CODEX-HYBRID-SAVINGS-TEST.md", "source_sha256": "4295f209f90fb266c9d14e3816d5af86c254b3f629e696b546ebc3dbe0afcc65"},
+      "reference_impact": {"outbound_explicit": [], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "review command and doc references to the current double-separator filename before move"}
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md",
+      "git_object_id": "31f4d4761e587db67187a8ba341e3be0ba960da2",
+      "bytes": 8061,
+      "sha256": "0efa460836ba9ef4ce154449c5725e573bc74cbd2c855d70e8893ba67376254c",
+      "disposition": "propose_relocate",
+      "evidence": ["Approved governed runbook", "Blueprint target projection provides docs/operations/runbooks"],
+      "proposed_target": "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md",
+      "rollback": {"operation": "move", "from": "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md", "to": "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md", "source_sha256": "0efa460836ba9ef4ce154449c5725e573bc74cbd2c855d70e8893ba67376254c"},
+      "reference_impact": {"outbound_explicit": ["docs/PRD-GoVibe-Platform-Overview.md", "docs/architecture/C4-GoVibe-Platform.md", "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md", "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md", "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md", "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "rewrite accepted inbound paths and its peer runbook path during integration"}
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-GoVibe-First-Use.md",
+      "git_object_id": "280d792c7df7f33dd1af41db6064809e1e12b901",
+      "bytes": 10681,
+      "sha256": "66d33974b00a06965d5931a91f80851db1de3e635cb1041a11571775b5bdca06",
+      "disposition": "propose_relocate",
+      "evidence": ["Governed first-use runbook", "Blueprint target projection provides docs/operations/runbooks"],
+      "proposed_target": "docs/operations/runbooks/RUNBOOK-GoVibe-First-Use.md",
+      "rollback": {"operation": "move", "from": "docs/operations/runbooks/RUNBOOK-GoVibe-First-Use.md", "to": "docs/runbooks/RUNBOOK-GoVibe-First-Use.md", "source_sha256": "66d33974b00a06965d5931a91f80851db1de3e635cb1041a11571775b5bdca06"},
+      "reference_impact": {"outbound_explicit": ["docs/api/API-005-GoVibe-Capability-Contracts.md", "docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md", "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "rewrite accepted inbound paths during integration"}
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "git_object_id": "49a7a766691c02f7f257b907489a8cce9c2f433e",
+      "bytes": 10398,
+      "sha256": "97fd37b66cde981c7ae182e3f7c9521bb27f128e097a9b22cd595fd345c6d5f0",
+      "disposition": "escalate_phase2_before_relocation",
+      "evidence": ["Runbook frontmatter combines candidate lifecycle with source_of_truth true", "Preconditions use obsolete context tier H0-H6", "Phase 1 forbids semantic authority and H-axis correction"],
+      "proposed_target": "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "rollback": {"operation": "move", "from": "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md", "to": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md", "source_sha256": "97fd37b66cde981c7ae182e3f7c9521bb27f128e097a9b22cd595fd345c6d5f0"},
+      "reference_impact": {"outbound_explicit": ["docs/PRD-GoVibe-Platform-Overview.md", "docs/SDD-System-Design.md", "docs/STD-Execution-Governance.md", "docs/api/API-003-Mission-Workflow-Event-Schema.md", "docs/architecture/C4-GoVibe-Platform.md", "docs/features/agent-team/FEAT-Multi-Agent-Collaboration.md", "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md", "docs/features/governance-access/FEAT-RBAC-ABAC-Governance.md", "docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md"], "inbound": "assigned_B05_bounded_executor_runbook_references_this_path; broader_inbound_not_assessed_due_to_t_ctx_isolation", "required_action": "owner must resolve lifecycle/authority and Phase 2 H-axis semantics before structural relocation"}
+    },
+    {
+      "path": "docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md",
+      "git_object_id": "6e381af916c25ccb249bbcdd66fbd07b014969e5",
+      "bytes": 2564,
+      "sha256": "48576d8d4925aa6f386337d6a932851486cd5e4aee3e3aa7e6e38aaf3c2036c0",
+      "disposition": "propose_relocate",
+      "evidence": ["Governed operational runbook", "Blueprint target projection provides docs/operations/runbooks"],
+      "proposed_target": "docs/operations/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md",
+      "rollback": {"operation": "move", "from": "docs/operations/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md", "to": "docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md", "source_sha256": "48576d8d4925aa6f386337d6a932851486cd5e4aee3e3aa7e6e38aaf3c2036c0"},
+      "reference_impact": {"outbound_explicit": ["docs/architecture/MSP-GKS-Taxonomy-Mapping.md", "docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md"], "inbound": "not_assessed_due_to_t_ctx_isolation", "required_action": "rewrite accepted inbound paths during integration"}
+    }
+  ],
+  "candidate_relations": [
+    {"candidate_link_id": "B05-REL-001", "type": "CONFORMS_TO", "source": "docs/design/GoVibe-Document-Hierarchy.md", "target": "docs/STD-Document-Versioning-Governance.md", "source_sha256": "4659d0c03628d03f4d4d7d162707a70c131db56d57d91a6204267ec95b0d7f53", "provenance": "explicit related_docs frontmatter", "confidence": 1.0, "status": "candidate"},
+    {"candidate_link_id": "B05-REL-002", "type": "CONFORMS_TO", "source": "docs/design/GoVibe-Document-Hierarchy.md", "target": "docs/STD-Execution-Governance.md", "source_sha256": "4659d0c03628d03f4d4d7d162707a70c131db56d57d91a6204267ec95b0d7f53", "provenance": "explicit related_docs frontmatter", "confidence": 1.0, "status": "candidate"},
+    {"candidate_link_id": "B05-REL-003", "type": "VALIDATES", "source": "docs/design/DOMAIN_DETAILS.md", "target": "docs/design/SITE_MAP.md", "source_sha256": "db5c9314442efbdf10083470c02e821ff4120b207a7b374e767788bcb3f398f3", "provenance": "explicit statement that the verification matrix must match SITE_MAP", "confidence": 0.98, "status": "candidate"},
+    {"candidate_link_id": "B05-REL-004", "type": "DERIVES_FROM", "source": "docs/design/WIREFRAME-A2-Roadmap-Board.md", "target": "docs/design/TEMPLATE_REFERENCE.md", "source_sha256": "4140f5d0b7a6356926a9e6b877064f3b15d7a7daf9b012da4cd4e2f1f6bdc021", "provenance": "explicit related/source reference in wireframe", "confidence": 0.95, "status": "candidate"},
+    {"candidate_link_id": "B05-REL-005", "type": "DERIVES_FROM", "source": "docs/design/LANDING-GoVibe-Release-Notes-v0.1.2.md", "target": "docs/design/LANDING-GoVibe-Mockup.html", "source_sha256": "20f693432e48646868e8ac19bd7a059067482e87542d87bbd333cdfacb6b012b", "provenance": "explicit Architecture section path", "confidence": 1.0, "status": "candidate"},
+    {"candidate_link_id": "B05-REL-006", "type": "CONFORMS_TO", "source": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md", "target": "docs/STD-Execution-Governance.md", "source_sha256": "97fd37b66cde981c7ae182e3f7c9521bb27f128e097a9b22cd595fd345c6d5f0", "provenance": "explicit related_docs frontmatter; semantic drift remains unresolved", "confidence": 0.7, "status": "candidate"},
+    {"candidate_link_id": "B05-REL-007", "type": "VALIDATES", "source": "docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md", "target": "docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md", "source_sha256": "48576d8d4925aa6f386337d6a932851486cd5e4aee3e3aa7e6e38aaf3c2036c0", "provenance": "explicit related_docs frontmatter and runbook purpose", "confidence": 0.95, "status": "candidate"}
+  ],
+  "unresolved": [
+    {"code": "missing_runtime_context_identity", "files": [], "detail": "contextId, cacheId and contextHash were not issued by the runtime; kvId was not minted"},
+    {"code": "inbound_reference_scope_limited", "files": ["all"], "detail": "T-ctx isolation prohibited cross-batch corpus inspection, so integration reviewer must perform bounded inbound analysis"},
+    {"code": "phase2_semantic_review", "files": ["docs/design/LANDING-Copy-Template-GoVibe-Draft1.md", "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"], "detail": "Legacy H-tier/context semantics are outside Phase 1"},
+    {"code": "authority_lifecycle_conflict", "files": ["docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"], "detail": "candidate lifecycle and source_of_truth true require owner decision"},
+    {"code": "archive_authority_review", "files": ["docs/fontend/desigh/desigh system/desigh system.md"], "detail": "Content appears superseded by SITE_MAP, but archival disposition requires authority and inbound evidence"},
+    {"code": "metadata_normalization_queue", "files": ["docs/archive/candidate/README.md", "docs/archive/legacy-p1-mvp-import-reference.md", "docs/design/DESIGN_SYSTEM.md", "docs/design/DOMAIN_DETAILS.md", "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md", "docs/design/LANDING-GoVibe-Release-Notes-v0.1.2.md", "docs/design/SITE_MAP.md", "docs/design/TEMPLATE_MODULARIZATION.md", "docs/design/TEMPLATE_REFERENCE.md"], "detail": "Markdown files lack full governed frontmatter and/or changelog; no corpus metadata was changed in Phase 1"}
+  ],
+  "validation": {
+    "manifest_verifier": {"status": "pass", "tracked_git_blobs_verified": 201, "processable_unique": 195, "external_untracked_verified": 5, "errors": 0},
+    "docs_validate": {"status": "pass", "warnings": "pre_existing_baseline_warnings_only"},
+    "roadmap_validate": {"status": "pass_with_environment_fallback", "sources_checked": 7, "errors": 0, "warnings": 14, "execution_note": "Worktree invocation was blocked by missing node_modules/node-html-parser; command was rerun from G:/govibe using its installed dependencies. B05 does not modify roadmap inputs."},
+    "diff_check": {"status": "pass", "changed_files": 1, "changed_path": "docs/change-requests/manifests/results/DOC-CLEANSING-B05-RESULT-v1.json"},
+    "diff_check_staged": {"status": "pass", "changed_files": 1, "changed_path": "docs/change-requests/manifests/results/DOC-CLEANSING-B05-RESULT-v1.json"}
+  }
+}
