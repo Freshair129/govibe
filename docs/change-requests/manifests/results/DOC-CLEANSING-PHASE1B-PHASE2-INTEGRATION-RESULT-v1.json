@@ -1,18 +1,19 @@
 {
-  "schema_version": "1.0.1",
+  "schema_version": "1.0.2",
   "result_id": "DOC-CLEANSING-PHASE1B-PHASE2-INTEGRATION-RESULT-v1",
-  "status": "execution_complete_evidence_repaired_with_runtime_baseline_debt",
+  "status": "execution_complete_evidence_repaired_with_provenance_and_runtime_baseline_debt",
   "execution_complete": true,
   "execution_authorized": false,
   "integration_branch": "codex/docs-cleansing-ia",
   "accepted_base_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
   "evidence_revision": {
-    "revision": 2,
-    "status": "verified_git_blob_content_bytes",
-    "scope": "Phase 2 semantic rollback map only",
-    "preserves": "accepted commits, authority provenance, forward operations, inverse operations, and final target identities",
+    "revision": 3,
+    "status": "verified_git_blob_content_bytes_and_patch_equivalent_provenance",
+    "scope": "Phase 2 semantic rollback map plus accepted-source provenance",
+    "preserves": "accepted source review provenance, integrated commits, authority provenance, forward operations, inverse operations, and final target identities",
     "sha256_basis": "git_blob_content_bytes",
-    "verified_associations": 88
+    "verified_associations": 88,
+    "verified_patch_equivalences": 6
   },
   "post_sync_validation": {
     "origin_main": "91ec65aed07c5e22f5b5c8a8e214c6b9e0067c2a",
@@ -29,13 +30,49 @@
     "msp_gks_materializations": 0,
     "scope_closure": "No further mutation is authorized without a new owner-approved packet."
   },
-  "accepted_commits_in_dependency_order": [
-    "c86a95baa6601a4f3e90f9c978cb12e55f0592e8",
-    "0908fb8871d910e05a9dab57a97034450c76cbbe",
-    "6c6d7f9518c306b25522f1f1e12bff4019ba473f",
-    "7bf0326f7ae91f2cc0fecaf3d753d6da16936f6e",
-    "c26dae127090f28f0f52db2d3621091ad0d5eb7e",
-    "b16ff2e2142e9e24e8293a1836601412c1880741"
+  "accepted_source_commit_provenance_in_dependency_order": [
+    {
+      "source_commit": "c86a95baa6601a4f3e90f9c978cb12e55f0592e8",
+      "integrated_patch_equivalent_commit": "eabc2d22881005a25dbd998e938e91d9e8abf8c1",
+      "patch_id": "7cd13caff96ae3fbaedf3afd6c6450b2fb897404",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    },
+    {
+      "source_commit": "0908fb8871d910e05a9dab57a97034450c76cbbe",
+      "integrated_patch_equivalent_commit": "18354e664fa31900620c8712f67b1954796c7fd9",
+      "patch_id": "6c7c52eb7c1e4ef7cf9756938d6aa347702bd671",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    },
+    {
+      "source_commit": "6c6d7f9518c306b25522f1f1e12bff4019ba473f",
+      "integrated_patch_equivalent_commit": "0843454f4fbb222df42154ecaf64c6737a70af00",
+      "patch_id": "ada621024ad0f5e56a7851ab5c37fba3734209d8",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    },
+    {
+      "source_commit": "7bf0326f7ae91f2cc0fecaf3d753d6da16936f6e",
+      "integrated_patch_equivalent_commit": "768afd2bb12de781ad059082ca602eca3f7a71b3",
+      "patch_id": "91cbadf14510decbd8b79add1a685884268a260e",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    },
+    {
+      "source_commit": "c26dae127090f28f0f52db2d3621091ad0d5eb7e",
+      "integrated_patch_equivalent_commit": "ab6823b4ab680cd71a28d677aa62d4e9a13624db",
+      "patch_id": "60bb50387e905838ae56ccfcf91cd4be8b30e5e6",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    },
+    {
+      "source_commit": "b16ff2e2142e9e24e8293a1836601412c1880741",
+      "integrated_patch_equivalent_commit": "d2337e1677f6b4f3e0fbe91ac4879dc69dd7ecb8",
+      "patch_id": "01d45cb6fcea0975159a65aaf70ccef8de3292ff",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    }
   ],
   "review_gates": {
     "independent_review": "ACCEPT for each accepted commit",
@@ -158,7 +195,7 @@
   ],
   "validations": {
     "manifest_verifier": "PASS: 201 tracked Git blobs, 195 processable, 6 tracked exclusions, 5 external-root exclusions verified; source manifest SHA-256 f5b16968f3bace10177d11849d60f7aaf7bf287ef3c9645becbb0e11eb3d99b6.",
-    "docs_validate": "PASS: 353 Markdown files, 187 document IDs, and 812 path references checked; existing 12/32/33 criteria-structure warnings remain separate.",
+    "docs_validate": "PASS: 354 Markdown files, 188 document IDs, and 812 path references checked; existing 12/32/33 criteria-structure warnings remain separate.",
     "roadmap_validate": "PASS: 7 sources, 0 errors, 14 pre-existing plan-quality warnings.",
     "lint": "PASS: tsc --noEmit; existing roadmap quality warnings are emitted by repository tooling and not fixed here.",
     "build": "PASS: tsc and Vite production build completed.",
@@ -175,5 +212,12 @@
     "No direct MSP/GKS/GenesisBlockDB operation, canonical identity assignment, or graph-completeness claim.",
     "Old active runbook path is permitted only in historical manifests, results, rollback evidence, and non-canonical .brain materialization."
   ],
-  "self_hashing": "This result does not hash itself or integration-only control documents to avoid self-referential identity claims; mapped execution targets are fully listed above."
+  "self_hashing": {
+    "algorithm": "sha256",
+    "canonical_projection": "UTF-8 JSON.stringify of this result with the self_hashing object omitted",
+    "projection_sha256": "3b9805cd9ea65a7c7ca7514cea84f0714df8804dec5b13e49d181bffee3d6490",
+    "projection_bytes": 16923,
+    "status": "verified",
+    "note": "The projection omits its own hash metadata, preventing a self-referential identity claim while retaining a reproducible result-content digest."
+  }
 }
