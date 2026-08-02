@@ -2,8 +2,8 @@
 title: "GoVibe Universal Agent Operating Contract"
 summary: "สัญญาการทำงานสากลและการควบคุมจริยธรรมของ AI Agents ในโครงการ GoVibe"
 doc_id: "AGENTS-CORE-001"
-version: "1.7.0"
-updated: "2026-08-01"
+version: "1.8.0"
+updated: "2026-08-02"
 owner: "THESEUS"
 type: "agents"
 block_manifest:
@@ -24,6 +24,14 @@ block_manifest:
 - ใช้ `AGENTS.md` และ `BLUEPRINT-*.md` เป็น Hub
 - งาน implementation ระบุอย่างน้อย `id`, `block_id`, `access_scope`, `status`
 - Spoke artifact ต้องเชื่อมกลับ Task/Work Packet/Atom ที่เป็น authority
+
+### 1.1 Authority resolution
+
+- `docs/STD-Execution-Governance.md` ใน GoVibe คือ canonical SOT ของ Execution Governance
+- สำเนาใน RWANG-PROMAX เป็น distribution mirror และห้าม override canonical
+- ถ้า version, payload hash หรือ authority metadata ไม่ตรง ให้ถือ mirror เป็น `drifted`
+- mirror ที่ `drifted` หรือ `unknown` ใช้อนุมัติ implementation, policy enforcement หรือ audit conclusion ไม่ได้
+- semantic change ที่พบจาก RWANG ต้องเสนอ upstream เข้า GoVibe ก่อน แล้วจึง sync กลับ mirror
 
 ## 2. Unified handover
 
@@ -180,6 +188,7 @@ Agent ต้องแก้ทุก `must_update`; ต้องตรวจแ�
 - Exact Context Retention: ก่อน dispatch ต้อง persist cache และ injection lineage
 - Private Memory Discipline: raw private episode ไม่ใช่ durable global memory และไม่ใช่ shared truth
 - Impact Before Completion: semantic/schema/authority/runtime change ต้องผ่าน backlink impact analysis
+- Canonical Over Mirror: เมื่อ canonical กับ mirror ขัดกัน ให้ canonical ชนะและ fail closed จนกว่า drift จะถูกแก้
 - Escalate, Do Not Widen: context หรือ permission ไม่พอให้ escalate ไม่ใช่ขยายเอง
 - Best Code Rule: ใช้การแก้ที่เล็กที่สุดซึ่งรักษา contract และ evidence ได้
 
@@ -187,6 +196,7 @@ Agent ต้องแก้ทุก `must_update`; ต้องตรวจแ�
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.8.0 | 2026-08-02 | THESEUS / Boss | Declared GoVibe Execution Governance as canonical SOT, RWANG-PROMAX as mirror, and added fail-closed authority/drift resolution. |
 | 1.7.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Added Deep Scan candidate ownership, wikilink/crosslink/symbol-link/backlink semantics, and mandatory explainable impact analysis before completion. |
 | 1.6.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Added Shared/Workspace Private/Global Private vault rules, T/V/W/M context profiles, context/cache/KV/replay lineage, private-memory promotion discipline, and MSP-only runtime boundary. |
 | 1.5.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Aligned C/H/R/D/W/Budget/Risk semantics and prohibited H5/H6 and ambiguous context_tier. |
