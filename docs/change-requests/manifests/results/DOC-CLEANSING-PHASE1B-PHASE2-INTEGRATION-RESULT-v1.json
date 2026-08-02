@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.2",
+  "schema_version": "1.0.3",
   "result_id": "DOC-CLEANSING-PHASE1B-PHASE2-INTEGRATION-RESULT-v1",
   "status": "execution_complete_evidence_repaired_with_provenance_and_runtime_baseline_debt",
   "execution_complete": true,
@@ -7,13 +7,15 @@
   "integration_branch": "codex/docs-cleansing-ia",
   "accepted_base_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
   "evidence_revision": {
-    "revision": 3,
-    "status": "verified_git_blob_content_bytes_and_patch_equivalent_provenance",
+    "revision": 4,
+    "status": "verified_git_blob_content_bytes_and_raw_patch_equivalent_provenance",
     "scope": "Phase 2 semantic rollback map plus accepted-source provenance",
     "preserves": "accepted source review provenance, integrated commits, authority provenance, forward operations, inverse operations, and final target identities",
     "sha256_basis": "git_blob_content_bytes",
     "verified_associations": 88,
-    "verified_patch_equivalences": 6
+    "verified_patch_equivalences": 6,
+    "patch_id_basis": "raw OS pipe: git show --pretty=format: <commit> | git patch-id --stable (cmd.exe /d /s /c; no PowerShell or string normalization)",
+    "patch_id_verification": "Each source and integrated commit produced the identical full patch ID through the recorded raw pipe."
   },
   "post_sync_validation": {
     "origin_main": "91ec65aed07c5e22f5b5c8a8e214c6b9e0067c2a",
@@ -34,7 +36,7 @@
     {
       "source_commit": "c86a95baa6601a4f3e90f9c978cb12e55f0592e8",
       "integrated_patch_equivalent_commit": "eabc2d22881005a25dbd998e938e91d9e8abf8c1",
-      "patch_id": "7cd13caff96ae3fbaedf3afd6c6450b2fb897404",
+      "patch_id": "ca36d4a07ac634e933b83f348d635317b7a5e17f",
       "source_commit_is_ancestor": false,
       "integrated_commit_is_ancestor": true
     },
@@ -55,21 +57,21 @@
     {
       "source_commit": "7bf0326f7ae91f2cc0fecaf3d753d6da16936f6e",
       "integrated_patch_equivalent_commit": "768afd2bb12de781ad059082ca602eca3f7a71b3",
-      "patch_id": "91cbadf14510decbd8b79add1a685884268a260e",
+      "patch_id": "676d260061007cf4f29e7fcf2f6acc9a3f3e02ee",
       "source_commit_is_ancestor": false,
       "integrated_commit_is_ancestor": true
     },
     {
       "source_commit": "c26dae127090f28f0f52db2d3621091ad0d5eb7e",
       "integrated_patch_equivalent_commit": "ab6823b4ab680cd71a28d677aa62d4e9a13624db",
-      "patch_id": "60bb50387e905838ae56ccfcf91cd4be8b30e5e6",
+      "patch_id": "a0de3b7d7757b610b67ba9b8137e6325e8ff2478",
       "source_commit_is_ancestor": false,
       "integrated_commit_is_ancestor": true
     },
     {
       "source_commit": "b16ff2e2142e9e24e8293a1836601412c1880741",
       "integrated_patch_equivalent_commit": "d2337e1677f6b4f3e0fbe91ac4879dc69dd7ecb8",
-      "patch_id": "01d45cb6fcea0975159a65aaf70ccef8de3292ff",
+      "patch_id": "e5ba1665bbb45ba5c4c9c5a95e94df3174d57778",
       "source_commit_is_ancestor": false,
       "integrated_commit_is_ancestor": true
     }
@@ -215,8 +217,8 @@
   "self_hashing": {
     "algorithm": "sha256",
     "canonical_projection": "UTF-8 JSON.stringify of this result with the self_hashing object omitted",
-    "projection_sha256": "3b9805cd9ea65a7c7ca7514cea84f0714df8804dec5b13e49d181bffee3d6490",
-    "projection_bytes": 16923,
+    "projection_sha256": "403ba951c200268b7c048e421719d29461fd2e396f73b459a36ace7753018c0a",
+    "projection_bytes": 17204,
     "status": "verified",
     "note": "The projection omits its own hash metadata, preventing a self-referential identity claim while retaining a reproducible result-content digest."
   }
