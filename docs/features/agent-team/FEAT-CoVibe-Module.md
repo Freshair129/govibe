@@ -2,8 +2,8 @@
 title: "FEAT: CoVibe Module"
 doc_id: "FEAT-COVIBE-MODULE"
 status: "approved"
-version: "0.1.0"
-updated: "2026-06-17"
+version: "0.2.0"
+updated: "2026-08-02"
 owner: "THESEUS"
 auditor: "ATHER"
 source_of_truth: true
@@ -14,6 +14,7 @@ supporting_prd_systems:
   - "SYSTEM-10::Execution-Governance-System"
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
+  - "docs/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md"
@@ -24,123 +25,151 @@ related_docs:
 
 ## 1. Goal
 
-Define the GoVibe `CoVibe` module as the solo-owner orchestration layer where one primary owner or lead agent coordinates bounded support agents or bounded external executors.
+Define the GoVibe `CoVibe` module as the **single-authority collaboration mode** where one principal human owner or delegated lead authority coordinates bounded agents, agent teams, or external executors through one governed knowledge and context boundary.
 
-The module sits on top of `SYSTEM-05::Agent-Team-Management-System` and relies on `SYSTEM-06::Integration-Bridge-System` for executor access, plus `SYSTEM-10::Execution-Governance-System` for bounded packet discipline.
+`CoVibe` is not an SME edition and is not limited to solo developers. It applies whenever one authority remains responsible for scope, approval, and final interpretation, regardless of organization size.
+
+The module sits on top of `SYSTEM-05::Agent-Team-Management-System`, relies on `SYSTEM-06::Integration-Bridge-System` for executor access, and uses `SYSTEM-10::Execution-Governance-System` plus MSP-issued context packets to keep execution bounded.
 
 ## 2. Why This Exists
 
-`CoVibe` is the right term when one owner is still the center of gravity, but support agents or external executors are helping with bounded work.
+AI agents can execute faster than a single owner can fully define, validate, and preserve software knowledge. A request may contain a valid business intent while missing software-engineering distinctions, governing relations, constraints, non-functional requirements, acceptance criteria, or explicit out-of-scope boundaries.
 
-Without a dedicated module definition, the solo-owner flow can drift into over-broad external-agent prompts, quota waste, unclear lead ownership, blurred review and approval boundaries, and scope creep caused by support executors acting like owners.
+Without CoVibe, a lead or support agent may fill those missing relations from model priors, widen scope, create plausible but unauthorized architecture, or hand work to another agent without preserving WHY and source lineage.
 
-This module keeps the main-agent / support-agent loop narrow and auditable.
+CoVibe exists to ensure that one authority can use multiple agents without surrendering control of meaning.
 
 ## 3. Module Boundary
 
-`CoVibe` means intra-owner orchestration.
+`CoVibe` means collaboration under one principal authority.
 
 Canonical shape:
 
 ```text
-[Human]
+[Principal Human / Delegated Lead Authority]
    <=GoVibe / CoVibe=>
-[Main Agent / Main Agent Team]
-   <=support=>
-[Support Agent / Support Executor]
+[Lead Agent or Agent Team]
+   <=bounded support=>
+[Support Agent / External Executor]
 ```
+
+The principal authority may exist inside a solo project, SME, agency team, enterprise unit, or temporary delivery group. Company size does not determine the mode.
 
 What belongs here:
 
-- solo founder or solo developer workflows
-- main-agent-led execution with bounded support
-- model routing for support tasks
-- token/quota aware execution packets
-- explicit context containers and evidence packets
-- support-agent review and handoff back to the owner
+- one principal scope and approval authority;
+- incomplete or heterogeneous intent that must become agent-usable knowledge;
+- main-agent-led execution with bounded support;
+- MSP-scoped context selection from GKS knowledge and relations;
+- model routing for support tasks;
+- token/quota-aware execution packets;
+- explicit context containers, source relations, exclusions, and evidence packets;
+- support-agent review and handoff back to the principal authority.
 
 What does not belong here:
 
-- multi-owner governance
-- unbounded autonomous execution
-- a separate platform brand
-- replacement of `MCP` or the current bridge layer
+- multiple independent approval authorities;
+- unbounded autonomous execution;
+- unrestricted GKS traversal;
+- external skills assigning canonical knowledge identities;
+- a separate platform brand;
+- replacement of `MCP` or the current bridge layer.
 
 ## 4. Module Responsibilities
 
 | Responsibility | Description |
 |---|---|
-| Main-agent control | Keep the primary owner or lead agent in charge. |
-| Support routing | Route bounded work to the right support executor or model. |
-| Packet control | Keep prompts, context, and output bounded to the task. |
-| Quota preservation | Prefer lower-cost executors for narrow work. |
-| Evidence capture | Record what was asked, what was used, and what was returned. |
+| Authority preservation | Keep one principal human or delegated authority responsible for scope, approval, and final interpretation. |
+| Knowledge completion | Surface missing requirements, relations, constraints, assumptions, and acceptance criteria before execution. |
+| Context control | Use MSP-issued context rather than asking agents to traverse the whole GKS graph. |
+| Main-agent control | Keep the lead agent responsible for bounded orchestration, not product authority. |
+| Support routing | Route bounded work to the appropriate support executor or model. |
+| Packet control | Preserve task scope, source versions, governing relations, exclusions, and budget. |
+| Evidence capture | Record what was asked, what context was authorized, what was returned, and what remains unresolved. |
 
 ## 5. Module Components
 
-- main-agent context packet
-- support-executor router
-- model selection policy
-- quota-aware task packet builder
-- bounded external executor bridge
-- evidence capture and review trail
-- scope guardrail and escalation gate
+- principal-authority and delegated-lead identity;
+- intent and document validation intake;
+- missing-relation and unresolved-assumption detector;
+- MSP context request and context packet;
+- main-agent task packet;
+- support-executor router;
+- model selection policy;
+- quota-aware task packet builder;
+- bounded external executor bridge;
+- evidence capture and review trail;
+- scope guardrail and escalation gate.
 
 ## 6. Inputs And Outputs
 
 ### Inputs
 
-- single-owner request or lead-agent task
-- bounded source docs
-- current git/repo state evidence
-- context packet and model route
-- support agent output
+- request, document, diagram, code, or observed issue;
+- principal authority and approval rules;
+- source document versions and hashes;
+- governing issue, insight, ADR, requirement, and feature relations when available;
+- MSP-issued context packet;
+- current repository and test evidence;
+- support-agent output.
 
 ### Outputs
 
-- bounded draft artifact
-- execution evidence
-- recommended decision
-- escalation or approval request
-- task completion or blocker note
+- validated or explicitly incomplete agent-usable knowledge;
+- bounded draft artifact;
+- missing-relation or unresolved-assumption report;
+- execution and source-lineage evidence;
+- recommended decision;
+- escalation or approval request;
+- task completion or blocker note.
 
 ## 7. Workflow Contract
 
 ```text
-Request
-  -> classify as solo-owner / lead-plus-support
-  -> load shared CoVibe context
-  -> build bounded packet
+Request / artifact
+  -> resolve principal authority
+  -> validate intent, relations, constraints, and scope
+  -> report missing relations or unresolved assumptions
+  -> request MSP-scoped context from GKS
+  -> build bounded task packet
   -> choose executor/model route
-  -> collect draft evidence
-  -> verify against source truth
-  -> return to lead owner
+  -> collect draft and evidence
+  -> verify against authorized knowledge and source truth
+  -> return decision and evidence to principal authority
 ```
+
+The workflow must not proceed through a gap by silently inventing WHY. It may continue only where the missing information is explicitly marked non-blocking by the principal authority or governing policy.
 
 ## 8. Acceptance Criteria
 
-- `CoVibe` is defined as the solo-owner orchestration module.
-- The module keeps the lead owner or lead agent as the center of control.
+- `CoVibe` is defined as the single-authority collaboration mode.
+- Organization size is not used to classify CoVibe.
+- The module keeps the principal authority in control of scope and approval.
+- Agents receive MSP-scoped context rather than unrestricted graph access.
+- Missing WHY, authority, source relation, or scope is reported instead of inferred.
+- External skills and support executors return candidates and evidence, not canonical authority.
 - The module does not create a new top-level PRD system.
-- The module uses bounded packets and evidence capture for support executors.
-- The module routes support work through governed bridges rather than free-form prompts.
 
 ## 9. Success Criteria
 
-- Solo-owner work can offload bounded tasks without losing control.
-- Support executors return evidence, not final authority.
-- Token and quota usage remains visibly bounded.
+- One authority can coordinate multiple agents without losing control of meaning.
+- Incomplete input is made explicitly usable or explicitly unresolved before high-risk execution.
+- Support executors do not silently widen scope.
+- Agent handoffs preserve governing relations, source versions, exclusions, and evidence.
+- Token and context usage remain visibly bounded.
 
 ## 10. Definition Of Done
 
 - Module doc is linked from the CoDev/CoVibe terminology note.
 - Module doc is registered in the document version registry.
 - The PRD system map or collaboration section references this module.
-- `docs:validate` passes after the doc is added.
+- Context and executor contracts preserve authority, relation, scope, and evidence fields.
+- `docs:validate` passes after registry propagation.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-08-02 | THESEUS / Boss | Refined CoVibe from a solo/SME-shaped description to the canonical single-authority mode; added relation-first validation, MSP-scoped context, candidate-only external skills, and missing-WHY escalation. |
 | 0.1.0 | 2026-06-20 | THESEUS | Signed off; promoted draft -> approved. |
 | 0.1.0+draft | 2026-06-17 | THESEUS | Defined the CoVibe collaboration module for solo-owner orchestration and bounded support execution. |
