@@ -178,6 +178,7 @@ paths only. They are not configuration and must never become runtime or CI depen
 - `docs/architecture/SDD-Symbol-Graph-Traceability-Boundary.md`
 
 ## Changelog
+
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.0 | 2026-06-21 | ARCHON / ATHER | Initial decision record adopting MSP/GKS adapter (Option A) as the GoVibe traceability gate; resolves CR-2026-06-14 required changes. |

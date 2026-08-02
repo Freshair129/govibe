@@ -119,6 +119,7 @@ Implementation output should return:
 - verification run
 
 ## Changelog
+
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.1+draft | 2026-06-19 | LYRA / ARCHON / ATHER | Clarified that ARCHON authors the ADR directly when the structure refactor cannot be approved from the change request alone. |

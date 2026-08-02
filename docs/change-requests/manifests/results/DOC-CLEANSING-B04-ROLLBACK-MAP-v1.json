@@ -6,8 +6,8 @@
   "execution_commit": "5547c1fe33e375818e94d1c4d347cc517608468c",
   "operation_count": 31,
   "content_state_counts": {
-    "byte_preserved": 20,
-    "intentionally_rewritten": 11
+    "byte_preserved": 18,
+    "intentionally_rewritten": 13
   },
   "rollback_execution": "apply inverse operations in ascending rollback_order (the original forward order reversed); do not execute from this evidence artifact without authorization",
   "verifier_evidence": "pass: parsed committed map; 31 unique forward/inverse pairs; all final targets present; all rollback destinations absent; exact inverse symmetry; rollback orders 1..31; final Git blob and SHA-256 match; rollback was not executed",
@@ -25,11 +25,15 @@
         "git_blob": "ba43784ae9617b348dd2eb45997f6ab72f46ec95",
         "sha256": "4637ca2d45bf4bd074a86790f2e2a6aeb53460ee2598cbc811ca1d896629fdcc"
       },
-      "post": {
+      "intermediate_post": {
         "git_blob": "ba43784ae9617b348dd2eb45997f6ab72f46ec95",
         "sha256": "4637ca2d45bf4bd074a86790f2e2a6aeb53460ee2598cbc811ca1d896629fdcc"
       },
-      "content_state": "byte_preserved",
+      "post": {
+        "git_blob": "a0f0b72b0055d596acdab3513e95a34812513b6d",
+        "sha256": "11c7fecb3a65002f07b55ace65c89dc6a5802b6b0210b6fc13a1f5fb0669731d"
+      },
+      "content_state": "intentionally_rewritten",
       "rollback_order": 31
     },
     {
@@ -165,9 +169,13 @@
         "git_blob": "dec0ca1e26527bf8156660153995052106b400e4",
         "sha256": "074e0f6e948518bff05eb379a78158d1eca575140919d875b35ef0fdb75fe1e6"
       },
-      "post": {
+      "intermediate_post": {
         "git_blob": "7d429cc94f881e999b6d4fc251f7b354fec38797",
         "sha256": "7fbc71ed1747c4c05f0316d1b62e57e20e8ae8adae9ee4a2029995f7a63a9521"
+      },
+      "post": {
+        "git_blob": "9d0e7762a31e4402ffee1a67c4e3c45766bd6e83",
+        "sha256": "4cd94d9c2527a53b931f93fbacfc94eaa42c159611cfe53ebfd36fb86fbbd2dd"
       },
       "content_state": "intentionally_rewritten",
       "rollback_order": 24
@@ -185,9 +193,13 @@
         "git_blob": "ef9ba88e3db3fd8f9f1230830048bd4d86f1566f",
         "sha256": "2db3dac720be2cb73984932af8b1612b5d178b2002972bbd89831835bae0f01d"
       },
-      "post": {
+      "intermediate_post": {
         "git_blob": "f59e7381981e3c976d70910194fd4f2659e36d20",
         "sha256": "79789b6e004b235669f6645c9286db0fe7c3a448b4b767f8737057d84210e732"
+      },
+      "post": {
+        "git_blob": "269a3bb7fc7676cae32191344d17166c3f5ed6d6",
+        "sha256": "2a53fcefeebd4a81aa2fa6270cdc978b225a8ef34f56a579a87e4d21cffce641"
       },
       "content_state": "intentionally_rewritten",
       "rollback_order": 23
@@ -345,9 +357,13 @@
         "git_blob": "8768d8cf5f24fc83738713a8a53053fd2973d063",
         "sha256": "107e187e921df62dbc82b8e29480b6df6daf290b5f043685c40778eb534ec5f4"
       },
-      "post": {
+      "intermediate_post": {
         "git_blob": "72b2eda3ea6fb0318d3f4c2708fbbcd3645e89a2",
         "sha256": "2e30a35358bd443d658f3f9079526d611a3653426a2880ca5ffdd33bfbfb41bf"
+      },
+      "post": {
+        "git_blob": "ca37297333d086d5e7726984ce96dda56a8476ae",
+        "sha256": "983efea27a636fbc87ace19513f94cdb9afe45516c1b9761aa3192a9d83719e4"
       },
       "content_state": "intentionally_rewritten",
       "rollback_order": 15
@@ -425,11 +441,15 @@
         "git_blob": "24db4e64e62d190343146331f4d0856e51ec1e5e",
         "sha256": "e676a2b9ca51290e9de7c7ef2f1a04e06159119b19ce48d6a87664129c40e372"
       },
-      "post": {
+      "intermediate_post": {
         "git_blob": "24db4e64e62d190343146331f4d0856e51ec1e5e",
         "sha256": "e676a2b9ca51290e9de7c7ef2f1a04e06159119b19ce48d6a87664129c40e372"
       },
-      "content_state": "byte_preserved",
+      "post": {
+        "git_blob": "21546fbe9bcf2836a903bee89796d10c3b0bcb23",
+        "sha256": "fd1ae1154e95a6f1664284aea6ea9d2482075f70bc924ea0d7a4ddc7a7069928"
+      },
+      "content_state": "intentionally_rewritten",
       "rollback_order": 11
     },
     {

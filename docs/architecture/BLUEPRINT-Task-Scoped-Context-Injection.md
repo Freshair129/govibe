@@ -411,6 +411,7 @@ structured result
 - No runtime code or schema is changed in this round.
 
 ## Changelog
+
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.1 | 2026-06-20 | ARCHON / ATHER | Signed off; promoted draft -> approved. |

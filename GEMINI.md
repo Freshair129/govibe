@@ -135,6 +135,7 @@ npm run build
 For UI changes, also perform browser verification and console-error checks. Use `[[AGENT::GHOST]]`'s assets for detailed QA checklists.
 
 ## Changelog
+
 | Version | Date | Summary |
 |---|---|---|
 | 0.3.0 | 2026-06-13 | ID-based agent references, MemoryOS V3 integration, traceability headers. |

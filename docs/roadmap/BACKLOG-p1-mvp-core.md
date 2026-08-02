@@ -917,6 +917,7 @@ ui_state:
 - [x] UI implementation remains blocked until docs/design and data contract are approved.
 
 ## Changelog
+
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.1+draft | 2026-06-20 | LYRA | Honesty fixes: set source_of_truth to false (derived legacy import fixture), added legacy-import fixture note and legacy-imported telemetry note for progress values, without rewriting preserved legacy task content. |

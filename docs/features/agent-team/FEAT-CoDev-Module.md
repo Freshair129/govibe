@@ -174,6 +174,7 @@ If governing relations, authority ownership, or scope conflict is unresolved, Co
 - `docs:validate` passes after registry propagation.
 
 ## Changelog
+
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.2.0 | 2026-08-02 | THESEUS / Boss | Refined CoDev from a company-size-shaped collaboration description to the canonical multi-authority mode; added relation preservation, MSP-scoped context, GKS convention translation, conflict routing, and candidate-only external skills. |

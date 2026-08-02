@@ -149,6 +149,7 @@ Costs:
 When any GoVibe document conflicts with this ADR on the meaning of H, this ADR and the canonical RWANG Execution Governance Standard govern until the conflicting document is revised.
 
 ## Changelog
+
 | Version | Date | Status | Summary |
 |---|---|---|---|
 | 1.0.0 | 2026-08-01 | accepted | Defined H exclusively as Access Scope H0-H4 and separated retrieval, context, risk, fan-out, and operating mode. |

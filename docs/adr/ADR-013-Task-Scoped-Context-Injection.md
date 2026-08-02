@@ -113,6 +113,7 @@ GoVibe will adopt a refine-from-existing approach for context injection.
 - `docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md`
 
 ## Changelog
+
 | Version | Date | Summary |
 |---|---|---|
 | 0.1.0 | 2026-06-19 | Accepted task-scoped context injection strategy using reuse-plus-refinement instead of full rewrite or wholesale import. |

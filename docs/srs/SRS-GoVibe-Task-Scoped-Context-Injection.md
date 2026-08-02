@@ -189,6 +189,7 @@ The system must expose enough metadata for a lead reviewer to:
 - A later blueprint can derive component boundaries from this SRS without redefining product intent.
 
 ## Changelog
+
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.0 | 2026-06-20 | ARCHON / ATHER | Signed off; promoted draft -> approved. |

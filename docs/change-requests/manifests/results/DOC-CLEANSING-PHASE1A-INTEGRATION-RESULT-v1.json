@@ -12,12 +12,17 @@
   ],
   "operation_count": 45,
   "content_states": {
-    "B04": {"byte_preserved": 20, "intentionally_rewritten": 11},
+    "B04": {"byte_preserved": 18, "intentionally_rewritten": 13},
     "B05": {"byte_preserved": 13, "intentionally_rewritten": 1}
   },
   "rollback_maps": {
     "B04": "docs/change-requests/manifests/results/DOC-CLEANSING-B04-ROLLBACK-MAP-v1.json",
     "B05": "docs/change-requests/manifests/results/DOC-CLEANSING-B05-ROLLBACK-MAP-v1.json"
+  },
+  "full_rollback_plan": {
+    "status": "documented_not_executed",
+    "reverse_commit_order": ["32e27f5", "39b4430", "c41e103", "da1bbea", "88b0b54", "33f9905", "dec7477"],
+    "note": "Revert descendant evidence-only corrections first; use non-destructive git revert commits and validate maps and gates after reversal."
   },
   "active_reference_reconciliation": {
     "B04_replacements": 25,
