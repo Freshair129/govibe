@@ -2,7 +2,7 @@
 title: "Rollback Plan: Document IA Cleansing Phase 1"
 doc_id: "ROLLBACK-DOCUMENT-IA-CLEANSING-PHASE1"
 status: "draft"
-version: "0.2.0+draft"
+version: "0.2.1+draft"
 updated: "2026-08-03"
 owner: "ATHER"
 source_of_truth: true
@@ -56,7 +56,7 @@ authorized by this plan.
 ## 5. Committed Phase 1-A Maps
 
 - `docs/change-requests/manifests/results/DOC-CLEANSING-B04-ROLLBACK-MAP-v1.json`
-  records 31 inverse pairs and content states `20 byte_preserved + 11 intentionally_rewritten`.
+  records 31 inverse pairs and content states `18 byte_preserved + 13 intentionally_rewritten`.
 - `docs/change-requests/manifests/results/DOC-CLEANSING-B05-ROLLBACK-MAP-v1.json`
   records 14 inverse pairs and content states `13 byte_preserved + 1 intentionally_rewritten`.
 
@@ -74,6 +74,7 @@ H-axis, schema/runtime, and Phase 2 work remain `execution_authorized=false`.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.1+draft | 2026-08-03 | ATHER | Corrected the final accepted B04 content-state evidence to 18 byte-preserved and 13 intentionally rewritten. |
 | 0.2.0+draft | 2026-08-03 | ATHER | Recorded the committed Phase 1-A rollback authorities, 45 reversible operations, content states, and no-further-mutation gate. |
 | 0.1.1+draft | 2026-08-03 | ATHER | Bound rollback evidence to the deterministic manifest verifier and explicit external-root handling. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Defined non-destructive rollback evidence and recovery boundaries for the cleansing workflow. |

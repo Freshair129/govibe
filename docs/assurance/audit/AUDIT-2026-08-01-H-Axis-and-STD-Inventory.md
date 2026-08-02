@@ -2,21 +2,22 @@
 title: "Audit: H-Axis and Execution-Governance STD Inventory"
 doc_id: "AUDIT-2026-08-01-H-AXIS-STD-INVENTORY"
 status: "under-review"
-version: "0.1.1"
+version: "0.1.2"
 updated: "2026-08-03"
 owner: "ATHER"
 source_of_truth: false
 canonical_authority:
-  repository: "Freshair129/RWANG-PROMAX"
-  path: "skills/rwang/references/EXECUTION-GOVERNANCE.md"
-  version: "2.3.0+ga"
+  repository: "Freshair129/govibe"
+  path: "docs/STD-Execution-Governance.md"
+  version: "2.4.0+ga"
 ---
 
 # Audit: H-Axis and Execution-Governance STD Inventory
 
 ## 1. Canonical result
 
-The canonical RWANG standard and the GoVibe mirror agree on the binding definition:
+The canonical GoVibe standard defines the binding result. RWANG-PROMAX is a
+distribution mirror and cannot override GoVibe when the sources differ:
 
 ```text
 H = Access Scope / executor tool-permission ceiling
@@ -30,8 +31,8 @@ Retrieval distance, representation depth, context budget, W-scale, risk, and ope
 
 | Priority | Source | Status | Result |
 |---|---|---|---|
-| 1 | `Freshair129/RWANG-PROMAX/skills/rwang/references/EXECUTION-GOVERNANCE.md` | stable canonical | H0-H4 Access Scope |
-| 2 | `docs/STD-Execution-Governance.md` | stable mirror | semantically aligned with RWANG |
+| 1 | `docs/STD-Execution-Governance.md` | stable canonical SOT | H0-H4 Access Scope; canonical wins on conflict |
+| 2 | `Freshair129/RWANG-PROMAX/skills/rwang/references/EXECUTION-GOVERNANCE.md` | distribution mirror | may distribute aligned content; cannot override canonical GoVibe |
 | 3 | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | accepted local decision | binds GoVibe migration and compatibility |
 | 4 | feature/SRS/C4/PoC documents | mixed | must conform to sources above |
 
@@ -39,8 +40,8 @@ Retrieval distance, representation depth, context budget, W-scale, risk, and ope
 
 | File | Classification | Finding | Action in PR #17 |
 |---|---|---|---|
-| `docs/STD-Execution-Governance.md` | stable mirror | Correctly defines H0-H4 as Access Scope and retires H5/H6 | no semantic rewrite required |
-| RWANG `EXECUTION-GOVERNANCE.md` | canonical external STD | Confirms H0-H4 and separates graph radius | used as authority |
+| `docs/STD-Execution-Governance.md` | stable canonical SOT | Defines H0-H4 as Access Scope and retires H5/H6 | governing authority |
+| RWANG `EXECUTION-GOVERNANCE.md` | distribution mirror | May confirm aligned H0-H4 and graph-radius separation | cannot override GoVibe |
 | `docs/architecture/C4-GoVibe-Platform.md` | active draft architecture | Uses H0-H6 for retrieval and full-network traversal | correction overlay added; direct rewrite deferred |
 | `docs/srs/SRS-GKS-Retrieval-Layer.md` | active draft SRS | Used H0-H6 as graph hops and cited STD incorrectly | corrected to R0-R6 |
 | `docs/assurance/audit/POC-H6-Budget-Sufficiency.md` | approved audit, legacy identifier | Note distinguished R from H but active body still used H0-H6 | body normalized to R0-R6; filename/doc_id retained for compatibility |
@@ -91,5 +92,6 @@ npm run docs:validate
 
 | Version | Date | Status | Summary |
 |---|---|---|---|
+| 0.1.2 | 2026-08-03 | under-review | Corrected authority direction: GoVibe Execution Governance is canonical SOT and RWANG-PROMAX is a non-overriding distribution mirror. |
 | 0.1.1 | 2026-08-03 | under-review | Preserved the historical ADR-020 collision record and normalized its active reference to existing ADR-021. |
 | 0.1.0 | 2026-08-01 | under-review | Recorded H/STD authority, reviewed known active files, completed bounded document corrections, and listed residual validation debt. |
