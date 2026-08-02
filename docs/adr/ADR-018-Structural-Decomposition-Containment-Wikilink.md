@@ -6,7 +6,7 @@ version: "0.2.0"
 updated: "2026-08-02"
 owner: "Boss (CEO)"
 type: adr
-related_adrs: ["ADR-020"]
+related_adrs: ["ADR-023"]
 ---
 
 # ADR-018: Structural decomposition = containment tree + wikilink graph
@@ -29,7 +29,7 @@ Adopt a **single COMPOSITIONAL containment tree**:
 - **Cross-cutting / cross-system links use wikilink edges `[[TYPE::Name]]`**. An atom has one physical containment primary owner and may have N inbound references, constrained by the Acyclic Backlink Invariant.
 - **Relationship criticality is auto-derived** from the dependency graph, not hand-labeled.
 - Every promoted feature, requirement, decision, ADR, task, implementation symbol, test, and evidence artifact should preserve explicit forward or reverse relations sufficient to recover both WHAT and WHY.
-- **Graph topology is not retrieval policy.** Agents and GoVibe must not traverse arbitrary graph neighborhoods in the governed runtime path. MSP supplies the task-specific traversal profile: seed refs, required reason chains, relation allowlist, exclusions, radius, depth, width, authority state, and budget (`ADR-020`).
+- **Graph topology is not retrieval policy.** Agents and GoVibe must not traverse arbitrary graph neighborhoods in the governed runtime path. MSP supplies the task-specific traversal profile: seed refs, required reason chains, relation allowlist, exclusions, radius, depth, width, authority state, and budget (`ADR-023`).
 - Missing or unresolved links must remain explicit evidence. They must not be replaced with inferred relations solely because an LLM can produce plausible prose.
 
 ## 3. Consequences
@@ -43,7 +43,7 @@ Adopt a **single COMPOSITIONAL containment tree**:
 - (−) A complete graph can still produce a bad context packet if authority, scope, exclusions, or reason-chain requirements are wrong.
 
 ## 4. Related
-`SPEC-Genesis-Block`, `FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS`, GenesisBlockDB K-Impact, [[ADR-015-Master-Essence-vs-GOV-Policy]], [[ADR-020-Knowledge-Authority-Context-Authority-Boundary]].
+`SPEC-Genesis-Block`, `FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS`, GenesisBlockDB K-Impact, [[ADR-015-Master-Essence-vs-GOV-Policy]], [[ADR-023-Knowledge-Authority-Context-Authority-Boundary]].
 
 ## Changelog
 | Version | Date | Owner | Summary |
