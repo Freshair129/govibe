@@ -9,7 +9,8 @@
     "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
     "sha256": "b9d4b920b18bd6daf2d1790c11a8d30b0efd719a2d65970338293e50c28a2d2c"
   },
-  "rollback_authority": "docs/change-requests/manifests/results/DOC-CLEANSING-B05-EXECUTION-ROLLBACK-v1.md",
+  "rollback_authority": "docs/change-requests/manifests/results/DOC-CLEANSING-B05-ROLLBACK-MAP-v1.json",
+  "rollback_evidence": "docs/change-requests/manifests/results/DOC-CLEANSING-B05-EXECUTION-ROLLBACK-v1.md",
   "accounting": {"approved_operations": 14, "executed_relocations": 13, "executed_rename_relocation": 1, "deletions": 0, "semantic_or_metadata_edits": 0},
   "operations": [
     {"kind":"relocation","from":"docs/archive/candidate/README.md","to":"docs/archive/candidates/README.md","source_git_object_id":"f3930fd13831026dffe6cffbf4a575b48c45592c","source_sha256":"22093864fef1c9910e5d9d3f2afd024ff8e50a0bb140f59eb544eb163fac4049"},
@@ -32,11 +33,13 @@
     {"file":"docs/design/WIREFRAME-A2-Roadmap-Board.md","from":"docs/design/TEMPLATE_REFERENCE.md","to":"docs/references/templates/TEMPLATE_REFERENCE.md"}
   ],
   "cross_batch_reference_updates": {"performed": [], "status":"not_performed_by_design","reason":"Only B05-owned files were changed; cross-batch paths remain for integration from the accepted map."},
-  "rollback_reconciliation": {"map":".file-organizer-map.json","inverse_pairs_expected":14,"inverse_pairs_verified":14,"status":"pass","reversal":"Each to path maps back to its unique from path with the recorded source SHA-256."},
+  "final_target_preservation": {"byte_identical":13,"intentionally_rewritten":1,"rewritten_path":"docs/archive/legacy/LANDING-GoVibe-Release-Notes-v0.1.2.md","rewrite":"Internal mockup reference updated to docs/references/fixtures/LANDING-GoVibe-Mockup.html.","source_preflight_is_distinct":true},
+  "rollback_reconciliation": {"map":"docs/change-requests/manifests/results/DOC-CLEANSING-B05-ROLLBACK-MAP-v1.json","inverse_pairs_expected":14,"inverse_pairs_verified":14,"status":"pass","reversal":"Each final target has a unique collision-free inverse path and an exact final Git-blob identity."},
   "unresolved": ["Phase 2 semantic and authority items remain excluded.","Archive authority review remains excluded.","Registry/global README/schema edits remain excluded.","Cross-batch references require integration review."],
   "validation": {
     "json_parse":"pass",
     "source_git_blob_sha256":"pass_14_of_14",
+    "final_target_git_blob_identity":"pass_14_of_14_13_byte_identical_1_intentionally_rewritten",
     "target_containment_and_collision_preflight":"pass_14_of_14",
     "rollback_reconciliation":"pass_14_of_14",
     "git_diff_check":"pass",
