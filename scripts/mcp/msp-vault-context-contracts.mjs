@@ -32,6 +32,19 @@ function requireObject(value, label) {
   return value;
 }
 
+function rejectCanonicalCandidate(candidate) {
+  for (const [key, value] of Object.entries(candidate)) {
+    const canonicalKey = /^(canonical_?id|gks_?id|target_?ref)$/i.test(key);
+    const canonicalValue = typeof value === "string" && value.toLowerCase().startsWith("gks:");
+    if (canonicalKey || canonicalValue) {
+      const error = new Error("Provider candidate must not assign a canonical GKS identity.");
+      error.code = "provider_canonical_identity_forbidden";
+      throw error;
+    }
+  }
+  return candidate;
+}
+
 export function createTypedVaultContextMsp(client) {
   if (!client || typeof client.call !== "function") throw new Error("MSP parent capability is unavailable.");
 
@@ -111,6 +124,7 @@ export function createTypedVaultContextMsp(client) {
       if (!Array.isArray(input.evidenceRefs) || input.evidenceRefs.length === 0) {
         throw new TypeError("evidenceRefs must contain at least one reference.");
       }
+      const candidate = rejectCanonicalCandidate(requireObject(input.candidate, "candidate"));
       const result = await client.call("msp_memory_promote", {
         schema_version: "govibe-memory-promotion/v1",
         actor: requireString(input.actor, "actor"),
@@ -118,7 +132,7 @@ export function createTypedVaultContextMsp(client) {
         workspace_id: requireString(input.workspaceId, "workspaceId"),
         source_memory_ref: requireString(input.sourceMemoryRef, "sourceMemoryRef"),
         target_scope: requireString(input.targetScope, "targetScope"),
-        candidate: requireObject(input.candidate, "candidate"),
+        candidate,
         evidence_refs: input.evidenceRefs.map((ref) => requireString(ref, "evidence reference")),
         reason: requireString(input.reason, "reason"),
         idempotency_key: requireString(input.idempotencyKey, "idempotencyKey"),
