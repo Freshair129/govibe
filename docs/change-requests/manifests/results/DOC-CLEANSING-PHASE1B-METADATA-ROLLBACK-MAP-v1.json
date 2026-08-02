@@ -4,6 +4,7 @@
   "batch_id": "PHASE1B-METADATA",
   "baseline_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
   "execution_authority": "owner delegated decision in this task",
+  "post_identity_status": "intermediate_at_c86a95baa6601a4f3e90f9c978cb12e55f0592e8; GVDOC-1004 is superseded by the separately mapped Phase1B handover semantic correction and central registry reconciliation remains pending",
   "operation_count": 8,
   "operation_type": "in_place_metadata_normalization",
   "path_operations": 0,

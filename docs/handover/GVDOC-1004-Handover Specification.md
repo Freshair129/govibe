@@ -1,10 +1,10 @@
 ---
 title: "GKS System Handover Specification"
-summary: Handover instructions for the GKS JIT Context Engine, H0-H6 routing, W-Scale fan-out control, and hybrid retrieval enforcement after Phase 4.
+summary: Draft handover guidance for MSP-scoped context assembly, H0-H4 executor access, and separately declared R/D/W/Budget/Risk/contextProfile controls.
 doc_id: "GVDOC-1004"
 created: "2026-06-12T19:15:00+07:00,GKS Lead Architect"
 updated: "2026-08-03"
-version: "2.2.0-ga"
+version: "2.3.0+draft"
 status: "draft"
 owner: "THESEUS"
 source_of_truth: false
@@ -26,8 +26,8 @@ crosslink:
 # GKS Handover Specification
 
 **To:** System AI Agents / Core Engineering Team  
-**Subject:** Mandatory handover for JIT context routing, H0-H6 depth policy, W-Scale fan-out control, and 4-layer hybrid retrieval  
-**Status:** Mandatory implementation
+**Subject:** Draft handover for MSP-scoped context assembly, executor access, and bounded retrieval guidance
+**Status:** Draft guidance; no implementation authorization
 
 ## 1. Canonical Standards
 
@@ -40,9 +40,9 @@ This handover does not define the platform standard by itself. It inherits from 
 
 When this handover conflicts with a current standard, the standard wins and this handover must be updated.
 
-## 2. Required Routing Corrections
+## 2. Execution Access and Context Axes
 
-### 2.1 Complexity to Hop Mapping
+### 2.1 Complexity to Access Mapping
 
 The old `R10` wording is now legacy naming. The canonical standard name is `Execution Governance Standard`.
 
@@ -51,29 +51,38 @@ Required mapping:
 - `C-0` -> `H0`
 - `C-1` -> `H1`
 - `C-2` -> `H2`
-- `C-3` -> `H3-H6`
+- `C-3` -> `H3`
+
+`H4` is an explicit upward access declaration that requires owner approval. It
+is not a complexity default and it is not a retrieval or graph-depth value.
 
 Operational meaning:
 
-- `H0` = isolated subtask or PR-sized change
-- `H1` = local task and immediate component boundary
-- `H2` = feature/story context
-- `H3` = epic or module integration
-- `H4` = phase or architecture boundary
-- `H5` = roadmap or cross-system operating context
-- `H6` = enterprise-wide or full-network traversal ceiling
+- `H0` = one bounded file read
+- `H1` = search
+- `H2` = write and multi-file edit
+- `H3` = shell execution
+- `H4` = network and full configured capabilities, subject to approval
 
-### 2.2 H0-H6 Graph Depth Policy
+### 2.2 Retrieval, Compaction, Fan-out, and Context Policy
 
-JIT traversal must support a maximum depth of `6` hops.
+`H` must not be used for graph hops, retrieval radius, compaction depth, token
+budget, risk, or context profile. `H5` and `H6` are abolished and must not be
+introduced as compatibility tiers.
 
 ```yaml
-graph_traversal:
-  max_depth_hops: 6
-  acyclic_loop_check: true
+context_packet_controls:
+  retrieval_radius: "R0..R6 or explicit policy"
+  compaction_depth: "D: repository-defined"
+  fan_out: "W: explicit scale"
+  budget: "explicit object or value"
+  risk: "explicit class"
+  contextProfile: "packet-specified T-ctx, V-ctx, W-ctx, or M-ctx"
 ```
 
-The `H6` tier exists as the hard ceiling for full-network reasoning and should be rare. If ordinary work regularly needs `H6`, the architecture likely has excessive coupling and needs refactoring.
+Any retrieval must be authorized through an MSP-provided context packet with its
+relation policy, exclusions, permissions, budget, and source lineage. This
+document does not assign a default graph-hop ceiling or authorize traversal.
 
 ### 2.3 W-Scale Fan-out Control
 
@@ -91,56 +100,72 @@ Purpose:
 - prevent oversized super-hub nodes
 - surface coupling problems before deployment
 
-## 3. Traversal Requirements
+## 3. Scoped Context Requirements
 
-Traversal must remain bi-directional:
+When an approved context packet permits relation traversal, it may identify
+bounded upstream and downstream relations:
 
 - upward through parent relationships
 - downward through child relationships
 
-The renderer must build a bespoke virtual document from the visited node set rather than exposing the raw source tree.
+GoVibe does not call GKS or GenesisBlockDB directly. The runtime boundary is:
+
+```text
+Executor / Claude Code -> GoVibe MCP -> MSP -> GKS -> GenesisBlockDB
+```
+
+The context packet is MSP-scoped. An agent must not assemble unrestricted graph
+context, read another agent's private vault, or substitute `context_tier` for
+the packet's `contextProfile`.
 
 Minimum behavior:
 
 ```text
 pivot node
-  -> bounded traversal by H tier
-  -> visited node set
-  -> virtual document render
-  -> agent consumes scoped context only
+  -> MSP-authorized bounded relation policy
+  -> source versions and exclusions
+  -> context packet
+  -> agent consumes only the scoped packet
 ```
 
-## 4. Hybrid Retrieval Enforcement
+## 4. Hybrid Retrieval Guidance
 
-The retrieval stack must preserve the 4-layer order:
+If an approved hybrid retrieval design selects these layers, its intended order
+is:
 
 1. atomic or exact match
 2. FTS layer
 3. vector or semantic layer
 4. graph expansion or reranking layer
 
-FTS is mandatory as layer 2 and must not be skipped when exact atomic match fails.
+This handover does not itself enforce a retrieval implementation or claim that
+any layer is available at runtime.
 
-## 5. Verification and Enforcement
+## 5. Verification Boundary
 
-- Run verification guards before merge or deployment.
-- Reject traversal configs that exceed `H6`.
-- Reject graph states that exceed `W4`.
-- Fail handover compliance when implementation still references legacy `R10` naming as canonical.
+- Verify that this document does not introduce `H5`, `H6`, or `context_tier`.
+- Verify that declared access, retrieval, compaction, fan-out, budget, risk,
+  and context profile are not conflated.
+- Verify the GoVibe -> MSP -> GKS -> GenesisBlockDB boundary is retained.
+- Treat runtime behavior, retrieval-layer availability, and any broader legacy
+  content as separate evidence or follow-up work.
 
 ## 6. Handover Outcome
 
-This document hands over the operational instructions for:
+This draft records a corrected handover posture for:
 
-- H0-H6 depth routing
-- W-Scale fan-out limiting
-- bi-directional JIT traversal
-- hybrid retrieval enforcement
+- H0-H4 executor access
+- separately declared R/D/W/Budget/Risk/contextProfile controls
+- MSP-scoped context assembly
+- conditional hybrid-retrieval guidance
 
-The long-term source of truth for these rules must remain in the standard and feature documents, with this handover acting as an implementation transfer layer.
+The long-term source of truth for these rules remains the current GoVibe
+standards and approved architecture documents. This handover is not a
+canonical authority or an implementation transfer approval.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 2.3.0+draft | 2026-08-03 | THESEUS | Replaced obsolete multi-tier access semantics with H0-H4 executor access and separate packet controls; preserved the MSP-only runtime boundary without asserting runtime availability. |
 | 2.2.0-ga | 2026-08-03 | THESEUS | Normalized legacy release version and governed metadata under delegated Phase 1B authority; no handover content is approved as canonical. |
