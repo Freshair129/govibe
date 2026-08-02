@@ -1,0 +1,38 @@
+schema_version: "1.0.0"
+standard_id: "STD-EXECUTION-GOVERNANCE"
+semantic_version: "2.4.0+ga"
+normative_payload:
+  start_heading: "# STD: Execution Governance Standard"
+  newline_normalization: "LF"
+  sha256: "d72f3f6d0e9a711d25c689f9ddee13468cbdd10a34a336451112e0c41ae3b3f4"
+
+canonical:
+  repository: "Freshair129/govibe"
+  ref: "main"
+  path: "docs/STD-Execution-Governance.md"
+  source_of_truth: true
+  distribution_role: "canonical"
+
+mirrors:
+  - repository: "Freshair129/RWANG-PROMAX"
+    ref: "main"
+    path: "skills/rwang/references/EXECUTION-GOVERNANCE.md"
+    source_of_truth: false
+    distribution_role: "mirror"
+    required_status: "synced"
+
+policy:
+  semantic_version_lock: "exact"
+  canonical_wins: true
+  direct_mirror_semantic_edits: "forbidden"
+  on_version_mismatch: "fail_closed"
+  on_hash_mismatch: "fail_closed"
+  on_unknown_authority: "fail_closed"
+  mirror_wrapper_revision_field: "mirror_revision"
+
+required_checks:
+  - "exactly one source_of_truth=true for this doc_id"
+  - "canonical and mirror semantic versions match"
+  - "normative payload sha256 matches"
+  - "mirror points to the canonical repository and path"
+  - "GoVibe registry records the canonical version and path"
