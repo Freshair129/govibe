@@ -26,13 +26,19 @@ Each future operation must record source path/hash, target path, operation,
 collision check, inbound-reference impact, worker commit and inverse operation.
 The consolidated dry-run map must be approved and committed before execution.
 
+For tracked sources, `source path/hash` means SHA-256 and byte length over exact
+baseline Git blob bytes obtained through `git cat-file`, with no implicit newline
+or text normalization. Filesystem-byte hashes are permitted only for exclusions
+explicitly marked ignored/untracked and never establish a tracked rollback base.
+
 ## 3. Recovery Procedure
 
 1. Stop worker and integration dispatch.
 2. Preserve review logs and current commit hashes.
 3. Verify the target is the isolated worktree and branch.
 4. Revert accepted commits using non-destructive Git revert commits.
-5. Re-run inventory hashes and registry/reference validation.
+5. Re-run all tracked hashes against baseline Git blobs and then run
+   registry/reference validation.
 6. Escalate any hash mismatch or path not represented in the rollback map.
 
 No recursive deletion, hard reset, root-worktree checkout, or map clearing is

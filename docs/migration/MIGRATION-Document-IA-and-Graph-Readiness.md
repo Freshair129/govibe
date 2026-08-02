@@ -21,6 +21,14 @@ Phase 1 is pinned to `a5f2c938ab285b23b803d37c9786537a77dfdc9d`.
 It creates planning artifacts only. The corpus must not be moved or renamed
 until a complete dry-run map passes Noise Review and receives separate approval.
 
+Tracked evidence hashes are SHA-256 over the exact Git blob bytes resolved by
+`git rev-parse <baseline>:<path>` and read by `git cat-file blob <object-id>`.
+Byte counts use that same blob buffer. No checkout conversion, encoding change,
+line-ending conversion, Unicode normalization, or trailing newline is applied.
+`sourceManifestHash` is SHA-256 over the UTF-8 canonical JSON projection defined
+in the inventory manifest. The five ignored/untracked exclusions are explicitly
+marked `filesystem_bytes` and are not mixed into the tracked source hash.
+
 ## 2. Exact Work Batches
 
 The batch manifest is authoritative for exact paths and hashes.
@@ -52,7 +60,7 @@ diff receives the same review before Parent Final Gate.
 
 ## 4. Execution Sequence
 
-1. Reproduce inventory hashes and verify baseline accounting.
+1. Reproduce all 201 tracked hashes from Git blobs and verify baseline accounting.
 2. Dispatch isolated B01-B05 work packets with `T-ctx`.
 3. Review each commit read-only and return noisy batches for revision.
 4. Integrate accepted commits in one `W-ctx` workflow.
