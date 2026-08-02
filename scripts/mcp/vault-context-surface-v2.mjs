@@ -1,4 +1,5 @@
 import { govibeRuntime } from "./runtime-core.mjs";
+import { validateContextAuthorityRequest } from "./context-authority-contract.mjs";
 import { createTypedVaultContextMsp } from "./msp-vault-context-contracts.mjs";
 import { handlesVaultContextTool, vaultContextToolCatalog } from "./vault-context-surface.mjs";
 
@@ -27,21 +28,24 @@ export function createVaultContextToolHandlerV2(runtime) {
       case "govibe.vault.mount":
         result = await typed.mountVault({ ...args, actor });
         break;
-      case "govibe.context.resolve":
+      case "govibe.context.resolve": {
         if (typeof runtime?.mspClient?.resolveContext !== "function") throw new Error("MSP context resolve capability is unavailable.");
+        const contextAuthority = validateContextAuthorityRequest({ ...args, actor });
         result = await runtime.mspClient.resolveContext({
           actor,
-          workspaceId: requireString(args.workspaceId, "workspaceId"),
+          workspaceId: contextAuthority.identity.workspaceId,
           workspacePath: requireString(args.workspacePath, "workspacePath"),
-          agentId: requireString(args.agentId, "agentId"),
+          agentId: contextAuthority.identity.agentId,
           contextProfile: requireString(args.contextProfile, "contextProfile"),
-          parentContextId: args.parentContextId ?? null,
+          parentContextId: contextAuthority.lineage.parentContextId,
           workflowRef: args.workflowRef ?? null,
           stateKeys: args.stateKeys ?? [],
-          knowledgeRefs: args.knowledgeRefs ?? [],
-          mode: "codev",
+          knowledgeRefs: contextAuthority.knowledgeRefs,
+          contextAuthority,
+          mode: args.mode ?? "codev",
         });
         break;
+      }
       case "govibe.context.diff":
         result = await typed.diffContext({ ...args, actor });
         break;
