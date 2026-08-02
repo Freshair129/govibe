@@ -1,6 +1,47 @@
 import { govibeRuntime } from "./runtime-core.mjs";
+import { validateContextAuthorityRequest, validateContextAuthorityResponse } from "./context-authority-contract.mjs";
 import { createTypedVaultContextMsp } from "./msp-vault-context-contracts.mjs";
 import { handlesVaultContextTool, vaultContextToolCatalog } from "./vault-context-surface.mjs";
+
+const resolveTool = vaultContextToolCatalog.find((tool) => tool.name === "govibe.context.resolve");
+if (resolveTool) {
+  Object.assign(resolveTool.inputSchema.properties, {
+    taskId: { type: "string" },
+    runId: { type: "string" },
+    sessionId: { type: "string" },
+    turnId: { type: "string" },
+    sources: {
+      type: "array",
+      minItems: 1,
+      items: {
+        type: "object",
+        properties: { id: { type: "string" }, version: { type: "string" }, hash: { type: "string" } },
+        required: ["id", "version", "hash"],
+      },
+    },
+    requiredReasonRefs: { type: "array", minItems: 1, items: { type: "string" } },
+    relationAllowlist: { type: "array", minItems: 1, items: { type: "string" } },
+    retrievalRadius: { type: "integer", minimum: 0, maximum: 6 },
+    inclusions: { type: "array", items: { type: "string" } },
+    exclusions: { type: "array", items: { type: "string" } },
+    unresolvedAssumptions: { type: "array", items: { type: "string" } },
+    budget: {
+      type: "object",
+      properties: { maxTokens: { type: "integer", minimum: 1 }, compaction: { type: "string" } },
+      required: ["maxTokens"],
+    },
+    lineage: {
+      type: "object",
+      properties: { contextId: { type: "string" }, cacheId: { type: "string" }, parentContextId: { type: "string" } },
+      required: ["contextId", "cacheId"],
+    },
+  });
+  resolveTool.inputSchema.required = [
+    "actor", "workspaceId", "workspacePath", "agentId", "contextProfile",
+    "taskId", "runId", "sessionId", "turnId", "sources", "requiredReasonRefs",
+    "relationAllowlist", "retrievalRadius", "budget", "lineage",
+  ];
+}
 
 export { handlesVaultContextTool, vaultContextToolCatalog };
 
@@ -27,21 +68,25 @@ export function createVaultContextToolHandlerV2(runtime) {
       case "govibe.vault.mount":
         result = await typed.mountVault({ ...args, actor });
         break;
-      case "govibe.context.resolve":
+      case "govibe.context.resolve": {
         if (typeof runtime?.mspClient?.resolveContext !== "function") throw new Error("MSP context resolve capability is unavailable.");
-        result = await runtime.mspClient.resolveContext({
+        const contextAuthority = validateContextAuthorityRequest({ ...args, actor });
+        const rawResult = await runtime.mspClient.resolveContext({
           actor,
-          workspaceId: requireString(args.workspaceId, "workspaceId"),
+          workspaceId: contextAuthority.identity.workspaceId,
           workspacePath: requireString(args.workspacePath, "workspacePath"),
-          agentId: requireString(args.agentId, "agentId"),
+          agentId: contextAuthority.identity.agentId,
           contextProfile: requireString(args.contextProfile, "contextProfile"),
-          parentContextId: args.parentContextId ?? null,
+          parentContextId: contextAuthority.lineage.parentContextId,
           workflowRef: args.workflowRef ?? null,
           stateKeys: args.stateKeys ?? [],
-          knowledgeRefs: args.knowledgeRefs ?? [],
-          mode: "codev",
+          knowledgeRefs: contextAuthority.knowledgeRefs,
+          contextAuthority,
+          mode: args.mode ?? "codev",
         });
+        result = validateContextAuthorityResponse(rawResult, contextAuthority);
         break;
+      }
       case "govibe.context.diff":
         result = await typed.diffContext({ ...args, actor });
         break;
