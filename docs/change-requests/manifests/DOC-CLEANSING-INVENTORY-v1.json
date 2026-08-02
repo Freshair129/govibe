@@ -8,7 +8,22 @@
     "external_source": "exact filesystem bytes from G:/govibe at inventory time",
     "algorithm": "sha256",
     "normalization": "none",
-    "canonical_projection": "UTF-8 JSON.stringify of baseline_commit plus path-sorted tracked_records; no trailing newline",
+    "canonical_projection": "UTF-8 JSON.stringify of the ordered projection implemented by scripts/docs/verify-doc-cleansing-manifest.mjs",
+    "projection_keys": [
+      "baseline_commit",
+      "tracked_records"
+    ],
+    "record_keys": [
+      "path",
+      "git_object_id",
+      "bytes",
+      "sha256",
+      "disposition",
+      "batch"
+    ],
+    "record_order": "ascending UTF-8 bytewise path order",
+    "serialization": "JSON.stringify with insertion order shown; UTF-8; no whitespace; no trailing newline",
+    "verifier": "scripts/docs/verify-doc-cleansing-manifest.mjs",
     "canonical_projection_bytes": 54574
   },
   "source_manifest_hash": "f5b16968f3bace10177d11849d60f7aaf7bf287ef3c9645becbb0e11eb3d99b6",

@@ -2,7 +2,7 @@
 title: "Migration Plan: Document IA and Graph Readiness"
 doc_id: "MIGRATION-DOCUMENT-IA-GRAPH-READINESS"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-08-03"
 owner: "LYRA / ATHER"
 source_of_truth: true
@@ -28,6 +28,22 @@ line-ending conversion, Unicode normalization, or trailing newline is applied.
 `sourceManifestHash` is SHA-256 over the UTF-8 canonical JSON projection defined
 in the inventory manifest. The five ignored/untracked exclusions are explicitly
 marked `filesystem_bytes` and are not mixed into the tracked source hash.
+
+The verifier constructs the projection with keys in this exact insertion order:
+`baseline_commit`, then `tracked_records`. Records are sorted by UTF-8 bytewise
+path order and use keys `path`, `git_object_id`, `bytes`, `sha256`,
+`disposition`, `batch` in that order; missing batch is serialized as `null`.
+Serialization is compact `JSON.stringify`, encoded once as UTF-8, with no
+whitespace or trailing newline.
+
+Canonical verification command from the repository root:
+
+```powershell
+node scripts/docs/verify-doc-cleansing-manifest.mjs --external-root G:/govibe
+```
+
+Without `--external-root`, the command still verifies all 201 tracked blobs and
+emits `skipped_no_external_root` for the five filesystem exclusions.
 
 ## 2. Exact Work Batches
 
@@ -88,4 +104,5 @@ Never widen context or guess a disposition to clear a gate.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-03 | LYRA / ATHER | Added the executable deterministic projection, Git-blob, batch, and optional external-filesystem verification contract. |
 | 0.1.0+draft | 2026-08-03 | LYRA / ATHER | Defined the five exact cleansing batches, isolation, noise review, integration, stop, and final-gate sequence. |

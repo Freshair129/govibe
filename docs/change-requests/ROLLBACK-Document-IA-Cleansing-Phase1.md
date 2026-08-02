@@ -2,7 +2,7 @@
 title: "Rollback Plan: Document IA Cleansing Phase 1"
 doc_id: "ROLLBACK-DOCUMENT-IA-CLEANSING-PHASE1"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-08-03"
 owner: "ATHER"
 source_of_truth: true
@@ -31,6 +31,15 @@ baseline Git blob bytes obtained through `git cat-file`, with no implicit newlin
 or text normalization. Filesystem-byte hashes are permitted only for exclusions
 explicitly marked ignored/untracked and never establish a tracked rollback base.
 
+Before rollback approval, reproduce the evidence with:
+
+```powershell
+node scripts/docs/verify-doc-cleansing-manifest.mjs --external-root G:/govibe
+```
+
+The verifier is the executable authority for projection key order, UTF-8
+bytewise record ordering, compact JSON serialization, and external skip evidence.
+
 ## 3. Recovery Procedure
 
 1. Stop worker and integration dispatch.
@@ -55,4 +64,5 @@ authorized by this plan.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-03 | ATHER | Bound rollback evidence to the deterministic manifest verifier and explicit external-root handling. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Defined non-destructive rollback evidence and recovery boundaries for the cleansing workflow. |
