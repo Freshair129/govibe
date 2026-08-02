@@ -205,9 +205,21 @@
       "after": {"sha256": "07fde2a9d26f10c4eb6d67350528b06573723c4ad806a067f82bf881b8b4c19e", "bytes": 6883},
       "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
       "inverse": "Restore exact blob 7c6ffde:.agents/qa/AGENT.md after verifying the listed after SHA-256."
+    },
+    {
+      "id": "P2S-22",
+      "kind": "resource_registry_compatibility_rewrite",
+      "path": "scripts/mcp/registry.mjs",
+      "repair_baseline_commit": "c26dae127090f28f0f52db2d3621091ad0d5eb7e",
+      "before": {"sha256": "d68eff5e9a9f9dba8c180a777167dd89dc76dfa95b5ccb915e32b0d797639020", "bytes": 12795},
+      "after": {"sha256": "d34c872490f35968da576a631e61f1a85cf3fa421cd3ef61b96421736eafbd4c", "bytes": 12914},
+      "preserved_identity": "govibe://docs/runbook/multi-agent",
+      "rewrite": "Keep the resource URI stable; update its path to docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md and label it draft/non-SOT operational guidance governed by docs/STD-Execution-Governance.md.",
+      "inverse": "Restore exact blob c26dae127090f28f0f52db2d3621091ad0d5eb7e:scripts/mcp/registry.mjs after verifying the listed after SHA-256."
     }
   ],
   "rollback_order": [
+    "P2S-22: restore the exact c26dae registry blob after verifying its listed after SHA-256; the resource URI remains unchanged in both directions.",
     "P2S-03 through P2S-21: restore each exact baseline blob after verifying its listed after SHA-256.",
     "P2S-02: restore the baseline runbook to docs/runbooks and remove the moved destination only after verifying its listed after SHA-256.",
     "P2S-01: restore the exact baseline landing-template blob after verifying its listed after SHA-256.",
@@ -223,13 +235,14 @@
     "multi_agent_runbook": {
       "governing_relation": "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/STD-Execution-Governance.md",
       "distance": 1,
-      "direct_backlinks": {"artifacts": 19, "reference_edges": 22},
+      "direct_backlinks": {"artifacts": 20, "reference_edges": 23},
       "required_action": "rewrite every discovered active path reference to the collision-free operational-runbooks location",
       "cycles": "No cycle found in the bounded direct-path reference set; traversal was capped at one inbound edge from the runbook seed and one governing-standard edge.",
-      "coverage": "Exact-path discovery over tracked Markdown, .agents contracts, and GEMINI.md at the baseline; it is bounded discovery evidence, not a canonical GKS graph-completeness claim.",
+      "coverage": "Exact-path discovery over tracked Markdown, .agents contracts, GEMINI.md, and the MCP resource catalog; it is bounded discovery evidence, not a canonical GKS graph-completeness claim.",
       "unresolved": [
         "No MSP-issued context packet or canonical GKS relation IDs were available.",
         "Semantic correctness of unrelated legacy H/context references was intentionally excluded.",
+        "Historical cleansing inventory/batch manifests, prior rollback/result evidence, and one non-canonical .brain session retain the baseline path as evidence; they are not active resource consumers.",
         "The generated result and rollback artifacts are not self-hashed inside this map to avoid a self-referential digest claim."
       ]
     }
