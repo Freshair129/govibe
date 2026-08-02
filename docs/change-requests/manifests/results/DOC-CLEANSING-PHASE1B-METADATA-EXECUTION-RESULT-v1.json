@@ -1,5 +1,8 @@
 {
   "schema_version": "1.0.0",
+  "evidence_revision": 2,
+  "sha256_basis": "git_blob_content_bytes",
+  "sha256_status": "recomputed_and_verified",
   "result_id": "DOC-CLEANSING-PHASE1B-METADATA-EXECUTION-RESULT-v1",
   "baseline_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
   "execution_authority": "owner delegated decision in this task",

@@ -1,5 +1,8 @@
 {
   "schema_version": "1.0.0",
+  "evidence_revision": 2,
+  "sha256_basis": "git_blob_content_bytes",
+  "sha256_status": "recomputed_and_verified",
   "result_id": "DOC-CLEANSING-PHASE1B-HANDOVER-SEMANTIC-EXECUTION-RESULT-v1",
   "baseline_commit": "c86a95baa6601a4f3e90f9c978cb12e55f0592e8",
   "execution_authority": "owner delegated decision in this task",
