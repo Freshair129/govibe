@@ -1,0 +1,84 @@
+schema: govibe-provider-entitlement-compatibility-registry/v1
+version: 0.1.0
+updated: 2026-08-03
+default_decision: deny
+required_policy_doc: docs/security/POLICY-Provider-Entitlement-Sharing-Compatibility.md
+
+reason_codes:
+  - COMPATIBILITY_RECORD_MISSING
+  - COMPATIBILITY_RECORD_EXPIRED
+  - COMPATIBILITY_RECORD_SUSPENDED
+  - PRODUCT_OR_PLAN_MISMATCH
+  - EXECUTION_SURFACE_MISMATCH
+  - SHARE_SCOPE_NOT_APPROVED
+  - PRINCIPAL_NOT_APPROVED
+  - AUTOMATION_NOT_APPROVED
+  - SESSION_REUSE_NOT_APPROVED
+  - CONCURRENCY_NOT_APPROVED
+  - CREDENTIAL_DELEGATION_NOT_APPROVED
+  - EVIDENCE_STALE_OR_INVALID
+  - PROVIDER_POLICY_UNKNOWN
+
+records:
+  - record_id: local-runtime-owner-host-v1
+    schema_version: govibe-provider-entitlement-compatibility/v1
+    provider: local
+    product: govibe-local-runtime
+    plan: self-hosted
+    execution_surface: local_runtime
+    entitlement_type: local_compute
+    owner_type: user_or_organization
+    permitted_user_model: host_policy
+    approved_scope: local_host
+    automation_allowed: true
+    credential_delegation_allowed: false
+    session_reuse_allowed: false
+    concurrent_use_allowed: host_policy
+    quota_visibility:
+      compute_seconds: provider_reported
+      gpu_memory: provider_reported
+      token_usage: govibe_estimated
+      request_quota: not_applicable
+    cache_visibility:
+      prompt_cache: unknown
+      provider_session: not_applicable
+    approval_state: approved_owner_only
+    approved_date: 2026-08-03
+    expiry_date: 2027-02-03
+    next_review_date: 2026-11-03
+    evidence_refs:
+      - internal:govibe-local-runtime-ownership-policy
+    restrictions:
+      - Execution is restricted to the registered host and authorized workspace policy.
+      - This record does not authorize remote credential sharing or cross-user sessions.
+
+  - record_id: external-provider-default-deny-v1
+    schema_version: govibe-provider-entitlement-compatibility/v1
+    provider: "*"
+    product: "*"
+    plan: "*"
+    execution_surface: "*"
+    entitlement_type: external_subscription_or_seat
+    owner_type: unknown
+    permitted_user_model: owner_only
+    approved_scope: owner_only
+    automation_allowed: false
+    credential_delegation_allowed: false
+    session_reuse_allowed: false
+    concurrent_use_allowed: false
+    quota_visibility:
+      request_quota: unknown
+      token_usage: unknown
+      credits: unknown
+      cached_tokens: unknown
+    cache_visibility:
+      prompt_cache: unknown
+      provider_session: unknown
+    approval_state: unknown
+    approved_date: null
+    expiry_date: null
+    next_review_date: null
+    evidence_refs: []
+    restrictions:
+      - External provider sharing is denied until an exact provider/product/plan/surface record is approved.
+      - Technical access or observed concurrency is not evidence of authorization.
