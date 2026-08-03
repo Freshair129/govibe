@@ -2,7 +2,7 @@
 title: "GoVibe Documentation Navigation Hub"
 doc_id: "DOCS-NAVIGATION-HUB"
 status: "draft"
-version: "0.2.9+draft"
+version: "0.3.0+draft"
 updated: "2026-08-03"
 owner: "THESEUS / ATHER"
 source_of_truth: true
@@ -11,6 +11,9 @@ related_docs:
   - "docs/STD-Document-Versioning-Governance.md"
   - "docs/DOC-VERSION-REGISTRY.md"
   - "docs/design/GoVibe-Document-Hierarchy.md"
+  - "docs/srs/SRS-Canonical-Semantic-IR.md"
+  - "docs/adr/ADR-025-Storage-Backend-Independence-and-GenesisBlockDB-Adapter-Boundary.md"
+  - "docs/integration/CONTRACT-GenesisBlockDB-Adapter.md"
 ---
 
 # GoVibe Documentation Navigation Hub
@@ -24,13 +27,30 @@ related_docs:
 - Platform intent: `docs/BRD-GoVibe-Platform.md` and
   `docs/PRD-GoVibe-Platform-Overview.md`
 
+## Canonical Semantic IR and Storage Boundary
+
+- Software requirements: `docs/srs/SRS-Canonical-Semantic-IR.md`
+- Storage-backend independence decision: `docs/adr/ADR-025-Storage-Backend-Independence-and-GenesisBlockDB-Adapter-Boundary.md`
+- GenesisBlockDB adapter contract: `docs/integration/CONTRACT-GenesisBlockDB-Adapter.md`
+- Tracking issue: `#91`
+
+```text
+GoVibe semantic compilation and governed execution
+  -> MSP promotion/context authority
+  -> GKS canonical semantic authority
+  -> backend-neutral persistence port
+  -> GenesisBlockDB adapter or another compatible backend
+```
+
+GenesisBlockDB is a standalone database product and one supported backend. GoVibe is not its only client. NotiKeeper and future clients may use GenesisBlockDB with independent schemas and domain rules. GoVibe-specific ontology must not become mandatory database-core ontology.
+
 ## Main Collections
 
 | Need | Current collection |
 |---|---|
 | Product and feature contracts | `docs/features/`, `docs/srs/` |
 | Architecture and decisions | `docs/architecture/`, `docs/adr/`, `docs/blueprints/`, `docs/lld/` |
-| Interfaces | `docs/api/` |
+| Interfaces and integration | `docs/api/`, `docs/integration/` |
 | Planning | `docs/roadmap/` |
 | Operations | `docs/operations/runbooks/`, `docs/handover/` |
 | Change and failure control | `docs/change-control/change-requests/`, `docs/change-control/rca/`, `docs/migration/` |
@@ -96,6 +116,7 @@ this does not promote an API/ADR or claim external-consumer safety.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0+draft | 2026-08-03 | ATHER / THESEUS | Added Canonical Semantic IR, backend-independence, and GenesisBlockDB adapter-boundary navigation after merged PR #92 while preserving WP-11 closure guidance. |
 | 0.2.9+draft | 2026-08-03 | ATHER | Updated navigation for WP-11 PR #95 closure; parent/API drafts, promotion prohibition, D-07 accepted HIGH external risk, and rollback remain unchanged. |
 | 0.2.8+draft | 2026-08-03 | ATHER | Updated navigation for the authorized WP-11 schema-less compatibility removal and canonical D-07 lifecycle correction; API-008 remains draft and external-consumer risk remains accepted, not resolved. |
 | 0.2.7+draft | 2026-08-03 | ATHER | Updated execution-binding navigation for Boss's D-07 WP-11 authorization and explicit accepted-risk/rollback boundary; parent/API drafts remain unchanged. |
