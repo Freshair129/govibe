@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.1.83+draft"
+version: "0.1.84+draft"
 updated: "2026-08-03"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -32,7 +32,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.0+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.1.83+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.1.84+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -49,10 +49,11 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Change Request | `CR-2026-08-03-DOCUMENT-IA-KNOWLEDGE-GRAPH-READINESS` | `0.3.0+draft` | draft | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Document-IA-and-Knowledge-Graph-Readiness.md` |
 | Change Request | `CR-2026-08-03-PHASE1B-METADATA-DECISION-PACKET` | `0.2.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Phase1B-Metadata-Decision-Packet.md` |
 | Change Request | `CR-2026-08-03-PHASE2-SEMANTIC-AUTHORITY-DECISION-PACKET` | `0.2.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Phase2-Semantic-Authority-Decision-Packet.md` |
+| Change Request | `FUTURE-CR-CONTEXT-AUTHORITY-RUNTIME-REPAIR` | `0.1.0+draft` | draft | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Context-Authority-Runtime-Repair.md` |
 | Blueprint | `BLUEPRINT-DOCUMENT-IA-GRAPH-CONTRACT` | `0.1.0+draft` | draft | ARCHON / THESEUS / ATHER | `docs/blueprints/BLUEPRINT-Document-Information-Architecture-and-Graph-Contract.md` |
 | Migration | `MIGRATION-DOCUMENT-IA-GRAPH-READINESS` | `0.3.0+draft` | draft | LYRA / ATHER | `docs/migration/MIGRATION-Document-IA-and-Graph-Readiness.md` |
 | Rollback | `ROLLBACK-DOCUMENT-IA-CLEANSING-PHASE1` | `0.3.0+draft` | draft | ATHER | `docs/change-requests/ROLLBACK-Document-IA-Cleansing-Phase1.md` |
-| Navigation | `DOCS-NAVIGATION-HUB` | `0.2.0+draft` | draft | THESEUS / ATHER | `docs/README.md` |
+| Navigation | `DOCS-NAVIGATION-HUB` | `0.2.1+draft` | draft | THESEUS / ATHER | `docs/README.md` |
 | PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.5.0+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
 | PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.1+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
 | Design | `DESIGN-GOVIBE-DOCUMENT-HIERARCHY` | `0.2.0+draft` | draft | ARCHON / THESEUS / ATHER | `docs/design/GoVibe-Document-Hierarchy.md` |
@@ -169,6 +170,7 @@ them into product authority.
 | Change Request | `CR-2026-06-15-CODEV-COVIBE-POSITIONING-REVIEW` | `0.1.1-beta` | draft | Boss (Product Authority) | `docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md` |
 | Migration | `MIG-001-MISSION-CONTROL-REACT` | `0.1.0+draft` | draft | LYRA | `docs/migration/MIG-001-Mission-Control-React.md` |
 | RCA | `RCA-2026-06-14-VISUAL-AGENT-FLEET-GOVERNANCE-FAILURE` | `0.1.0+draft` | draft | ATHER | `docs/rca/RCA-2026-06-14-Visual-Agent-Fleet-Governance-Failure.md` |
+| RCA | `RCA-2026-08-03-CONTEXT-AUTHORITY-RUNTIME-REPAIR` | `0.1.0+draft` | draft | ATHER / THESEUS | `docs/rca/RCA-2026-08-03-Context-Authority-Runtime-Repair.md` |
 | Security | `PATH-CONTAINMENT` | `0.1.0+draft` | draft | ATHER | `docs/security/PATH-CONTAINMENT.md` |
 | Copy template | `LANDING-COPY-TEMPLATE-GOVIBE-DRAFT1` | `0.2.0+draft` | draft | GoVibe | `docs/design/LANDING-Copy-Template-GoVibe-Draft1.md` |
 
@@ -184,6 +186,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.84+draft | 2026-08-03 | ATHER / THESEUS | Registered the owner-gated context-authority runtime repair CR and canonical RCA. |
 | 0.1.83+draft | 2026-08-03 | Boss / ATHER | Reconciled Phase 1B and Phase 2 registered records: all eight metadata candidates, GVDOC-1004, the moved multi-agent runbook, LANDING template, approval-state decision packets, and current control documents. |
 | 0.1.82+draft | 2026-08-03 | ATHER | Corrected the H-axis audit authority direction and final B04 rollback content-state evidence. |
 | 0.1.81+draft | 2026-08-03 | ATHER | Registered the two owner-gated cleansing decision packets and synchronized the Phase 1-A factual correction and H-axis audit reference normalization. |
