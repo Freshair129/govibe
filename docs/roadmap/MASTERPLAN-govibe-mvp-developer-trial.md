@@ -1,9 +1,9 @@
 ---
 title: "MASTERPLAN: GoVibe MVP Developer Trial"
 doc_id: "MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL"
-status: "draft"
-version: "0.1.1+draft"
-updated: "2026-06-20"
+status: "approved"
+version: "0.2.0"
+updated: "2026-07-31"
 owner: "LYRA"
 auditor: "ATHER"
 source_of_truth: true
@@ -139,7 +139,7 @@ Clone repo
 
 ## 11. Acceptance Criteria
 
-- [ ] Active MVP master plan is registered in `docs/DOC-VERSION-REGISTRY.md`.
+- [x] Active MVP master plan is registered in `docs/DOC-VERSION-REGISTRY.md`.
 - [ ] Developer trial scope is limited to document-driven state, agent-team visibility, and bounded external executor support.
 - [ ] A2 trial data comes from roadmap/task source docs or approved snapshots, not fake UI rows.
 - [ ] A5 trial view can distinguish PIC, executor, approver, auditor, role, and authority.
@@ -182,5 +182,6 @@ Clone repo
 ## Changelog
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.2.0 | 2026-07-31 | approved | Boss approved the MVP scope; the plan is now eligible to drive the A2 active roadmap through the existing promotion contract. | pending | LYRA |
 | 0.1.1+draft | 2026-06-20 | draft | Added a one-line note qualifying BACKLOG-p1-mvp-core as a legacy import fixture in UI Traceability; no other content changed. | pending | LYRA |
 | 0.1.0+draft | 2026-06-16 | draft | Initial MVP master plan for developer trial scope, phases, backlog seed, traceability, and validation gates. | pending | Codex |

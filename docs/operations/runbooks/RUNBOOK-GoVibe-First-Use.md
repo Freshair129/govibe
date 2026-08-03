@@ -2,8 +2,8 @@
 title: "RUNBOOK: GoVibe First Use"
 doc_id: "RUNBOOK-GOVIBE-FIRST-USE"
 status: "draft"
-version: "0.1.2+draft"
-updated: "2026-08-03"
+version: "0.1.3+draft"
+updated: "2026-08-04"
 owner: "GoVibe"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -73,10 +73,11 @@ comma-separated list; wildcard origins are not supported.
 ## 4. ดู Master Plan ก่อนเริ่มงาน
 
 1. เปิดเมนู **A2 / Roadmap**.
-2. ในแผง **Master Plan** เลือกเอกสารที่ต้องการแล้วกด **Open review**.
-3. ตรวจ title, สถานะ approval และ phase ที่ parse ได้.
+2. ในแผง **Master Plan** เลือกเอกสารที่ต้องการ.
+3. ถ้าเอกสารเป็น `approved` กด **Use as active roadmap**; ถ้าเป็น `draft` หรือ `candidate` กด **Open review**.
+4. ตรวจ title, สถานะ approval และ phase ที่ parse ได้.
 
-Master Plan ที่เป็น `draft` เปิดดูได้ แต่ยังไม่ขับเคลื่อน execution board. ต้องให้ LYRA/owner อนุมัติเอกสารตาม governance ก่อนจึงจะใช้เป็น active roadmap ได้. ปุ่มนี้ไม่แก้ไฟล์, ไม่ promote และไม่อนุมัติแผน.
+Master Plan ที่เป็น `draft` เปิดดูได้ แต่ยังไม่ขับเคลื่อน execution board. เอกสาร `approved` เท่านั้นที่เลือกเป็น active roadmap ได้. ปุ่มใน UI ไม่แก้ไฟล์และไม่อนุมัติแผน; approval ต้องเกิดในเอกสารและ registry ก่อน.
 
 ## 5. รัน 12-stage workspace scan
 
@@ -150,6 +151,7 @@ GoVibe เรียก **MSP parent** ผ่าน stdio MCP เพียงเ�
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.3+draft | 2026-08-04 | GoVibe | Added the approved-Master-Plan activation path while retaining review-only behavior for unapproved sources. |
 | 0.1.2+draft | 2026-08-03 | GoVibe | Removed obsolete direct GKS configuration; clarified MSP-only preflight and non-dispatchable configuration states. |
 | 0.1.1+draft | 2026-08-02 | GoVibe | Documented the required local sidecar token and explicit browser-origin trust boundary. |
 | 0.1.0+draft | 2026-07-30 | GoVibe | First-use SOP for Mission Control, Master Plan review, and the 12-stage scan MVP. |

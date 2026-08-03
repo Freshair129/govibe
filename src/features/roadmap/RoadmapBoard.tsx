@@ -162,7 +162,11 @@ export function RoadmapBoard({ snapshot, send }: { snapshot: MissionSnapshot; se
     }
   }
 
-  async function handleMasterPlanPreview(sourcePath: string) {
+  async function handleMasterPlanAction(sourcePath: string, approvalStatus?: string) {
+    if (approvalStatus?.toLowerCase() === "approved") {
+      await handleSourceChange(sourcePath);
+      return;
+    }
     if (!send) return;
     setSwitchingSource(true);
     try {
@@ -318,14 +322,18 @@ export function RoadmapBoard({ snapshot, send }: { snapshot: MissionSnapshot; se
       </section>
       <div className="a2-roadmap-layout">
         <section className="a2-roster-panel masterplan-review-panel">
-          <div className="a2-roster-head"><div><strong>Master Plan</strong><span>Review-only sources remain outside the active roadmap until LYRA approval.</span></div></div>
-          {masterPlans.length > 0 ? masterPlans.map((source) => (
+          <div className="a2-roster-head"><div><strong>Master Plan</strong><span>Approved sources can drive the active roadmap; other sources remain review-only.</span></div></div>
+          {masterPlans.length > 0 ? masterPlans.map((source) => {
+            const isActive = source.sourcePath === activeSourcePath;
+            const isApproved = source.approvalStatus?.toLowerCase() === "approved";
+            return (
             <article className="masterplan-source" key={source.sourcePath}>
               <strong>{source.title}</strong>
               <span>{source.approvalStatus ?? "draft"} · {source.sourcePath}</span>
-              <button type="button" onClick={() => void handleMasterPlanPreview(source.sourcePath)} disabled={switchingSource}>Open review</button>
+              <button type="button" onClick={() => void handleMasterPlanAction(source.sourcePath, source.approvalStatus)} disabled={switchingSource || isActive}>{isApproved ? isActive ? "Active roadmap" : "Use as active roadmap" : "Open review"}</button>
             </article>
-          )) : <EmptyState title="No Master Plan discovered" body="Add a governed MASTERPLAN source under docs/roadmap to make it reviewable here." />}
+            );
+          }) : <EmptyState title="No Master Plan discovered" body="Add a governed MASTERPLAN source under docs/roadmap to make it reviewable here." />}
           {snapshot.masterPlanPreview ? (
             <div className="masterplan-preview" aria-label="Master Plan review preview">
               <strong>{snapshot.masterPlanPreview.title}</strong>
