@@ -31,7 +31,41 @@ function governedRequest() {
     },
     contextLineage: { runId: 'run-migration', sessionId: 'session-migration', turnId: 'turn-migration' },
     policyDecision: 'allow',
-    executionBinding: { binding_id: 'binding-migration', provider_id: 'codex', entitlement_id: 'entitlement-migration', principal_id: 'migration-agent', run_id: 'run-migration', credential_grant_id: null, provider_session_id: null },
+    executionBinding: {
+      schema: 'govibe-execution-binding/v1',
+      binding_id: 'binding-migration',
+      binding_request_id: 'br-migration',
+      actor_id: 'migration-agent',
+      principal_id: 'migration-agent',
+      organization_id: 'org-migration',
+      workspace_id: 'workspace-migration',
+      project_id: 'project-migration',
+      task_id: 'TASK-migration',
+      agent_id: 'migration-agent',
+      run_id: 'run-migration',
+      session_id: 'session-migration',
+      turn_id: 'turn-migration',
+      context_id: 'ctx-migration',
+      cache_id: 'cache-migration',
+      context_hash: 'hash-migration',
+      source_manifest_hash: 'manifest-migration',
+      context_profile: 'T-ctx',
+      tool_contract_hash: 'tools-migration',
+      provider_id: 'codex',
+      entitlement_id: 'entitlement-migration',
+      executor_class: 'external-agent',
+      model_id: 'model-migration',
+      credential_grant_id: null,
+      provider_session_id: null,
+      affinity_key: null,
+      fallback_policy_id: null,
+      quota_snapshot_ref: null,
+      policy_decision_refs: ['policy:migration:1'],
+      state: 'active',
+      authorized_at: '2026-08-03T00:00:00.000Z',
+      expires_at: '2026-08-03T00:01:00.000Z',
+      revoked_at: null,
+    },
   };
 }
 
@@ -67,9 +101,23 @@ describe('durable workflow', () => {
 describe('providers and policy', () => {
   it('boots with unavailable providers and fails with a typed error only when selected', async () => {
     const registry = createExecutorRegistry({ codex: { execute: async () => ({ ok: true }) } });
+    const request = governedRequest();
     expect(registry.inspect()).toEqual(expect.arrayContaining([expect.objectContaining({ id: 'claude-code', available: false })]));
     await expect(registry.execute('claude-code', {})).rejects.toBeInstanceOf(ProviderUnavailableError);
-    await expect(registry.execute('codex', governedRequest())).resolves.toEqual({ ok: true });
+    expect(request.executionBinding).toMatchObject({
+      schema: 'govibe-execution-binding/v1',
+      actor_id: 'migration-agent',
+      principal_id: 'migration-agent',
+      workspace_id: 'workspace-migration',
+      task_id: 'TASK-migration',
+      agent_id: 'migration-agent',
+      run_id: 'run-migration',
+      session_id: 'session-migration',
+      turn_id: 'turn-migration',
+      context_id: 'ctx-migration',
+      cache_id: 'cache-migration',
+    });
+    await expect(registry.execute('codex', request)).resolves.toEqual({ ok: true });
   });
 
   it('shares skill definitions while separating CoVibe and CoDev authority', () => {

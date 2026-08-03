@@ -2,7 +2,7 @@
 title: "WP-10: Execution-Binding v1 Fixture Migration and Consumer Discovery"
 doc_id: "WP-10-EXECUTION-BINDING-V1-FIXTURE-MIGRATION-AND-CONSUMER-DISCOVERY"
 status: "approved"
-version: "0.2.0"
+version: "0.2.2"
 updated: "2026-08-03"
 owner: "Boss (CEO)"
 proposal_author: "ATHER"
@@ -11,6 +11,8 @@ source_of_truth: false
 approval_recorded_at: "2026-08-03"
 execution_authorized: true
 execution_complete: false
+evidence_status: "verification-pending"
+consumer_evidence: "docs/assurance/audit/EVIDENCE-WP-10-Execution-Binding-v1-Consumer-Discovery.md"
 complexity: "C-3"
 access_scope: "H3"
 risk: "HIGH"
@@ -77,9 +79,23 @@ only the fixture/helper changes, rerun the baseline suite, and never restore a
 context-authority bypass. Consumer evidence remains historical evidence, not a
 license to remove compatibility.
 
+## Consumer-evidence state
+
+The bounded commit-pinned discovery record is
+`docs/assurance/audit/EVIDENCE-WP-10-Execution-Binding-v1-Consumer-Discovery.md`.
+Its evidence state is `verification-pending`: it confirms the tracked producer
+inventory and records unresolved external-consumer, deployment, telemetry,
+owner-attestation, and canonical-graph gaps. WP-10 remains
+`execution_complete: false` pending remote CI, branch integration/merge, and
+any required independent QA acceptance. The evidence records passed local gates
+and an independent bounded-diff `APPROVE` review only. It does not authorize
+WP-11 or promote API-008/ADR-024.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.2 | 2026-08-03 | ATHER | Linked passed local-gate and independent-review evidence; remote CI/merge and execution completion remain pending. |
+| 0.2.1 | 2026-08-03 | ATHER | Added the commit-pinned consumer-evidence reference and verification-pending state; execution remains incomplete pending implementation review and CI. |
 | 0.2.0 | 2026-08-03 | Boss / ATHER | Approved the bounded fixture-only v1 migration and consumer-discovery scope; no compatibility removal or API promotion is authorized. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Proposed future fixture-only v1 migration and consumer discovery; execution remains unauthorized. |

@@ -2,7 +2,7 @@
 title: "CR: Execution-Binding v1 Lifecycle and Schema-Less Legacy Sunset Decision"
 doc_id: "CR-2026-08-03-EXECUTION-BINDING-V1-LIFECYCLE-DECISION"
 status: "approved"
-version: "0.2.0"
+version: "0.2.2"
 updated: "2026-08-03"
 owner: "Boss (CEO)"
 proposal_author: "ATHER"
@@ -13,6 +13,8 @@ approval_recorded_at: "2026-08-03"
 decision_authorized: true
 execution_authorized: false
 promotion_authorized: false
+wp_10_evidence_status: "verification-pending"
+wp_10_consumer_evidence: "docs/assurance/audit/EVIDENCE-WP-10-Execution-Binding-v1-Consumer-Discovery.md"
 complexity: "C-3"
 access_scope: "H3"
 risk: "HIGH"
@@ -198,6 +200,17 @@ Before any removal proposal, the owner must receive a bounded report containing:
 Any `unknown` consumer blocks schema-less removal unless the owner explicitly
 accepts the documented breaking risk and authorizes WP-11.
 
+### WP-10 evidence state
+
+The commit-pinned repository discovery is recorded in
+`docs/assurance/audit/EVIDENCE-WP-10-Execution-Binding-v1-Consumer-Discovery.md`.
+Its evidence state is `verification-pending`: passed local gates and an
+independent bounded-diff `APPROVE` review are recorded, while remote CI, branch
+integration/merge, and any required independent QA acceptance remain pending.
+The artifact records unknown external-consumer, deployment, telemetry,
+attestation, and canonical-graph surfaces; it does not authorize WP-11 or
+promote API-008/ADR-024.
+
 ### WP-B: remove schema-less compatibility only after owner acceptance
 
 WP-11 may remove the absent-schema principal-only branch only after WP-10's
@@ -273,5 +286,7 @@ authority bypass or silently reintroduce schema-less interpretation.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.2 | 2026-08-03 | ATHER | Linked WP-10 local-gate and independent-review evidence; remote CI/merge and all promotion/removal gates remain pending. |
+| 0.2.1 | 2026-08-03 | ATHER | Linked WP-10 commit-pinned consumer evidence as verification-pending; execution completion, API/ADR promotion, and WP-11 remain blocked. |
 | 0.2.0 | 2026-08-03 | Boss / ATHER | Recorded Boss approval: retain parent/API drafts, reject standalone API-008 promotion and WP-11, normalize ADR-024 and policy metadata, and authorize WP-10 only. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Opened owner-gated C-3/H3/HIGH lifecycle and schema-less legacy-sunset decision; no promotion or execution is authorized. |

@@ -42,15 +42,53 @@ function governedRequest(overrides = {}) {
     policyDecision: "allow",
     contextLineage: { runId: "run-1", sessionId: "session-1", turnId: "turn-1" },
     executionBinding: {
+      schema: "govibe-execution-binding/v1",
       binding_id: "binding-1",
+      binding_request_id: "br-1",
+      actor_id: "user-1",
+      principal_id: "user-1",
+      organization_id: "org-1",
+      workspace_id: "ws-1",
+      project_id: "project-1",
+      task_id: "task-1",
+      agent_id: "agent-1",
+      run_id: "run-1",
+      session_id: "session-1",
+      turn_id: "turn-1",
+      context_id: "context-1",
+      cache_id: "cache-1",
+      context_hash: "hash-1",
+      source_manifest_hash: "manifest-1",
+      context_profile: "T-ctx",
+      tool_contract_hash: "tools-1",
       provider_id: "codex",
       entitlement_id: "ent-1",
-      principal_id: "user-1",
-      run_id: "run-1",
+      executor_class: "external-agent",
+      model_id: "model-1",
       credential_grant_id: null,
       provider_session_id: null,
+      affinity_key: null,
+      fallback_policy_id: null,
+      quota_snapshot_ref: null,
+      policy_decision_refs: ["policy:entitlement:1"],
+      state: "active",
+      authorized_at: "2026-08-03T00:00:00.000Z",
+      expires_at: "2026-08-03T00:01:00.000Z",
+      revoked_at: null,
     },
     ...overrides,
+  };
+}
+
+function principalOnlyLegacyBinding() {
+  return {
+    binding_id: "binding-legacy-1",
+    provider_id: "codex",
+    entitlement_id: "ent-1",
+    principal_id: "user-1",
+    run_id: "run-1",
+    credential_grant_id: null,
+    provider_session_id: null,
   };
 }
 
@@ -95,6 +133,22 @@ function serviceBinding() {
 }
 
 describe("executor adapter governed handoff", () => {
+  it("uses a complete v1 binding for normal governed dispatch", () => {
+    expect(governedRequest().executionBinding).toMatchObject({
+      schema: "govibe-execution-binding/v1",
+      actor_id: "user-1",
+      principal_id: "user-1",
+      workspace_id: "ws-1",
+      task_id: "task-1",
+      agent_id: "agent-1",
+      run_id: "run-1",
+      session_id: "session-1",
+      turn_id: "turn-1",
+      context_id: "context-1",
+      cache_id: "cache-1",
+    });
+  });
+
   it("fails closed when no execution binding exists", async () => {
     const registry = createExecutorRegistry({ codex: { execute: vi.fn() } });
     await expect(registry.execute("codex", governedRequest({ executionBinding: undefined })))
@@ -210,7 +264,7 @@ describe("executor adapter governed handoff", () => {
   it("allows only principal-only schema-less legacy bindings", async () => {
     const execute = vi.fn(async (_request, runtime) => runtime.executionBinding.principal_id);
     const registry = createExecutorRegistry({ codex: { execute } });
-    const legacy = governedRequest().executionBinding;
+    const legacy = principalOnlyLegacyBinding();
 
     await expect(registry.execute("codex", governedRequest({ executionBinding: legacy }))).resolves.toBe("user-1");
     await expect(registry.execute("codex", governedRequest({ executionBinding: { ...legacy, actor_id: "user-1" } })))
