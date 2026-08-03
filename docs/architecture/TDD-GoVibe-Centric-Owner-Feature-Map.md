@@ -6,7 +6,7 @@ version: "0.3.0+draft"
 updated: "2026-07-26"
 owner: "Boss (Product Authority) / ARCHON / ATHER"
 source_of_truth: false
-superseded_by: "docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md"
+superseded_by: "docs/change-control/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md"
 prd_system: "GOVIBE-PLATFORM"
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
@@ -25,7 +25,7 @@ related_docs:
 > **Superseded draft:** Do not use this file as an implementation source. The
 > owner removed RWANG from the target product architecture and defined CoVibe
 > and CoDev as equal-capability collaboration modes. The replacement proposal
-> is `docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md`.
+> is `docs/change-control/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md`.
 > The historical body remains temporarily for decision traceability.
 
 ## 1. สถานะและเจตนาของเอกสาร
@@ -690,8 +690,7 @@ sequenceDiagram
 เมื่อ Final Product Grade ผ่าน จึงออก reconciliation ADR และ implementation plan
 เป็นงานถัดไป งานนี้ไม่อนุญาตให้แก้ code ในรอบเดียวกัน
 
-## CHANGELOG
-
+## Changelog
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
 | 0.3.0+draft | 2026-07-26 | superseded | Withdrawn after the owner removed RWANG from the target architecture and moved its capabilities under GoVibe commands and shared services. | pending | ATHER |

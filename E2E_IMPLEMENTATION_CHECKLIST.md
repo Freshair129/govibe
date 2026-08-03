@@ -299,7 +299,7 @@ npm run e2e:report
 ### File Editors
 - Tests: `e2e/landing-page.spec.ts`
 - Config: `playwright.config.ts`
-- Page: `docs/design/LANDING-GoVibe-Mockup.html`
+- Page: `docs/references/fixtures/LANDING-GoVibe-Mockup.html`
 
 ---
 

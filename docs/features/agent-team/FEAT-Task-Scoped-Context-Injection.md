@@ -18,7 +18,7 @@ related_docs:
   - "docs/adr/ADR-013-Task-Scoped-Context-Injection.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/genesis-knowledge-system/FEAT-Hybrid-JIT-Context-System.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - "docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md"
 ---
 
@@ -158,7 +158,6 @@ Request
 - Blueprint work stays blocked until this feature contract and the SRS are reviewed.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.0 | 2026-06-20 | ARCHON / ATHER | Signed off; promoted draft -> approved. |

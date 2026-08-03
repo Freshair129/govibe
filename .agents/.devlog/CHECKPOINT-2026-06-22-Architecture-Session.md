@@ -35,7 +35,7 @@ type: checkpoint
 ## 3. Artifacts produced this session
 - ADR-015 … ADR-019 (5 files under docs/adr/)
 - `docs/BRD-GoVibe-Platform.md` (+ §4.1 Translator Model)
-- `docs/audit/POC-5-Axis-Coverage.md` (PoC-1: 5-axis coverage, 0 docs outside)
+- `docs/assurance/audit/POC-5-Axis-Coverage.md` (PoC-1: 5-axis coverage, 0 docs outside)
 - Historical note: the former deterministic registration utility was later retired; current documentation tooling is limited to the scripts that remain under `scripts/docs/`.
 - All 7 registered under `DOC-VERSION-REGISTRY.md` §8 Auto-Registered · `docs:validate` PASS
 
@@ -53,7 +53,7 @@ type: checkpoint
 ## 5. Open threads / next
 1. ~~Ratify ADR-015..019~~ ✓ DONE (accepted 2026-06-22 via `npm run docs:ratify`).
 2. Registry version ✓ bumped (0.1.44). **TODO:** re-file §8 Auto-Registered rows into curated sections (curatorial).
-3. ~~PoC-2~~ ✓ DONE (`docs/audit/POC-H6-Budget-Sufficiency.md`).
+3. ~~PoC-2~~ ✓ DONE (`docs/assurance/audit/POC-H6-Budget-Sufficiency.md`).
 4. ~~Doc impact~~ ✓ DONE: new `SRS-GKS-Retrieval-Layer` + `SDD-GoVibe-MSP-GKS-Integration` + H→D note in `FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS`; C4/CTX Decision-Alignment sections; PRD×2/STD `related_adrs` citations. (Deeper PRD *body* rewrites to the new positioning = optional later, with version bumps.)
 5. ~~Doc-create~~ ✓ DONE historically; the original command utilities were later retired and are not available in the current repository.
 6. ~~Close audit #1~~ ✓ DONE (`.github/workflows/governance.yml` — enforced docs+roadmap gate, no continue-on-error).

@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0.0",
+  "result_id": "DOC-CLEANSING-B05-EXECUTION-RESULT-v1",
+  "batch_id": "B05",
+  "operation_mode": "approved_reversible_phase1_a",
+  "execution_start_commit": "6c62276b96602652a7fe16da5e9c4fcc00ef1083",
+  "accepted_analysis": {
+    "path": "docs/change-requests/manifests/results/DOC-CLEANSING-B05-RESULT-v1.json",
+    "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
+    "sha256": "b9d4b920b18bd6daf2d1790c11a8d30b0efd719a2d65970338293e50c28a2d2c"
+  },
+  "rollback_authority": "docs/change-requests/manifests/results/DOC-CLEANSING-B05-ROLLBACK-MAP-v1.json",
+  "rollback_evidence": "docs/change-requests/manifests/results/DOC-CLEANSING-B05-EXECUTION-ROLLBACK-v1.md",
+  "accounting": {"approved_operations": 14, "executed_relocations": 13, "executed_rename_relocation": 1, "deletions": 0, "semantic_or_metadata_edits": 0},
+  "operations": [
+    {"kind":"relocation","from":"docs/archive/candidate/README.md","to":"docs/archive/candidates/README.md","source_git_object_id":"f3930fd13831026dffe6cffbf4a575b48c45592c","source_sha256":"22093864fef1c9910e5d9d3f2afd024ff8e50a0bb140f59eb544eb163fac4049"},
+    {"kind":"relocation","from":"docs/archive/candidate/data-architecture-hnsw-explorer.html","to":"docs/archive/candidates/data-architecture-hnsw-explorer.html","source_git_object_id":"e3e90176167771e5d26250fc4982afaebdeec482","source_sha256":"6dc3257ac751af8c56864cfa0b3d08a61bae688430a1cd3dcc6474af21a6dc38"},
+    {"kind":"relocation","from":"docs/archive/candidate/genesisdb-obsidian-production-workflow.html","to":"docs/archive/candidates/genesisdb-obsidian-production-workflow.html","source_git_object_id":"9341f95d716367d919515477cc31727fcc1306c7","source_sha256":"279dd1417a2a0860d71865647d0ce261c8d2749957d7d6899219917df7801fff"},
+    {"kind":"relocation","from":"docs/archive/candidate/hector-compaction-explorer.html","to":"docs/archive/candidates/hector-compaction-explorer.html","source_git_object_id":"2709cb40238af4302a55662cec12b1536c6652ff","source_sha256":"aa89ed4f4794631598b137b4e689f57412ce78b3fbc8de588ad9ccda70658803"},
+    {"kind":"relocation","from":"docs/archive/legacy-p1-mvp-import-reference.md","to":"docs/archive/legacy/legacy-p1-mvp-import-reference.md","source_git_object_id":"4b6031b0e030cef5fcee4856d04a5f8a71bea3ea","source_sha256":"c76b255e3e2ebd4a164c2e83732e6b547ac23b1bbd73607e94ca2c3e791f195a"},
+    {"kind":"relocation","from":"docs/design/LANDING-GoVibe-Mockup.html","to":"docs/references/fixtures/LANDING-GoVibe-Mockup.html","source_git_object_id":"d6a7381aa6e06555d42bf784e0724277c76cdd94","source_sha256":"5ede6c891903f834b13fdce0551bc778ba29fcea888e6b3ee62bfb37c1cb3450"},
+    {"kind":"relocation","from":"docs/design/LANDING-GoVibe-Release-Notes-v0.1.2.md","to":"docs/archive/legacy/LANDING-GoVibe-Release-Notes-v0.1.2.md","source_git_object_id":"699aaf6c0d23ac879592490e1cd544ea8009f49a","source_sha256":"20f693432e48646868e8ac19bd7a059067482e87542d87bbd333cdfacb6b012b"},
+    {"kind":"relocation","from":"docs/design/MOCKUP-A2-Roadmap-Board.html","to":"docs/references/fixtures/MOCKUP-A2-Roadmap-Board.html","source_git_object_id":"148f3c159bb17707594e1965ae20bb1c7b64203b","source_sha256":"9da44e6e05b891681732956aa5568f26173988387a3396fbfd3953a03df19553"},
+    {"kind":"relocation","from":"docs/design/TEMPLATE_MODULARIZATION.md","to":"docs/references/templates/TEMPLATE_MODULARIZATION.md","source_git_object_id":"d5e5dfd3f279c08664813fffbf810c3bec632354","source_sha256":"bb4ff87c648e48910bf11c4776df0d0c0879ca82b90d8866447d311977232c9a"},
+    {"kind":"relocation","from":"docs/design/TEMPLATE_REFERENCE.md","to":"docs/references/templates/TEMPLATE_REFERENCE.md","source_git_object_id":"fe07a1da73b006aa41150225575ade775a228376","source_sha256":"85e4624d0cb7ff7f788adb1540bed5da65601721970aeb6c4cce0ec6a1e49c1b"},
+    {"kind":"rename_relocation","from":"docs/runbooks/RUNBOOK--CODEX-HYBRID-SAVINGS-TEST.md","to":"docs/operations/runbooks/RUNBOOK-Codex-Hybrid-Savings-Test.md","source_git_object_id":"6d9fc5ab76d074f039217562bf4960a5a3a8f6c9","source_sha256":"4295f209f90fb266c9d14e3816d5af86c254b3f629e696b546ebc3dbe0afcc65"},
+    {"kind":"relocation","from":"docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md","to":"docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md","source_git_object_id":"31f4d4761e587db67187a8ba341e3be0ba960da2","source_sha256":"0efa460836ba9ef4ce154449c5725e573bc74cbd2c855d70e8893ba67376254c"},
+    {"kind":"relocation","from":"docs/runbooks/RUNBOOK-GoVibe-First-Use.md","to":"docs/operations/runbooks/RUNBOOK-GoVibe-First-Use.md","source_git_object_id":"280d792c7df7f33dd1af41db6064809e1e12b901","source_sha256":"66d33974b00a06965d5931a91f80851db1de3e635cb1041a11571775b5bdca06"},
+    {"kind":"relocation","from":"docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md","to":"docs/operations/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md","source_git_object_id":"6e381af916c25ccb249bbcdd66fbd07b014969e5","source_sha256":"48576d8d4925aa6f386337d6a932851486cd5e4aee3e3aa7e6e38aaf3c2036c0"}
+  ],
+  "reference_updates": [
+    {"file":"docs/archive/legacy/LANDING-GoVibe-Release-Notes-v0.1.2.md","from":"docs/design/LANDING-GoVibe-Mockup.html","to":"docs/references/fixtures/LANDING-GoVibe-Mockup.html"},
+    {"file":"docs/design/WIREFRAME-A2-Roadmap-Board.md","from":"docs/design/TEMPLATE_REFERENCE.md","to":"docs/references/templates/TEMPLATE_REFERENCE.md"}
+  ],
+  "cross_batch_reference_updates": {"performed": [], "status":"not_performed_by_design","reason":"Only B05-owned files were changed; cross-batch paths remain for integration from the accepted map."},
+  "final_target_preservation": {"byte_identical":13,"intentionally_rewritten":1,"rewritten_path":"docs/archive/legacy/LANDING-GoVibe-Release-Notes-v0.1.2.md","rewrite":"Internal mockup reference updated to docs/references/fixtures/LANDING-GoVibe-Mockup.html.","source_preflight_is_distinct":true},
+  "rollback_reconciliation": {"map":"docs/change-requests/manifests/results/DOC-CLEANSING-B05-ROLLBACK-MAP-v1.json","inverse_pairs_expected":14,"inverse_pairs_verified":14,"status":"pass","reversal":"Each final target has a unique collision-free inverse path and an exact final Git-blob identity."},
+  "unresolved": ["Phase 2 semantic and authority items remain excluded.","Archive authority review remains excluded.","Registry/global README/schema edits remain excluded.","Cross-batch references require integration review."],
+  "validation": {
+    "json_parse":"pass",
+    "source_git_blob_sha256":"pass_14_of_14",
+    "final_target_git_blob_identity":"pass_14_of_14_13_byte_identical_1_intentionally_rewritten",
+    "target_containment_and_collision_preflight":"pass_14_of_14",
+    "rollback_reconciliation":"pass_14_of_14",
+    "git_diff_check":"pass",
+    "focused_path_checks":{"b05_owned_rewrites":"pass_2_of_2","remaining_old_paths":"expected_only_in_cross_batch_and_historical_manifest_evidence"},
+    "docs_validate":{"status":"expected_transitional_failure","exit_code":1,"errors":20,"reason":"Moved paths remain referenced by registry and cross-batch or ignored agent artifacts; these files are intentionally outside the B05-owned mutation boundary.","weakened":false}
+  }
+}

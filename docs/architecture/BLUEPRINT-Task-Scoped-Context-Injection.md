@@ -18,7 +18,7 @@ related_docs:
   - "docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md"
   - "docs/adr/ADR-013-Task-Scoped-Context-Injection.md"
   - "docs/design/GoVibe-Document-Hierarchy.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
 ---
 
 # BLUEPRINT: Task-Scoped Context Injection

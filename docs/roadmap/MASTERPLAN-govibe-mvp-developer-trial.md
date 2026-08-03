@@ -13,7 +13,7 @@ related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - ".agents/context/CONTEXT-Bounded-External-Executor.md"
   - "docs/roadmap/ROADMAP-govibe-mcp-runtime.md"
   - "docs/roadmap/ROADMAP-task-scoped-context-injection.md"
@@ -132,7 +132,7 @@ Clone repo
 | MVP-BL-002 | Section 8 | A2 Project Overview | `docs/roadmap/BACKLOG-p1-mvp-core.md` | Task Container dropdown verification |
 | MVP-BL-003 | Section 8 | A5 Agent Management | agent registry and Visual Agent Fleet docs | role and authority display verification |
 | MVP-BL-003A | Section 8 | A2 Project Overview | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` and `docs/roadmap/BACKLOG-task-scoped-context-injection.md` | task-scoped context packet planning chain verification |
-| MVP-BL-004 | Section 8 | A5 or runbook view | `docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` | PILOT-01 feedback artifact |
+| MVP-BL-004 | Section 8 | A5 or runbook view | `docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md` | PILOT-01 feedback artifact |
 | MVP-BL-005 | Section 9 | Developer quickstart | quickstart and smoke checklist | `docs:validate` and `baseline:check` logs |
 
 > Note: `docs/roadmap/BACKLOG-p1-mvp-core.md` is a legacy import fixture used to exercise the A2 Task Container / telemetry schema, not canonical MVP product scope. Its progress values are legacy-imported telemetry, not live state.
@@ -180,7 +180,6 @@ Clone repo
 | Baseline warnings hide real blockers | Release confusion | Separate warnings from MVP blockers in trial notes |
 
 ## Changelog
-
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
 | 0.1.1+draft | 2026-06-20 | draft | Added a one-line note qualifying BACKLOG-p1-mvp-core as a legacy import fixture in UI Traceability; no other content changed. | pending | LYRA |

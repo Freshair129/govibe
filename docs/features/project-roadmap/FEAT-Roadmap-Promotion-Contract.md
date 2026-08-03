@@ -10,7 +10,7 @@ source_of_truth: true
 prd_system: "SYSTEM-02::Project-Roadmap-Management-System"
 related_docs:
   - "docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md"
-  - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
   - "docs/STD-Document-Versioning-Governance.md"
   - "docs/DOC-VERSION-REGISTRY.md"
   - ".agents/pm/AGENT.md"

@@ -10,7 +10,7 @@ source_of_truth: true
 related_docs:
   - "docs/STD-Execution-Governance.md"
   - "docs/architecture/C4-GoVibe-Platform.md"
-  - "docs/change-requests/work-packets/WP-02-H-Axis-Canonical-Propagation.md"
+  - "docs/change-control/change-requests/work-packets/WP-02-H-Axis-Canonical-Propagation.md"
 external_authority:
   repository: "Freshair129/RWANG-PROMAX"
   path: "skills/rwang/references/EXECUTION-GOVERNANCE.md"

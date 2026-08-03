@@ -114,7 +114,7 @@ If the worker cannot stay within scope, it must output `BLOCKED` instead of inve
 | --- | --- | --- | --- | --- | --- |
 | MT-A2-01 | Phase and sprint shell parity | C-1 | LOW | `src/App.tsx`, `src/styles.css` | Restructure A2 so the phase area visually includes a sprint shell and duration/progress surface before task rows. |
 | MT-A2-02 | Task row badge parity | C-1 | LOW | `src/App.tsx`, `src/styles.css` | Make each roadmap task row denser with template-like badges, controls, and unavailable placeholders without adding schema. |
-| MT-A2-03 | Task detail dropdown skeleton | C-2 | MEDIUM | `src/App.tsx`, `src/styles.css`, `docs/design/TEMPLATE_REFERENCE.md`, `docs/design/DOMAIN_DETAILS.md` | Add expandable task detail blocks for symbol links, metadata, DoD, changelog, and export placeholders using runtime fields or explicit `unavailable`. |
+| MT-A2-03 | Task detail dropdown skeleton | C-2 | MEDIUM | `src/App.tsx`, `src/styles.css`, `docs/references/templates/TEMPLATE_REFERENCE.md`, `docs/design/DOMAIN_DETAILS.md` | Add expandable task detail blocks for symbol links, metadata, DoD, changelog, and export placeholders using runtime fields or explicit `unavailable`. |
 | MT-A2-04 | A2 mobile density polish | C-1 | LOW | `src/styles.css` | Tighten spacing and wrapping of A2 header, roster, and task areas on smaller widths without changing semantics. |
 | MT-A2-05 | Export helper extraction | C-1 | LOW | `src/App.tsx` plus one new helper under `src/` | Improve code quality by moving roadmap export serialization out of the main app component after the A2 UI structure is stable. |
 
@@ -155,7 +155,7 @@ Phase container
 
 - `src/App.tsx`
 - `src/styles.css`
-- `docs/design/TEMPLATE_REFERENCE.md`
+- `docs/references/templates/TEMPLATE_REFERENCE.md`
 - `docs/design/DOMAIN_DETAILS.md`
 - `GoVibe-Mission-Control-template.html`
 
@@ -315,7 +315,7 @@ Refine A2-only mobile density and wrapping behavior so the shipped parity work r
 
 - `src/styles.css`
 - `src/App.tsx`
-- `docs/design/TEMPLATE_REFERENCE.md`
+- `docs/references/templates/TEMPLATE_REFERENCE.md`
 - `docs/design/DOMAIN_DETAILS.md`
 - `GoVibe-Mission-Control-template.html`
 
@@ -381,7 +381,7 @@ Extract roadmap export serialization and download helpers out of the main A2 Rea
 
 - `src/App.tsx`
 - one new helper under `src/`
-- `docs/design/TEMPLATE_REFERENCE.md` only if diff guard needs companionship
+- `docs/references/templates/TEMPLATE_REFERENCE.md` only if diff guard needs companionship
 
 ### Rules
 

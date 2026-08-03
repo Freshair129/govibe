@@ -1,4 +1,4 @@
-﻿---
+---
 title: "CR: PM Asset Redundancy Cleanup and Telemetry Alignment"
 doc_id: "CR-2026-06-14-pm-asset-redundancy-cleanup"
 status: "approve_with_conditions"
@@ -34,7 +34,7 @@ affected_tasks:
 timeline_impact: "Immediate update to templates; no impact on product code."
 resource_impact: "Owned by LYRA; Drafted by THESEUS; Audited by ATHER."
 risk_impact: "MEDIUM (Impacts workflow, naming, audit path, and traceability contract)."
-what_moves_out: "Legacy 'Import P1 MVP' data from Implementation-Plan-Template.md moves to `docs/archive/legacy-p1-mvp-import-reference.md`."
+what_moves_out: "Legacy 'Import P1 MVP' data from Implementation-Plan-Template.md moves to `docs/archive/legacy/legacy-p1-mvp-import-reference.md`."
 approval_owner: "ARCHON"
 decision: "approve_with_conditions"
 ```
@@ -57,7 +57,7 @@ decision: "approve_with_conditions"
 
 ## 3. Migration & Reference Update List
 - [x] Rename legacy PM template to Implementation-Plan-Template.md
-- [x] Move legacy content from PLAN_Template.md to `docs/archive/legacy-p1-mvp-import-reference.md`
+- [x] Move legacy content from PLAN_Template.md to `docs/archive/legacy/legacy-p1-mvp-import-reference.md`
 - [x] Update `Backlog-Template.md` to reference Implementation-Plan-Template.md for execution detail.
 - [x] Ensure all templates include a header referencing `Planning-Decomposition-Standard.md` as the SSOT.
 

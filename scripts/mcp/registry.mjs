@@ -319,10 +319,10 @@ export const resourceCatalog = [
   },
   {
     uri: "govibe://docs/runbook/multi-agent",
-    name: "Runbook GoVibe Multi-Agent",
-    description: "Canonical multi-agent workflow runbook.",
+    name: "GoVibe Multi-Agent Operational Guidance (Draft, Non-SOT)",
+    description: "Draft, non-SOT multi-agent operational guidance. Canonical execution-governance authority: docs/STD-Execution-Governance.md.",
     mimeType: "text/markdown",
-    path: "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+    path: "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
   },
   {
     uri: "govibe://roadmap/sources",

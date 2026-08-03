@@ -2,8 +2,8 @@
 title: "GoVibe Document Hierarchy"
 doc_id: "DESIGN-GOVIBE-DOCUMENT-HIERARCHY"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-19"
+version: "0.2.0+draft"
+updated: "2026-08-03"
 owner: "ARCHON / THESEUS / ATHER"
 source_of_truth: true
 related_docs:
@@ -11,6 +11,7 @@ related_docs:
   - "docs/STD-Execution-Governance.md"
   - "docs/STD-Document-Versioning-Governance.md"
   - "docs/DOC-VERSION-REGISTRY.md"
+  - "docs/blueprints/BLUEPRINT-Document-Information-Architecture-and-Graph-Contract.md"
 ---
 
 # GoVibe Document Hierarchy
@@ -155,8 +156,22 @@ When adding a new capability, use this skeleton:
 - `docs:validate` passes.
 - Future taxonomy discussions can cite this file instead of re-deciding the hierarchy every time.
 
+## 11. Graph-Ready Information Architecture
+
+The hierarchy is semantic; folders are its human navigation projection and are
+not canonical graph identity. A document move preserves `doc_id`, provenance,
+and version lineage. Cross-layer links become typed relation candidates such as
+`GOVERNS`, `DEFINES`, `IMPLEMENTS`, `VALIDATES`, `DECIDES`, `DERIVES_FROM`,
+`CONFORMS_TO`, or `SUPERSEDES` after validation. Backlinks reverse-project the
+same relation rather than creating duplicate semantic edges.
+
+Impact traversal must be cycle-safe, relation-filtered, and bounded. Missing
+authority, WHY, lifecycle, or source relation is an escalation, not permission
+to infer or widen context.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0+draft | 2026-08-03 | ARCHON / THESEUS / ATHER | Added graph-ready identity, typed relation, backlink, bounded impact, and missing-authority rules. |
 | 0.1.0+draft | 2026-06-19 | ARCHON / THESEUS / ATHER | Added recommended document hierarchy and skeleton for GoVibe from platform PRD down to evidence. |

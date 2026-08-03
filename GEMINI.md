@@ -17,7 +17,7 @@ This file gives Gemini and other AI coding agents the current operating context 
 For the canonical root agent contract, also read:
 
 Persona and role: `.agents/cto/AGENT.md`
-runbooks and workflow: `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
+runbooks and workflow: `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 
 ## Project Overview
 
@@ -67,8 +67,8 @@ Read these documents before changing architecture, product behavior, UI contract
 11. `docs/design/DESIGN_SYSTEM.md`
 12. `docs/design/SITE_MAP.md`
 13. `docs/design/DOMAIN_DETAILS.md`
-14. `docs/design/TEMPLATE_REFERENCE.md`
-15. `docs/design/TEMPLATE_MODULARIZATION.md`
+14. `docs/references/templates/TEMPLATE_REFERENCE.md`
+15. `docs/references/templates/TEMPLATE_MODULARIZATION.md`
 
 Human SWE docs are canonical. Atoms and generated views are derived via MemoryOS V3.
 
@@ -112,8 +112,8 @@ For UI changes, compare against:
 - `docs/design/DESIGN_SYSTEM.md`
 - `docs/design/SITE_MAP.md`
 - `docs/design/DOMAIN_DETAILS.md`
-- `docs/design/TEMPLATE_REFERENCE.md`
-- `docs/design/TEMPLATE_MODULARIZATION.md`
+- `docs/references/templates/TEMPLATE_REFERENCE.md`
+- `docs/references/templates/TEMPLATE_MODULARIZATION.md`
 
 A5 Agent Management must preserve the template contracts for the infinity carousel, no nested cards, EVA media loop, cursor glow, `interactive-card`, Raycast 3D Agent Cards, Agent drag follow-cursor, character tilt, and mobile adaptation.
 

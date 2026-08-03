@@ -8,8 +8,8 @@ owner: "ARCHON / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-09::Traceability-Audit-Verification-System"
 related_docs:
-  - "docs/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md"
-  - "docs/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md"
+  - "docs/change-control/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md"
+  - "docs/change-control/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md"
   - "docs/architecture/MSP-GKS-Taxonomy-Mapping.md"
   - "docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md"
   - "docs/architecture/SDD-MSP-External-Evidence-Boundary.md"
@@ -170,8 +170,8 @@ paths only. They are not configuration and must never become runtime or CI depen
 
 ## Related Documents
 
-- `docs/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md`
-- `docs/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md`
+- `docs/change-control/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md`
+- `docs/change-control/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md`
 - `docs/architecture/MSP-GKS-Taxonomy-Mapping.md`
 - `docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md`
 - `docs/architecture/SDD-MSP-External-Evidence-Boundary.md`

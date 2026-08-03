@@ -229,7 +229,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "G:\govibe\scripts\agents\me
 
 See:
 
-- `docs/runbooks/RUNBOOK--CODEX-HYBRID-SAVINGS-TEST.md`
+- `docs/operations/runbooks/RUNBOOK-Codex-Hybrid-Savings-Test.md`
 
 If you want the shortest manual flow, record one round at a time with only 4 numbers:
 

@@ -520,7 +520,7 @@ McpOrchestrationService
 
 ## 9. Open Questions
 - Should HCS have its own standalone SRS and SDD under `docs/hcs/`?
-- Should `RUNBOOK-GoVibe-Multi-Agent.md` be migrated from `.agents/` into `docs/runbooks/` as the canonical runbook?
+- Should `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` remain draft, non-SOT operational guidance, or require a separately approved canonical artifact?
 - Should C4 diagrams become source input for Diagram to Doc, or remain a reviewed architecture artifact only?
 - Which storage layer is canonical for graph state in phase 1: in-memory graph, local file index, SQLite, or embedded vector store?
 

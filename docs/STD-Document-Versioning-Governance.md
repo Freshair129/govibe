@@ -2,8 +2,8 @@
 title: "STD: Document Versioning Governance"
 doc_id: "STD-DOCUMENT-VERSIONING-GOVERNANCE"
 status: "draft"
-version: "0.1.2+draft"
-updated: "2026-06-15"
+version: "0.2.0+draft"
+updated: "2026-08-03"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 prd_system: "SYSTEM-09::Traceability-Audit-Verification-System"
@@ -11,6 +11,7 @@ related_docs:
   - "docs/STD-Execution-Governance.md"
   - "docs/features/traceability-audit/FEAT-Document-Version-Governance.md"
   - "docs/DOC-VERSION-REGISTRY.md"
+  - "docs/change-requests/CR-2026-08-03-Document-IA-and-Knowledge-Graph-Readiness.md"
 ---
 
 # STD: Document Versioning Governance
@@ -239,10 +240,24 @@ operational markers — `migration-needed`, `proposed-migration`, `pending-class
 These are registry bookkeeping states, not document lifecycle values: a document's own
 frontmatter `status` must use one of the lifecycle values above.
 
+## 14. Cleansing Inventory And Identity Rules
+
+Document cleansing must begin from a commit-pinned inventory. Every discovered
+file is exactly once processable or excluded-with-reason, and every processable
+batch is limited to 50 files. Ignored or untracked user files may be hash-
+accounted as external exclusions but must not be copied into an integration
+worktree or added to worker writable scope.
+
+`doc_id` is the stable GoVibe document identity. A file path is a navigation
+location and may change only through an approved, collision-free dry-run map
+with inbound-reference impact and inverse rollback entries. Canonical GKS
+identities remain MSP/GKS-owned and must not be minted during cleansing.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0+draft | 2026-08-03 | ATHER / THESEUS | Added commit-pinned cleansing inventory, external exclusion, stable identity, bounded batch, and rollback requirements. |
 | 0.1.2+draft | 2026-06-20 | ATHER / THESEUS | Added Section 13 allowed document status values, registered `+draft` as a sanctioned pre-approval edition marker, and bound the `status` frontmatter field to the defined lifecycle set. |
 | 0.1.1+draft | 2026-06-15 | ATHER / THESEUS | Added repository diff gate automation requirements for docs/code/masterplan scope validation and staged-only review support. |
 | 0.1.0+draft | 2026-06-15 | ATHER / THESEUS | Initial document versioning governance standard for metadata, canonical version format, changelog, and registry requirements. |

@@ -11,7 +11,7 @@ prd_system: "SYSTEM-08::Genesis-Knowledge-System"
 related_adrs: ["ADR-016", "ADR-017", "ADR-019"]
 related_docs:
   - "docs/srs/SRS-GoVibe-Translator-Core-Slice.md"
-  - "docs/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md"
+  - "docs/assurance/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md"
   - "docs/CONCEPT--HYBRID-JIT-CONTEXT.md"
   - "docs/features/genesis-knowledge-system/FEAT-Doc-Format-Template-Extraction.md"
   - "docs/api/API-002-Symbol-Linking.md"
@@ -79,7 +79,6 @@ render path:
 SRS FR-1→Ingestor · FR-2→Format-Extractor · FR-3→Symbol-Linker · FR-4→Selector+Renderer · FR-5→Fidelity Gate · FR-6→Provenance Writer · FR-7→MCP tool contracts (see `LLD-Translator-Core-Slice`).
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.0+draft | 2026-06-22 | ARCHON / ATHER | Initial architecture for the translator-core slice: ingest/render pipeline, 7 components, interim stores, slice boundaries, risks; encodes the hybrid / both-metric / local-jsonl decisions. |

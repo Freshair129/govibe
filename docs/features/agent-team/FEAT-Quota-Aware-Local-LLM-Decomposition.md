@@ -11,7 +11,7 @@ related_docs:
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md"
   - "docs/srs/SRS-Ollama-Sidecar-Execution.md"
-  - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
   - ".agents/pm/asset/Planning-Decomposition-Standard.md"
   - ".agents/pm/asset/Implementation-Plan-Template.md"
   - "docs/STD-Execution-Governance.md"

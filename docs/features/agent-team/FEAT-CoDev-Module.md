@@ -14,10 +14,10 @@ supporting_prd_systems:
   - "SYSTEM-10::Execution-Governance-System"
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
-  - "docs/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
+  - "docs/change-control/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md"
 ---
 

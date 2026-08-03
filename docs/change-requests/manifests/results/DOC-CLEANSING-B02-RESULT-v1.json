@@ -1,0 +1,1243 @@
+{
+  "schema_version": "1.0.0",
+  "result_id": "DOC-CLEANSING-B02-RESULT-v1",
+  "batch_id": "B02",
+  "generated_at": "2026-08-03T00:00:00+07:00",
+  "baseline_commit": "a5f2c938ab285b23b803d37c9786537a77dfdc9d",
+  "source_manifest": "docs/change-requests/manifests/DOC-CLEANSING-B02-v1.json",
+  "source_manifest_hash": "f5b16968f3bace10177d11849d60f7aaf7bf287ef3c9645becbb0e11eb3d99b6",
+  "context_profile": "T-ctx",
+  "context_packet": {
+    "contextId": {
+      "status": "unresolved",
+      "reason": "not_issued_by_runtime"
+    },
+    "cacheId": {
+      "status": "unresolved",
+      "reason": "not_issued_by_runtime"
+    },
+    "sourceManifestHash": "f5b16968f3bace10177d11849d60f7aaf7bf287ef3c9645becbb0e11eb3d99b6",
+    "contextHash": "1185f348b9d69137e2897455f1beb1d153172504507949572704bb8119fd8bb2",
+    "context_hash_contract": "sha256 over compact UTF-8 JSON array of sorted path, git_object_id, bytes, sha256 records",
+    "sources": [
+      {
+        "path": "AGENTS.md",
+        "git_object_id": "8b618b9c1d78ffd562d954bda8a8bf39104f48f1",
+        "bytes": 15452,
+        "sha256": "c9a1e7b9b5255189dd5531decc86d62b2ab37f68403d3977d306c05fc65e7bb6"
+      },
+      {
+        "path": "docs/blueprints/BLUEPRINT-Document-Information-Architecture-and-Graph-Contract.md",
+        "git_object_id": "18aa33e2d7a5619d6229e93a3830248f4ff56d5a",
+        "bytes": 3811,
+        "sha256": "af0802df304ca0463a96e2cf0d3cc80f875fbb0fefeffd646e84d06f3d4ce3d9"
+      },
+      {
+        "path": "docs/change-requests/CR-2026-08-03-Document-IA-and-Knowledge-Graph-Readiness.md",
+        "git_object_id": "47771e874a66b4ab2281938eb344c652a252999b",
+        "bytes": 5271,
+        "sha256": "a183d2bf16565e46090f4e5d1e60db6c364fa898f4f233053ae71b9e52319d83"
+      },
+      {
+        "path": "docs/change-requests/ROLLBACK-Document-IA-Cleansing-Phase1.md",
+        "git_object_id": "67c6263c0f92c0ef9631200eed7304f0d6b03fac",
+        "bytes": 2794,
+        "sha256": "5b7f377fdcba70f084cfac7cb4d0e8a948f0d7deca4da0012de3f33b0d28f673"
+      },
+      {
+        "path": "docs/change-requests/manifests/DOC-CLEANSING-B02-v1.json",
+        "git_object_id": "220d14e20ca4d67677a0cad413df1f6ab8b20d42",
+        "bytes": 20424,
+        "sha256": "3cb2182a8a31c4add4db799478a3adf61d6c2a9c66222d41f3f2fea13da1b7f7"
+      },
+      {
+        "path": "docs/migration/MIGRATION-Document-IA-and-Graph-Readiness.md",
+        "git_object_id": "2e1a893290f934bb57216ce33d2292489cca132e",
+        "bytes": 5124,
+        "sha256": "ba2c738d0ff97107393cb900509a9cc7af08f00620b22e9907afae020f298919"
+      }
+    ],
+    "kvId": {
+      "status": "not_present",
+      "reason": "runtime_issued_only"
+    }
+  },
+  "execution_boundary": {
+    "mode": "recovery",
+    "corpus_mutation_authorized": false,
+    "corpus_files_modified": 0,
+    "moves": 0,
+    "renames": 0,
+    "archives_executed": 0,
+    "deduplications_executed": 0,
+    "cross_batch_reads": 0,
+    "cross_batch_updates": [],
+    "registry_touched": false,
+    "canonical_identity_minted": false
+  },
+  "accounting": {
+    "expected": 46,
+    "inspected": 46,
+    "accounted": 46,
+    "baseline_blobs_verified": 46,
+    "disposition_counts": {
+      "keep": 23,
+      "metadata_normalize": 0,
+      "unambiguous_move": 0,
+      "duplicate_candidate": 0,
+      "archive_candidate": 1,
+      "escalate": 22
+    },
+    "complete": true
+  },
+  "files": [
+    {
+      "path": "docs/adr/ADR-001-Monorepo-Architecture.md",
+      "git_object_id": "f378f3c4f217b4afbf35d08c8d733d311b3c0d2e",
+      "source_bytes": 3512,
+      "source_sha256": "d9931ac0a3186d421aab978566b2e22d43e9b594681f1811f24bbd5a55d57730",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-001: GoVibe Monorepo Architecture & Workspace Strategy",
+        "doc_id": null,
+        "status": "unresolved",
+        "version": "unresolved",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-002-MCP-As-Primary-Orchestration-Interface.md",
+      "git_object_id": "56e034b01bb215a066fa04345c4009345fbd6454",
+      "source_bytes": 3962,
+      "source_sha256": "77b1d7cd3f1adf2aae89190e8f0971be0cfc2a8b1d45caa4db5e007483d3bde1",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-002: MCP As Primary Orchestration Interface",
+        "doc_id": null,
+        "status": "unresolved",
+        "version": "unresolved",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 7,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-006-Deterministic-Agent-ID-Generation.md",
+      "git_object_id": "b1a0bb6581530c08cc59d1595ca1c1f5727a1032",
+      "source_bytes": 1093,
+      "source_sha256": "9b588da7e55d86b6ef7c79c0eeafb6ea79602fd389aa9b30e780c26f57a6ddf3",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-006: Deterministic Agent ID Generation Engine",
+        "doc_id": null,
+        "status": "unresolved",
+        "version": "unresolved",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-007-Deterministic-Governance.md",
+      "git_object_id": "08850cbc71f6f9fd7a33376139e68093f09c6149",
+      "source_bytes": 1646,
+      "source_sha256": "0ff72cf4aaeed1ce6545e6c49472f53dce56c50a0f82abb57601d964d58b94c5",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-007: Deterministic Governance via Hardened Tooling",
+        "doc_id": null,
+        "status": "unresolved",
+        "version": "unresolved",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-008-Session-Traceability.md",
+      "git_object_id": "22960763d6fd80aa4a9ff2e89e834ac09fc99189",
+      "source_bytes": 1161,
+      "source_sha256": "52770286e3b4882d97c8f12d3d00cdfe970dd22dc4c187c75062b5a1c01a333f",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-008: Session Traceability & Telemetry System",
+        "doc_id": null,
+        "status": "unresolved",
+        "version": "unresolved",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-011-Intent-to-Production-Governance.md",
+      "git_object_id": "93298e3a8731a8c956fa33ea4f00a700cb5f3a8c",
+      "source_bytes": 2084,
+      "source_sha256": "6194d3d53bf967aeb54a7938c76285ee9b5880a800aedfc594c424b53594f7c7",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-011: Intent-to-Production (I2P) Governance Paradigm",
+        "doc_id": null,
+        "status": "unresolved",
+        "version": "unresolved",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-012-Visual-Agent-Fleet-Governance.md",
+      "git_object_id": "aa9be376dbb20a3f1ca832dad9167d817d629a07",
+      "source_bytes": 4220,
+      "source_sha256": "8e6a6705dd22dc68663606020b27cf54a81290bf7c228fef775be8ae579880ec",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR: Visual Agent Fleet Governance",
+        "doc_id": "ADR-012-visual-agent-fleet-governance",
+        "status": "accepted",
+        "version": "0.1.0",
+        "owner": "ARCHON / THESEUS",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 3,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-013-Task-Scoped-Context-Injection.md",
+      "git_object_id": "07b88f3b7ec1a14f0ce63d474a0dfcbb4bc684c9",
+      "source_bytes": 5835,
+      "source_sha256": "3daf535c76ee182a47cba399bf1ce57d63413f33cc1e76084ad3293e1827a761",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR: Task-Scoped Context Injection",
+        "doc_id": "ADR-013-task-scoped-context-injection",
+        "status": "accepted",
+        "version": "0.1.0",
+        "owner": "ARCHON / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 4,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-014-MSP-GKS-Traceability-Gate.md",
+      "git_object_id": "95545437426edb7fd86880cc5a144cb059f70ca8",
+      "source_bytes": 10944,
+      "source_sha256": "580ec19f1ee253bf5a71024efdcc0f9acc20b4f77b3f38f878aff5a8ab5e2dec",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR: MSP/GKS as GoVibe Traceability Gate",
+        "doc_id": "ADR-014-msp-gks-traceability-gate",
+        "status": "accepted",
+        "version": "0.1.0",
+        "owner": "ARCHON / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 6,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-015-Master-Essence-vs-GOV-Policy.md",
+      "git_object_id": "bbc4ce6c4766e8ab67dc3102711a5a3d68287d0f",
+      "source_bytes": 1857,
+      "source_sha256": "cd26a01172fabd481a42f04b61a93cc3fe004497bb9d9d58d877ba6eb329a0aa",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-015: \"Master\" = essence tier; root governance policy → `GOV--`",
+        "doc_id": "ADR-015-MASTER-ESSENCE-VS-GOV-POLICY",
+        "status": "accepted",
+        "version": "0.1.0",
+        "owner": "Boss (CEO)",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "source_of_truth authority field is missing and cannot be inferred by this worker",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-016-Full-Stack-Mandatory-Swappable-Backend.md",
+      "git_object_id": "758686d2956843bef7b6afc3807a275b7d4f74c1",
+      "source_bytes": 3152,
+      "source_sha256": "9bfbbf275ed2e115cfe3e7727e06edf927f4617ac4dfc3057ed266c9f048efac",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-016: Mandatory GoVibe + MSP core; full eco optional (tiered); swappable storage backend",
+        "doc_id": "ADR-016-FULL-STACK-MANDATORY-SWAPPABLE-BACKEND",
+        "status": "accepted",
+        "version": "0.2.0",
+        "owner": "Boss (CEO)",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "source_of_truth authority field is missing and cannot be inferred by this worker",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-017-GoVibe-Governance-Translator-GKS-Interlingua.md",
+      "git_object_id": "22e66ade0dddbadaa1d2e04c19872f52f1727953",
+      "source_bytes": 3080,
+      "source_sha256": "915e5f299ab28718266310fdc07b18eb2069773b2feeb6a85ef9b728fa536209",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-017: GoVibe = governance translator; GKS = interlingua; ride MCP/A2A",
+        "doc_id": "ADR-017-GOVIBE-GOVERNANCE-TRANSLATOR-GKS-INTERLINGUA",
+        "status": "accepted",
+        "version": "0.2.0",
+        "owner": "Boss (CEO)",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "source_of_truth authority field is missing and cannot be inferred by this worker",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md",
+      "git_object_id": "1a40d0645a54f377b6197a188b00605015608196",
+      "source_bytes": 3582,
+      "source_sha256": "c1f8897ec62e1f2f65d27f99dcb1e92ecc042a9dcfcce668cfab867b12078245",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-018: Structural decomposition = containment tree + wikilink graph",
+        "doc_id": "ADR-018-STRUCTURAL-DECOMPOSITION-CONTAINMENT-WIKILINK",
+        "status": "accepted",
+        "version": "0.2.0",
+        "owner": "Boss (CEO)",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "source_of_truth authority field is missing and cannot be inferred by this worker",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": [
+        "legacy_H5_H6_semantics"
+      ]
+    },
+    {
+      "path": "docs/adr/ADR-019-Universal-Code-In-MCP-Out.md",
+      "git_object_id": "238d7c7cfb97e487f2d05357855be7eeda48cf09",
+      "source_bytes": 3918,
+      "source_sha256": "416fd39cc0600a165fdae502c32c81d373fcfd4cbb59a29daf7205e1c5a6f385",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-019: Universal code-in + MCP-out — no per-framework adapters",
+        "doc_id": "ADR-019-UNIVERSAL-CODE-IN-MCP-OUT",
+        "status": "accepted",
+        "version": "0.2.0",
+        "owner": "Boss (CEO)",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "source_of_truth authority field is missing and cannot be inferred by this worker",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-020-Per-Agent-Memory-Unit.md",
+      "git_object_id": "358a2d8d3eb2d6886a788e82c7cc4708e35f7f09",
+      "source_bytes": 8154,
+      "source_sha256": "da8d26b3afc61e335a08c8336f36e6dc16fb07eca82b0718a928197e562619cd",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR: Per-Agent Memory via Composed Tiered Units (EVA Memory-OS Subset Port)",
+        "doc_id": "ADR-020-PER-AGENT-MEMORY-UNIT",
+        "status": "proposed",
+        "version": "0.1.1+draft",
+        "owner": "ARCHON / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 7,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md",
+      "git_object_id": "15f2a7ce304601133a2ab718834e213e8d40d13a",
+      "source_bytes": 4676,
+      "source_sha256": "9b43cc246d21c988c02dde7d97f6a46f068be06faa63d2ed15a547d95da34bfe",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-021: H-Axis Access Scope and Semantic Separation",
+        "doc_id": "ADR-021-H-AXIS-ACCESS-SCOPE-SEPARATION",
+        "status": "accepted",
+        "version": "1.0.0",
+        "owner": "Boss (CEO)",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 3,
+      "phase2_semantic_flags": [
+        "legacy_H5_H6_semantics"
+      ]
+    },
+    {
+      "path": "docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md",
+      "git_object_id": "7fcc9d74295703889306435aa887d91e1baf8a89",
+      "source_bytes": 2074,
+      "source_sha256": "ffdffcc9252b086661fcb5032f948d8ce87a5ea11b5c4718b8d89fe6defa1cb8",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "Decision",
+        "doc_id": "ADR-022-VAULT-OWNERSHIP-CONTEXT-LINEAGE",
+        "status": "approved",
+        "version": "1.0.0",
+        "owner": "Boss / ATHER",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "source_of_truth authority field is missing and cannot be inferred by this worker",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-023-Knowledge-Authority-Context-Authority-Boundary.md",
+      "git_object_id": "522f38a493cf926bb2b94009fdb5b22523b95e1b",
+      "source_bytes": 5774,
+      "source_sha256": "6dcedee79e727a6f1e9ccb7107053beddc1e8f7cc15dc2b326273f8c55ade9dd",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-023: GKS knowledge authority vs MSP context authority",
+        "doc_id": "ADR-023-KNOWLEDGE-AUTHORITY-CONTEXT-AUTHORITY-BOUNDARY",
+        "status": "accepted",
+        "version": "0.1.0",
+        "owner": "Boss (CEO)",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "source_of_truth authority field is missing and cannot be inferred by this worker",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 3,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md",
+      "git_object_id": "4b5050255fd5b6513fd8d34532ce6b66687047e2",
+      "source_bytes": 8056,
+      "source_sha256": "8592dd59b00ae618ecac2dad908ec59441443b7a279c269f19e7470d7f11957e",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ADR-024: Provider Entitlement and Execution Authority Boundary",
+        "doc_id": "ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY",
+        "status": "proposed",
+        "version": "0.1.0+draft",
+        "owner": "Boss (CEO)",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "source_of_truth authority field is missing and cannot be inferred by this worker",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/ARCH-Vault-and-Context-Model.md",
+      "git_object_id": "b1a64f200ee1dcd5627a291e58e99555e8096385",
+      "source_bytes": 9444,
+      "source_sha256": "65e48bf6530ecb1ab142460643d37dab4e5bb9f83515f5ebb2ec42b4347c17f7",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "Vault model",
+        "doc_id": "ARCH-VAULT-CONTEXT-MODEL",
+        "status": "approved",
+        "version": "1.0.1",
+        "owner": "Boss / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 4,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md",
+      "git_object_id": "db213a82e98b588da85ad7316108848d21c6545a",
+      "source_bytes": 7495,
+      "source_sha256": "b65b6a1a067c74c8d150d4d18ea620820b9957df31af6223d5ed1b351711142e",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "Boundary",
+        "doc_id": "BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE",
+        "status": "approved",
+        "version": "3.1.0",
+        "owner": "Boss / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 5,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-Mission-Gateway-Runtime-Responsibility-Split.md",
+      "git_object_id": "c2affbf30b1f9854358ac6196da09e7b3764e000",
+      "source_bytes": 11227,
+      "source_sha256": "f1d0cf9d985a4d1f4e80f0b7a147fc57562b0aa0c2cdde8f56f8f605272919db",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "Mission Gateway and Runtime Responsibility Split",
+        "doc_id": "BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT",
+        "status": "approved",
+        "version": "0.1.1",
+        "owner": "Boss / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 4,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md",
+      "git_object_id": "48e2156c285e3ce837cd3230e0ebe592a26f594b",
+      "source_bytes": 11794,
+      "source_sha256": "e77fe71de2eeee0078d1746d247c71d9956e07330eed67ce9d1919efc32a87fe",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "BLUEPRINT: Task-Scoped Context Injection",
+        "doc_id": "BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION",
+        "status": "approved",
+        "version": "0.1.1",
+        "owner": "ARCHON / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 7,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/BLUEPRINT-Translator-Core-Slice.md",
+      "git_object_id": "f8aae0e16df50a9a11118c54ab94bb68e395d61e",
+      "source_bytes": 4614,
+      "source_sha256": "12c1f937944216cf5243dd1e2b999fccb70e267a056ff39c3e34385aa435c7ed",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "BLUEPRINT: GoVibe Translator-Core Slice",
+        "doc_id": "BLUEPRINT-TRANSLATOR-CORE-SLICE",
+        "status": "draft",
+        "version": "0.1.0+draft",
+        "owner": "ARCHON / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 6,
+      "phase2_semantic_flags": [
+        "active_H0_H6_retrieval_semantics"
+      ]
+    },
+    {
+      "path": "docs/architecture/C4-GoVibe-Platform-H-Axis-Correction.md",
+      "git_object_id": "07e2a96d15bb30d68072b2e2b75241068f407775",
+      "source_bytes": 4220,
+      "source_sha256": "ceff301aff344bf37575c0b39f94a3ad3d60d7422fca48642362989d773c5880",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "C4 Correction: H-Axis Semantic Separation",
+        "doc_id": "C4-GOVIBE-H-AXIS-CORRECTION",
+        "status": "approved",
+        "version": "1.0.0",
+        "owner": "ARCHON",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 1,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/C4-GoVibe-Platform.md",
+      "git_object_id": "3967579f01a18afd0f1f23930a465ffd750c2772",
+      "source_bytes": 18382,
+      "source_sha256": "75a4d878ef0e20acf451b1b97e5244f3e35c4fd8688133c610eb297b826296c1",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "C4: GoVibe Platform Architecture",
+        "doc_id": null,
+        "status": "unresolved",
+        "version": "unresolved",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 1,
+      "phase2_semantic_flags": [
+        "active_H0_H6_retrieval_semantics"
+      ]
+    },
+    {
+      "path": "docs/architecture/C4-Knowledge-Context-Authority-Overlay.md",
+      "git_object_id": "9e677df8d8be4c937e58ef73b5b995146e22a8c2",
+      "source_bytes": 4006,
+      "source_sha256": "5740242b270b1ebcec7c7348f822f6a9209fecf96ac2bca04154b0a9e9517b85",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "C4 Overlay: Knowledge and Context Authority",
+        "doc_id": "C4-KNOWLEDGE-CONTEXT-AUTHORITY-OVERLAY",
+        "status": "draft",
+        "version": "0.1.0+draft",
+        "owner": "ARCHON / ATHER",
+        "source_of_truth": "false"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 2,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/C4-Provider-Entitlement-Execution-Routing-Overlay.md",
+      "git_object_id": "c48d45f881d6c5c16298fbd0a20809847e53fb1c",
+      "source_bytes": 7614,
+      "source_sha256": "7d3509e60306c2881bfe4638d78a85acbe6d361e9901215cb6d3f7791083a048",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "C4 Overlay: Provider Entitlement and Execution Routing",
+        "doc_id": "C4-PROVIDER-ENTITLEMENT-EXECUTION-ROUTING-OVERLAY",
+        "status": "draft",
+        "version": "0.1.0+draft",
+        "owner": "ARCHON / ATHER",
+        "source_of_truth": "false"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 3,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/CTX-GoVibe-System-Context.md",
+      "git_object_id": "0f46053bf4c6556f8fb6ef3e2545934ce2d8be38",
+      "source_bytes": 6281,
+      "source_sha256": "c4c43ff51d356592a431dabdd2064e6d284a1714e802da83ea2851a9923fa975",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "CTX: GoVibe System Context",
+        "doc_id": null,
+        "status": "unresolved",
+        "version": "unresolved",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 6,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/ERD-GoVibe-Platform-Data-Model.md",
+      "git_object_id": "49af8e8a6b176b38e46886089085a6cd4ce734ca",
+      "source_bytes": 8615,
+      "source_sha256": "2a4d95e2ce53ecef90c863afe3695204acc071d351760cd437ec526fc6daeb1e",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "ERD: GoVibe Platform Data Model",
+        "doc_id": null,
+        "status": "unresolved",
+        "version": "unresolved",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 5,
+      "phase2_semantic_flags": []
+    }
+    ,
+    {
+      "path": "docs/architecture/H-Axis-Compatibility-Decision.md",
+      "git_object_id": "13f60dba5eba5404a1875e9f23601feefe8b7b61",
+      "source_bytes": 2956,
+      "source_sha256": "fcbc30ba1d5c847f6c1eaa3d162aa38583ac27c999d2ddd3c1278ff22a320b9c",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "H-Axis Compatibility Decision",
+        "doc_id": "H-AXIS-COMPATIBILITY-DECISION",
+        "status": "approved",
+        "version": "1.0.0",
+        "owner": "ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": [
+        "legacy_H5_H6_semantics"
+      ]
+    },
+    {
+      "path": "docs/architecture/MSP-GKS-Taxonomy-Mapping.md",
+      "git_object_id": "4adead275a610919306d074218ff9940a2c5f5ca",
+      "source_bytes": 2644,
+      "source_sha256": "0691c5dc483ebda4f9afc59236cfd4f6dd678903e57602301dbafe13ab9bc82c",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "Architecture: MSP/GKS Taxonomy Mapping",
+        "doc_id": "MSP-GKS-TAXONOMY-MAPPING",
+        "status": "approved",
+        "version": "0.1.0",
+        "owner": "THESEUS / KIN",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 3,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/RWANG-CONSUMER-BOUNDARY.md",
+      "git_object_id": "342c93883ad7efb5f81030600c5350c8fd3e5bd3",
+      "source_bytes": 5904,
+      "source_sha256": "8691dc7ab100af2cab53ea4065f4e98a0cbb3997730b56ae85150243531021d0",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "GoVibe Consumer Boundary for RWANG",
+        "doc_id": null,
+        "status": "unresolved",
+        "version": "unresolved",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "missing frontmatter leaves doc_id, lifecycle, owner, version, and authority unresolved",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/SDD-Genesis-Block.md",
+      "git_object_id": "befc6ff9204c5dbe4887501176d5914231e27d90",
+      "source_bytes": 3616,
+      "source_sha256": "70eb5cf95e63b837dcea65224965c42ea921553a10cd356e447efd9d5aebbff3",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "SDD: Genesis Block Architecture",
+        "doc_id": "SDD-GKS-001",
+        "status": "candidate",
+        "version": "1.2.0",
+        "owner": "THESEUS",
+        "source_of_truth": "true"
+      },
+      "disposition": "escalate",
+      "reason": "candidate lifecycle requires owner disposition; no promotion is authorized",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": [
+        "legacy_H5_H6_semantics"
+      ]
+    },
+    {
+      "path": "docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md",
+      "git_object_id": "a22f8b86035ecf2233b707449b01bee084b109b1",
+      "source_bytes": 4094,
+      "source_sha256": "6053dbd59197d83be45f58bf0a145e013d183986f47a02703d12055ac73acc74",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "SDD: GoVibe ↔ MSP ↔ GKS ↔ GenesisBlockDB integration",
+        "doc_id": "SDD-GOVIBE-MSP-GKS-INTEGRATION",
+        "status": "draft",
+        "version": "0.1.2+draft",
+        "owner": "Boss (CEO)",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "source_of_truth authority field is missing and cannot be inferred by this worker",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/SDD-MSP-External-Evidence-Boundary.md",
+      "git_object_id": "9859f78a4b015000b432879a22cc8849163b487d",
+      "source_bytes": 6871,
+      "source_sha256": "d75332ebf323023e590349c6b7cd30826021305911950c16e7c85b0b021c4609",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "SDD: MSP External Evidence Boundary",
+        "doc_id": "SDD-MSP-EXTERNAL-EVIDENCE-BOUNDARY",
+        "status": "approved",
+        "version": "0.1.1",
+        "owner": "ARCHON / KIN / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 5,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/SDD-Symbol-Graph-Traceability-Boundary.md",
+      "git_object_id": "f00a72e20b8a7d26cfe02c27fe1c5d68a31c8443",
+      "source_bytes": 8923,
+      "source_sha256": "a4fbe0ddc75d1784ebd02c4a4d18aea0078f4ade2d9598c4004a9898cfe67c63",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "SDD: Symbol Graph Traceability Boundary",
+        "doc_id": "SDD-SYMBOL-GRAPH-TRACEABILITY-BOUNDARY",
+        "status": "approved",
+        "version": "0.1.1",
+        "owner": "ARCHON / THESEUS / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 6,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/SDD-Visual-Agent-Fleet.md",
+      "git_object_id": "e576a6d575c8c439e7406d4425c9bf08d89eb030",
+      "source_bytes": 5397,
+      "source_sha256": "7057f843535d3e8e7fef1658dcd2e8dda967437dcdaab965db43c3202a36dfb8",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "SDD: Visual Agent Fleet",
+        "doc_id": "SDD-VISUAL-AGENT-FLEET",
+        "status": "approved",
+        "version": "0.1.0",
+        "owner": "THESEUS / ARCHON",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 3,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/SEQ-Ollama-Sidecar-Flow.md",
+      "git_object_id": "add017a0e7319e08cba5a1b9594fb4a7e8fda5d3",
+      "source_bytes": 3010,
+      "source_sha256": "b5033f01dadef042e5875853ec635e1d156518ea99e1f2889a0d025377819bef",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "SEQ: Ollama Sidecar Flow",
+        "doc_id": "SEQ-OLLAMA-SIDECAR-FLOW",
+        "status": "approved",
+        "version": "0.1.2",
+        "owner": "THESEUS",
+        "source_of_truth": "false"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 4,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/architecture/TDD-GoVibe-Centric-Owner-Feature-Map.md",
+      "git_object_id": "836ea516ad3b72950d68464056e268b61406e058",
+      "source_bytes": 39076,
+      "source_sha256": "1911e7f12080474d91670ab4d42df3aaa354acb5f2de6788c34261dc35639f97",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "TDD: GoVibe-Centric Owner Map and Feature Map",
+        "doc_id": "TDD-GOVIBE-CENTRIC-OWNER-FEATURE-MAP",
+        "status": "superseded",
+        "version": "0.3.0+draft",
+        "owner": "Boss (Product Authority) / ARCHON / ATHER",
+        "source_of_truth": "false"
+      },
+      "disposition": "archive_candidate",
+      "reason": "explicit superseded lifecycle; archive path operation remains deferred",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 10,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/blueprints/BLUEPRINT-Agent-Team-Management.md",
+      "git_object_id": "5527c7220baef3c14e3b617a1ac0962fd47945d8",
+      "source_bytes": 6022,
+      "source_sha256": "9ec903a8c583c866717d5254e51b24725086a6ba27bc765ec6d9ae283b244013",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "SYSTEM: Multi-Agent Team Orchestration [L4-Container] AGENT_TEAM_SYSTEM",
+        "doc_id": "UGB-SYSTEM-05-001",
+        "status": "candidate",
+        "version": "1.0.0",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "candidate lifecycle requires owner disposition; no promotion is authorized",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": [
+        "legacy_context_scaling_tier"
+      ]
+    },
+    {
+      "path": "docs/blueprints/BLUEPRINT-Genesis-Knowledge-System.md",
+      "git_object_id": "13feeafaad454b1bdfac6082f71e6a39318b42eb",
+      "source_bytes": 4916,
+      "source_sha256": "0afbbff1b5bfacdfc8a2e72f0d3b0387831a91ba66accaa72ea4280e144d58ce",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "SYSTEM: Genesis Knowledge System [L4-Container] GKS_CORE",
+        "doc_id": "UGB-GKS-001",
+        "status": "candidate",
+        "version": "1.3.0",
+        "owner": "unresolved",
+        "source_of_truth": "unresolved"
+      },
+      "disposition": "escalate",
+      "reason": "candidate lifecycle requires owner disposition; no promotion is authorized",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 0,
+      "phase2_semantic_flags": [
+        "legacy_H5_H6_semantics",
+        "legacy_context_scaling_tier"
+      ]
+    },
+    {
+      "path": "docs/lld/LLD-Agent-Launcher-Execution-Router.md",
+      "git_object_id": "74361003d1677cd306eddfe55b31e2084453c6fc",
+      "source_bytes": 4237,
+      "source_sha256": "7aeaa4e51bad2b8ef74ec30f4b3404fc48233c886c21983c46a98847c7f80785",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "LLD: Agent Launcher Execution Router",
+        "doc_id": "LLD-AGENT-LAUNCHER-EXECUTION-ROUTER",
+        "status": "approved",
+        "version": "0.1.2",
+        "owner": "THESEUS",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 3,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/lld/LLD-GoVibe-MCP-Tools.md",
+      "git_object_id": "a3bfec7330511ebf567a62038bcf7e194bb1c7c0",
+      "source_bytes": 8140,
+      "source_sha256": "94054bc82b5df0906183d9caf490a3d3e527570979e45d13219ed5d705b40d32",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "LLD: GoVibe MCP Tools",
+        "doc_id": "LLD-GOVIBE-MCP-TOOLS",
+        "status": "approved",
+        "version": "0.2.1",
+        "owner": "GoVibe",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 4,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/lld/LLD-Task-Scoped-Context-Injection-Core.md",
+      "git_object_id": "b46ece44e86ccb82aa4fb1a534ad3d5cd056e582",
+      "source_bytes": 19632,
+      "source_sha256": "2d4ce2b99ba3b19e5a5f4b64283050407df31b58b24c72486fd828e531a5531f",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "LLD: Task-Scoped Context Injection Core",
+        "doc_id": "LLD-TASK-SCOPED-CONTEXT-INJECTION-CORE",
+        "status": "approved",
+        "version": "0.1.1",
+        "owner": "ARCHON / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 8,
+      "phase2_semantic_flags": []
+    },
+    {
+      "path": "docs/lld/LLD-Translator-Core-Slice.md",
+      "git_object_id": "bfbaa7d0449a1d2bec6ffa20888b6f12611cfb78",
+      "source_bytes": 6487,
+      "source_sha256": "3ff25a80f5e7b9e0e6bddb2266790f0994bfc404b0dc44e04c07a070f5f48825",
+      "baseline_blob_verified": true,
+      "observed": {
+        "title": "LLD: GoVibe Translator-Core Slice",
+        "doc_id": "LLD-TRANSLATOR-CORE-SLICE",
+        "status": "draft",
+        "version": "0.1.0+draft",
+        "owner": "ARCHON / ATHER",
+        "source_of_truth": "true"
+      },
+      "disposition": "keep",
+      "reason": "descriptive recovery-mode path; lifecycle and source_of_truth are explicit",
+      "path_operation": null,
+      "inbound_reference_evidence": "not_required_no_path_operation",
+      "explicit_document_reference_signals": 4,
+      "phase2_semantic_flags": [
+        "legacy_H5_H6_semantics"
+      ]
+    }
+  ],
+  "relation_candidates": [
+    {
+      "candidate_link_id": "B02-REL-001",
+      "type": "CONFORMS_TO",
+      "source": "C4-PROVIDER-ENTITLEMENT-EXECUTION-ROUTING-OVERLAY",
+      "target": "docs/architecture/C4-GoVibe-Platform.md",
+      "source_sha256": "7d3509e60306c2881bfe4638d78a85acbe6d361e9901215cb6d3f7791083a048",
+      "provenance": "explicit frontmatter conforms_to",
+      "confidence": 1,
+      "status": "candidate"
+    },
+    {
+      "candidate_link_id": "B02-REL-002",
+      "type": "CONFORMS_TO",
+      "source": "C4-PROVIDER-ENTITLEMENT-EXECUTION-ROUTING-OVERLAY",
+      "target": "docs/architecture/C4-Knowledge-Context-Authority-Overlay.md",
+      "source_sha256": "7d3509e60306c2881bfe4638d78a85acbe6d361e9901215cb6d3f7791083a048",
+      "provenance": "explicit frontmatter conforms_to",
+      "confidence": 1,
+      "status": "candidate"
+    },
+    {
+      "candidate_link_id": "B02-REL-003",
+      "type": "CONFORMS_TO",
+      "source": "C4-PROVIDER-ENTITLEMENT-EXECUTION-ROUTING-OVERLAY",
+      "target": "docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md",
+      "source_sha256": "7d3509e60306c2881bfe4638d78a85acbe6d361e9901215cb6d3f7791083a048",
+      "provenance": "explicit frontmatter conforms_to",
+      "confidence": 1,
+      "status": "candidate"
+    },
+    {
+      "candidate_link_id": "B02-REL-004",
+      "type": "DERIVES_FROM",
+      "source": "SEQ-OLLAMA-SIDECAR-FLOW",
+      "target": "docs/PRD-GoVibe-Platform-Overview.md",
+      "source_sha256": "b5033f01dadef042e5875853ec635e1d156518ea99e1f2889a0d025377819bef",
+      "provenance": "explicit frontmatter source_prd",
+      "confidence": 1,
+      "status": "candidate"
+    },
+    {
+      "candidate_link_id": "B02-REL-005",
+      "type": "SUPERSEDES",
+      "source": "docs/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md",
+      "target": "TDD-GOVIBE-CENTRIC-OWNER-FEATURE-MAP",
+      "source_sha256": "1911e7f12080474d91670ab4d42df3aaa354acb5f2de6788c34261dc35639f97",
+      "provenance": "target document explicit frontmatter superseded_by; direction normalized to SUPERSEDES",
+      "confidence": 1,
+      "status": "candidate"
+    }
+  ],
+  "unresolved_relation_signals": {
+    "explicit_document_reference_signal_count": 127,
+    "decision": "not_materialized_as_generic_RELATED_TO",
+    "reason": "related_docs and inline path references do not establish governing relation type; reviewer or owner must resolve WHY/source/authority"
+  },
+  "phase2_deferred": {
+    "flag_count": 11,
+    "reason": "H0-H6 and context_scaling_tier semantic corrections are outside Phase 1",
+    "files": [
+      {
+        "path": "docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md",
+        "flags": [
+          "legacy_H5_H6_semantics"
+        ]
+      },
+      {
+        "path": "docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md",
+        "flags": [
+          "legacy_H5_H6_semantics"
+        ]
+      },
+      {
+        "path": "docs/architecture/BLUEPRINT-Translator-Core-Slice.md",
+        "flags": [
+          "legacy_H5_H6_semantics"
+        ]
+      },
+      {
+        "path": "docs/architecture/C4-GoVibe-Platform-H-Axis-Correction.md",
+        "flags": [
+          "legacy_H5_H6_semantics"
+        ]
+      },
+      {
+        "path": "docs/architecture/C4-GoVibe-Platform.md",
+        "flags": [
+          "legacy_H5_H6_semantics"
+        ]
+      },
+      {
+        "path": "docs/architecture/H-Axis-Compatibility-Decision.md",
+        "flags": [
+          "legacy_H5_H6_semantics"
+        ]
+      },
+      {
+        "path": "docs/architecture/SDD-Genesis-Block.md",
+        "flags": [
+          "legacy_H5_H6_semantics"
+        ]
+      },
+      {
+        "path": "docs/blueprints/BLUEPRINT-Agent-Team-Management.md",
+        "flags": [
+          "legacy_context_scaling_tier"
+        ]
+      },
+      {
+        "path": "docs/blueprints/BLUEPRINT-Genesis-Knowledge-System.md",
+        "flags": [
+          "legacy_H5_H6_semantics",
+          "legacy_context_scaling_tier"
+        ]
+      },
+      {
+        "path": "docs/lld/LLD-Translator-Core-Slice.md",
+        "flags": [
+          "legacy_H5_H6_semantics"
+        ]
+      }
+    ]
+  },
+  "rollback": {
+    "operations": [],
+    "status": "not_required_no_path_operation"
+  },
+  "validations": [
+    {
+      "command": "node scripts/docs/verify-doc-cleansing-manifest.mjs",
+      "status": "pass",
+      "evidence": "201 tracked Git blobs verified; 195 processable unique; 6 tracked exclusions; no errors; external filesystem exclusions skipped because no external root was supplied"
+    },
+    {
+      "command": "npm run docs:validate",
+      "status": "pass",
+      "evidence": "30 templates, 345 Markdown files, 173 document IDs, and 705 path references checked; baseline warnings remain out of B02 scope"
+    },
+    {
+      "command": "npm run roadmap:validate",
+      "status": "pass",
+      "evidence": "7 roadmap sources checked with 0 errors and 14 baseline warnings; temporary dependency junction was verified and removed after the run"
+    },
+    {
+      "command": "git diff --check",
+      "status": "pass"
+    }
+  ],
+  "review_gate": {
+    "status": "pending_noise_review",
+    "allowed_decisions": [
+      "accept",
+      "return_for_revision",
+      "escalate"
+    ]
+  },
+  "notes": [
+    "All 46 assigned Git blobs were read in full for content, metadata, reference-signal, and Phase 2 flag inspection.",
+    "No architecture, ADR, blueprint, or LLD corpus file was edited.",
+    "Disposition is evidence for review and does not execute lifecycle, authority, archive, or graph promotion decisions."
+  ]
+}

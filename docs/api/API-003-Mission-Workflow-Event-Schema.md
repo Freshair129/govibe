@@ -256,5 +256,5 @@ May consume:
 
 - `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md`
 - `docs/features/project-roadmap/FEAT-Document-Driven-Roadmap-Source.md`
-- `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
+- `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 - `docs/design/DOMAIN_DETAILS.md`

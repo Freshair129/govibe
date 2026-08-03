@@ -10,9 +10,9 @@ source_of_truth: false
 related_docs:
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
   - "docs/PRD-GoVibe-Platform-Overview.md"
-  - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
 ---
 
 # CONTEXT: Bounded External Executor
@@ -37,7 +37,7 @@ Use this order when conflicts appear:
 2. `docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md`
 3. `docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md`
 4. `docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md`
-5. `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
+5. `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md`
 6. current packet or task instruction
 
 ## 4. CoVibe Meaning

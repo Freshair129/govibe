@@ -22,10 +22,10 @@ Before testing UI, navigation, or deployment behavior, inspect these files:
 | Design system | `docs/design/DESIGN_SYSTEM.md` |
 | Navigation map | `docs/design/SITE_MAP.md` |
 | Domain/module details | `docs/design/DOMAIN_DETAILS.md` |
-| Legacy template split | `docs/design/TEMPLATE_MODULARIZATION.md` |
-| Legacy template parity | `docs/design/TEMPLATE_REFERENCE.md` |
+| Legacy template split | `docs/references/templates/TEMPLATE_MODULARIZATION.md` |
+| Legacy template parity | `docs/references/templates/TEMPLATE_REFERENCE.md` |
 | Feature index | `docs/features/README.md` |
-| Multi-agent runbook | `docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` |
+| Multi-agent runbook | `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` |
 
 ## Primary Targets
 

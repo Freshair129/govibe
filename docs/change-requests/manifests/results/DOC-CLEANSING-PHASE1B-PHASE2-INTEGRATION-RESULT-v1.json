@@ -1,0 +1,237 @@
+{
+  "schema_version": "1.0.3",
+  "result_id": "DOC-CLEANSING-PHASE1B-PHASE2-INTEGRATION-RESULT-v1",
+  "status": "execution_complete_evidence_repaired_with_ci_follow_up_and_runtime_baseline_debt",
+  "execution_complete": true,
+  "execution_authorized": false,
+  "integration_branch": "codex/docs-cleansing-ia",
+  "accepted_base_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+  "evidence_revision": {
+    "revision": 5,
+    "status": "verified_git_blob_content_bytes_raw_patch_equivalent_provenance_and_ci_follow_up",
+    "scope": "Phase 2 semantic rollback map, accepted-source provenance, and CI fixture-contract follow-up",
+    "preserves": "accepted source review provenance, integrated commits, authority provenance, forward operations, inverse operations, final target identities, and recorded runtime baseline debt",
+    "sha256_basis": "git_blob_content_bytes",
+    "verified_associations": 88,
+    "verified_patch_equivalences": 6,
+    "patch_id_basis": "raw OS pipe: git show --pretty=format: <commit> | git patch-id --stable (cmd.exe /d /s /c; no PowerShell or string normalization)",
+    "patch_id_verification": "Each source and integrated commit produced the identical full patch ID through the recorded raw pipe."
+  },
+  "post_sync_validation": {
+    "origin_main": "91ec65aed07c5e22f5b5c8a8e214c6b9e0067c2a",
+    "merge_commit": "23081b9c58fb63758491127ab315516485058da4",
+    "origin_changed_paths": 9,
+    "path_overlap_with_cleansing_branch": 0,
+    "status": "documentation_evidence_passed_security_ci_fixture_follow_up_recorded_runtime_baseline_debt_remains",
+    "reason": "The merged execution-binding enforcement exposed a stale positive security-test fixture. The approved follow-up updates only that fixture with a governed local binding; runtime code is not modified and the separate full-test baseline debt remains recorded."
+  },
+  "ci_follow_up_provenance": {
+    "pull_request": 87,
+    "branch_head_before_follow_up": "f88723bb2ce98a63b0042160acceac7f19f47636",
+    "workflow": "P0 Security CI",
+    "run_id": "30773512405",
+    "job": "verify",
+    "failing_test": "dispatches only after bounded authority, allow policy, and lineage validation",
+    "failure_code": "EXECUTION_BINDING_REQUIRED",
+    "root_cause": "The positive graph-dispatch authority fixture omitted the executionBinding now required by the merged executor-adapter contract.",
+    "approved_remediation": "Add a no-secret governed local execution binding to the test fixture without weakening authority, policy, or lineage assertions.",
+    "targeted_validation": "PASS: node --test scripts/mcp/graph-dispatch-authority.security.mjs, 7 passed, 0 failed."
+  },
+  "authority_provenance": {
+    "owner": "Boss (Product Authority)",
+    "decision": "owner approval plus delegated decision authority in the assigned cleansing task",
+    "canonical_gks_ids_assigned": 0,
+    "msp_gks_materializations": 0,
+    "scope_closure": "No further mutation is authorized without a new owner-approved packet."
+  },
+  "accepted_source_commit_provenance_in_dependency_order": [
+    {
+      "source_commit": "c86a95baa6601a4f3e90f9c978cb12e55f0592e8",
+      "integrated_patch_equivalent_commit": "eabc2d22881005a25dbd998e938e91d9e8abf8c1",
+      "patch_id": "ca36d4a07ac634e933b83f348d635317b7a5e17f",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    },
+    {
+      "source_commit": "0908fb8871d910e05a9dab57a97034450c76cbbe",
+      "integrated_patch_equivalent_commit": "18354e664fa31900620c8712f67b1954796c7fd9",
+      "patch_id": "6c7c52eb7c1e4ef7cf9756938d6aa347702bd671",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    },
+    {
+      "source_commit": "6c6d7f9518c306b25522f1f1e12bff4019ba473f",
+      "integrated_patch_equivalent_commit": "0843454f4fbb222df42154ecaf64c6737a70af00",
+      "patch_id": "ada621024ad0f5e56a7851ab5c37fba3734209d8",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    },
+    {
+      "source_commit": "7bf0326f7ae91f2cc0fecaf3d753d6da16936f6e",
+      "integrated_patch_equivalent_commit": "768afd2bb12de781ad059082ca602eca3f7a71b3",
+      "patch_id": "676d260061007cf4f29e7fcf2f6acc9a3f3e02ee",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    },
+    {
+      "source_commit": "c26dae127090f28f0f52db2d3621091ad0d5eb7e",
+      "integrated_patch_equivalent_commit": "ab6823b4ab680cd71a28d677aa62d4e9a13624db",
+      "patch_id": "a0de3b7d7757b610b67ba9b8137e6325e8ff2478",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    },
+    {
+      "source_commit": "b16ff2e2142e9e24e8293a1836601412c1880741",
+      "integrated_patch_equivalent_commit": "d2337e1677f6b4f3e0fbe91ac4879dc69dd7ecb8",
+      "patch_id": "e5ba1665bbb45ba5c4c9c5a95e94df3174d57778",
+      "source_commit_is_ancestor": false,
+      "integrated_commit_is_ancestor": true
+    }
+  ],
+  "review_gates": {
+    "independent_review": "ACCEPT for each accepted commit",
+    "integration_gate": "this result preserves accepted slice operations and provenance; revision 2 normalizes only the Phase 2 rollback-map hash basis",
+    "final_gate": "parent final gate receives this result, validations, versions, rollback accounting, and unresolved queue"
+  },
+  "operation_accounting": {
+    "phase1b_metadata_normalizations": 8,
+    "phase1b_handover_semantic_correction": 1,
+    "phase2_structural_source_dispositions": 5,
+    "phase2_semantic_operations": 22,
+    "accepted_slice_operations": 36,
+    "unique_final_mapped_targets": 34,
+    "path_moves": 3,
+    "content_or_metadata_rewrites": 33,
+    "deletions": 0,
+    "archive_or_legacy_paths": 2,
+    "notes": "The 36 source operations resolve to 34 final targets because CoDev is a Phase 1B metadata target and a Phase 2 path-reference target, while GVDOC has sequential Phase 1B metadata and semantic checkpoints."
+  },
+  "source_results_and_maps": [
+    "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE1B-METADATA-EXECUTION-RESULT-v1.json",
+    "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE1B-METADATA-ROLLBACK-MAP-v1.json",
+    "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE1B-HANDOVER-SEMANTIC-EXECUTION-RESULT-v1.json",
+    "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE1B-HANDOVER-SEMANTIC-ROLLBACK-MAP-v1.json",
+    "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE2-STRUCTURE-RESULT-v1.md",
+    "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE2-SEMANTIC-RESULT-v1.md",
+    "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE2-SEMANTIC-ROLLBACK-MAP-v1.json"
+  ],
+  "source_evidence_revisions": {
+    "docs/change-requests/manifests/results/DOC-CLEANSING-PHASE2-SEMANTIC-ROLLBACK-MAP-v1.json": {
+      "schema_version": "1.1",
+      "evidence_revision": 2,
+      "status": "verified_git_blob_content_bytes",
+      "sha256_basis": "git_blob_content_bytes",
+      "operations": 22,
+      "before_after_inverse_associations": 88
+    }
+  },
+  "cross_slice_identity_chains": {
+    "CoDev_CR": {
+      "path": "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md",
+      "baseline_blob": "f3689318559f98a7b7d334f0d188ca499204aef5",
+      "phase1b_metadata_blob": "b3849bb4b79f2eb62e3d3dcbf8623d340a052ef2",
+      "phase2_semantic_slice_blob": "f232889dc5306446535fb54f8f65611a01b8c653",
+      "final_integration_blob": "2e61b8f3b417d11287228880951be2fae87e53d8",
+      "final_sha256": "25210edccbd97abc1d42693beae6e70c0a1dc182afdfa92ced7622204c2b3c06",
+      "sha256_basis": "git_blob_content_bytes",
+      "inverse_chain": [
+        "replace final integration blob with the Phase 1B metadata blob to undo only the Phase 2 runbook-reference rewrite",
+        "replace the Phase 1B metadata blob with the baseline blob to undo metadata normalization"
+      ]
+    },
+    "GVDOC_1004": {
+      "path": "docs/handover/GVDOC-1004-Handover Specification.md",
+      "baseline_blob": "242e809062d54628b3e6b841b989ff754cf22dd8",
+      "phase1b_metadata_blob": "e94fa3c1a76ce6540c61721695a66404245fc305",
+      "phase1b_semantic_and_final_blob": "d53199887af005fefc694d832bab8d075511cd26",
+      "final_sha256": "5932d002616beb9479c43aec0b5a2e23e79ac6a9ed5ee58e9e1d63936df43b0e",
+      "sha256_basis": "git_blob_content_bytes",
+      "inverse_chain": [
+        "replace final semantic blob with the Phase 1B metadata blob",
+        "replace the Phase 1B metadata blob with the baseline blob"
+      ]
+    },
+    "multi_agent_resource_registry": {
+      "path": "scripts/mcp/registry.mjs",
+      "baseline_blob": "efa66ef477f8e8b3462d99a55bb074f305ae233e",
+      "final_repair_blob": "2670047fba91b66e85b1d66d894d096e20e90379",
+      "final_sha256": "e4427f3437a02cbe1c237b3d5c227e61a75debf1f40407a6b034f62c708619f8",
+      "sha256_basis": "git_blob_content_bytes",
+      "inverse": "restore the baseline blob only after verifying the final SHA-256; the govibe://docs/runbook/multi-agent URI remains a compatibility identity."
+    }
+  },
+  "final_target_identities": [
+    {"path":"docs/audit/AUDIT-GoVibe-RWANG-Cutover-Readiness-2026-07-30.md","git_blob":"3b13cf2a214a261f5dbe2b84d226c13dded896d8","bytes":3525,"sha256":"cb141d7437c83ee64489da904af314c251c48e8e668adc38852e8a6d053d3411"},
+    {"path":"docs/audit/IMPACT-ANALYSIS-PHASE4.md","git_blob":"cbe5eb0be02b33dcc6a48bbbc85ccc635419841e","bytes":2465,"sha256":"3aff84eda214b812c55cb5df588898ee96e5ff6ca93a58b8df19690f7d969433"},
+    {"path":"docs/audit/UAT-Plan.md","git_blob":"746fe2edd848de9ad4e9cb01778a31f9f0229161","bytes":1536,"sha256":"fca67a95c2054079b94ceb2ebf38c5a5ec03ccbd30d7a1d93219732ca2ea7a43"},
+    {"path":"docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md","git_blob":"2e61b8f3b417d11287228880951be2fae87e53d8","bytes":9110,"sha256":"25210edccbd97abc1d42693beae6e70c0a1dc182afdfa92ced7622204c2b3c06"},
+    {"path":"docs/handover/GVDOC-1004-Handover Specification.md","git_blob":"d53199887af005fefc694d832bab8d075511cd26","bytes":5769,"sha256":"5932d002616beb9479c43aec0b5a2e23e79ac6a9ed5ee58e9e1d63936df43b0e"},
+    {"path":"docs/migration/MIG-001-Mission-Control-React.md","git_blob":"9d67a6b855bc0a54b974c6fe202f7ed86820fde7","bytes":3081,"sha256":"8bcfed6b65974ab8f8e5f11c067737914a305a79a56b6a12eb5dd8b6c27bfb4b"},
+    {"path":"docs/rca/RCA-2026-06-14-Visual-Agent-Fleet-Governance-Failure.md","git_blob":"4edc126cd1cc90af0140188c239552baeebefb8d","bytes":3455,"sha256":"eee009b2cf476ddde6949f48ba29f9cb084a0875516eb752f5044e930531ea20"},
+    {"path":"docs/security/PATH-CONTAINMENT.md","git_blob":"1bdb1f566ddb5deb5efb40deb52b3a6c4414e3a9","bytes":1249,"sha256":"33cc629913b30330040bedecfc3397ca76f1eae9124839bc3723ca87d52f9ed4"},
+    {"path":"docs/TDD-Phase1-Core-State.md","git_blob":"9ef33419d46cd7a6bb3b337902fc556df809f876","bytes":2404,"sha256":"127c2bc300dbc54cb1fc979d7170de9048742b8f4ac461229aaf3f72d93e583c"},
+    {"path":"docs/audit/TDD-Phase1-Core-State.md","git_blob":"4e8b1a81010a2018f60fe161cfdac4a8b1477a52","bytes":2394,"sha256":"ce7d598bf0f381f2a7019f631a3fb987a1e21cf7e7acc048e84bb35e0cbd9cb1"},
+    {"path":"docs/TDD-Phase2-Desktop-Integration.md","git_blob":"7d7d64be2b0e539ece251f4bf2ef4e8bc7aac339","bytes":2435,"sha256":"03cf7019dfd34400424cc44a201424cbee92b9cbb90c28c3882e16ca2ad4e4f2"},
+    {"path":"docs/archive/duplicates/TDD-Phase2-Desktop-Integration.audit-duplicate.md","git_blob":"7d7d64be2b0e539ece251f4bf2ef4e8bc7aac339","bytes":2435,"sha256":"03cf7019dfd34400424cc44a201424cbee92b9cbb90c28c3882e16ca2ad4e4f2"},
+    {"path":"docs/archive/legacy/legacy-domain-navigation-outline.md","git_blob":"bbfd21e5d7084fe46968b568235e45530838955a","bytes":2129,"sha256":"2f3556c5f9685007540e8eb322546d20fb97f61a5dace316f3df9924cd8aaa9c"},
+    {"path":"docs/design/LANDING-Copy-Template-GoVibe-Draft1.md","git_blob":"f9c98d92c4c5c08c1658023596e9955adc13c814","bytes":15968,"sha256":"0d48c589236e05871a388d7ff7ef3d5ad16ace0aa3ba2a46f639e7df47c67847"},
+    {"path":"docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md","git_blob":"7c9e6fa7feae105be79416a968b4d15b39f49b8c","bytes":11801,"sha256":"fb1150ee5cd4ad9c8df62d6629edb7eb5713fcb0324ea91d2c2897d0bca83c0a"},
+    {"path":"GEMINI.md","git_blob":"c49c273be0dd366dc56794cf076e5d4eba9d49c1","bytes":5739,"sha256":"ee483f539729ab38e60b1e0c35d86420454f1e2717cdac240ae05020d31cd21f"},
+    {"path":"docs/api/API-003-Mission-Workflow-Event-Schema.md","git_blob":"f02769d7ccb6be3c943af118d4f2a885160eff0a","bytes":6941,"sha256":"8eabb6fd64bcb0b97bf96b14f8878c9ef80818e16cdcfe49b8407900af7c6c6a"},
+    {"path":"docs/architecture/SEQ-Ollama-Sidecar-Flow.md","git_blob":"8111b448457cc05385ec50d17121dd6982ef28a9","bytes":3032,"sha256":"74e2d55c842f22cf3e51cd0462e7d93eac4710e73464b4765e26db055b8bb141"},
+    {"path":"docs/architecture/CTX-GoVibe-System-Context.md","git_blob":"2620c6310a1792ab959104a75e750c466654698f","bytes":6292,"sha256":"8a26ae3591fbccdf31d9530f91d55616e1e533c889235bd7a13141f8c66030cb"},
+    {"path":"docs/srs/SRS-Ollama-Sidecar-Execution.md","git_blob":"d7a52c4acfcc34fcd3cf02bd675cd4f22fb3f44f","bytes":6738,"sha256":"8fa13277c5b8696b90bc236fbac70319a5e615afe18b5f30466f9cfdadede1a9"},
+    {"path":"docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md","git_blob":"13e97b73c5d7fffb4399fb403cfb87c641b0f1c3","bytes":6318,"sha256":"edee72d153edf41d694bf90c7bc37a09324f75261e4a076a31bb2759962a6c80"},
+    {"path":"docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md","git_blob":"b37e9ee2f4e4bfccea0c4604374eae5e755c4c4a","bytes":10189,"sha256":"2b5c3bc44653744184ec7ef21e7ead151205633e7b38ef0c0928fa751114e2e7"},
+    {"path":"docs/srs/SRS-GoVibe-MCP-Server.md","git_blob":"b1045bc610e7b1eb995675f723992d59931abbcc","bytes":8268,"sha256":"21bd6c6c050437958f681e02c79a07b1019109bf666505730f96d998753efdd4"},
+    {"path":"docs/change-control/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md","git_blob":"810dee0cf233929fca0460a386e2af4d66597e91","bytes":7252,"sha256":"d9b5f938a5dd0492bf247285cb7d93e43036546e8894314c7abdf25059b07c7f"},
+    {"path":"docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md","git_blob":"42d7b089e682dd72fe6396ed94411c3eb0749242","bytes":8072,"sha256":"736306faa74d228cab9ab752b64f5f32913650eb00c0559446ebf551e71f9f23"},
+    {"path":"docs/lld/LLD-Agent-Launcher-Execution-Router.md","git_blob":"9768a73af345fa390f12e47a05900679c29ef19e","bytes":4248,"sha256":"ca654f03f1aaddd4438080d66951fb27419e7b8142a2503ff5377e535cf854a2"},
+    {"path":"docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md","git_blob":"8386c4acb6b2a70608e2dd3f97684e5dfc666b87","bytes":5445,"sha256":"e83eda865a2f668252328633a221b3c0d1fc46d61f5ebefb3bac175a158ef474"},
+    {"path":"docs/architecture/C4-GoVibe-Platform.md","git_blob":"6290ec3bdaada1a56b198d56122db82a7c673e10","bytes":18428,"sha256":"768b309b7468552a990f1309b016cfd065e5f77adfa9b55c8c6ad49a806aa11f"},
+    {"path":"docs/lld/LLD-GoVibe-MCP-Tools.md","git_blob":"8744523b1875bb661dda86a76b2b50676a8ec198","bytes":8151,"sha256":"e6cf305e417129c40ee28ab54b9fac214de77a8bdb8a6461e862c4747190f5fc"},
+    {"path":".agents/context/CONTEXT-Bounded-External-Executor.md","git_blob":"8a7d33dac2e11f04469173bc9459e1f40ae3be29","bytes":4368,"sha256":"bf915d7a07189735d91f0240ddb35e8f231b31513b8a7529d94818be899d38b3"},
+    {"path":".agents/doc_writer/THESEUS.md","git_blob":"085b3e65dff912f2ef940b02460dcc2f22b08c2e","bytes":6881,"sha256":"7625ab526c509d59fed9ed9271f1964f56a36449fd7042e79e3e8150297ae8b7"},
+    {"path":".agents/auditor/AGENT.md","git_blob":"dcd34b5389d40e05cd077c5fdd51ed5d13e6dfe8","bytes":9047,"sha256":"b4264fb13a617eb85d63acb413551bffc4f99654d0afc45f15332bb22bd0fd4a"},
+    {"path":".agents/qa/AGENT.md","git_blob":"2765a4df07d5dca6669a6a49d2887615882adebe","bytes":6738,"sha256":"3c49140b4783a8e5e1baa2299b16a810f9176230e853309c8bece617bcfbe5c9"},
+    {"path":"scripts/mcp/registry.mjs","git_blob":"2670047fba91b66e85b1d66d894d096e20e90379","bytes":12579,"sha256":"e4427f3437a02cbe1c237b3d5c227e61a75debf1f40407a6b034f62c708619f8"}
+  ],
+  "deterministic_full_rollback_order": [
+    "Revert the integration-only registry, decision-packet, parent-CR, migration, rollback, navigation, and this result changes.",
+    "P2S-22: restore the final resource-registry target to its baseline identity after verification.",
+    "P2S-03 through P2S-21: restore reference targets in descending operation order after verification.",
+    "P2S-02: restore the baseline runbook path and remove its moved destination after verification.",
+    "P2S-01: restore the LANDING baseline blob after verification.",
+    "Restore the Phase 2 structural archive moves in their recorded reverse order.",
+    "Restore GVDOC final semantic blob to its Phase 1B metadata checkpoint, then to baseline.",
+    "Restore the remaining Phase 1B metadata targets in descending rollback_order from their committed map.",
+    "Run manifest verifier, docs validation, roadmap validation, and diff checks; do not use hard reset or touch the root worktree."
+  ],
+  "validations": {
+    "manifest_verifier": "PASS: 201 tracked Git blobs, 195 processable, 6 tracked exclusions, 5 external-root exclusions verified; source manifest SHA-256 f5b16968f3bace10177d11849d60f7aaf7bf287ef3c9645becbb0e11eb3d99b6.",
+    "docs_validate": "PASS: 354 Markdown files, 188 document IDs, and 812 path references checked; existing 12/32/33 criteria-structure warnings remain separate.",
+    "roadmap_validate": "PASS: 7 sources, 0 errors, 14 pre-existing plan-quality warnings.",
+    "lint": "PASS: tsc --noEmit; existing roadmap quality warnings are emitted by repository tooling and not fixed here.",
+    "build": "PASS: tsc and Vite production build completed.",
+    "security": "PASS: 35 passed, 0 failed. The PR #87 P0 Security CI follow-up fixture supplies the governed local execution binding required by executor-adapter enforcement while retaining bounded-authority, allow-policy, and lineage coverage.",
+    "mission_gateway_targeted_test": "PASS: src/missionGateway.test.ts, 8 passed.",
+    "diff_checks": "PASS: npm run diff:check and git diff --check.",
+    "phase2_semantic_rollback_map_hash_associations": "PASS: 22 operations and 88 before/after/inverse associations recomputed from recorded Git blob content bytes.",
+    "full_npm_test": "POST-SYNC BASELINE FAILURE: 11 failed, 180 passed, 1 skipped. Failures are capability-runtime (3), migration-capabilities (1), msp-live-contract (2), and executor-adapter (5); all concern the merged required contextAuthority, allow-policy, or execution-binding contracts. test:security is not reached by npm test because Vitest exits first; its separately run CI follow-up validation passes 35/35."
+  },
+  "exclusions_and_unresolved_queue": [
+    "77 criteria-structure warnings: unchanged and not treated as documentation-cleaning completion.",
+    "14 legacy roadmap-quality warnings: unchanged and not treated as roadmap repair.",
+    "Post-sync runtime baseline debt: 11 full-test failures caused by merged contextAuthority, allow-policy, and execution-binding contract expectations; the separate security fixture-contract failure is repaired and verified by the PR #87 CI follow-up.",
+    "No direct MSP/GKS/GenesisBlockDB operation, canonical identity assignment, or graph-completeness claim.",
+    "Old active runbook path is permitted only in historical manifests, results, rollback evidence, and non-canonical .brain materialization."
+  ],
+  "self_hashing": {
+    "algorithm": "sha256",
+    "canonical_projection": "UTF-8 JSON.stringify of this result with the self_hashing object omitted",
+    "projection_sha256": "4962815253b679698f6930edabca9bb7ca97b6ce7644679746e450cd3f8dfaae",
+    "projection_bytes": 18166,
+    "status": "verified",
+    "note": "The projection omits its own hash metadata, preventing a self-referential identity claim while retaining a reproducible result-content digest."
+  }
+}

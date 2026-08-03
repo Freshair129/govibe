@@ -13,7 +13,7 @@ A self-contained marketing landing page lives **outside** the Mission Control Re
 
 ## What it is
 
-- **Single static HTML file** at `docs/design/LANDING-GoVibe-Mockup.html` (~73 KB, all CSS + JS inline)
+- **Single static HTML file** at `docs/references/fixtures/LANDING-GoVibe-Mockup.html` (~73 KB, all CSS + JS inline)
 - **Copy template** at `docs/design/LANDING-Copy-Template-GoVibe-Draft1.md` (16-section outline, structure inspired by https://top-workshops-645528.framer.app/)
 - **Not** a React component, **not** in `src/`, **not** under Vite build. Open it directly or via the Vite dev server static path.
 
@@ -27,7 +27,7 @@ A self-contained marketing landing page lives **outside** the Mission Control Re
 
 - **GitHub:** `Freshair129/landinggovibe` (main branch tracks production)
 - **Vercel:** https://govibe-landing.vercel.app (alias) · project `pornpons-projects/govibe-landing`
-- **Working dir for the deployed repo:** `G:\govibe-landing\` (sibling of `G:\govibe\`, contains `index.html` copied from `docs/design/LANDING-GoVibe-Mockup.html`)
+- **Working dir for the deployed repo:** `G:\govibe-landing\` (sibling of `G:\govibe\`, contains `index.html` copied from `docs/references/fixtures/LANDING-GoVibe-Mockup.html`)
 - Deploy command from `G:\govibe-landing\`: `vercel --prod`
 
 ## Structure (top → bottom)
@@ -100,7 +100,7 @@ A self-contained marketing landing page lives **outside** the Mission Control Re
    - `govibe.chip.corner` → position string (`'br'`, `'bl'`, `'tr'`, `'tl'`); default fallback = `'br'`
 8. **Drag-to-corner snap:** use CSS `[data-corner]` attribute selector (not inline style) to switch position anchors cleanly. Dragging sets inline `left`/`top`, release clears inlines and sets `data-corner` attr to trigger CSS rule.
 9. **Pointer event handlers:** use `pointer*` (not `mouse*`/`touch*`) for unified handling. Drag handler respects `setPointerCapture()` and respects pointer type filters (`pointerType==='touch'` for rejection).
-10. **Sync after edits:** when changing `docs/design/LANDING-GoVibe-Mockup.html`, copy to `G:\govibe-landing\index.html`, commit, push to `Freshair129/landinggovibe`, then `vercel --prod`.
+10. **Sync after edits:** when changing `docs/references/fixtures/LANDING-GoVibe-Mockup.html`, copy to `G:\govibe-landing\index.html`, commit, push to `Freshair129/landinggovibe`, then `vercel --prod`.
 
 ## Placeholders awaiting real data (live-data-only)
 
@@ -116,7 +116,7 @@ Never invent numbers, testimonials, or prices to fill these. Wait for product ow
 
 ## Related files
 
-- Source HTML: `docs/design/LANDING-GoVibe-Mockup.html`
+- Source HTML: `docs/references/fixtures/LANDING-GoVibe-Mockup.html`
 - Copy template: `docs/design/LANDING-Copy-Template-GoVibe-Draft1.md`
 - Motion probe: the former one-off Framer Motion probe was retired and is not part of the current repository.
 - Deployed mirror: `G:\govibe-landing\` (separate git repo → GitHub `Freshair129/landinggovibe` → Vercel)

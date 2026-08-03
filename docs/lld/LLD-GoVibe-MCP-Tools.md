@@ -11,7 +11,7 @@ related_docs:
   - "docs/PRD-GoVibe-MCP-Orchestration.md"
   - "docs/srs/SRS-GoVibe-MCP-Server.md"
   - "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md"
-  - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
 ---
 
 # LLD: GoVibe MCP Tools

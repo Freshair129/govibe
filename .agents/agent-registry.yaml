@@ -590,7 +590,7 @@ scopes:
       - docs/features/mission-control/
       - docs/design/SITE_MAP.md
       - docs/design/DOMAIN_DETAILS.md
-      - docs/design/TEMPLATE_REFERENCE.md
+      - docs/references/templates/TEMPLATE_REFERENCE.md
       - docs/STD-Execution-Governance.md
     verification_context:
       - .agents/auditor/AGENT.md

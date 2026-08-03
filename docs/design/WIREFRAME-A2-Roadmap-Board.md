@@ -8,7 +8,7 @@ owner: "THESEUS / VIBE"
 source_of_truth: false
 related_docs:
   - "docs/roadmap/GoVibe-Mission-Control-template.html"
-  - "docs/design/TEMPLATE_REFERENCE.md"
+  - "docs/references/templates/TEMPLATE_REFERENCE.md"
   - "docs/design/SITE_MAP.md"
   - "docs/design/DOMAIN_DETAILS.md"
 ---

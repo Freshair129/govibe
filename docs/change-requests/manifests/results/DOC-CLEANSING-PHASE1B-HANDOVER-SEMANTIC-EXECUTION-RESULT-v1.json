@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_revision": 2,
+  "sha256_basis": "git_blob_content_bytes",
+  "sha256_status": "recomputed_and_verified",
+  "result_id": "DOC-CLEANSING-PHASE1B-HANDOVER-SEMANTIC-EXECUTION-RESULT-v1",
+  "baseline_commit": "c86a95baa6601a4f3e90f9c978cb12e55f0592e8",
+  "execution_authority": "owner delegated decision in this task",
+  "scope": "GVDOC-1004 semantic correction and Phase1B evidence continuity only",
+  "accounting": {"candidates":1,"corrected":1,"path_moves":0,"registry_edits":0,"canonical_gks_ids_assigned":0,"msp_gks_materializations":0},
+  "decision": {"path":"docs/handover/GVDOC-1004-Handover Specification.md","owner":"THESEUS","status":"draft","version":"2.3.0+draft","source_of_truth":false},
+  "semantic_correction": {"removed":"H0-H6 depth/context-tier semantics","replaced_with":"H0-H4 executor access plus separately declared R/D/W/Budget/Risk/contextProfile controls","runtime_boundary":"Executor / Claude Code -> GoVibe MCP -> MSP -> GKS -> GenesisBlockDB","runtime_claims_added":false},
+  "prior_phase1b_map": {"path":"docs/change-requests/manifests/results/DOC-CLEANSING-PHASE1B-METADATA-ROLLBACK-MAP-v1.json","status":"intermediate checkpoint; its GVDOC-1004 post identity is superseded by this map, and registry reconciliation remains an integrator responsibility"},
+  "rollback_map":"docs/change-requests/manifests/results/DOC-CLEANSING-PHASE1B-HANDOVER-SEMANTIC-ROLLBACK-MAP-v1.json",
+  "validation_scope":{"legacy_semantics_scan":"pass: no legacy H0-H6 depth/context-tier claim remains","json_parse":"pass","docs_validate":"expected transitional fail: existing central registry retains the out-of-scope cutover-audit status mismatch","roadmap_validate":"pass: 7 sources, 0 errors, 14 pre-existing warnings","lint":"pass: dependency-capable root worktree tsc","diff_check":"expected transitional fail: delegates to docs:validate and is blocked only by the out-of-scope central registry mismatch"},
+  "out_of_scope":["docs/DOC-VERSION-REGISTRY.md","path relocation","runtime implementation","MSP/GKS materialization"]
+}

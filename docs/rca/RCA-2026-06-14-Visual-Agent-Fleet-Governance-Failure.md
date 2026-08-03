@@ -1,3 +1,13 @@
+---
+title: "[ROOT CAUSE] Visual Agent Fleet Documentation Governance Failure"
+doc_id: "RCA-2026-06-14-VISUAL-AGENT-FLEET-GOVERNANCE-FAILURE"
+status: "draft"
+version: "0.1.0+draft"
+updated: "2026-08-03"
+owner: "ATHER"
+source_of_truth: false
+---
+
 # [ROOT CAUSE] Visual Agent Fleet Documentation Governance Failure
 
 **Incident:** Documentation Governance Escape (Missing ADR/PRD Alignment in initial implementation)
@@ -32,3 +42,9 @@ The task was treated as a **C-2 (Doc-Driven Feature)** implementation rather tha
 ## 6. Responsible Roles
 - **THESEUS**: Responsible for ensuring documentation hierarchy (Parent before Peer).
 - **ATHER**: Responsible for auditing governance compliance and blocking non-compliant implementation.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.0+draft | 2026-08-03 | ATHER | Added governed metadata under delegated Phase 1B authority; the RCA remains historical evidence pending any current review. |

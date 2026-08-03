@@ -16,7 +16,7 @@ related_docs:
 
 # BACKLOG: P1 MVP Core Task Containers
 
-> **Legacy import fixture.** This backlog is a legacy import FIXTURE used to exercise the Task Container / telemetry schema, not canonical MVP product scope. Legacy task codes and imported values are preserved, not overwritten (see `docs/archive/legacy-p1-mvp-import-reference.md`). It is not a source of truth; canonical MVP scope lives in `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md`.
+> **Legacy import fixture.** This backlog is a legacy import FIXTURE used to exercise the Task Container / telemetry schema, not canonical MVP product scope. Legacy task codes and imported values are preserved, not overwritten (see `docs/archive/legacy/legacy-p1-mvp-import-reference.md`). It is not a source of truth; canonical MVP scope lives in `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md`.
 
 **ImpId:** IMP-GVMP01P05EP01  
 **Source Export:** `C:/Users/freshair/Downloads/p1-mvp-core-.json`  
@@ -38,7 +38,7 @@ Represent the P1 MVP Core export as a GoVibe roadmap source with Task Container 
 
 ## Phases
 
-> Note: Progress values in this section (and the Sprints/Backlog tables below) are legacy-imported telemetry preserved from the source export, not live progress. They are intentionally not reconciled with `Status` (e.g. a `planned` row may carry a non-zero legacy progress) per the import contract in `docs/archive/legacy-p1-mvp-import-reference.md`; do not treat them as live runtime state.
+> Note: Progress values in this section (and the Sprints/Backlog tables below) are legacy-imported telemetry preserved from the source export, not live progress. They are intentionally not reconciled with `Status` (e.g. a `planned` row may carry a non-zero legacy progress) per the import contract in `docs/archive/legacy/legacy-p1-mvp-import-reference.md`; do not treat them as live runtime state.
 
 | Phase | Parent ID | Goal | Status | Progress | Recorded At |
 |---|---|---|---|---:|---|

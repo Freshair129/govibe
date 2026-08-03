@@ -1,0 +1,899 @@
+{
+  "schema_version": "1.1",
+  "status": "executed_evidence_repaired_pending_independent_review",
+  "baseline_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+  "scope": {
+    "seeds": [
+      "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md",
+      "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+    ],
+    "excluded": [
+      "central registry",
+      "runtime/code behavior",
+      "unrelated legacy H-axis references",
+      "the self-referential result and rollback-evidence artifacts",
+      ".brain session materialization (non-canonical, not an active contract)"
+    ]
+  },
+  "forward_operations": [
+    {
+      "id": "P2S-01",
+      "kind": "content_rewrite",
+      "path": "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "7236e732f714db996f739f5e5c6cdc888275e446",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "fb8da4555e7ce7f931cc8e19d3f77e855790b6d48511504b0c882cbdefb8b4be",
+        "bytes": 15456
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "f9c98d92c4c5c08c1658023596e9955adc13c814",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "0d48c589236e05871a388d7ff7ef3d5ad16ace0aa3ba2a46f639e7df47c67847",
+        "bytes": 15968
+      },
+      "change": "Add draft/non-SOT template metadata; replace legacy C0-C3 plus context-tier H0-H5 copy with separated C/H/R/D/W/Budget/Risk wording.",
+      "inverse": "Restore exact blob 7c6ffde:docs/design/LANDING-Copy-Template-GoVibe-Draft1.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "f9c98d92c4c5c08c1658023596e9955adc13c814",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "0d48c589236e05871a388d7ff7ef3d5ad16ace0aa3ba2a46f639e7df47c67847",
+          "bytes": 15968
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "7236e732f714db996f739f5e5c6cdc888275e446",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "fb8da4555e7ce7f931cc8e19d3f77e855790b6d48511504b0c882cbdefb8b4be",
+          "bytes": 15456
+        },
+        "action": "Restore docs/design/LANDING-Copy-Template-GoVibe-Draft1.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-02",
+      "kind": "move_and_content_rewrite",
+      "from": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "to": "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "49a7a766691c02f7f257b907489a8cce9c2f433e",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "97fd37b66cde981c7ae182e3f7c9521bb27f128e097a9b22cd595fd345c6d5f0",
+        "bytes": 10398
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "7c9e6fa7feae105be79416a968b4d15b39f49b8c",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "fb1150ee5cd4ad9c8df62d6629edb7eb5713fcb0324ea91d2c2897d0bca83c0a",
+        "bytes": 11801
+      },
+      "change": "Move into the existing operational-runbooks taxonomy; mark draft/non-SOT guidance; align H0-H4 Access Scope and separated C/H/R/D/W/Budget/Risk semantics; retain the GoVibe MCP -> MSP -> GKS -> GenesisBlockDB boundary.",
+      "inverse": "Restore exact blob 7c6ffde:docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md and remove the destination only after its listed after SHA-256 is verified.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "7c9e6fa7feae105be79416a968b4d15b39f49b8c",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "fb1150ee5cd4ad9c8df62d6629edb7eb5713fcb0324ea91d2c2897d0bca83c0a",
+          "bytes": 11801
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "49a7a766691c02f7f257b907489a8cce9c2f433e",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "97fd37b66cde981c7ae182e3f7c9521bb27f128e097a9b22cd595fd345c6d5f0",
+          "bytes": 10398
+        },
+        "action": "Restore docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md from the recorded baseline blob and remove docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md only after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-03",
+      "kind": "reference_rewrite",
+      "path": "GEMINI.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "0d347cad2ffe90d48e06beefead4ec4436ed41e3",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "a216151943f059257e20777fbf6f50b042d261582eb12e5d49bf417013bfd407",
+        "bytes": 5728
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "c49c273be0dd366dc56794cf076e5d4eba9d49c1",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "ee483f539729ab38e60b1e0c35d86420454f1e2717cdac240ae05020d31cd21f",
+        "bytes": 5739
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:GEMINI.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "c49c273be0dd366dc56794cf076e5d4eba9d49c1",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "ee483f539729ab38e60b1e0c35d86420454f1e2717cdac240ae05020d31cd21f",
+          "bytes": 5739
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "0d347cad2ffe90d48e06beefead4ec4436ed41e3",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "a216151943f059257e20777fbf6f50b042d261582eb12e5d49bf417013bfd407",
+          "bytes": 5728
+        },
+        "action": "Restore GEMINI.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-04",
+      "kind": "reference_rewrite",
+      "path": "docs/api/API-003-Mission-Workflow-Event-Schema.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "705f3dfd2587614892d58e80926585d76144c7cb",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "73fe797d4889187889f06c66411cb0beaf89a6f3e68798a488ea44c79f350de6",
+        "bytes": 6930
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "f02769d7ccb6be3c943af118d4f2a885160eff0a",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "8eabb6fd64bcb0b97bf96b14f8878c9ef80818e16cdcfe49b8407900af7c6c6a",
+        "bytes": 6941
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/api/API-003-Mission-Workflow-Event-Schema.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "f02769d7ccb6be3c943af118d4f2a885160eff0a",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "8eabb6fd64bcb0b97bf96b14f8878c9ef80818e16cdcfe49b8407900af7c6c6a",
+          "bytes": 6941
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "705f3dfd2587614892d58e80926585d76144c7cb",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "73fe797d4889187889f06c66411cb0beaf89a6f3e68798a488ea44c79f350de6",
+          "bytes": 6930
+        },
+        "action": "Restore docs/api/API-003-Mission-Workflow-Event-Schema.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-05",
+      "kind": "reference_rewrite",
+      "path": "docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "f3689318559f98a7b7d334f0d188ca499204aef5",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "46fb7f4c8061928ea328b4a00a099695b071cb8b21420cafd4f4c0fb986f2c0f",
+        "bytes": 8811
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "2e61b8f3b417d11287228880951be2fae87e53d8",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "25210edccbd97abc1d42693beae6e70c0a1dc182afdfa92ced7622204c2b3c06",
+        "bytes": 9110
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "2e61b8f3b417d11287228880951be2fae87e53d8",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "25210edccbd97abc1d42693beae6e70c0a1dc182afdfa92ced7622204c2b3c06",
+          "bytes": 9110
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "f3689318559f98a7b7d334f0d188ca499204aef5",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "46fb7f4c8061928ea328b4a00a099695b071cb8b21420cafd4f4c0fb986f2c0f",
+          "bytes": 8811
+        },
+        "action": "Restore docs/change-requests/CR-2026-06-15-CoDev-CoVibe-Positioning-Review.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-06",
+      "kind": "reference_rewrite",
+      "path": "docs/architecture/SEQ-Ollama-Sidecar-Flow.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "add017a0e7319e08cba5a1b9594fb4a7e8fda5d3",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "b5033f01dadef042e5875853ec635e1d156518ea99e1f2889a0d025377819bef",
+        "bytes": 3010
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "8111b448457cc05385ec50d17121dd6982ef28a9",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "74e2d55c842f22cf3e51cd0462e7d93eac4710e73464b4765e26db055b8bb141",
+        "bytes": 3032
+      },
+      "rewrite": "Two exact path references updated to docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/architecture/SEQ-Ollama-Sidecar-Flow.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "8111b448457cc05385ec50d17121dd6982ef28a9",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "74e2d55c842f22cf3e51cd0462e7d93eac4710e73464b4765e26db055b8bb141",
+          "bytes": 3032
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "add017a0e7319e08cba5a1b9594fb4a7e8fda5d3",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "b5033f01dadef042e5875853ec635e1d156518ea99e1f2889a0d025377819bef",
+          "bytes": 3010
+        },
+        "action": "Restore docs/architecture/SEQ-Ollama-Sidecar-Flow.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-07",
+      "kind": "reference_rewrite",
+      "path": "docs/architecture/CTX-GoVibe-System-Context.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "0f46053bf4c6556f8fb6ef3e2545934ce2d8be38",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "c4c43ff51d356592a431dabdd2064e6d284a1714e802da83ea2851a9923fa975",
+        "bytes": 6281
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "2620c6310a1792ab959104a75e750c466654698f",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "8a26ae3591fbccdf31d9530f91d55616e1e533c889235bd7a13141f8c66030cb",
+        "bytes": 6292
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/architecture/CTX-GoVibe-System-Context.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "2620c6310a1792ab959104a75e750c466654698f",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "8a26ae3591fbccdf31d9530f91d55616e1e533c889235bd7a13141f8c66030cb",
+          "bytes": 6292
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "0f46053bf4c6556f8fb6ef3e2545934ce2d8be38",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "c4c43ff51d356592a431dabdd2064e6d284a1714e802da83ea2851a9923fa975",
+          "bytes": 6281
+        },
+        "action": "Restore docs/architecture/CTX-GoVibe-System-Context.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-08",
+      "kind": "reference_rewrite",
+      "path": "docs/srs/SRS-Ollama-Sidecar-Execution.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "72382fb94dd925d795472e5332b5d6a7c14cad6b",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "41140d26b279b97e3099a5ef11b7739a905a69a8d337decae9949aedb71e7d8c",
+        "bytes": 6727
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "d7a52c4acfcc34fcd3cf02bd675cd4f22fb3f44f",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "8fa13277c5b8696b90bc236fbac70319a5e615afe18b5f30466f9cfdadede1a9",
+        "bytes": 6738
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/srs/SRS-Ollama-Sidecar-Execution.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "d7a52c4acfcc34fcd3cf02bd675cd4f22fb3f44f",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "8fa13277c5b8696b90bc236fbac70319a5e615afe18b5f30466f9cfdadede1a9",
+          "bytes": 6738
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "72382fb94dd925d795472e5332b5d6a7c14cad6b",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "41140d26b279b97e3099a5ef11b7739a905a69a8d337decae9949aedb71e7d8c",
+          "bytes": 6727
+        },
+        "action": "Restore docs/srs/SRS-Ollama-Sidecar-Execution.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-09",
+      "kind": "reference_rewrite",
+      "path": "docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "8160a568ded38161bdb4bf7b36c40dd4423f75f0",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "4d6aac381f9b7136f8f3e535d69465c88be3d6de72211bfcfbde40a095b8e23f",
+        "bytes": 6307
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "13e97b73c5d7fffb4399fb403cfb87c641b0f1c3",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "edee72d153edf41d694bf90c7bc37a09324f75261e4a076a31bb2759962a6c80",
+        "bytes": 6318
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "13e97b73c5d7fffb4399fb403cfb87c641b0f1c3",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "edee72d153edf41d694bf90c7bc37a09324f75261e4a076a31bb2759962a6c80",
+          "bytes": 6318
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "8160a568ded38161bdb4bf7b36c40dd4423f75f0",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "4d6aac381f9b7136f8f3e535d69465c88be3d6de72211bfcfbde40a095b8e23f",
+          "bytes": 6307
+        },
+        "action": "Restore docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-10",
+      "kind": "reference_rewrite",
+      "path": "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "73452ea285f73888f87f917e33783218516ef434",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "f991ce0308b08bb316c07a4d0fdb4ae611fdf1694b8f8396fd059d0da32c082f",
+        "bytes": 10167
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "b37e9ee2f4e4bfccea0c4604374eae5e755c4c4a",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "2b5c3bc44653744184ec7ef21e7ead151205633e7b38ef0c0928fa751114e2e7",
+        "bytes": 10189
+      },
+      "rewrite": "Two exact path references updated to docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "b37e9ee2f4e4bfccea0c4604374eae5e755c4c4a",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "2b5c3bc44653744184ec7ef21e7ead151205633e7b38ef0c0928fa751114e2e7",
+          "bytes": 10189
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "73452ea285f73888f87f917e33783218516ef434",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "f991ce0308b08bb316c07a4d0fdb4ae611fdf1694b8f8396fd059d0da32c082f",
+          "bytes": 10167
+        },
+        "action": "Restore docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-11",
+      "kind": "reference_rewrite",
+      "path": "docs/srs/SRS-GoVibe-MCP-Server.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "36d88ab3c26a55950a357e0b88cfb5c768ae9ea9",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "17d9064b65abdd41d20a68df2d048c96849125005321aa3f3dcfb1d04a9e46e2",
+        "bytes": 8257
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "b1045bc610e7b1eb995675f723992d59931abbcc",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "21bd6c6c050437958f681e02c79a07b1019109bf666505730f96d998753efdd4",
+        "bytes": 8268
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/srs/SRS-GoVibe-MCP-Server.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "b1045bc610e7b1eb995675f723992d59931abbcc",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "21bd6c6c050437958f681e02c79a07b1019109bf666505730f96d998753efdd4",
+          "bytes": 8268
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "36d88ab3c26a55950a357e0b88cfb5c768ae9ea9",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "17d9064b65abdd41d20a68df2d048c96849125005321aa3f3dcfb1d04a9e46e2",
+          "bytes": 8257
+        },
+        "action": "Restore docs/srs/SRS-GoVibe-MCP-Server.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-12",
+      "kind": "reference_rewrite",
+      "path": "docs/change-control/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "21546fbe9bcf2836a903bee89796d10c3b0bcb23",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "fd1ae1154e95a6f1664284aea6ea9d2482075f70bc924ea0d7a4ddc7a7069928",
+        "bytes": 7241
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "810dee0cf233929fca0460a386e2af4d66597e91",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "d9b5f938a5dd0492bf247285cb7d93e43036546e8894314c7abdf25059b07c7f",
+        "bytes": 7252
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/change-control/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "810dee0cf233929fca0460a386e2af4d66597e91",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "d9b5f938a5dd0492bf247285cb7d93e43036546e8894314c7abdf25059b07c7f",
+          "bytes": 7252
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "21546fbe9bcf2836a903bee89796d10c3b0bcb23",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "fd1ae1154e95a6f1664284aea6ea9d2482075f70bc924ea0d7a4ddc7a7069928",
+          "bytes": 7241
+        },
+        "action": "Restore docs/change-control/change-requests/feedback/RUNBOOK-Bounded-External-Executor-Workflow-feedback.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-13",
+      "kind": "reference_rewrite",
+      "path": "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "31f4d4761e587db67187a8ba341e3be0ba960da2",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "0efa460836ba9ef4ce154449c5725e573bc74cbd2c855d70e8893ba67376254c",
+        "bytes": 8061
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "42d7b089e682dd72fe6396ed94411c3eb0749242",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "736306faa74d228cab9ab752b64f5f32913650eb00c0559446ebf551e71f9f23",
+        "bytes": 8072
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "42d7b089e682dd72fe6396ed94411c3eb0749242",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "736306faa74d228cab9ab752b64f5f32913650eb00c0559446ebf551e71f9f23",
+          "bytes": 8072
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "31f4d4761e587db67187a8ba341e3be0ba960da2",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "0efa460836ba9ef4ce154449c5725e573bc74cbd2c855d70e8893ba67376254c",
+          "bytes": 8061
+        },
+        "action": "Restore docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-14",
+      "kind": "reference_rewrite",
+      "path": "docs/lld/LLD-Agent-Launcher-Execution-Router.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "74361003d1677cd306eddfe55b31e2084453c6fc",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "7aeaa4e51bad2b8ef74ec30f4b3404fc48233c886c21983c46a98847c7f80785",
+        "bytes": 4237
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "9768a73af345fa390f12e47a05900679c29ef19e",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "ca654f03f1aaddd4438080d66951fb27419e7b8142a2503ff5377e535cf854a2",
+        "bytes": 4248
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/lld/LLD-Agent-Launcher-Execution-Router.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "9768a73af345fa390f12e47a05900679c29ef19e",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "ca654f03f1aaddd4438080d66951fb27419e7b8142a2503ff5377e535cf854a2",
+          "bytes": 4248
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "74361003d1677cd306eddfe55b31e2084453c6fc",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "7aeaa4e51bad2b8ef74ec30f4b3404fc48233c886c21983c46a98847c7f80785",
+          "bytes": 4237
+        },
+        "action": "Restore docs/lld/LLD-Agent-Launcher-Execution-Router.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-15",
+      "kind": "reference_rewrite",
+      "path": "docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "d981f8f285b9ef5f47cb9c13a4e9d2a6f891e425",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "86896d9d21ff5f953606f30a2224135031bb8c80681f170acc618551e234d62d",
+        "bytes": 5434
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "8386c4acb6b2a70608e2dd3f97684e5dfc666b87",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "e83eda865a2f668252328633a221b3c0d1fc46d61f5ebefb3bac175a158ef474",
+        "bytes": 5445
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "8386c4acb6b2a70608e2dd3f97684e5dfc666b87",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "e83eda865a2f668252328633a221b3c0d1fc46d61f5ebefb3bac175a158ef474",
+          "bytes": 5445
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "d981f8f285b9ef5f47cb9c13a4e9d2a6f891e425",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "86896d9d21ff5f953606f30a2224135031bb8c80681f170acc618551e234d62d",
+          "bytes": 5434
+        },
+        "action": "Restore docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-16",
+      "kind": "reference_rewrite",
+      "path": "docs/architecture/C4-GoVibe-Platform.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "3967579f01a18afd0f1f23930a465ffd750c2772",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "75a4d878ef0e20acf451b1b97e5244f3e35c4fd8688133c610eb297b826296c1",
+        "bytes": 18382
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "6290ec3bdaada1a56b198d56122db82a7c673e10",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "768b309b7468552a990f1309b016cfd065e5f77adfa9b55c8c6ad49a806aa11f",
+        "bytes": 18428
+      },
+      "rewrite": "Open-question wording changed from migration-to-canonical to the moved path's draft/non-SOT operational posture.",
+      "inverse": "Restore exact blob 7c6ffde:docs/architecture/C4-GoVibe-Platform.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "6290ec3bdaada1a56b198d56122db82a7c673e10",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "768b309b7468552a990f1309b016cfd065e5f77adfa9b55c8c6ad49a806aa11f",
+          "bytes": 18428
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "3967579f01a18afd0f1f23930a465ffd750c2772",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "75a4d878ef0e20acf451b1b97e5244f3e35c4fd8688133c610eb297b826296c1",
+          "bytes": 18382
+        },
+        "action": "Restore docs/architecture/C4-GoVibe-Platform.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-17",
+      "kind": "reference_rewrite",
+      "path": "docs/lld/LLD-GoVibe-MCP-Tools.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "a3bfec7330511ebf567a62038bcf7e194bb1c7c0",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "94054bc82b5df0906183d9caf490a3d3e527570979e45d13219ed5d705b40d32",
+        "bytes": 8140
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "8744523b1875bb661dda86a76b2b50676a8ec198",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "e6cf305e417129c40ee28ab54b9fac214de77a8bdb8a6461e862c4747190f5fc",
+        "bytes": 8151
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:docs/lld/LLD-GoVibe-MCP-Tools.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "8744523b1875bb661dda86a76b2b50676a8ec198",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "e6cf305e417129c40ee28ab54b9fac214de77a8bdb8a6461e862c4747190f5fc",
+          "bytes": 8151
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "a3bfec7330511ebf567a62038bcf7e194bb1c7c0",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "94054bc82b5df0906183d9caf490a3d3e527570979e45d13219ed5d705b40d32",
+          "bytes": 8140
+        },
+        "action": "Restore docs/lld/LLD-GoVibe-MCP-Tools.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-18",
+      "kind": "reference_rewrite",
+      "path": ".agents/context/CONTEXT-Bounded-External-Executor.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "f6146d65f3293bfd1f719b96040064ea499c360b",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "775a0a9dc497392145acd691e6563c86f162de8e6720c4067c98f9e75725d107",
+        "bytes": 4346
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "8a7d33dac2e11f04469173bc9459e1f40ae3be29",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "bf915d7a07189735d91f0240ddb35e8f231b31513b8a7529d94818be899d38b3",
+        "bytes": 4368
+      },
+      "rewrite": "Two exact path references updated to docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:.agents/context/CONTEXT-Bounded-External-Executor.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "8a7d33dac2e11f04469173bc9459e1f40ae3be29",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "bf915d7a07189735d91f0240ddb35e8f231b31513b8a7529d94818be899d38b3",
+          "bytes": 4368
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "f6146d65f3293bfd1f719b96040064ea499c360b",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "775a0a9dc497392145acd691e6563c86f162de8e6720c4067c98f9e75725d107",
+          "bytes": 4346
+        },
+        "action": "Restore .agents/context/CONTEXT-Bounded-External-Executor.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-19",
+      "kind": "reference_rewrite",
+      "path": ".agents/doc_writer/THESEUS.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "1171996cc38e6ac46f337e4353708c576ed417ee",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "520843df971645e927af08439d275715d8c7e8bfd5d9e35f1fa7ffe7831d78ab",
+        "bytes": 6864
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "085b3e65dff912f2ef940b02460dcc2f22b08c2e",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "7625ab526c509d59fed9ed9271f1964f56a36449fd7042e79e3e8150297ae8b7",
+        "bytes": 6881
+      },
+      "rewrite": "Update path and replace obsolete canonical claim with draft/non-SOT operational-guidance posture.",
+      "inverse": "Restore exact blob 7c6ffde:.agents/doc_writer/THESEUS.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "085b3e65dff912f2ef940b02460dcc2f22b08c2e",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "7625ab526c509d59fed9ed9271f1964f56a36449fd7042e79e3e8150297ae8b7",
+          "bytes": 6881
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "1171996cc38e6ac46f337e4353708c576ed417ee",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "520843df971645e927af08439d275715d8c7e8bfd5d9e35f1fa7ffe7831d78ab",
+          "bytes": 6864
+        },
+        "action": "Restore .agents/doc_writer/THESEUS.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-20",
+      "kind": "reference_rewrite",
+      "path": ".agents/auditor/AGENT.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "223ae999f15d1145940395e74962a1b8fae8c4cb",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "f9f9678facc30656d96f494f0f5e10e2bce263d5ab89efd655b6c498ab2cc3ed",
+        "bytes": 9030
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "dcd34b5389d40e05cd077c5fdd51ed5d13e6dfe8",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "b4264fb13a617eb85d63acb413551bffc4f99654d0afc45f15332bb22bd0fd4a",
+        "bytes": 9047
+      },
+      "rewrite": "Update path and replace obsolete canonical claim with draft/non-SOT operational-guidance posture.",
+      "inverse": "Restore exact blob 7c6ffde:.agents/auditor/AGENT.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "dcd34b5389d40e05cd077c5fdd51ed5d13e6dfe8",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "b4264fb13a617eb85d63acb413551bffc4f99654d0afc45f15332bb22bd0fd4a",
+          "bytes": 9047
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "223ae999f15d1145940395e74962a1b8fae8c4cb",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "f9f9678facc30656d96f494f0f5e10e2bce263d5ab89efd655b6c498ab2cc3ed",
+          "bytes": 9030
+        },
+        "action": "Restore .agents/auditor/AGENT.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-21",
+      "kind": "reference_rewrite",
+      "path": ".agents/qa/AGENT.md",
+      "before": {
+        "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+        "git_blob": "fc0e64f1942eea82bc0c0f9bef932dc689a4c4fe",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "71171b37ad00fdc4f5d9157e59b6a3bb393647c3ff8a72c3f4fbdd04eda985c4",
+        "bytes": 6727
+      },
+      "after": {
+        "source_commit": "ab6823b",
+        "git_blob": "2765a4df07d5dca6669a6a49d2887615882adebe",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "3c49140b4783a8e5e1baa2299b16a810f9176230e853309c8bece617bcfbe5c9",
+        "bytes": 6738
+      },
+      "rewrite": "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md",
+      "inverse": "Restore exact blob 7c6ffde:.agents/qa/AGENT.md after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "ab6823b",
+          "git_blob": "2765a4df07d5dca6669a6a49d2887615882adebe",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "3c49140b4783a8e5e1baa2299b16a810f9176230e853309c8bece617bcfbe5c9",
+          "bytes": 6738
+        },
+        "restore": {
+          "source_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
+          "git_blob": "fc0e64f1942eea82bc0c0f9bef932dc689a4c4fe",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "71171b37ad00fdc4f5d9157e59b6a3bb393647c3ff8a72c3f4fbdd04eda985c4",
+          "bytes": 6727
+        },
+        "action": "Restore .agents/qa/AGENT.md from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    },
+    {
+      "id": "P2S-22",
+      "kind": "resource_registry_compatibility_rewrite",
+      "path": "scripts/mcp/registry.mjs",
+      "repair_baseline_commit": "c26dae127090f28f0f52db2d3621091ad0d5eb7e",
+      "before": {
+        "source_commit": "c26dae127090f28f0f52db2d3621091ad0d5eb7e",
+        "git_blob": "efa66ef477f8e8b3462d99a55bb074f305ae233e",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "e786d6bdb46eca92edc435276757eed28db66c64a3072e9616c2c67626b588c1",
+        "bytes": 12453
+      },
+      "after": {
+        "source_commit": "d2337e1",
+        "git_blob": "2670047fba91b66e85b1d66d894d096e20e90379",
+        "sha256_basis": "git_blob_content_bytes",
+        "sha256": "e4427f3437a02cbe1c237b3d5c227e61a75debf1f40407a6b034f62c708619f8",
+        "bytes": 12579
+      },
+      "preserved_identity": "govibe://docs/runbook/multi-agent",
+      "rewrite": "Keep the resource URI stable; update its path to docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md and label it draft/non-SOT operational guidance governed by docs/STD-Execution-Governance.md.",
+      "inverse": "Restore exact blob c26dae127090f28f0f52db2d3621091ad0d5eb7e:scripts/mcp/registry.mjs after verifying the listed after SHA-256.",
+      "inverse_blob_identity": {
+        "precondition": {
+          "source_commit": "d2337e1",
+          "git_blob": "2670047fba91b66e85b1d66d894d096e20e90379",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "e4427f3437a02cbe1c237b3d5c227e61a75debf1f40407a6b034f62c708619f8",
+          "bytes": 12579
+        },
+        "restore": {
+          "source_commit": "c26dae127090f28f0f52db2d3621091ad0d5eb7e",
+          "git_blob": "efa66ef477f8e8b3462d99a55bb074f305ae233e",
+          "sha256_basis": "git_blob_content_bytes",
+          "sha256": "e786d6bdb46eca92edc435276757eed28db66c64a3072e9616c2c67626b588c1",
+          "bytes": 12453
+        },
+        "action": "Restore scripts/mcp/registry.mjs from the recorded baseline blob after the listed after blob identity is verified."
+      }
+    }
+  ],
+  "rollback_order": [
+    "P2S-22: restore the exact c26dae registry blob after verifying its listed after SHA-256; the resource URI remains unchanged in both directions.",
+    "P2S-03 through P2S-21: restore each exact baseline blob after verifying its listed after SHA-256.",
+    "P2S-02: restore the baseline runbook to docs/runbooks and remove the moved destination only after verifying its listed after SHA-256.",
+    "P2S-01: restore the exact baseline landing-template blob after verifying its listed after SHA-256.",
+    "Re-run the documentation and reference validators; prefer a non-destructive Git revert of the completed slice commit."
+  ],
+  "impact_analysis": {
+    "landing_template": {
+      "governing_relation": "docs/design/LANDING-Copy-Template-GoVibe-Draft1.md -> docs/STD-Execution-Governance.md",
+      "distance": 1,
+      "inbound_references_discovered": 0,
+      "required_action": "retain at the original path, mark non-SOT/draft, and correct only the legacy H wording"
+    },
+    "multi_agent_runbook": {
+      "governing_relation": "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md -> docs/STD-Execution-Governance.md",
+      "distance": 1,
+      "direct_backlinks": {
+        "artifacts": 20,
+        "reference_edges": 23
+      },
+      "required_action": "rewrite every discovered active path reference to the collision-free operational-runbooks location",
+      "cycles": "No cycle found in the bounded direct-path reference set; traversal was capped at one inbound edge from the runbook seed and one governing-standard edge.",
+      "coverage": "Exact-path discovery over tracked Markdown, .agents contracts, GEMINI.md, and the MCP resource catalog; it is bounded discovery evidence, not a canonical GKS graph-completeness claim.",
+      "unresolved": [
+        "No MSP-issued context packet or canonical GKS relation IDs were available.",
+        "Semantic correctness of unrelated legacy H/context references was intentionally excluded.",
+        "Historical cleansing inventory/batch manifests, prior rollback/result evidence, and one non-canonical .brain session retain the baseline path as evidence; they are not active resource consumers.",
+        "The generated result and rollback artifacts are not self-hashed inside this map to avoid a self-referential digest claim."
+      ]
+    }
+  },
+  "sha256_basis": "git_blob_content_bytes",
+  "evidence_revision": {
+    "revision": 2,
+    "status": "verified_git_blob_content_bytes",
+    "updated": "2026-08-03",
+    "supersedes_status": "executed_pending_independent_review",
+    "reason": "Recomputed every before, after, and inverse digest from recorded Git blob content bytes; no forward or inverse operation changed."
+  }
+}

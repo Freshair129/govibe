@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "evidence_revision": 2,
+  "sha256_basis": "git_blob_content_bytes",
+  "sha256_status": "recomputed_and_verified",
+  "map_id": "DOC-CLEANSING-PHASE1B-HANDOVER-SEMANTIC-ROLLBACK-MAP-v1",
+  "baseline_commit": "c86a95baa6601a4f3e90f9c978cb12e55f0592e8",
+  "execution_authority": "owner delegated decision in this task",
+  "operation_count": 1,
+  "operation_type": "in_place_semantic_correction",
+  "path_operations": 0,
+  "msp_gks_materialization": "none",
+  "rollback_execution": "Replace the current path with the recorded pre Git blob; do not execute without authorization.",
+  "pairs": [
+    {
+      "path": "docs/handover/GVDOC-1004-Handover Specification.md",
+      "forward": {
+        "operation": "replace_blob",
+        "from_git_blob": "e94fa3c1a76ce6540c61721695a66404245fc305",
+        "to_git_blob": "d53199887af005fefc694d832bab8d075511cd26",
+        "pre_sha256": "f52d2f3cc749ab1ce8e1c3e69b71bf827c540b9222b510a2e6de280af654500d",
+        "post_sha256": "5932d002616beb9479c43aec0b5a2e23e79ac6a9ed5ee58e9e1d63936df43b0e"
+      },
+      "inverse": {
+        "operation": "replace_blob",
+        "from_git_blob": "d53199887af005fefc694d832bab8d075511cd26",
+        "to_git_blob": "e94fa3c1a76ce6540c61721695a66404245fc305",
+        "from_sha256": "5932d002616beb9479c43aec0b5a2e23e79ac6a9ed5ee58e9e1d63936df43b0e",
+        "to_sha256": "f52d2f3cc749ab1ce8e1c3e69b71bf827c540b9222b510a2e6de280af654500d"
+      },
+      "rollback_order": 1
+    }
+  ]
+}

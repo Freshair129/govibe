@@ -8,11 +8,11 @@ owner: "ATHER / KIN"
 source_of_truth: true
 prd_system: "SYSTEM-09::Traceability-Audit-Verification-System"
 related_docs:
-  - "docs/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md"
-  - "docs/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md"
+  - "docs/change-control/change-requests/CR-2026-06-14-MSP-GKS-GoVibe-Integration.md"
+  - "docs/change-control/change-requests/feedback/CR-2026-06-14-MSP-GKS-GoVibe-Integration-feedback.md"
   - "docs/architecture/MSP-GKS-Taxonomy-Mapping.md"
   - "docs/architecture/SDD-MSP-External-Evidence-Boundary.md"
-  - "docs/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md"
+  - "docs/operations/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md"
 ---
 
 # FEAT: MSP Validate Evidence Adapter
@@ -90,7 +90,6 @@ This packet is the canonical evidence/decision contract for MSP-derived evidence
 - `docs:validate` passes after the slice.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.1.1 | 2026-06-21 | ATHER / KIN | Signed off; promoted draft -> approved (MSP/GKS gate decision recorded in ADR-014). |

@@ -5,7 +5,7 @@ on:
     branches: [ main, develop ]
     paths:
       - 'e2e/**'
-      - 'docs/design/LANDING-GoVibe-Mockup.html'
+      - 'docs/references/fixtures/LANDING-GoVibe-Mockup.html'
       - 'package.json'
       - 'playwright.config.ts'
       - '.github/workflows/e2e-tests.yml'
@@ -14,7 +14,7 @@ on:
     branches: [ main, develop ]
     paths:
       - 'e2e/**'
-      - 'docs/design/LANDING-GoVibe-Mockup.html'
+      - 'docs/references/fixtures/LANDING-GoVibe-Mockup.html'
       - 'package.json'
       - 'playwright.config.ts'
 

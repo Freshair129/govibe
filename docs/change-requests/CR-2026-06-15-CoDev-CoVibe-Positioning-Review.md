@@ -1,16 +1,17 @@
 ---
+title: "Change Request: CoDev and CoVibe Positioning Review"
 doc_id: "CR-2026-06-15-CODEV-COVIBE-POSITIONING-REVIEW"
-status: "candidate"
-version: "0.1.1b"
-updated: "2026-06-20"
-owner: "CODEx"
+status: "draft"
+version: "0.1.1-beta"
+updated: "2026-08-03"
+owner: "Boss (Product Authority)"
 source_of_truth: false
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/architecture/C4-GoVibe-Platform.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/integration-bridge/FEAT-MCP-Integration-Bridge.md"
-  - "docs/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md"
 ---
 
 # Change Request: CoDev and CoVibe Positioning Review
@@ -214,5 +215,6 @@ No product rename, no PRD restructure, and no implementation change should proce
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---------|------|--------|---------|-------------|-------|
+| 0.1.1-beta | 2026-08-03 | draft | Normalized legacy beta version and governed metadata under delegated Phase 1B authority; no product-positioning approval is implied. | pending | Boss (Product Authority) |
 | 0.1.1b | 2026-06-20 | candidate | Corrected §3 CoDev and CoVibe mental-model diagrams to canonical forms from FEAT-CoDev-CoVibe-Terminology-Definition §3 and noted the earlier sketches as superseded. | pending | Codex |
 | 0.1.0b | 2026-06-15 | candidate | Initial discussion packet summarizing current PRD position, problem framing, proposed direction, and trade-offs for CoDev and CoVibe positioning review. | pending | Codex |

@@ -14,11 +14,11 @@ supporting_prd_systems:
   - "SYSTEM-10::Execution-Governance-System"
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
-  - "docs/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
+  - "docs/change-control/change-requests/CR-2026-08-02-Knowledge-Context-Product-Alignment.md"
   - "docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md"
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
   - "docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md"
-  - "docs/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
+  - "docs/operations/runbooks/RUNBOOK-Bounded-External-Executor-Workflow.md"
 ---
 
 # FEAT: CoVibe Module
@@ -167,7 +167,6 @@ The workflow must not proceed through a gap by silently inventing WHY. It may co
 - `docs:validate` passes after registry propagation.
 
 ## Changelog
-
 | Version | Date | Owner | Summary |
 |---|---|---|---|
 | 0.2.0 | 2026-08-02 | THESEUS / Boss | Refined CoVibe from a solo/SME-shaped description to the canonical single-authority mode; added relation-first validation, MSP-scoped context, candidate-only external skills, and missing-WHY escalation. |

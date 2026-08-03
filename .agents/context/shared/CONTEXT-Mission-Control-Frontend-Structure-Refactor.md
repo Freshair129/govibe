@@ -7,8 +7,8 @@ updated: "2026-06-19"
 owner: "LYRA / ARCHON / ATHER"
 source_of_truth: false
 related_docs:
-  - "docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md"
-  - "docs/change-requests/feedback/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor-feedback.md"
+  - "docs/change-control/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md"
+  - "docs/change-control/change-requests/feedback/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor-feedback.md"
   - "docs/PRD-GoVibe-Platform-Overview.md"
   - "docs/STD-Execution-Governance.md"
   - ".agents/cto/AGENT.md"
@@ -75,7 +75,7 @@ For this change request, do not load all of `G:\govibe\.agents`.
 Load only the minimum bounded set:
 
 1. `AGENTS.md`
-2. `docs/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md`
+2. `docs/change-control/change-requests/CR-2026-06-19-Mission-Control-Frontend-Structure-Refactor.md`
 3. this shared context file
 4. the role-specific contract:
    - `.agents/cto/AGENT.md` for `ARCHON`
