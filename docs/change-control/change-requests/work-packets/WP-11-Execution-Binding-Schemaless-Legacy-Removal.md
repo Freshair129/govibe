@@ -2,7 +2,7 @@
 title: "WP-11: Execution-Binding Schema-Less Legacy Removal"
 doc_id: "WP-11-EXECUTION-BINDING-SCHEMALESS-LEGACY-REMOVAL"
 status: "approved"
-version: "0.2.0"
+version: "0.3.0"
 updated: "2026-08-03"
 owner: "Boss (CEO)"
 proposal_author: "ATHER"
@@ -10,7 +10,11 @@ approval_owner: "Boss (CEO)"
 source_of_truth: false
 approval_recorded_at: "2026-08-03"
 execution_authorized: true
-execution_complete: false
+execution_complete: true
+pr_url: "https://github.com/Freshair129/govibe/pull/95"
+pr_head_commit: "d8f457927af936194086c0659882ae16e9b4c14e"
+merge_commit: "50a5acf165570434f73dcea4413ade4f5eec26a7"
+merged_at: "2026-08-03T13:55:29Z"
 external_breaking_risk: "accepted-by-owner"
 complexity: "C-3"
 access_scope: "H3"
@@ -87,9 +91,35 @@ approval is limited to the bounded removal scope and rollback process in this
 packet. It does not promote API-007, API-008, ADR-024, or the parent
 multi-provider CR.
 
+## Execution closure and retained rollback boundary
+
+WP-11 completed through merged PR [#95](https://github.com/Freshair129/govibe/pull/95)
+from head `d8f457927af936194086c0659882ae16e9b4c14e` as merge commit
+`50a5acf165570434f73dcea4413ade4f5eec26a7` at `2026-08-03T13:55:29Z`.
+The removal completed despite the accepted unknown-external-consumer risk; it
+does not establish that those consumers are absent, safe, migrated, or covered
+by repository evidence.
+
+| Evidence | Recorded result |
+|---|---|
+| Remote E2E | success: run `30820067825`, job `91707457705` |
+| Vercel | success |
+| Final local suite | 215 total: 214 pass, 0 fail, 1 skip |
+| Security | 35/35 pass |
+| Other local gates | lint, build, MCP smoke, docs validation, roadmap validation, diff check, and whitespace check passed |
+| Independent reviews | security and release reviews approved |
+
+The D-07 HIGH risk acceptance remains in force. If an affected external
+consumer or approved rollback trigger is identified, restore the exact prior
+compatibility branch using the captured inverse patch, rerun the approved
+baseline suite, and record the consumer. This retained rollback path does not
+restore an authority bypass, widen scope, or promote API-007, API-008, ADR-024,
+or the parent multi-provider CR.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0 | 2026-08-03 | Boss / ATHER | Closed WP-11 with merged PR #95, successful remote E2E/Vercel and local gates, approved independent security/release reviews, and retained D-07 accepted HIGH external-consumer risk plus rollback; API/parent promotion remains out of scope. |
 | 0.2.0 | 2026-08-03 | Boss / ATHER | Approved and authorized WP-11 under D-07 with explicit acceptance of documented HIGH unknown-external-consumer breaking risk and mandatory rollback; API/parent promotion remains out of scope. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Proposed owner-gated schema-less compatibility removal after consumer proof; execution remains unauthorized. |

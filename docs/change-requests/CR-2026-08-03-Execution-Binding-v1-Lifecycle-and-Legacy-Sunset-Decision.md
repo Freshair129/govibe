@@ -2,7 +2,7 @@
 title: "CR: Execution-Binding v1 Lifecycle and Schema-Less Legacy Sunset Decision"
 doc_id: "CR-2026-08-03-EXECUTION-BINDING-V1-LIFECYCLE-DECISION"
 status: "approved"
-version: "0.2.5"
+version: "0.2.6"
 updated: "2026-08-03"
 owner: "Boss (CEO)"
 proposal_author: "ATHER"
@@ -17,7 +17,7 @@ promotion_authorized: false
 wp_10_evidence_status: "complete"
 wp_10_execution_complete: true
 wp_11_execution_authorized: true
-wp_11_execution_complete: false
+wp_11_execution_complete: true
 wp_11_external_breaking_risk: "accepted-by-owner"
 wp_10_consumer_evidence: "docs/assurance/audit/EVIDENCE-WP-10-Execution-Binding-v1-Consumer-Discovery.md"
 complexity: "C-3"
@@ -46,8 +46,8 @@ Boss (CEO) approved the selections recorded in Section 6. D-07 authorizes
 WP-11's bounded schema-less compatibility removal under the explicit accepted
 HIGH external-consumer breaking risk and mandatory rollback. This decision CR
 does not promote any API/ADR or authorize a runtime-conformance claim. The
-parent multi-provider CR, API-007, and API-008 remain `draft`; WP-11 remains
-`execution_complete: false` until its approved CI/merge exit gate closes.
+parent multi-provider CR, API-007, and API-008 remain `draft`; WP-10 and WP-11
+are execution-complete only within their separately authorized scopes.
 
 **Recommended selection:** do **not** promote API-008 at this time. Keep the
 parent multi-provider CR, API-007, and API-008 in `draft`. Keep ADR-024 out of
@@ -180,10 +180,10 @@ escalation; they must not be filled from repository silence or model prior.
 | D-06 | Approve WP-10 after its own review. | Migrates only the three tracked schema-less fixtures to full v1 and gathers consumer evidence. | **Selected; WP-10 authorized, Boss, 2026-08-03.** |
 | D-07 | Approve WP-11 with explicit acceptance of incomplete consumer evidence. | Removes compatibility under documented unknown external breaking risk; rollback remains mandatory. | **Selected; Boss accepted the remaining HIGH external-consumer breaking risk and authorized WP-11, 2026-08-03.** |
 
-Approval of this packet is not API/ADR promotion. WP-10 is complete and WP-11
-is approved with `execution_authorized: true` under D-07's explicit owner risk
-acceptance. The parent multi-provider CR, API-007, and API-008 remain `draft`,
-and promotion remains unauthorized.
+Approval of this packet is not API/ADR promotion. WP-10 and WP-11 are complete
+within their separately authorized scopes. WP-11 completed under D-07's
+explicit owner risk acceptance; the parent multi-provider CR, API-007, and
+API-008 remain `draft`, and promotion remains unauthorized.
 
 ## 7. Proposed staged sunset
 
@@ -245,9 +245,9 @@ affected consumer is identified.
 - AC-06: all authority, security, provider-compatibility, and graph-coverage
   gaps are stated rather than inferred away.
 - AC-07: WP-10 is complete for its stated fixture/consumer evidence scope.
-  D-07 authorizes WP-11 with `execution_authorized: true` and the explicitly
-  accepted HIGH external-consumer breaking risk; WP-11 remains
-  `execution_complete: false` until its approved CI/merge exit gate closes.
+  WP-11 is complete for its separately authorized removal scope with D-07's
+  explicitly accepted HIGH external-consumer breaking risk and retained
+  rollback path; neither completion promotes the parent/API lifecycle.
 
 ## 9. Success criteria and Definition of Done
 
@@ -257,8 +257,8 @@ evidence.
 
 This proposal is done when:
 
-1. Boss's D-01 through D-07 selections are recorded, with D-06/WP-10 complete
-   and D-07/WP-11 execution authorized but not execution-complete;
+1. Boss's D-01 through D-07 selections are recorded, with D-06/WP-10 and
+   D-07/WP-11 complete within their separately authorized scopes;
 2. any approved documentation-only correction has a narrow diff, a changelog,
    registry/index parity where required, and `npm run docs:validate` evidence;
 3. any WP-10/WP-11 authorization records exact files, test commands, evidence
@@ -333,10 +333,35 @@ prior compatibility branch, rerun the approved baseline, record the consumer,
 and preserve authority validation without widening scope. This authorization
 does not promote the parent CR, API-007, API-008, or ADR-024.
 
+## 14. Authorized WP-11 execution closure
+
+WP-11 is execution-complete for its bounded schema-less compatibility-removal
+scope through merged PR [#95](https://github.com/Freshair129/govibe/pull/95).
+Head `d8f457927af936194086c0659882ae16e9b4c14e` merged as
+`50a5acf165570434f73dcea4413ade4f5eec26a7` at `2026-08-03T13:55:29Z`.
+
+| Evidence | Recorded result |
+|---|---|
+| Remote E2E | success: run `30820067825`, job `91707457705` |
+| Vercel | success |
+| Final local suite | 215 total: 214 pass, 0 fail, 1 skip |
+| Security | 35/35 pass |
+| Other local gates | lint, build, MCP smoke, docs validation, roadmap validation, diff check, and whitespace check passed |
+| Independent reviews | security and release reviews approved |
+
+The CR is execution-complete for its two authorized child scopes: WP-10
+fixture migration/consumer discovery and WP-11 schema-less removal. This is
+not completion or promotion of the parent multi-provider CR, API-007, API-008,
+or ADR-024: each remains `draft`, and `promotion_authorized: false` remains
+unchanged. D-07's accepted HIGH unknown-external-consumer risk remains
+unresolved; the removal was completed under that acceptance, with the rollback
+path in Section 13 preserved.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.6 | 2026-08-03 | Boss / ATHER | Closed WP-11 with PR #95 CI/Vercel/local-gate and approved independent security/release review evidence; the CR/WP-10/WP-11 scopes are complete, while parent/API drafts and promotion prohibition remain unchanged. |
 | 0.2.5 | 2026-08-03 | Boss / ATHER | Corrected the canonical D-07 lifecycle state: WP-11 is execution-authorized under accepted HIGH external-consumer risk and mandatory rollback, but remains execution-incomplete; parent/API drafts and promotion prohibition remain unchanged. |
 | 0.2.4 | 2026-08-03 | Boss / ATHER | Recorded D-07 selection: Boss authorized WP-11 and accepted the documented HIGH unknown-external-consumer breaking risk with mandatory rollback; parent/API drafts and promotion prohibition remain unchanged. |
 | 0.2.3 | 2026-08-03 | ATHER | Closed the authorized WP-10 scope with merged PR #93, remote E2E/P0/Vercel evidence, final local gates, and independent approval; parent/API drafts, unknown consumer/GKS coverage, and the WP-11 removal block remain unchanged. |
