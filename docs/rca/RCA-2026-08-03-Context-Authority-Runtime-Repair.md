@@ -2,7 +2,7 @@
 title: "RCA: Context Authority Runtime Repair and Execution-Binding Contract Mismatch"
 doc_id: "RCA-2026-08-03-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-08-03"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -26,11 +26,15 @@ capability, one migration, and two MSP live tests.
 1. Five executor-adapter fixtures omit full `govibe-context-authority/v1`, an
    allow policy decision, and context lineage. They are fixture drift, not a
    production defect.
-2. One MSP continuation path is a production defect: `continue.mjs` invokes
-   `resolveContext` without caller-supplied authority, so WorkspaceService
-   cannot forward and validate it at the required boundary.
-3. The remaining capability, direct/live, and migration failures are fixture
-   drift. Positive fixtures must meet unrelated validation prerequisites.
+2. One **capability-runtime** failure exposes a production defect:
+   `packages/govibe-core/src/continue.mjs:65` invokes `resolveContext` without
+   caller-supplied authority, and
+   `scripts/mcp/runtime/workspace-service.mjs:41` drops
+   `args.contextAuthority`; WorkspaceService therefore cannot forward and
+   validate authority at the required boundary.
+3. The other two capability failures, the migration failure, and both MSP-live
+   failures are fixture drift. Positive fixtures must meet unrelated validation
+   prerequisites.
 4. Legacy vault-context-surface `resolveContext` lacks authority and has no
    recorded compatibility disposition.
 5. The binding service emits `actor_id`, while the provider adapter requires
@@ -42,8 +46,10 @@ capability, one migration, and two MSP live tests.
 
 Two causes must remain separate:
 
-1. **Fixture contract drift:** ten failures model a pre-authority or incomplete
-   governed request and lack authority, policy, lineage, or prerequisites.
+1. **Fixture contract drift:** ten failures (five executor-adapter, two
+   capability, one migration, and two MSP-live) model a pre-authority or
+   incomplete governed request and lack authority, policy, lineage, or
+   prerequisites.
 2. **Continuation authority propagation defect:** caller authority is lost
    before `resolveContext`, violating ADR-023/API-007's explicit,
    forward-and-validate authority requirement.
@@ -80,4 +86,5 @@ companion is a workspace-continuity pointer only; this file is canonical.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-03 | ATHER / THESEUS | Corrected attribution: the propagation defect is capability-runtime; both MSP-live failures are fixture drift. |
 | 0.1.0+draft | 2026-08-03 | ATHER / THESEUS | Recorded audited fixture drift, continuation propagation defect, legacy-path gap, and separate binding-contract decision gate. |

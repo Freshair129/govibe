@@ -2,7 +2,7 @@
 title: "WP-06: Context Authority Runtime Repair"
 doc_id: "WP-06-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-08-03"
 owner: "Boss (Product Authority)"
 execution_authorized: false
@@ -32,9 +32,12 @@ access. This draft work packet grants no implementation authority.
 ## Bounded execution scope
 
 1. Align five executor-adapter fixtures only; do not change production for them.
-2. Forward/validate caller authority through `continue.mjs` and WorkspaceService
-   before context resolution.
-3. Align three capability, one migration, and remaining MSP live fixtures.
+2. Repair the capability-runtime propagation defect at
+   `packages/govibe-core/src/continue.mjs:65` and
+   `scripts/mcp/runtime/workspace-service.mjs:41`: forward/validate caller
+   authority before context resolution.
+3. Align the two remaining capability, one migration, and two MSP-live fixtures
+   only; these are fixture-drift cases.
 4. Implement only the selected legacy and identity-contract dispositions.
 5. Add focused regression tests and keep strict security tests unchanged.
 
@@ -42,8 +45,8 @@ access. This draft work packet grants no implementation authority.
 
 - 192 current test cases: 0 fail; record skip count (target 191 pass/0 fail/1 skip).
 - Security suite 35/35 pass without weakened fail-closed assertions.
-- Focused tests, lint, build, MCP smoke, `npm run docs:validate`, and
-  `npm run diff:check` pass.
+- Focused tests, lint, build, MCP smoke, `npm run docs:validate`,
+  `npm run diff:check`, and direct `git diff --check` pass.
 - Bounded impact record, independent QA acceptance, evidence hashes, final diff,
   and commit hash are retained.
 - No raw secret, unrestricted traversal, direct GKS, or direct GenesisBlockDB.
@@ -57,4 +60,5 @@ order, rerun the baseline matrix, and never restore an authority bypass.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-03 | THESEUS / ATHER | Corrected capability-runtime and MSP-live test mapping; added direct `git diff --check` to the exit gate. |
 | 0.1.0+draft | 2026-08-03 | THESEUS / ATHER | Opened owner-gated proposal WP-06; implementation remains unauthorized. |

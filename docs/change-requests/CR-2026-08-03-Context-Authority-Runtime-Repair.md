@@ -2,7 +2,7 @@
 title: "CR: Context Authority Runtime Repair and Execution-Binding Contract Gate"
 doc_id: "FUTURE-CR-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-08-03"
 owner: "Boss (Product Authority)"
 decision_owner: "Boss (Product Authority)"
@@ -73,9 +73,9 @@ existing GoVibe -> MSP -> GKS promotion flow accepts it.
 | Matrix | Baseline | Disposition |
 |---|---:|---|
 | Executor-adapter | 5 fail | Fixture drift: governed requests lack full `govibe-context-authority/v1`, `policyDecision: allow`, and `contextLineage`. No production change for these five. |
-| Capability | 3 fail | Context/MSP fixture drift; meet governed-request contract and unrelated prerequisites. |
+| Capability | 3 fail | One failure exposes the continuation production defect: `packages/govibe-core/src/continue.mjs:65` calls without authority and `scripts/mcp/runtime/workspace-service.mjs:41` drops `args.contextAuthority`; the other capability fixtures are drift. |
 | Migration | 1 fail | Context/MSP fixture drift; retain migration semantics and provide valid authority evidence. |
-| MSP live | 2 fail | Continuation has a production defect: `continue.mjs` calls `resolveContext` without caller-supplied authority. WorkspaceService must forward and validate it. The other direct/live path is fixture drift. |
+| MSP live | 2 fail | Fixture drift only; align complete governed requests without changing production behavior for these cases. |
 | Full suite | 180 pass, 11 fail, 1 skip | 192 current test cases; baseline only. |
 | Security | 35/35 pass | Strict fail-closed controls remain unchanged. |
 
@@ -89,8 +89,9 @@ The `.brain` record is only a governed pointer, never a duplicate authority.
 2. Repair continuation authority propagation: `continue.mjs` accepts only
    caller-supplied authority; WorkspaceService forwards and validates it before
    `resolveContext`; no callee convenience default is allowed.
-3. Align the remaining capability, direct/live, and migration fixtures when
-   evidence proves contract drift, without changing fail-closed behavior.
+3. Repair the capability-runtime continuation defect at the approved boundary,
+   then align the remaining capability, migration, and MSP-live fixtures when
+   evidence proves drift, without changing fail-closed behavior.
 4. Select an explicit disposition for legacy vault-context-surface
    `resolveContext`, which lacks authority: valid propagation, rejection of
    authority-less governed requests, or approved deprecation/removal.
@@ -145,8 +146,11 @@ and D-02 selections explicitly.
 
 - AC-01: reproduce the audited 11-failure matrix and retain command output.
 - AC-02: fix all five executor-adapter failures by fixture alignment only.
-- AC-03: continuation forwards and validates caller-supplied authority; absent
-  or invalid authority fails closed.
+- AC-03: the capability-runtime continuation path forwards and validates
+  caller-supplied authority at `continue.mjs:65` and WorkspaceService:41;
+  absent or invalid authority fails closed.
+- AC-03a: both MSP-live failures and the migration failure are repaired by
+  fixture alignment only; they introduce no production behavior change.
 - AC-04: legacy route has the selected explicit disposition and no bypass.
 - AC-05: D-01 is implemented under approved API-008 alignment or deferred with
   incomplete runtime closure stated everywhere.
@@ -192,8 +196,18 @@ coverage or widen retrieval. Before mutation, capture hashes and inverse patches
 for every approved file; rollback in reverse dependency order, rerun baseline,
 and never restore an authority bypass.
 
+## 12. Review-gate disposition
+
+Independent review returned **REQUEST CHANGES** on the initial proposal. This
+revision accepts the P1 corrections: the production propagation defect belongs
+to the capability-runtime matrix, both MSP-live failures are fixture drift, and
+the authoritative RCA is registered outside the non-SOT registry section. It
+also records the direct `git diff --check` completion gate in WP-06. No runtime
+or test mutation was made while applying this documentation correction.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-03 | THESEUS / ATHER | Corrected capability-runtime versus MSP-live failure attribution and recorded the review-gate disposition. |
 | 0.1.0+draft | 2026-08-03 | THESEUS / ATHER | Created proposal-only C-3/H3/HIGH repair boundary for the audited 11 Vitest failures, including authority, legacy-surface, and binding-contract owner decisions. |
