@@ -2,7 +2,7 @@
 title: "GoVibe Documentation Navigation Hub"
 doc_id: "DOCS-NAVIGATION-HUB"
 status: "draft"
-version: "0.3.0+draft"
+version: "0.3.1+draft"
 updated: "2026-08-03"
 owner: "THESEUS / ATHER"
 source_of_truth: true
@@ -101,6 +101,7 @@ API or asserting external-consumer safety.
 - `docs/change-requests/CR-2026-08-03-Execution-Binding-v1-Lifecycle-and-Legacy-Sunset-Decision.md`
 - `docs/change-control/change-requests/work-packets/WP-10-Execution-Binding-v1-Fixture-Migration-and-Consumer-Discovery.md`
 - `docs/change-control/change-requests/work-packets/WP-11-Execution-Binding-Schemaless-Legacy-Removal.md`
+- `docs/change-control/TODO-Execution-Binding-Lifecycle.md`
 
 Boss approved this decision packet on 2026-08-03. WP-10's fixture-only v1
 migration and consumer-discovery scope is complete with merged PR #93 and
@@ -112,10 +113,17 @@ recorded E2E, Vercel, local-gate, and independent security/release-review
 evidence. The parent multi-provider CR, API-007, and API-008 remain drafts;
 this does not promote an API/ADR or claim external-consumer safety.
 
+The remaining work register retains the owner-gated bundled lifecycle decision,
+external-consumer/deployed-version/operator discovery, provider security and
+runtime-conformance evidence, MSP-scoped impact coverage, and rollback
+monitoring. It lists unknowns as unknowns and does not authorize API-008
+promotion by itself.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.1+draft | 2026-08-03 | ATHER | Linked the post-WP-11 execution-binding remaining-work register; it preserves unknown external/provider/graph/rollback gates and the bundled promotion boundary. |
 | 0.3.0+draft | 2026-08-03 | ATHER / THESEUS | Added Canonical Semantic IR, backend-independence, and GenesisBlockDB adapter-boundary navigation after merged PR #92 while preserving WP-11 closure guidance. |
 | 0.2.9+draft | 2026-08-03 | ATHER | Updated navigation for WP-11 PR #95 closure; parent/API drafts, promotion prohibition, D-07 accepted HIGH external risk, and rollback remain unchanged. |
 | 0.2.8+draft | 2026-08-03 | ATHER | Updated navigation for the authorized WP-11 schema-less compatibility removal and canonical D-07 lifecycle correction; API-008 remains draft and external-consumer risk remains accepted, not resolved. |
