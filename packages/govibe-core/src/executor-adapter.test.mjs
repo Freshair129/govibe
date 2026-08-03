@@ -80,16 +80,9 @@ function governedRequest(overrides = {}) {
   };
 }
 
-function principalOnlyLegacyBinding() {
-  return {
-    binding_id: "binding-legacy-1",
-    provider_id: "codex",
-    entitlement_id: "ent-1",
-    principal_id: "user-1",
-    run_id: "run-1",
-    credential_grant_id: null,
-    provider_session_id: null,
-  };
+function bindingWithout(field) {
+  const { [field]: _removed, ...binding } = governedRequest().executionBinding;
+  return binding;
 }
 
 function bindingRequest() {
@@ -261,17 +254,16 @@ describe("executor adapter governed handoff", () => {
       .rejects.toMatchObject({ code: "EXECUTION_BINDING_SCOPE_MISMATCH", details: { field } });
   });
 
-  it("allows only principal-only schema-less legacy bindings", async () => {
-    const execute = vi.fn(async (_request, runtime) => runtime.executionBinding.principal_id);
+  it.each([
+    ["has no schema", bindingWithout("schema"), "EXECUTION_BINDING_SCHEMA_UNSUPPORTED"],
+    ["has an unsupported schema", { ...governedRequest().executionBinding, schema: "govibe-execution-binding/v0" }, "EXECUTION_BINDING_SCHEMA_UNSUPPORTED"],
+    ["is incomplete v1", bindingWithout("session_id"), "EXECUTION_BINDING_INVALID"],
+  ])("rejects a binding that %s before adapter execution", async (_scenario, binding, code) => {
+    const execute = vi.fn();
     const registry = createExecutorRegistry({ codex: { execute } });
-    const legacy = principalOnlyLegacyBinding();
 
-    await expect(registry.execute("codex", governedRequest({ executionBinding: legacy }))).resolves.toBe("user-1");
-    await expect(registry.execute("codex", governedRequest({ executionBinding: { ...legacy, actor_id: "user-1" } })))
-      .rejects.toMatchObject({ code: "EXECUTION_BINDING_LEGACY_INVALID" });
-    await expect(registry.execute("codex", governedRequest({ executionBinding: { ...legacy, schema: null } })))
-      .rejects.toMatchObject({ code: "EXECUTION_BINDING_SCHEMA_UNSUPPORTED" });
-    await expect(registry.execute("codex", governedRequest({ executionBinding: { ...legacy, schema: undefined } })))
-      .rejects.toMatchObject({ code: "EXECUTION_BINDING_SCHEMA_UNSUPPORTED" });
+    await expect(registry.execute("codex", governedRequest({ executionBinding: binding })))
+      .rejects.toMatchObject({ code });
+    expect(execute).not.toHaveBeenCalled();
   });
 });

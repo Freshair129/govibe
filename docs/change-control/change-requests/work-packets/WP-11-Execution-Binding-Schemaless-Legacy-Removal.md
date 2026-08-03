@@ -1,15 +1,17 @@
 ---
 title: "WP-11: Execution-Binding Schema-Less Legacy Removal"
 doc_id: "WP-11-EXECUTION-BINDING-SCHEMALESS-LEGACY-REMOVAL"
-status: "draft"
-version: "0.1.0+draft"
+status: "approved"
+version: "0.2.0"
 updated: "2026-08-03"
 owner: "Boss (CEO)"
 proposal_author: "ATHER"
 approval_owner: "Boss (CEO)"
 source_of_truth: false
-execution_authorized: false
+approval_recorded_at: "2026-08-03"
+execution_authorized: true
 execution_complete: false
+external_breaking_risk: "accepted-by-owner"
 complexity: "C-3"
 access_scope: "H3"
 risk: "HIGH"
@@ -23,19 +25,19 @@ related_apis: ["API-007", "API-008"]
 
 ## Objective
 
-If separately approved after WP-10, remove the schema-absent principal-only
-execution-binding compatibility branch. This is a HIGH-risk breaking change;
-the current packet grants no execution authority and makes no claim that it is
-safe to remove the branch.
+Under Boss approval recorded on 2026-08-03, remove the schema-absent
+principal-only execution-binding compatibility branch. This remains a HIGH-risk
+breaking change: the owner has accepted the documented unknown-external-consumer
+risk, not asserted that removal is safe for any unknown consumer.
 
 ## Preconditions
 
 - WP-10 is complete with independently reviewed consumer evidence.
-- Every potential external consumer is migrated, explicitly retained under a
-  documented compatibility plan, or evidenced as not applicable; unresolved
-  consumers remain visible.
-- Boss explicitly accepts any remaining external breaking risk and authorizes
-  the exact removal scope, rollout, rollback, and communication plan.
+- The WP-10 consumer-evidence record and its unresolved consumer classes are
+  retained as the governing evidence boundary.
+- Boss explicitly accepted the remaining HIGH external breaking risk and
+  authorized this packet on 2026-08-03. This authorization does not convert an
+  unknown consumer into a safe, absent, or migrated consumer.
 - The governing lifecycle decision still preserves approved context authority
   and does not use legacy removal to imply API-008 promotion.
 
@@ -53,7 +55,7 @@ safe to remove the branch.
 - entitlement-policy changes, provider sharing approval, credential/session
   policy changes, or context authority changes;
 - API-008 or parent-contract promotion;
-- silent removal when external-consumer evidence is incomplete.
+- any assertion that incomplete external-consumer evidence proves removal safe.
 
 ## Acceptance and exit gate
 
@@ -76,8 +78,18 @@ If an approved rollback trigger occurs, restore the exact prior compatibility
 branch, rerun the baseline suite, and record the affected consumer without
 weakening authority validation or widening scope.
 
+## Owner accepted-risk record
+
+Boss (CEO) authorized WP-11 on 2026-08-03 and accepted the residual HIGH
+breaking risk from unknown external consumers, external version support,
+provider compatibility, deployment telemetry, and canonical GKS coverage. This
+approval is limited to the bounded removal scope and rollback process in this
+packet. It does not promote API-007, API-008, ADR-024, or the parent
+multi-provider CR.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-08-03 | Boss / ATHER | Approved and authorized WP-11 under D-07 with explicit acceptance of documented HIGH unknown-external-consumer breaking risk and mandatory rollback; API/parent promotion remains out of scope. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Proposed owner-gated schema-less compatibility removal after consumer proof; execution remains unauthorized. |

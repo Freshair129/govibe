@@ -2,7 +2,7 @@
 title: "Evidence: WP-10 Execution-Binding v1 Consumer Discovery"
 doc_id: "EVIDENCE-WP-10-EXECUTION-BINDING-V1-CONSUMER-DISCOVERY"
 status: "approved"
-version: "0.2.0"
+version: "0.2.2"
 updated: "2026-08-03"
 owner: "ATHER"
 source_of_truth: false
@@ -28,8 +28,9 @@ risk: "HIGH"
 This is a commit-pinned, repository-only consumer-discovery record for WP-10.
 It records the authorized fixture-migration completion, but not runtime
 conformance.
-`API-008` remains `draft`; no API/ADR promotion is implied. WP-11 remains
-unauthorized, and this record does not authorize compatibility removal.
+`API-008` remains `draft`; no API/ADR promotion is implied. This record does
+not itself authorize compatibility removal; the later D-07 decision records
+Boss's explicit WP-11 authorization and accepted breaking risk.
 
 **Evidence state: complete for the authorized WP-10 scope.** PR #93 merged and
 the remote CI, Vercel, local validation, and independent-review evidence is
@@ -137,12 +138,12 @@ evidence classes remain unknown.
 
 ## 7. Removal gate and rollback
 
-**WP-11 removal gate: BLOCKED.** The three tracked fixtures may be migrated by
-WP-10, but all unknown rows in Section 6 must become either `migrated`,
-`not_applicable` with dated evidence, or `retained under compatibility` with
-explicit owner acceptance. The owner must then separately authorize WP-11 and
-accept any remaining HIGH breaking risk. Repository silence alone cannot clear
-the gate.
+**WP-11 removal evidence: incomplete.** The three tracked fixtures may be
+migrated by WP-10, but the unknown rows in Section 6 remain unresolved. At this
+record's close, they blocked removal by default. Boss subsequently accepted the
+remaining HIGH breaking risk and authorized WP-11 under D-07 on 2026-08-03.
+That acceptance is not repository evidence that the unknown classes are safe,
+absent, or migrated; repository silence alone does not establish those facts.
 
 For WP-10, capture the before/after blob hashes and inverse patch for each of
 the three authorized producer files, review the diff to prove no production
@@ -166,14 +167,12 @@ The after-migration source hashes are:
 | `packages/govibe-core/src/migration-capabilities.test.mjs` | `b60942971bd72f7b7b4a4d1d1bb2134cda602515` | `01ed6e99594921ae00b924c643a3b74ee2c7a339` | complete v1 fixture |
 | `scripts/mcp/graph-dispatch-authority.security.mjs` | `7f2b9778a8103a34b42e1f0ad5426f27d819ba99` | `08599f08dc79c96db395308d41bd44939d975c76` | complete v1 helper fixture |
 
-The current tracked static inventory found no production
-`executorRegistry.execute` invocation. The three named producer definitions
-now carry `schema: "govibe-execution-binding/v1"`. The sole schema-less binding
-construction is `principalOnlyLegacyBinding()` in
-`executor-adapter.test.mjs`, intentionally consumed by the
-`allows only principal-only schema-less legacy bindings` negative-coverage
-test. `executor-adapter.mjs` retains its schema-absent compatibility branch
-unchanged; neither result authorizes WP-11.
+At the WP-10 evidence source commit, the tracked static inventory found no
+production `executorRegistry.execute` invocation. The three named producer
+definitions carried `schema: "govibe-execution-binding/v1"`; the sole
+schema-less construction and compatibility branch were explicitly retained for
+the separately authorized WP-11 decision. This commit-pinned evidence does not
+establish external-consumer safety or assert the state of later WP-11 work.
 
 Local gates passed:
 
@@ -207,6 +206,8 @@ succeeded (run `30801949933`, job `91648317503`), and Vercel succeeded.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.2 | 2026-08-03 | ATHER | Clarified the WP-10 inventory as commit-pinned historical evidence after WP-11 authorization; external-consumer and GKS gaps remain unresolved. |
+| 0.2.1 | 2026-08-03 | ATHER | Recorded the later D-07 owner authorization and risk acceptance for WP-11 without changing the unresolved consumer/GKS evidence or implying API promotion. |
 | 0.2.0 | 2026-08-03 | ATHER | Closed authorized WP-10 evidence with PR #93 merge, remote E2E/P0/Vercel success, 212 pass/0 fail/1 skip local suite, 35/35 security, all listed local gates, and independent approval; consumer/GKS gaps still block WP-11 removal. |
 | 0.1.2+draft | 2026-08-03 | ATHER | Recorded the bounded after-migration inventory, local gate results, and independent `APPROVE` review; remote CI/merge and execution completion remain pending. |
 | 0.1.1+draft | 2026-08-03 | ATHER | Corrected the `index.mjs` commit-pinned blob hash after independent HEAD verification. |

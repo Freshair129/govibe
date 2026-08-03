@@ -2,7 +2,7 @@
 doc_id: "API-008-PROVIDER-ENTITLEMENT-ROUTING-USAGE-CONTRACT"
 title: "API-008: Provider Entitlement, Routing and Usage Contract"
 status: "draft"
-version: "0.2.1+draft"
+version: "0.3.0+draft"
 updated: "2026-08-03"
 owner: "ARCHON / ATHER"
 source_of_truth: true
@@ -48,17 +48,10 @@ require that equality and correlate the fields as follows:
 - `session_id` and `turn_id` equal the validated dispatch context lineage; and
 - `context_id` and `cache_id` equal `contextAuthority.lineage`.
 
-Any missing field or mismatch must fail closed. A v1 binding must never fall
-back to legacy interpretation.
-
-The only compatibility path is a principal-only runtime binding whose
-`schema` property is absent. It must contain the legacy binding/provider/
-entitlement/principal/run fields, must not contain `actor_id` or the extended
-workspace/task/agent/session/turn/context/cache fields, and its `principal_id`
-and `run_id` must exactly match the dispatch request. A present null, undefined,
-empty, or unknown `schema` value is unsupported. Legacy compatibility does not
-bypass context-authority, policy-decision, or lineage validation and must not be
-used to reinterpret an incomplete v1 binding.
+Any missing, null, empty, unknown, or unsupported `schema` value, or any
+missing v1 field or mismatch, must fail closed before provider dispatch.
+Schema-less bindings are unsupported and must never fall back to a legacy
+interpretation.
 
 ## 3. Provider capability descriptor
 
@@ -440,6 +433,7 @@ Where execution-resource behavior conflicts with context authority, API-007 and 
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0+draft | 2026-08-03 | ATHER | Removed the schema-absent principal-only compatibility path under authorized WP-11; all execution bindings now require complete `govibe-execution-binding/v1` before adapter dispatch. API lifecycle remains draft. |
 | 0.2.1+draft | 2026-08-03 | ARCHON / ATHER | Made the v1 actor/principal and workspace/task/agent/run/session/turn/context/cache correlation tuple mandatory and fail closed; bounded legacy compatibility to an absent-schema principal-only runtime binding. |
 | 0.2.0+draft | 2026-08-03 | ARCHON / ATHER | Defined D-01 actor/principal correlation: binding-service output carries equal `actor_id` and `principal_id`; adapters fail closed on a supplied mismatch while retaining the bounded legacy single-principal compatibility path. |
 | 0.1.0+draft | 2026-08-02 | ARCHON / ATHER | Initial draft provider-entitlement, routing, usage, affinity, and failover contract. |
