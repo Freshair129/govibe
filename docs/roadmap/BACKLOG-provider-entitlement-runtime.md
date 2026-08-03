@@ -2,7 +2,7 @@
 title: "BACKLOG: Provider Entitlement Runtime"
 doc_id: "BACKLOG-PROVIDER-ENTITLEMENT-RUNTIME"
 status: "draft"
-version: "0.1.3+draft"
+version: "0.1.4+draft"
 updated: "2026-08-04"
 owner: "LYRA"
 auditor: "ATHER"
@@ -15,6 +15,7 @@ related_docs:
   - "docs/security/POLICY-Provider-Entitlement-Usage-Ledger-Redaction-and-Retention.md"
   - "docs/security/POLICY-Provider-Adapter-Enablement.md"
   - "docs/architecture/SDD-Execution-Routing-and-Failover.md"
+  - "docs/assurance/audit/EVIDENCE-Provider-Entitlement-Runtime-Conformance.md"
   - "docs/assurance/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md"
   - "docs/security/POLICY-Provider-Entitlement-Sharing-Compatibility.md"
   - "docs/change-control/TODO-Execution-Binding-Lifecycle.md"
@@ -52,7 +53,7 @@ implementation claims.
 | PHA-PER-01 | | Entitlement authority and credential/session security foundation | review | 60 |
 | PHA-PER-02 | | Governed planning, binding, and usage accounting | in-progress | 70 |
 | PHA-PER-03 | | Bounded adapters and quota-aware routing | in-progress | 70 |
-| PHA-PER-04 | | Runtime conformance verification | planned | 0 |
+| PHA-PER-04 | | Runtime conformance verification | review | 50 |
 
 ## Sprints
 
@@ -61,7 +62,7 @@ implementation claims.
 | SPR-PER-01 | PHA-PER-01 | Registry and credential/session foundation | 2 | Ownership, lifecycle, and credential-isolation rules are enforced with negative tests | in-progress | 55 |
 | SPR-PER-02 | PHA-PER-02 | Planning, binding, and usage ledger | 2 | Authorization-first planning and non-fabricated usage accounting | in-progress | 70 |
 | SPR-PER-03 | PHA-PER-03 | Adapters and governed routing | 2 | Bounded adapters and auditable failover behind explicit policy | in-progress | 70 |
-| SPR-PER-04 | PHA-PER-04 | Conformance gate | 1 | Reviewed conformance evidence for the stated provider scope | planned | 0 |
+| SPR-PER-04 | PHA-PER-04 | Conformance gate | 1 | Reviewed conformance evidence for the stated provider scope | review | 50 |
 
 ## Backlog Items
 
@@ -73,7 +74,7 @@ implementation claims.
 | TSK-PER-61 | SPR-PER-02 | task | Usage ledger with reported, estimated, and unknown separation | SYSTEM-09 | P1 | unassigned | Issue #61 | TSK-PER-58; TSK-PER-60 | Unit separation, null-on-unknown, no automatic GKS promotion, aggregation by entitlement and workspace | review | 70 |
 | TSK-PER-63 | SPR-PER-03 | task | Provider adapter interface and first bounded adapters | SYSTEM-06 | P1 | unassigned | Issue #63 | TSK-PER-59; TSK-PER-60; TSK-PER-61 | Normalized inspect, execute, cancel; candidate-only output; no direct GKS access | review | 70 |
 | TSK-PER-62 | SPR-PER-03 | task | Quota-aware sticky routing with governed failover and rebind | SYSTEM-06 | P1 | unassigned | Issue #62 | TSK-PER-61; TSK-PER-63 | Authorization-first scoring, new binding id on failover, unchanged MSP lineage | review | 70 |
-| TSK-PER-64 | SPR-PER-04 | task | Multi-provider entitlement runtime conformance gate | SYSTEM-09 | P0 | unassigned | Issue #64 | TSK-PER-58; TSK-PER-59; TSK-PER-60; TSK-PER-61; TSK-PER-62; TSK-PER-63 | Contract, security, end-to-end, negative, failover, and telemetry tests reviewed and passing | planned | 0 |
+| TSK-PER-64 | SPR-PER-04 | task | Multi-provider entitlement runtime conformance gate | SYSTEM-09 | P0 | unassigned | Issue #64 | TSK-PER-58; TSK-PER-59; TSK-PER-60; TSK-PER-61; TSK-PER-62; TSK-PER-63 | Contract, security, end-to-end, negative, failover, and telemetry tests reviewed and passing | review | 50 |
 
 ## Task definitions
 
@@ -214,7 +215,26 @@ implementation claims.
 - **Tests:** the full conformance suite above, executed in CI.
 - **Evidence:** CI run reference, audit record, and security/release review
   approval naming the provider scope covered.
-- **Observed on `main`:** none.
+- **Observed on this branch:**
+  `packages/govibe-core/src/entitlement-runtime-conformance.test.mjs` (22 tests)
+  wiring planner, router, binding service, executor registry, adapter host,
+  credential vault and usage ledger into one dispatch chain, and
+  `docs/assurance/audit/EVIDENCE-Provider-Entitlement-Runtime-Conformance.md`.
+  The suite passes and covers every issue #64 acceptance criterion for a
+  fixture-only provider scope.
+- **Gate state: NOT PASSED.** The evidence package carries
+  `review_state: pending` and `gate_state: not_passed`. A passing suite is a
+  prerequisite for the gate, not the gate. Closing it additionally requires a CI
+  run reference on `main` and security/release review approval naming the
+  provider scope, which no test can supply.
+- **Remaining before the gate can close:** no part of the runtime is reachable
+  from the MCP server, the sidecar, or `index.mjs`, so there is no evidence under
+  the real dispatch path; no real provider was contacted; the issue #59
+  negative-test matrix is incomplete; the ledger has no durable storage; there is
+  no concurrency or load evidence; and three recorded contract gaps need an owner
+  disposition. All are enumerated in sections 4 and 5 of the evidence package.
+- **Gate effect:** unchanged. Issues #58 to #63 stay open and no document may
+  describe the entitlement runtime as implemented.
 - **Gate effect:** until this item passes, issues #58–#63 stay open and no
   document may describe the entitlement runtime as implemented.
 
@@ -245,6 +265,7 @@ implementation claims.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.4+draft | 2026-08-04 | ATHER | Recorded the conformance suite and evidence package for TSK-PER-64 and moved it to review. The gate is NOT passed: review_state is pending and security/release approval is outstanding. No task was promoted to done and no implementation status was propagated. |
 | 0.1.3+draft | 2026-08-04 | LYRA | Recorded the observed routing and failover module, tests, and design document for TSK-PER-62 and moved it to review; the router is not wired into dispatch, the decision-record schema is not in API-008, and the #64 gate is unchanged. |
 | 0.1.2+draft | 2026-08-04 | LYRA | Recorded the observed provider-adapter modules, tests, and enablement policy for TSK-PER-63, moved it to review, and corrected its dependency list to include TSK-PER-61 per issue #63; every provider record stays pending and the #64 gate is unchanged. |
 | 0.1.1+draft | 2026-08-04 | LYRA | Recorded the observed usage-ledger module, tests, and redaction/retention policy for TSK-PER-61 and moved it to review; process-memory storage and dispatch wiring remain unevidenced and the #64 gate is unchanged. |
