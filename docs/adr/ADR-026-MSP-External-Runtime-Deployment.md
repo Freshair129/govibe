@@ -1,6 +1,6 @@
 ---
-doc_id: "ADR-025-MSP-EXTERNAL-RUNTIME-DEPLOYMENT"
-title: "ADR-025: MSP external runtime deployment boundary"
+doc_id: "ADR-026-MSP-EXTERNAL-RUNTIME-DEPLOYMENT"
+title: "ADR-026: MSP external runtime deployment boundary"
 status: "proposed"
 version: "0.1.0+draft"
 updated: "2026-08-03"
@@ -10,7 +10,7 @@ related_issue: 75
 related_adrs: ["ADR-023"]
 ---
 
-# ADR-025: MSP external runtime deployment boundary
+# ADR-026: MSP external runtime deployment boundary
 
 **Status:** Proposed  
 **Date:** 2026-08-03  
