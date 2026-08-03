@@ -2,7 +2,7 @@
 title: "GoVibe Documentation Navigation Hub"
 doc_id: "DOCS-NAVIGATION-HUB"
 status: "draft"
-version: "0.2.3+draft"
+version: "0.2.4+draft"
 updated: "2026-08-03"
 owner: "THESEUS / ATHER"
 source_of_truth: true
@@ -76,10 +76,22 @@ and Vercel success. API-008 remains draft; the schema-less principal-only
 legacy binding is a governed compatibility residual, not a promotion or a
 defect-closure shortcut.
 
+## Proposed Execution-Binding v1 Lifecycle Decision
+
+- `docs/change-requests/CR-2026-08-03-Execution-Binding-v1-Lifecycle-and-Legacy-Sunset-Decision.md`
+- `docs/change-control/change-requests/work-packets/WP-10-Execution-Binding-v1-Fixture-Migration-and-Consumer-Discovery.md`
+- `docs/change-control/change-requests/work-packets/WP-11-Execution-Binding-Schemaless-Legacy-Removal.md`
+
+This draft owner-decision packet retains the parent multi-provider CR,
+API-007, and API-008 as drafts, proposes fixture-only v1 migration and
+consumer discovery before any legacy removal, and does not authorize execution,
+promotion, or runtime-conformance claims.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.4+draft | 2026-08-03 | ATHER | Added navigation for the owner-gated execution-binding v1 lifecycle and schema-less sunset decision; no execution or promotion is authorized. |
 | 0.2.3+draft | 2026-08-03 | ATHER | Recorded merged WP-06 closure evidence while retaining API-008 draft status and the governed legacy compatibility residual. |
 | 0.2.2+draft | 2026-08-03 | Boss / THESEUS | Recorded owner authorization for the bounded runtime-repair packet while preserving API-008 draft status pending validation. |
 | 0.2.1+draft | 2026-08-03 | THESEUS / ATHER | Added navigation for the owner-gated context-authority runtime repair packet without authorizing runtime mutation. |
