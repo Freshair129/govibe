@@ -1,4 +1,4 @@
-﻿---
+---
 title: "BACKLOG: Provider Entitlement Runtime"
 doc_id: "BACKLOG-PROVIDER-ENTITLEMENT-RUNTIME"
 status: "draft"
@@ -34,7 +34,7 @@ related_docs:
 ## Purpose and non-claims
 
 This backlog records the Definition of Done, tests, and evidence required for
-issues #58â€“#64. Recording a DoD is not evidence that it is met. Every
+issues #58–#64. Recording a DoD is not evidence that it is met. Every
 implementation status here reflects merged repository artifacts only; runtime
 conformance is claimable solely through issue #64.
 
@@ -171,10 +171,10 @@ implementation claims.
   (`second`) and subscription CLI (`request`); neither derives token counts.
 - **Remaining:** every provider record in the enablement policy is `pending`, so
   no adapter is approved for live dispatch. The issue #59 and #64 items from
-  sharing-policy section 14 â€” expired compatibility records, product/plan/surface
-  mismatch, owner-only cross-user authorization, workspace crossing, revocation
-  before invocation â€” are not covered here. The #64 gate still blocks any
-  implemented-capability claim.
+  sharing-policy section 14, namely expired compatibility records,
+  product/plan/surface mismatch, owner-only cross-user authorization, workspace
+  crossing, and revocation before invocation, are not covered here. The #64 gate
+  still blocks any implemented-capability claim.
 
 ### TSK-PER-62: Routing and failover (issue #62)
 
@@ -201,7 +201,7 @@ implementation claims.
 - **Evidence:** CI run reference, audit record, and security/release review
   approval naming the provider scope covered.
 - **Observed on `main`:** none.
-- **Gate effect:** until this item passes, issues #58â€“#63 stay open and no
+- **Gate effect:** until this item passes, issues #58–#63 stay open and no
   document may describe the entitlement runtime as implemented.
 
 ## Acceptance Criteria

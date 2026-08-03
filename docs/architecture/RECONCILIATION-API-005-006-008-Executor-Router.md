@@ -1,4 +1,4 @@
-﻿---
+---
 title: "Reconciliation: API-005, API-006, API-008 and Executor Router"
 doc_id: "RECONCILIATION-API-005-006-008-EXECUTOR-ROUTER"
 status: "draft"
@@ -49,7 +49,7 @@ The executor router must not call a provider adapter before a valid API-008 bind
 
 ## 3. Identity and lineage ownership
 
-### 3.1 Context lineage â€” API-006
+### 3.1 Context lineage — API-006
 
 The following fields remain owned by MSP/context contracts:
 
@@ -64,7 +64,7 @@ The following fields remain owned by MSP/context contracts:
 
 These values describe what context was assembled, persisted and injected. The entitlement runtime may validate and reference them but may not issue, rewrite or substitute them.
 
-### 3.2 Execution lineage â€” API-008
+### 3.2 Execution lineage — API-008
 
 The following fields are separate execution-resource lineage:
 
@@ -135,12 +135,12 @@ Measured against the section 7 target contract:
 | verify binding schema/version | present | #60 |
 | verify binding run/session/turn identity | present | #60 |
 | verify API-006 context IDs and hashes | present | #60 |
-| recheck entitlement lifecycle and compatibility policy | **absent at dispatch** â€” eligibility is evaluated during planning, not rechecked before invocation | #59, #64 |
+| recheck entitlement lifecycle and compatibility policy | **absent at dispatch**: eligibility is evaluated during planning, not rechecked before invocation | #59, #64 |
 | acquire run-scoped credential grant | present | #59 |
-| invoke adapter selected by `binding.adapter_id` | **partial** â€” dispatch selects by `provider_id`; `adapter_id` is carried on the enablement record, not used for selection | #63, #62 |
+| invoke adapter selected by `binding.adapter_id` | **partial**: dispatch selects by `provider_id`; `adapter_id` is carried on the enablement record, not used for selection | #63, #62 |
 | normalize provider result | present | #63 |
 | revoke/expire grant | present | #59 |
-| emit usage event | **not wired** â€” the ledger exists but no dispatch path writes to it | #61, #64 |
+| emit usage event | **not wired**: the ledger exists but no dispatch path writes to it | #61, #64 |
 
 The remaining path is still a compatibility seam, not the target architecture, and
 no row above is a runtime conformance claim before issue #64.
@@ -166,7 +166,7 @@ The adapter must not select another entitlement, model or context. It may reject
 
 ## 8. Compatibility migration
 
-### Phase A â€” additive binding gate
+### Phase A — additive binding gate
 
 Add `createBoundExecutorRegistry` or equivalent internal service while retaining the existing public registry facade.
 
@@ -183,7 +183,7 @@ must become a compatibility wrapper that either:
 
 It must not synthesize an entitlement from the provider string.
 
-### Phase B â€” caller migration
+### Phase B — caller migration
 
 Migrate every caller to:
 
@@ -191,7 +191,7 @@ Migrate every caller to:
 2. request an API-008 binding;
 3. dispatch using the binding.
 
-### Phase C â€” remove provider-string authorization
+### Phase C — remove provider-string authorization
 
 After all callers migrate, provider string lookup remains only inside the adapter registry using `binding.adapter_id`. Direct provider-selected dispatch is deprecated and removed.
 
@@ -240,7 +240,7 @@ The following behavior is deprecated immediately:
 | #61 | Usage events and quota snapshots |
 | #63 | Binding-only adapter dispatch and normalized results |
 | #62 | Rebind/failover after authorization-first filtering |
-| #64 | End-to-end proof across API-005 â†’ API-006 â†’ API-008 â†’ adapter |
+| #64 | End-to-end proof across API-005 → API-006 → API-008 → adapter |
 
 ## 13. Acceptance verification
 
