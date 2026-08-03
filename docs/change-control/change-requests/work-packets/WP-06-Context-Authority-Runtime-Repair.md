@@ -1,11 +1,13 @@
 ---
 title: "WP-06: Context Authority Runtime Repair"
 doc_id: "WP-06-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
-status: "draft"
-version: "0.1.1+draft"
+status: "approved"
+version: "0.2.0"
 updated: "2026-08-03"
-owner: "Boss (Product Authority)"
-execution_authorized: false
+owner: "Boss"
+approval_owner: "Boss"
+approval_recorded_at: "2026-08-03"
+execution_authorized: true
 complexity: "C-3"
 access_scope: "H3"
 risk: "HIGH"
@@ -17,14 +19,24 @@ parent_change_request: "FUTURE-CR-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
 
 ## Objective
 
-After explicit owner approval, repair the audited 11-test matrix without
+Under Boss approval recorded on 2026-08-03, repair the audited 11-test matrix without
 synthesizing authority, weakening fail-closed controls, or widening MSP/GKS
-access. This draft work packet grants no implementation authority.
+access. This approved work packet authorizes only its bounded scope.
+
+## Approval record
+
+- D-01: Boss selected Option A: perform the smallest API-008-governed
+  `actor_id` / `principal_id` contract-alignment slice with tests. API-008
+  remains draft until implementation alignment passes the exit gate.
+- D-02: Boss selected caller-supplied valid authority propagation for legacy
+  `resolveContext`; missing or invalid authority fails closed and is never
+  synthesized.
+- D-03: Boss authorized bounded WP-06 execution under the listed scope and
+  gates. `execution_complete` is not implied by this authorization.
 
 ## Preconditions
 
-- Owner approves the parent CR and selects API-008 binding identity and legacy
-  `resolveContext` dispositions.
+- Boss approval of the parent CR and all three decisions is recorded above.
 - Implementer reproduces 180 pass / 11 fail / 1 skip before mutation.
 - ADR-023/API-007 remain governing; ADR-024/API-008 change only under approved
   contract alignment.
@@ -60,5 +72,6 @@ order, rerun the baseline matrix, and never restore an authority bypass.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-08-03 | Boss | Recorded approval of the bounded WP-06 execution and explicit D-01/D-02 selections; API-008 remains draft pending validated alignment. |
 | 0.1.1+draft | 2026-08-03 | THESEUS / ATHER | Corrected capability-runtime and MSP-live test mapping; added direct `git diff --check` to the exit gate. |
 | 0.1.0+draft | 2026-08-03 | THESEUS / ATHER | Opened owner-gated proposal WP-06; implementation remains unauthorized. |

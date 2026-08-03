@@ -1,12 +1,14 @@
 ---
 title: "CR: Context Authority Runtime Repair and Execution-Binding Contract Gate"
 doc_id: "FUTURE-CR-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
-status: "draft"
-version: "0.1.1+draft"
+status: "approved"
+version: "0.2.0"
 updated: "2026-08-03"
-owner: "Boss (Product Authority)"
-decision_owner: "Boss (Product Authority)"
-execution_authorized: false
+owner: "Boss"
+decision_owner: "Boss"
+approval_owner: "Boss"
+approval_recorded_at: "2026-08-03"
+execution_authorized: true
 execution_complete: false
 complexity: "C-3"
 access_scope: "H3"
@@ -27,11 +29,11 @@ related_documents:
 
 ## 1. Decision boundary
 
-This is an owner-gated proposal only. It records an audited baseline of 11
-failing Vitest cases and the smallest bounded repair; it does **not** authorize
-runtime, test, API, ADR, schema, or security-control mutation.
-`execution_authorized: false` remains controlling until the Product Authority
-approves this CR, the work packet, and both decisions in Section 7.
+Boss approved this bounded repair on 2026-08-03. It records an audited baseline
+of 11 failing Vitest cases and the smallest authorized repair. Execution is now
+permitted only within Sections 4, 5, 6, and the explicit D-01/D-02 selections
+in Section 7; `execution_complete: false` remains controlling until the exit
+gates and independent QA evidence are satisfied.
 
 The higher of the two audit classifications governs: `C-3` / `H3` / `HIGH`, not
 the prior `C-2` / `MEDIUM` conclusion. The repair crosses public authority
@@ -132,15 +134,29 @@ service/adapter contract mismatch, not fixture-only work.
 Recommended posture: **A**, narrowly approved; otherwise a truthful
 runtime-completion claim is blocked.
 
+**Approved selection (Boss, 2026-08-03): Option A.** The bounded
+contract-alignment slice may define and implement the smallest compatible
+`actor_id` / `principal_id` identity-correlation rule with focused tests.
+API-008 remains `draft` until that implementation alignment is validated by the
+approved exit gate; this authorization does not promote API-008.
+
 ### D-02: Legacy `resolveContext` disposition (blocking)
 
 Approve valid authority propagation, authority-less governed-request rejection,
 or formal deprecation/removal. No implicit authority or silent downgrade.
 
+**Approved selection (Boss, 2026-08-03):** propagate only caller-supplied valid
+authority through the legacy `resolveContext` surface. Missing or invalid
+authority must fail closed; no synthetic authority is permitted.
+
 ### D-03: Repair authorization
 
 Approve exact files, owner, test scope, and QA gate in WP-06; state the D-01
 and D-02 selections explicitly.
+
+**Approved selection (Boss, 2026-08-03):** execute the bounded WP-06 scope,
+subject to every acceptance, security, validation, impact, rollback, and
+independent-QA gate in this CR and WP-06.
 
 ## 8. Acceptance criteria
 
@@ -209,5 +225,6 @@ or test mutation was made while applying this documentation correction.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-08-03 | Boss | Approved D-01 Option A, D-02 caller-supplied valid authority propagation, and D-03 bounded WP-06 execution; API-008 remains draft pending validated implementation alignment. |
 | 0.1.1+draft | 2026-08-03 | THESEUS / ATHER | Corrected capability-runtime versus MSP-live failure attribution and recorded the review-gate disposition. |
 | 0.1.0+draft | 2026-08-03 | THESEUS / ATHER | Created proposal-only C-3/H3/HIGH repair boundary for the audited 11 Vitest failures, including authority, legacy-surface, and binding-contract owner decisions. |
