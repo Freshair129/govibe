@@ -2,7 +2,7 @@
 title: "BACKLOG: Provider Entitlement Runtime"
 doc_id: "BACKLOG-PROVIDER-ENTITLEMENT-RUNTIME"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-08-04"
 owner: "LYRA"
 auditor: "ATHER"
@@ -12,6 +12,7 @@ related_docs:
   - "docs/roadmap/ROADMAP-provider-entitlement-runtime.md"
   - "docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md"
   - "docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md"
+  - "docs/security/POLICY-Provider-Entitlement-Usage-Ledger-Redaction-and-Retention.md"
   - "docs/assurance/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md"
   - "docs/security/POLICY-Provider-Entitlement-Sharing-Compatibility.md"
   - "docs/change-control/TODO-Execution-Binding-Lifecycle.md"
@@ -67,7 +68,7 @@ implementation claims.
 | TSK-PER-58 | SPR-PER-01 | task | Registry foundation for capability descriptors and entitlements | SYSTEM-06 | P0 | unassigned | Issue #58 | ADR-024; API-008 sections 3-4 | Schema conformance, ownerless rejection, lifecycle enforcement, inspection API | review | 70 |
 | TSK-PER-59 | SPR-PER-01 | task | Credential vault, revocation checks, and provider session isolation | SYSTEM-10 | P0 | unassigned | Issue #59 | TSK-PER-58 | No credential material outside the vault boundary; revoked or expired credentials block dispatch | in-progress | 50 |
 | TSK-PER-60 | SPR-PER-02 | task | Two-phase capability planning and immutable-context execution binding | SYSTEM-06 | P0 | unassigned | Issue #60 | TSK-PER-58; TSK-PER-59 | Typed rejection codes, persisted-context binding, protected credential channel | review | 70 |
-| TSK-PER-61 | SPR-PER-02 | task | Usage ledger with reported, estimated, and unknown separation | SYSTEM-09 | P1 | unassigned | Issue #61 | TSK-PER-58; TSK-PER-60 | Unit separation, null-on-unknown, no automatic GKS promotion, aggregation by entitlement and workspace | planned | 0 |
+| TSK-PER-61 | SPR-PER-02 | task | Usage ledger with reported, estimated, and unknown separation | SYSTEM-09 | P1 | unassigned | Issue #61 | TSK-PER-58; TSK-PER-60 | Unit separation, null-on-unknown, no automatic GKS promotion, aggregation by entitlement and workspace | review | 70 |
 | TSK-PER-63 | SPR-PER-03 | task | Provider adapter interface and first bounded adapters | SYSTEM-06 | P1 | unassigned | Issue #63 | TSK-PER-59; TSK-PER-60 | Normalized inspect, execute, cancel; candidate-only output; no direct GKS access | planned | 0 |
 | TSK-PER-62 | SPR-PER-03 | task | Quota-aware sticky routing with governed failover and rebind | SYSTEM-06 | P1 | unassigned | Issue #62 | TSK-PER-61; TSK-PER-63 | Authorization-first scoring, new binding id on failover, unchanged MSP lineage | planned | 0 |
 | TSK-PER-64 | SPR-PER-04 | task | Multi-provider entitlement runtime conformance gate | SYSTEM-09 | P0 | unassigned | Issue #64 | TSK-PER-58; TSK-PER-59; TSK-PER-60; TSK-PER-61; TSK-PER-62; TSK-PER-63 | Contract, security, end-to-end, negative, failover, and telemetry tests reviewed and passing | planned | 0 |
@@ -133,7 +134,20 @@ implementation claims.
 - **Tests:** partial-telemetry and rate-limit-only provider cases; estimation
   metadata retention; aggregation correctness.
 - **Evidence:** merged ledger module, tests, and a redaction/retention note.
-- **Observed on `main`:** none.
+- **Observed on this branch:** `packages/govibe-core/src/entitlement-usage-ledger.mjs`
+  with `entitlement-usage-ledger.test.mjs` (22 tests) and
+  `docs/security/POLICY-Provider-Entitlement-Usage-Ledger-Redaction-and-Retention.md`.
+  A provider capability descriptor is the only authority for accepting a reported
+  value, so a provider with no descriptor yields unknown telemetry rather than
+  zero. Aggregation keeps reported and estimated totals in separate buckets with
+  per-field coverage counts.
+- **Remaining:** the ledger holds records in process memory and is not wired into
+  dispatch or the sidecar; durable storage, operator retention configuration, and
+  accounting fidelity against a real provider are unevidenced. The `v1` usage-event
+  schema also has no `not_applicable` telemetry classification, so the sharing
+  policy's four-way classification is only three-way in practice; closing that
+  requires an API-008 change. The #64 gate still blocks any implemented-capability
+  claim.
 
 ### TSK-PER-63: Provider adapters (issue #63)
 
@@ -204,4 +218,5 @@ implementation claims.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-04 | LYRA | Recorded the observed usage-ledger module, tests, and redaction/retention policy for TSK-PER-61 and moved it to review; process-memory storage and dispatch wiring remain unevidenced and the #64 gate is unchanged. |
 | 0.1.0+draft | 2026-08-04 | LYRA | Initial governed backlog for issues #58-#64 with per-task Definition of Done, tests, evidence, observed repository state, and the #64 conformance gate. |
