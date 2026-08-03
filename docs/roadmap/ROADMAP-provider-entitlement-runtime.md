@@ -2,7 +2,7 @@
 title: "ROADMAP: Provider Entitlement Runtime"
 doc_id: "ROADMAP-PROVIDER-ENTITLEMENT-RUNTIME"
 id: RM-provider-entitlement-runtime
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-08-04"
 status: draft
 owner: "LYRA"
@@ -27,6 +27,7 @@ related_docs:
 **Auditor:** ATHER
 **Roadmap Source Path:** docs/roadmap/ROADMAP-provider-entitlement-runtime.md
 **Tracking Issues:** #55 (parent), #58, #59, #60, #61, #62, #63, #64, #65, #68
+**Closed prerequisites:** #66 (registry vertical slice), #67 (credential/session threat model)
 
 ## Purpose and non-claims
 
@@ -84,7 +85,8 @@ with auditable failover — proven by an independent conformance gate.
 | TASK-PER-63 | SPRINT-PER-05 | task | Provider adapter contract and first bounded adapters (issue #63) | SYSTEM-06 | P1 | unassigned | Issue #63 | TASK-PER-59; TASK-PER-60 | Adapters reach no GKS or GenesisBlockDB path, results conform to `govibe-provider-run-result/v1`, output stays `govibe-provider-candidate/v1`, unsupported fields stay unknown | planned | 0 |
 | TASK-PER-62 | SPRINT-PER-06 | task | Quota-aware sticky routing and governed failover (issue #62) | SYSTEM-06 | P1 | unassigned | Issue #62 | TASK-PER-61; TASK-PER-63 | Routing cannot bypass authorization, affinity is never a memory-validity signal, failover creates a new binding id and re-evaluates entitlement policy | planned | 0 |
 | TASK-PER-64 | SPRINT-PER-07 | task | Multi-provider entitlement runtime conformance gate (issue #64) | SYSTEM-09 | P0 | unassigned | Issue #64 | TASK-PER-58; TASK-PER-59; TASK-PER-60; TASK-PER-61; TASK-PER-62; TASK-PER-63 | Contract, security, end-to-end, negative, failover and partial-telemetry tests pass and are reviewed; implementation status is propagated only after this gate | planned | 0 |
-| TASK-PER-65 | SPRINT-PER-01 | task | Governed roadmap and backlog for the provider entitlement runtime (issue #65) | SYSTEM-02 | P0 | unassigned | Issue #65 | ADR-024; API-008 | This roadmap and its backlog are registered in the document registry and merged to main with one task per GitHub issue | in-progress | 80 |
+| TASK-PER-65 | SPRINT-PER-01 | task | Governed roadmap and backlog for the provider entitlement runtime (issue #65) | SYSTEM-02 | P0 | unassigned | Issue #65 | ADR-024; API-008 | This roadmap and its backlog are registered in the document registry and merged to main with one task per GitHub issue | done | 100 |
+| TASK-PER-68 | SPRINT-PER-01 | task | Record the implementation sequence packet and its prerequisite closures (issue #68) | SYSTEM-02 | P0 | unassigned | Issue #68 | TASK-PER-65 | The #58-#64 order, the closed #66 and #67 prerequisites, and the #64 gate are recorded in this roadmap | done | 100 |
 
 ## Dependency and release-gate mapping
 
@@ -98,6 +100,29 @@ with auditable failover — proven by an independent conformance gate.
 Ordering rule from issue #68, retained here: **#58 → #59 → #60 → #61 → #63 → #62 → #64**.
 Security and authority work (#58, #59) precedes routing and adapters (#62, #63);
 no gate may be skipped by scheduling convenience.
+
+## Implementation sequence packet (issue #68)
+
+Issue #68 recorded the implementation order for this runtime, including two
+prerequisite sub-issues that closed before this roadmap existed. They are
+recorded here so the sequence stays traceable after #68 is closed.
+
+| Step | Issue | Role in the sequence | Roadmap task | Issue state | Observed artifact |
+|---|---|---|---|---|---|
+| 1a | #66 | First executable registry vertical slice under #58 | TASK-PER-58 | closed 2026-08-02 | `packages/govibe-core/src/provider-entitlement-registry.mjs` and its test (PR #72) |
+| 1b | #58 | Registry foundation and eligibility filtering | TASK-PER-58 | open, gated by #64 | same as above |
+| 2a | #67 | Threat model required before credential-vault implementation | TASK-PER-59 | closed 2026-08-02 | `docs/assurance/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md` (PR #73) |
+| 2b | #59 | Credential vault, revocation checks, session isolation | TASK-PER-59 | open, gated by #64 | `credential-vault.mjs`, `provider-session-registry.mjs` and their tests |
+| 3 | #60 | Governed capability planning and execution binding | TASK-PER-60 | open, gated by #64 | `execution-capability-planner.mjs`, `execution-binding-service.mjs` and their tests (PR #88) |
+| 4 | #61 | Entitlement usage ledger and quota visibility | TASK-PER-61 | open | none |
+| 5 | #63 | Provider adapter contract and first bounded adapters | TASK-PER-63 | open | `executor-adapter.mjs` scaffold only |
+| 6 | #62 | Quota-aware sticky routing and governed failover | TASK-PER-62 | open | none |
+| 7 | #64 | Runtime conformance gate | TASK-PER-64 | open | none |
+
+Closing #66 and #67 satisfied their own deliverable scope only. Neither closure
+advances the #64 gate, and the #67 exit criterion — every P0 threat mapped to an
+implementation control and test — is verified under #59 and #64, not by the
+existence of the threat-model document.
 
 ## Observed repository state (evidence, 2026-08-04)
 
@@ -142,4 +167,5 @@ no gate may be skipped by scheduling convenience.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-04 | LYRA | Recorded the issue #68 implementation sequence packet, including the closed #66 and #67 prerequisites and their observed artifacts; marked the #65 planning task and the #68 sequence task done without advancing the #64 gate. |
 | 0.1.0+draft | 2026-08-04 | LYRA | Initial governed roadmap for issues #58-#64 with dependency and release-gate mapping, observed-state evidence, and the #64 conformance gate retained as a non-claim boundary. |
