@@ -135,7 +135,8 @@ Measured against the section 7 target contract:
 | verify binding schema/version | present | #60 |
 | verify binding run/session/turn identity | present | #60 |
 | verify API-006 context IDs and hashes | present | #60 |
-| recheck entitlement lifecycle and compatibility policy | **absent at dispatch**: eligibility is evaluated during planning, not rechecked before invocation | #59, #64 |
+| recheck binding lifecycle (authenticity, expiry, revocation) | present: dispatch verifies the binding against its issuing service, fail-closed | #59 |
+| recheck entitlement lifecycle and compatibility policy | **absent at dispatch**: eligibility is evaluated during planning; an entitlement revoked after its binding was issued is not caught while the binding remains live | #59, #64 |
 | acquire run-scoped credential grant | present | #59 |
 | invoke adapter selected by `binding.adapter_id` | **partial**: dispatch selects by `provider_id`; `adapter_id` is carried on the enablement record, not used for selection | #63, #62 |
 | normalize provider result | present | #63 |

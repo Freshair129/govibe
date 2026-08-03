@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { createExecutionBindingService } from './execution-binding-service.mjs';
 import { createExecutorRegistry } from './executor-adapter.mjs';
 import {
   createProviderAdapterHost,
@@ -28,6 +29,49 @@ function contextAuthority() {
   };
 }
 
+// Dispatch now verifies the binding against its issuing service, so the fixtures
+// use bindings the service actually issued. host() refreshes this per harness.
+let ISSUED = {};
+
+function issueBindings(bindingService, providerIds) {
+  const issued = {};
+  for (const providerId of providerIds) {
+    issued[providerId] = bindingService.createBinding({
+      binding_request_id: `br-${providerId}`,
+      actor_id: 'user-1',
+      organization_id: 'org-1',
+      workspace_id: 'ws-1',
+      task_id: 'task-1',
+      agent_id: 'agent-1',
+      run_id: 'run-1',
+      session_id: 'session-1',
+      turn_id: 'turn-1',
+      context: {
+        context_id: 'context-1',
+        cache_id: 'cache-1',
+        context_hash: 'hash-1',
+        source_manifest_hash: 'manifest-1',
+        context_profile: 'T-ctx',
+        tool_contract_hash: 'tools-1',
+        persisted: true,
+      },
+      eligible_target: {
+        authorized: true,
+        actor_id: 'user-1',
+        workspace_id: 'ws-1',
+        provider_id: providerId,
+        entitlement_id: 'ent-1',
+        executor_class: 'api-llm',
+        model_id: 'model-1',
+        state: 'active',
+      },
+      policy_decision_refs: ['policy:entitlement:1'],
+      ttl_ms: 3_600_000,
+    }).binding_id;
+  }
+  return issued;
+}
+
 function governedRequest(providerId, overrides = {}) {
   return {
     actor_id: 'user-1',
@@ -37,7 +81,7 @@ function governedRequest(providerId, overrides = {}) {
     contextLineage: { runId: 'run-1', sessionId: 'session-1', turnId: 'turn-1' },
     executionBinding: {
       schema: 'govibe-execution-binding/v1',
-      binding_id: 'binding-1',
+      binding_id: ISSUED[providerId] ?? 'binding-unissued',
       actor_id: 'user-1',
       principal_id: 'user-1',
       workspace_id: 'ws-1',
@@ -92,8 +136,15 @@ function policy(overrides = {}) {
 }
 
 function host({ adapters, policies = [policy(), policy({ provider_id: 'codex', adapter_id: 'adapter-codex', entitlement_types: ['personal_subscription'], allowed_executor_classes: ['external-agent'], policy_ref: 'docs/security/POLICY-Provider-Adapter-Enablement.md#codex' })], capabilities } = {}) {
+  let bindingCounter = 0;
+  const bindingService = createExecutionBindingService({
+    clock: () => new Date('2026-08-04T00:00:00.000Z'),
+    idFactory: () => { bindingCounter += 1; return String(bindingCounter); },
+  });
+  ISSUED = issueBindings(bindingService, ['local', 'codex', 'crewai']);
+
   return createProviderAdapterHost({
-    executorRegistry: createExecutorRegistry(adapters ?? {}),
+    executorRegistry: createExecutorRegistry(adapters ?? {}, { bindingService }),
     capabilityRegistry: createProviderCapabilityRegistry(capabilities ?? [
       descriptor(),
       descriptor({ provider_id: 'codex', adapter_id: 'adapter-codex', executor_classes: ['external-agent'], entitlement_types: ['personal_subscription'], usage_visibility: 'rate-limit-only', rate_limit_detectable: true }),
@@ -157,7 +208,7 @@ describe('run result normalization', () => {
 
     expect(result.schema).toBe('govibe-provider-run-result/v1');
     expect(result.status).toBe('completed');
-    expect(result.binding_id).toBe('binding-1');
+    expect(result.binding_id).toBe(ISSUED.local);
     expect(result.normalized_errors).toEqual([]);
     expect(result.retryable).toBe(false);
     expect(result.candidate.schema).toBe('govibe-provider-candidate/v1');

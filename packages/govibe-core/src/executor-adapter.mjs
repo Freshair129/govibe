@@ -115,7 +115,43 @@ function safeRequest(request) {
   }) });
 }
 
-export function createExecutorRegistry(adapters = {}, { credentialVault = null, sessionRegistry = null } = {}) {
+// API-008 section 13 names BINDING_EXPIRED as a normalized failure code. The
+// binding service reports the more specific EXECUTION_BINDING_EXPIRED, so the
+// dispatch boundary emits the contract code and keeps the specific one in details.
+function assertBindingIssued(bindingService, binding, request) {
+  if (!bindingService || typeof bindingService.assertUsable !== "function") {
+    fail("EXECUTION_BINDING_SERVICE_REQUIRED", "a binding service is required to verify binding authenticity");
+  }
+
+  try {
+    return bindingService.assertUsable(binding.binding_id, {
+      actor_id: binding.actor_id,
+      principal_id: binding.principal_id,
+      workspace_id: binding.workspace_id,
+      task_id: binding.task_id,
+      agent_id: binding.agent_id,
+      run_id: request.run_id,
+      session_id: binding.session_id,
+      turn_id: binding.turn_id,
+      context_id: binding.context_id,
+      cache_id: binding.cache_id,
+      provider_id: binding.provider_id,
+      entitlement_id: binding.entitlement_id,
+    });
+  } catch (error) {
+    if (error?.code === "EXECUTION_BINDING_EXPIRED") {
+      fail("BINDING_EXPIRED", "execution binding expired", { binding_id: binding.binding_id, source_code: error.code });
+    }
+    if (error?.code === "EXECUTION_BINDING_NOT_FOUND") {
+      fail("EXECUTION_BINDING_NOT_ISSUED", "execution binding was not issued by the binding service", {
+        binding_id: binding.binding_id,
+      });
+    }
+    throw error;
+  }
+}
+
+export function createExecutorRegistry(adapters = {}, { credentialVault = null, sessionRegistry = null, bindingService = null } = {}) {
   return {
     inspect() {
       return PROVIDERS.map((id) => ({
@@ -129,6 +165,10 @@ export function createExecutorRegistry(adapters = {}, { credentialVault = null, 
       if (typeof adapter?.execute !== "function") throw new ProviderUnavailableError(provider);
       assertExecutorDispatchAllowed(request);
       const binding = validateBinding(provider, request);
+      // Structural validation proves the binding is self-consistent. It does not
+      // prove the binding service ever issued it, nor that it is still live, so
+      // authenticity, expiry and revocation are checked against the issuer.
+      assertBindingIssued(bindingService, binding, request);
 
       let providerSession = null;
       if (binding.provider_session_id) {
