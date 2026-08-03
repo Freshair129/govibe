@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { RuntimeAuthorityError, buildBoundedGraphQuery } from "../../packages/govibe-core/src/authority-enforcement.mjs";
+import { createExecutionBindingService } from "../../packages/govibe-core/src/execution-binding-service.mjs";
 import { createExecutorRegistry } from "../../packages/govibe-core/src/executor-adapter.mjs";
 import { MspClient } from "../../packages/govibe-core/src/msp-client.mjs";
 
@@ -27,6 +28,48 @@ function authority(overrides = {}) {
   };
 }
 
+// Dispatch verifies a binding against its issuing service, so the fixture uses a
+// binding the service actually issued rather than a hand-written literal.
+const BINDING_SERVICE = createExecutionBindingService({
+  clock: () => new Date("2026-08-03T00:00:00.000Z"),
+  idFactory: () => "local-2",
+  defaultTtlMs: 60_000,
+});
+
+const ISSUED_BINDING = BINDING_SERVICE.createBinding({
+  binding_request_id: "br-local-2",
+  actor_id: "local-agent-2",
+  organization_id: "org-local",
+  workspace_id: "govibe",
+  project_id: "project-local",
+  task_id: "TASK-54",
+  agent_id: "ATHER",
+  run_id: "run-2",
+  session_id: "session-2",
+  turn_id: "turn-2",
+  context: {
+    context_id: "ctx-2",
+    cache_id: "cache-2",
+    context_hash: "hash-local-2",
+    source_manifest_hash: "manifest-local-2",
+    context_profile: "W-ctx",
+    tool_contract_hash: "tools-local-2",
+    persisted: true,
+  },
+  eligible_target: {
+    authorized: true,
+    actor_id: "local-agent-2",
+    workspace_id: "govibe",
+    project_id: "project-local",
+    provider_id: "local",
+    entitlement_id: "entitlement-local-2",
+    executor_class: "local-agent",
+    model_id: "model-local-2",
+    state: "active",
+  },
+  policy_decision_refs: ["policy:local:2"],
+});
+
 function dispatchRequest(overrides = {}) {
   return {
     task: "Implement bounded graph dispatch",
@@ -37,7 +80,7 @@ function dispatchRequest(overrides = {}) {
     policyDecision: "allow",
     executionBinding: {
       schema: "govibe-execution-binding/v1",
-      binding_id: "binding-local-2",
+      binding_id: ISSUED_BINDING.binding_id,
       binding_request_id: "br-local-2",
       actor_id: "local-agent-2",
       principal_id: "local-agent-2",
@@ -148,11 +191,11 @@ test("blocks executor dispatch on lineage mismatch", async () => {
 
 test("dispatches only after bounded authority, allow policy, and lineage validation", async () => {
   const calls = [];
-  const registry = createExecutorRegistry({ local: { execute: async (request) => { calls.push(request); return { ok: true }; } } });
+  const registry = createExecutorRegistry({ local: { execute: async (request) => { calls.push(request); return { ok: true }; } } }, { bindingService: BINDING_SERVICE });
   const request = dispatchRequest();
   assert.deepEqual(request.executionBinding, {
     schema: "govibe-execution-binding/v1",
-    binding_id: "binding-local-2",
+    binding_id: ISSUED_BINDING.binding_id,
     binding_request_id: "br-local-2",
     actor_id: "local-agent-2",
     principal_id: "local-agent-2",

@@ -43,7 +43,7 @@ function governedRequest(overrides = {}) {
     contextLineage: { runId: "run-1", sessionId: "session-1", turnId: "turn-1" },
     executionBinding: {
       schema: "govibe-execution-binding/v1",
-      binding_id: "binding-1",
+      binding_id: ISSUED_BINDING.binding_id,
       binding_request_id: "br-1",
       actor_id: "user-1",
       principal_id: "user-1",
@@ -121,8 +121,13 @@ function bindingRequest() {
   };
 }
 
+// Dispatch verifies a binding against its issuing service, so the fixtures share
+// one service and use the binding it actually issued.
+const BINDING_SERVICE = createExecutionBindingService({ idFactory: () => "service" });
+const ISSUED_BINDING = BINDING_SERVICE.createBinding(bindingRequest());
+
 function serviceBinding() {
-  return createExecutionBindingService({ idFactory: () => "service" }).createBinding(bindingRequest());
+  return ISSUED_BINDING;
 }
 
 describe("executor adapter governed handoff", () => {
@@ -168,7 +173,7 @@ describe("executor adapter governed handoff", () => {
       entitlement_id: "ent-1",
       principal_id: "user-1",
       run_id: "run-1",
-      binding_id: "binding-1",
+      binding_id: ISSUED_BINDING.binding_id,
       provider_id: "codex",
     });
 
@@ -177,7 +182,7 @@ describe("executor adapter governed handoff", () => {
       bindingHasGrant: "credential_grant_id" in request.executionBinding,
       credential: new TextDecoder().decode(runtime.credential),
     }));
-    const registry = createExecutorRegistry({ codex: { execute } }, { credentialVault: vault });
+    const registry = createExecutorRegistry({ codex: { execute } }, { credentialVault: vault, bindingService: BINDING_SERVICE });
     const request = governedRequest({
       secret: "must-not-pass",
       executionBinding: { ...governedRequest().executionBinding, credential_grant_id: grant.grant_id },
@@ -197,11 +202,11 @@ describe("executor adapter governed handoff", () => {
       entitlement_id: "ent-1",
       provider_id: "codex",
       run_id: "run-1",
-      binding_id: "binding-1",
+      binding_id: ISSUED_BINDING.binding_id,
       external_session_id: "external-secret-session",
     });
     const execute = vi.fn(async (_request, runtime) => runtime.providerSession.session_id);
-    const registry = createExecutorRegistry({ codex: { execute } }, { sessionRegistry: sessions });
+    const registry = createExecutorRegistry({ codex: { execute } }, { sessionRegistry: sessions, bindingService: BINDING_SERVICE });
 
     const request = governedRequest({
       executionBinding: { ...governedRequest().executionBinding, provider_session_id: session.session_id },
@@ -218,7 +223,7 @@ describe("executor adapter governed handoff", () => {
   it("accepts matching binding-service identity output and rejects identity substitution", async () => {
     const binding = serviceBinding();
     const execute = vi.fn(async (_request, runtime) => runtime.executionBinding.principal_id);
-    const registry = createExecutorRegistry({ codex: { execute } });
+    const registry = createExecutorRegistry({ codex: { execute } }, { bindingService: BINDING_SERVICE });
 
     await expect(registry.execute("codex", governedRequest({ executionBinding: binding }))).resolves.toBe("user-1");
     await expect(registry.execute("codex", governedRequest({ executionBinding: { ...binding, actor_id: "user-2" } })))

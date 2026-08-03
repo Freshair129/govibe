@@ -2,7 +2,7 @@
 title: "BACKLOG: Provider Entitlement Runtime"
 doc_id: "BACKLOG-PROVIDER-ENTITLEMENT-RUNTIME"
 status: "draft"
-version: "0.1.5+draft"
+version: "0.1.6+draft"
 updated: "2026-08-04"
 owner: "LYRA"
 auditor: "ATHER"
@@ -123,14 +123,17 @@ implementation claims.
   cases for missing or expired compatibility records and product/plan/surface
   mismatch cannot be tested. Derived-token handoff is not implemented; the vault
   hands raw secret bytes to the adapter and wipes them afterwards.
-- **Finding, not fixed here:** binding authenticity is not verified at dispatch.
-  `executionBindingService.assertUsable` is called nowhere on the dispatch path,
-  so a never-issued, expired, or revoked binding reaches the provider and the
-  API-008 `BINDING_EXPIRED` code is unreachable. Four characterization tests named
-  `GAP:` pin the current wrong behavior so it fails when fixed. Recorded in
+- **Finding, now fixed:** binding authenticity was not verified at dispatch, so a
+  never-issued, expired or revoked binding reached the provider and the API-008
+  `BINDING_EXPIRED` code was unreachable. `createExecutorRegistry` now takes a
+  `bindingService` and calls `assertUsable` before any adapter invocation,
+  fail-closed with `EXECUTION_BINDING_SERVICE_REQUIRED` when none is wired. The
+  `GAP:` characterization tests were flipped to assert rejection. Recorded in
   section 5.1 of
   `docs/assurance/audit/EVIDENCE-Provider-Entitlement-Runtime-Conformance.md`.
-  Security review has not signed off.
+- **Related gap still open:** dispatch rechecks the binding lifecycle but not the
+  entitlement lifecycle, so an entitlement revoked after its binding was issued is
+  not caught while the binding remains live. Security review has not signed off.
 
 ### TSK-PER-60: Planning and execution binding (issue #60)
 
@@ -286,6 +289,7 @@ implementation claims.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.6+draft | 2026-08-04 | ATHER | Fixed the binding-authenticity finding: dispatch now verifies bindings against the issuing service, fail-closed, and emits API-008 BINDING_EXPIRED. Recorded the remaining entitlement-lifecycle recheck gap. TSK-PER-59 is not done and the #64 gate is unchanged. |
 | 0.1.5+draft | 2026-08-04 | ATHER | Recorded the TSK-PER-59 dispatch-boundary negative matrix as closed and the two remaining items as missing implementations. Recorded a high-severity finding: binding authenticity is not verified at dispatch, so never-issued, expired and revoked bindings reach the provider. Not fixed here; it needs owner approval and blocks the #64 gate. |
 | 0.1.4+draft | 2026-08-04 | ATHER | Recorded the conformance suite and evidence package for TSK-PER-64 and moved it to review. The gate is NOT passed: review_state is pending and security/release approval is outstanding. No task was promoted to done and no implementation status was propagated. |
 | 0.1.3+draft | 2026-08-04 | LYRA | Recorded the observed routing and failover module, tests, and design document for TSK-PER-62 and moved it to review; the router is not wired into dispatch, the decision-record schema is not in API-008, and the #64 gate is unchanged. |

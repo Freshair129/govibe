@@ -185,7 +185,7 @@ function runtime({ providers = ['alpha', 'beta'], descriptors = null, entitlemen
     id,
     createSubscriptionCliAdapter({ providerId: id, run: async () => ({ artifacts: [`${id}-out.txt`] }) }),
   ]));
-  const executorRegistry = createExecutorRegistry(adapters ?? defaultAdapters, { credentialVault });
+  const executorRegistry = createExecutorRegistry(adapters ?? defaultAdapters, { credentialVault, bindingService });
   const adapterHost = createProviderAdapterHost({
     executorRegistry,
     capabilityRegistry,

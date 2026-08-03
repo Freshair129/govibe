@@ -5,6 +5,7 @@ import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { createWorkflowPlan, getWorkflowStatus, transitionWorkflow } from './workflow-engine.mjs';
+import { createExecutionBindingService } from './execution-binding-service.mjs';
 import { createExecutorRegistry, ProviderUnavailableError } from './executor-adapter.mjs';
 import { createPolicyEnvelope, assertPolicyAllows } from './policy-envelope.mjs';
 import { reviewWorkspace, optimizeMeasured, workspaceImpact, docsVersion } from './governance-operations.mjs';
@@ -100,8 +101,44 @@ describe('durable workflow', () => {
 
 describe('providers and policy', () => {
   it('boots with unavailable providers and fails with a typed error only when selected', async () => {
-    const registry = createExecutorRegistry({ codex: { execute: async () => ({ ok: true }) } });
-    const request = governedRequest();
+    // Dispatch verifies the binding against its issuing service, so the fixture
+    // binding is issued rather than hand-written.
+    const bindingService = createExecutionBindingService({ idFactory: () => 'migration' });
+    const issued = bindingService.createBinding({
+      binding_request_id: 'br-migration',
+      actor_id: 'migration-agent',
+      organization_id: 'org-migration',
+      workspace_id: 'workspace-migration',
+      project_id: 'project-migration',
+      task_id: 'TASK-migration',
+      agent_id: 'migration-agent',
+      run_id: 'run-migration',
+      session_id: 'session-migration',
+      turn_id: 'turn-migration',
+      context: {
+        context_id: 'ctx-migration',
+        cache_id: 'cache-migration',
+        context_hash: 'hash-migration',
+        source_manifest_hash: 'manifest-migration',
+        context_profile: 'T-ctx',
+        tool_contract_hash: 'tools-migration',
+        persisted: true,
+      },
+      eligible_target: {
+        authorized: true,
+        actor_id: 'migration-agent',
+        workspace_id: 'workspace-migration',
+        project_id: 'project-migration',
+        provider_id: 'codex',
+        entitlement_id: 'ent-migration',
+        executor_class: 'external-agent',
+        model_id: 'model-migration',
+        state: 'active',
+      },
+      policy_decision_refs: ['policy:entitlement:migration'],
+    });
+    const registry = createExecutorRegistry({ codex: { execute: async () => ({ ok: true }) } }, { bindingService });
+    const request = { ...governedRequest(), executionBinding: issued };
     expect(registry.inspect()).toEqual(expect.arrayContaining([expect.objectContaining({ id: 'claude-code', available: false })]));
     await expect(registry.execute('claude-code', {})).rejects.toBeInstanceOf(ProviderUnavailableError);
     expect(request.executionBinding).toMatchObject({

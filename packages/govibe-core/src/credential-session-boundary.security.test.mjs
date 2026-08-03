@@ -12,6 +12,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { createCredentialVault, createInMemorySecretBackend } from './credential-vault.mjs';
+import { createExecutionBindingService } from './execution-binding-service.mjs';
 import { createExecutorRegistry } from './executor-adapter.mjs';
 import { createProviderSessionRegistry } from './provider-session-registry.mjs';
 
@@ -32,10 +33,14 @@ function contextAuthority() {
   };
 }
 
+// Dispatch verifies a binding against its issuing service, so fixtures use a
+// binding the service actually issued. harness() refreshes this.
+let ISSUED = { binding_id: 'binding-unissued' };
+
 function binding(overrides = {}) {
   return {
     schema: 'govibe-execution-binding/v1',
-    binding_id: 'binding-1',
+    binding_id: ISSUED.binding_id,
     actor_id: 'user-1',
     principal_id: 'user-1',
     workspace_id: 'ws-1',
@@ -83,7 +88,44 @@ function harness({ clock = () => new Date('2026-08-04T00:00:00.000Z') } = {}) {
     clock,
     idFactory: () => { sessionId += 1; return String(sessionId); },
   });
-  const registry = createExecutorRegistry({ [PROVIDER]: adapter }, { credentialVault, sessionRegistry });
+  let bindingCounter = 0;
+  const bindingService = createExecutionBindingService({
+    clock,
+    idFactory: () => { bindingCounter += 1; return String(bindingCounter); },
+  });
+  ISSUED = bindingService.createBinding({
+    binding_request_id: 'br-1',
+    actor_id: 'user-1',
+    organization_id: 'org-1',
+    workspace_id: 'ws-1',
+    task_id: 'task-1',
+    agent_id: 'agent-1',
+    run_id: 'run-1',
+    session_id: 'session-1',
+    turn_id: 'turn-1',
+    context: {
+      context_id: 'ctx-1',
+      cache_id: 'cache-1',
+      context_hash: 'hash-1',
+      source_manifest_hash: 'manifest-1',
+      context_profile: 'T-ctx',
+      tool_contract_hash: 'tools-1',
+      persisted: true,
+    },
+    eligible_target: {
+      authorized: true,
+      actor_id: 'user-1',
+      workspace_id: 'ws-1',
+      provider_id: PROVIDER,
+      entitlement_id: 'ent-1',
+      executor_class: 'api-llm',
+      model_id: 'model-1',
+      state: 'active',
+    },
+    policy_decision_refs: ['policy:entitlement:1'],
+    ttl_ms: 3_600_000,
+  });
+  const registry = createExecutorRegistry({ [PROVIDER]: adapter }, { credentialVault, sessionRegistry, bindingService });
 
   credentialVault.registerCredential({
     credential_ref: 'cred-1',
@@ -98,7 +140,7 @@ function harness({ clock = () => new Date('2026-08-04T00:00:00.000Z') } = {}) {
     entitlement_id: 'ent-1',
     principal_id: 'user-1',
     run_id: 'run-1',
-    binding_id: 'binding-1',
+    binding_id: ISSUED.binding_id,
     provider_id: PROVIDER,
     ...overrides,
   });
@@ -108,12 +150,12 @@ function harness({ clock = () => new Date('2026-08-04T00:00:00.000Z') } = {}) {
     entitlement_id: 'ent-1',
     provider_id: PROVIDER,
     run_id: 'run-1',
-    binding_id: 'binding-1',
+    binding_id: ISSUED.binding_id,
     external_session_id: 'provider-side-session-handle',
     ...overrides,
   });
 
-  return { adapter, credentialVault, sessionRegistry, registry, grantFor, sessionFor };
+  return { adapter, credentialVault, sessionRegistry, bindingService, registry, grantFor, sessionFor };
 }
 
 /** Asserts the dispatch failed with `code` and that the provider was never reached. */
@@ -147,7 +189,7 @@ describe('#59 negative matrix: credential state blocks execution before provider
       entitlement_id: 'ent-1',
       principal_id: 'user-1',
       run_id: 'run-1',
-      binding_id: 'binding-1',
+      binding_id: ISSUED.binding_id,
       provider_id: PROVIDER,
     });
     now = new Date('2026-08-04T00:00:20.000Z');
@@ -187,8 +229,9 @@ describe('#59 negative matrix: credential state blocks execution before provider
   });
 
   it('fails closed when a grant is presented but no vault is configured', async () => {
+    const h = harness();
     const adapter = { capabilities: ['api-llm'], execute: vi.fn(async () => ({})), cancel: vi.fn() };
-    const registry = createExecutorRegistry({ [PROVIDER]: adapter });
+    const registry = createExecutorRegistry({ [PROVIDER]: adapter }, { bindingService: h.bindingService });
     await expect(registry.execute(PROVIDER, request({ credential_grant_id: 'grant_1' }))).rejects.toMatchObject({
       code: 'CREDENTIAL_VAULT_REQUIRED',
     });
@@ -211,7 +254,7 @@ describe('#59 negative matrix: confused deputy at the dispatch boundary', () => 
       entitlement_id: 'ent-2',
       principal_id: 'user-1',
       run_id: 'run-1',
-      binding_id: 'binding-1',
+      binding_id: ISSUED.binding_id,
       provider_id: PROVIDER,
     });
     await expectBlockedBeforeProvider(h, request({ credential_grant_id: foreign.grant_id }), 'CREDENTIAL_GRANT_SCOPE_MISMATCH');
@@ -303,8 +346,9 @@ describe('#59 negative matrix: provider session isolation at the dispatch bounda
   });
 
   it('fails closed when a session is presented but no session registry is configured', async () => {
+    const h = harness();
     const adapter = { capabilities: ['api-llm'], execute: vi.fn(async () => ({})), cancel: vi.fn() };
-    const registry = createExecutorRegistry({ [PROVIDER]: adapter }, { credentialVault: null, sessionRegistry: null });
+    const registry = createExecutorRegistry({ [PROVIDER]: adapter }, { credentialVault: null, sessionRegistry: null, bindingService: h.bindingService });
     await expect(registry.execute(PROVIDER, request({ provider_session_id: 'ps_1' }))).rejects.toMatchObject({
       code: 'PROVIDER_SESSION_REGISTRY_REQUIRED',
     });
@@ -349,44 +393,59 @@ describe('#59 negative matrix: the adapter receives only its bound scope', () =>
 });
 
 /**
- * These tests PIN CURRENT BEHAVIOR THAT IS WRONG. They are characterization
- * tests for gaps found while building the #59 negative matrix, not approval of
- * the behavior. Each will fail when the gap is closed, which is the intent:
- * whoever fixes it must come here and flip the assertion.
- *
- * Recorded in section 5 of
- * docs/assurance/audit/EVIDENCE-Provider-Entitlement-Runtime-Conformance.md
+ * These were characterization tests pinning a high-severity gap: dispatch never
+ * verified that a binding came from the binding service, so a forged, expired or
+ * revoked binding reached the provider. The gap is now closed and the assertions
+ * are flipped to prove it.
  */
-describe('#59 OPEN GAPS: binding authenticity is not verified at dispatch', () => {
-  it('GAP: dispatches a binding the binding service never issued', async () => {
+describe('#59 binding authenticity is verified at dispatch', () => {
+  it('blocks a binding the binding service never issued', async () => {
     const h = harness();
-    // Nothing ties this object to any issuing service. It only has to be
-    // internally consistent and correlate with the context authority.
-    await h.registry.execute(PROVIDER, request({ binding_id: 'binding_forged', entitlement_id: 'ent-never-granted' }));
-    expect(h.adapter.execute, 'a forged binding currently reaches the provider').toHaveBeenCalledOnce();
+    // Internally consistent and correlating with the context authority is no
+    // longer sufficient: the binding must have been issued.
+    await expectBlockedBeforeProvider(
+      h,
+      request({ binding_id: 'binding_forged', entitlement_id: 'ent-never-granted' }),
+      'EXECUTION_BINDING_NOT_ISSUED',
+    );
   });
 
-  it('GAP: dispatches an expired binding, so API-008 BINDING_EXPIRED is unreachable at dispatch', async () => {
-    const h = harness();
-    await h.registry.execute(PROVIDER, request({
-      authorized_at: '2020-01-01T00:00:00.000Z',
-      expires_at: '2020-01-01T00:01:00.000Z',
-    }));
-    expect(h.adapter.execute, 'an expired binding currently reaches the provider').toHaveBeenCalledOnce();
+  it('blocks an expired binding and emits the API-008 BINDING_EXPIRED code', async () => {
+    let now = new Date('2026-08-04T00:00:00.000Z');
+    const h = harness({ clock: () => now });
+    now = new Date('2026-08-04T02:00:00.000Z');
+    await expectBlockedBeforeProvider(h, request(), 'BINDING_EXPIRED');
   });
 
-  it('GAP: dispatches a revoked binding', async () => {
+  it('blocks a revoked binding', async () => {
     const h = harness();
-    await h.registry.execute(PROVIDER, request({ state: 'revoked', revoked_at: '2026-08-04T00:00:00.000Z' }));
-    expect(h.adapter.execute, 'a revoked binding currently reaches the provider').toHaveBeenCalledOnce();
+    h.bindingService.revokeBinding(ISSUED.binding_id);
+    await expectBlockedBeforeProvider(h, request(), 'EXECUTION_BINDING_REVOKED');
   });
 
-  it('GAP: omitting credential_grant_id skips the vault entirely', async () => {
+  it('blocks a binding whose claimed entitlement differs from the issued one', async () => {
+    const h = harness();
+    await expectBlockedBeforeProvider(h, request({ entitlement_id: 'ent-substituted' }), 'EXECUTION_BINDING_SCOPE_MISMATCH');
+  });
+
+  it('still allows an issued binding that legitimately carries no credential grant', async () => {
     const h = harness();
     await h.registry.execute(PROVIDER, request({ credential_grant_id: null }));
     expect(h.adapter.execute).toHaveBeenCalledOnce();
     const [, context] = h.adapter.execute.mock.calls[0];
-    expect(context.credential, 'no credential is demanded when the grant id is absent').toBeNull();
+    // A local or unauthenticated provider needs no credential. This is safe now
+    // only because the binding itself is verified, so the grant id cannot be
+    // dropped by a caller to escape the vault.
+    expect(context.credential).toBeNull();
+  });
+
+  it('fails closed when no binding service is wired at all', async () => {
+    const adapter = { capabilities: ['api-llm'], execute: vi.fn(async () => ({})), cancel: vi.fn() };
+    const registry = createExecutorRegistry({ [PROVIDER]: adapter });
+    await expect(registry.execute(PROVIDER, request())).rejects.toMatchObject({
+      code: 'EXECUTION_BINDING_SERVICE_REQUIRED',
+    });
+    expect(adapter.execute).not.toHaveBeenCalled();
   });
 });
 

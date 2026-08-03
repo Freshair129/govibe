@@ -2,7 +2,7 @@
 title: "Evidence: Provider Entitlement Runtime Conformance"
 doc_id: "EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE"
 status: "draft"
-version: "0.2.0+draft"
+version: "0.3.0+draft"
 updated: "2026-08-04"
 owner: "ATHER"
 source_of_truth: false
@@ -160,10 +160,40 @@ decision before or with this gate.
 Each requires an API-008 or reconciliation change. They are listed here so the
 gate reviewer dispositions them explicitly rather than discovering them later.
 
-## 5.1 Security finding: binding authenticity is not verified at dispatch
+## 5.1 Security finding: binding authenticity was not verified at dispatch
 
-**Severity: high. Found while building the issue #59 negative matrix. Not fixed
-in this branch.**
+**Severity: high. Found while building the issue #59 negative matrix.
+Status: FIXED.**
+
+### Resolution
+
+`createExecutorRegistry` now takes a `bindingService` and calls
+`assertUsable(binding.binding_id, ...)` before any adapter invocation, correlating
+actor, principal, workspace, task, agent, run, session, turn, context, cache,
+provider and entitlement against the issued record. The check is **fail-closed**:
+dispatch without a binding service raises
+`EXECUTION_BINDING_SERVICE_REQUIRED`.
+
+Emitted codes at the dispatch boundary:
+
+| Condition | Code |
+|---|---|
+| binding never issued | `EXECUTION_BINDING_NOT_ISSUED` |
+| binding expired | `BINDING_EXPIRED` (API-008 section 13) |
+| binding revoked | `EXECUTION_BINDING_REVOKED` |
+| claimed field differs from the issued record | `EXECUTION_BINDING_SCOPE_MISMATCH` |
+| no binding service wired | `EXECUTION_BINDING_SERVICE_REQUIRED` |
+
+The four `GAP:` characterization tests were flipped to assert rejection, and two
+were added for entitlement substitution and the unwired-service case. API-008
+section 13's `BINDING_EXPIRED` is now reachable for the first time.
+
+Blast radius was limited to tests: `runtime-core.mjs` only calls
+`executorRegistry.inspect()`, so no production dispatch path existed to break.
+Five test files were updated to issue bindings through a service instead of
+hand-writing literals.
+
+### Original finding, retained for the record
 
 `createExecutorRegistry` validates that an execution binding is *internally
 consistent* and *correlates with the context authority*. It never checks that the
@@ -184,15 +214,14 @@ Demonstrated consequences, each pinned by a characterization test named `GAP:` i
 The last item is only exploitable because of the first: if bindings were verified
 against the issuing service, a caller could not choose to omit the grant.
 
-Those four tests assert the **current, wrong** behavior deliberately, so they
-fail the moment the gap is closed and force whoever fixes it to update them.
+The last item was only exploitable because of the first: with bindings verified,
+a caller can no longer choose to omit the grant.
 
-Likely fix: pass the binding service into `createExecutorRegistry` and call
-`assertUsable(binding.binding_id, {...})` before any adapter invocation. That is a
-runtime behavior change affecting every caller and is deliberately **not** made
-here; it needs its own change with owner approval.
-
-This finding must be dispositioned before the #64 gate can close.
+Remaining related gap: the dispatch boundary now rechecks the **binding**
+lifecycle, but still does not recheck the **entitlement** lifecycle. An
+entitlement revoked after its binding was issued is not caught at dispatch while
+the binding remains live. That is tracked against issues #59 and #64 and is not
+closed by this fix.
 
 ## 6. Reviewer checklist
 
@@ -203,8 +232,9 @@ pre-answer any of these.
       what exact wording may the implementation documents use?
 - [ ] Are the section 4 exclusions acceptable, or must any be closed first?
 - [ ] What is the disposition of each section 5 contract gap?
-- [ ] **Section 5.1: must binding authenticity verification land before this gate,
-      and who approves the resulting dispatch behavior change?**
+- [ ] **Section 5.1 is fixed. Confirm the fail-closed dispatch behavior change is
+      acceptable, and decide whether the remaining entitlement-lifecycle recheck
+      must land before this gate.**
 - [ ] Is the issue #59 negative-test matrix required before this gate, or tracked
       as a follow-up with a named owner?
 - [ ] Which issues among #58 to #63 may close, and with what stated scope?
@@ -232,5 +262,6 @@ merges to `main`.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0+draft | 2026-08-04 | ATHER | Section 5.1 fixed: dispatch now verifies binding authenticity, expiry and revocation against the issuing service, fail-closed, and emits the API-008 BINDING_EXPIRED code for the first time. Recorded the remaining entitlement-lifecycle recheck gap. Gate remains not passed. |
 | 0.2.0+draft | 2026-08-04 | ATHER | Recorded the issue #59 dispatch-boundary negative matrix as closed, the two remaining #59 items as missing implementations rather than missing tests, and a new high-severity finding in section 5.1: binding authenticity is not verified at dispatch, so expired, revoked and never-issued bindings all reach the provider. Gate remains not passed. |
 | 0.1.0+draft | 2026-08-04 | ATHER | Initial conformance evidence package for issue #64: suite coverage mapped to the acceptance criteria, explicit non-coverage, three recorded contract gaps, and a reviewer checklist. The gate is not passed and no implementation status is propagated. |
