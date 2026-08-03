@@ -30,9 +30,20 @@ function authority(overrides = {}) {
 function dispatchRequest(overrides = {}) {
   return {
     task: "Implement bounded graph dispatch",
+    actor_id: "local-agent-2",
+    run_id: "run-2",
     contextAuthority: authority(),
     contextLineage: { runId: "run-2", sessionId: "session-2", turnId: "turn-2" },
     policyDecision: "allow",
+    executionBinding: {
+      binding_id: "binding-local-2",
+      provider_id: "local",
+      entitlement_id: "entitlement-local-2",
+      principal_id: "local-agent-2",
+      run_id: "run-2",
+      credential_grant_id: null,
+      provider_session_id: null,
+    },
     ...overrides,
   };
 }

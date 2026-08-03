@@ -1,16 +1,16 @@
 {
   "schema_version": "1.0.3",
   "result_id": "DOC-CLEANSING-PHASE1B-PHASE2-INTEGRATION-RESULT-v1",
-  "status": "execution_complete_evidence_repaired_with_provenance_and_runtime_baseline_debt",
+  "status": "execution_complete_evidence_repaired_with_ci_follow_up_and_runtime_baseline_debt",
   "execution_complete": true,
   "execution_authorized": false,
   "integration_branch": "codex/docs-cleansing-ia",
   "accepted_base_commit": "7c6ffde85f1f08771226abdc1f23d994a9e175db",
   "evidence_revision": {
-    "revision": 4,
-    "status": "verified_git_blob_content_bytes_and_raw_patch_equivalent_provenance",
-    "scope": "Phase 2 semantic rollback map plus accepted-source provenance",
-    "preserves": "accepted source review provenance, integrated commits, authority provenance, forward operations, inverse operations, and final target identities",
+    "revision": 5,
+    "status": "verified_git_blob_content_bytes_raw_patch_equivalent_provenance_and_ci_follow_up",
+    "scope": "Phase 2 semantic rollback map, accepted-source provenance, and CI fixture-contract follow-up",
+    "preserves": "accepted source review provenance, integrated commits, authority provenance, forward operations, inverse operations, final target identities, and recorded runtime baseline debt",
     "sha256_basis": "git_blob_content_bytes",
     "verified_associations": 88,
     "verified_patch_equivalences": 6,
@@ -22,8 +22,20 @@
     "merge_commit": "23081b9c58fb63758491127ab315516485058da4",
     "origin_changed_paths": 9,
     "path_overlap_with_cleansing_branch": 0,
-    "status": "documentation_evidence_passed_runtime_baseline_debt_recorded",
-    "reason": "Current runtime/security test outcomes changed after the required origin/main merge and are recorded without modifying runtime code in this evidence-only repair."
+    "status": "documentation_evidence_passed_security_ci_fixture_follow_up_recorded_runtime_baseline_debt_remains",
+    "reason": "The merged execution-binding enforcement exposed a stale positive security-test fixture. The approved follow-up updates only that fixture with a governed local binding; runtime code is not modified and the separate full-test baseline debt remains recorded."
+  },
+  "ci_follow_up_provenance": {
+    "pull_request": 87,
+    "branch_head_before_follow_up": "f88723bb2ce98a63b0042160acceac7f19f47636",
+    "workflow": "P0 Security CI",
+    "run_id": "30773512405",
+    "job": "verify",
+    "failing_test": "dispatches only after bounded authority, allow policy, and lineage validation",
+    "failure_code": "EXECUTION_BINDING_REQUIRED",
+    "root_cause": "The positive graph-dispatch authority fixture omitted the executionBinding now required by the merged executor-adapter contract.",
+    "approved_remediation": "Add a no-secret governed local execution binding to the test fixture without weakening authority, policy, or lineage assertions.",
+    "targeted_validation": "PASS: node --test scripts/mcp/graph-dispatch-authority.security.mjs, 7 passed, 0 failed."
   },
   "authority_provenance": {
     "owner": "Boss (Product Authority)",
@@ -201,24 +213,24 @@
     "roadmap_validate": "PASS: 7 sources, 0 errors, 14 pre-existing plan-quality warnings.",
     "lint": "PASS: tsc --noEmit; existing roadmap quality warnings are emitted by repository tooling and not fixed here.",
     "build": "PASS: tsc and Vite production build completed.",
-    "security": "POST-SYNC BASELINE FAILURE: 34 passed, 1 failed. graph-dispatch-authority.security.mjs expects direct adapter dispatch but merged execution-binding enforcement correctly requires a governed binding (EXECUTION_BINDING_REQUIRED).",
+    "security": "PASS: 35 passed, 0 failed. The PR #87 P0 Security CI follow-up fixture supplies the governed local execution binding required by executor-adapter enforcement while retaining bounded-authority, allow-policy, and lineage coverage.",
     "mission_gateway_targeted_test": "PASS: src/missionGateway.test.ts, 8 passed.",
     "diff_checks": "PASS: npm run diff:check and git diff --check.",
     "phase2_semantic_rollback_map_hash_associations": "PASS: 22 operations and 88 before/after/inverse associations recomputed from recorded Git blob content bytes.",
-    "full_npm_test": "POST-SYNC BASELINE FAILURE: 11 failed, 180 passed, 1 skipped. Failures are capability-runtime (3), migration-capabilities (1), msp-live-contract (2), and executor-adapter (5); all concern the merged required contextAuthority, allow-policy, or execution-binding contracts. test:security is not reached by npm test because Vitest exits first; its direct post-sync run is separately recorded above."
+    "full_npm_test": "POST-SYNC BASELINE FAILURE: 11 failed, 180 passed, 1 skipped. Failures are capability-runtime (3), migration-capabilities (1), msp-live-contract (2), and executor-adapter (5); all concern the merged required contextAuthority, allow-policy, or execution-binding contracts. test:security is not reached by npm test because Vitest exits first; its separately run CI follow-up validation passes 35/35."
   },
   "exclusions_and_unresolved_queue": [
     "77 criteria-structure warnings: unchanged and not treated as documentation-cleaning completion.",
     "14 legacy roadmap-quality warnings: unchanged and not treated as roadmap repair.",
-    "Post-sync runtime baseline debt: 11 full-test failures and 1 security-test failure caused by merged contextAuthority, allow-policy, and execution-binding contract expectations; not treated as runtime repair in this evidence-only change.",
+    "Post-sync runtime baseline debt: 11 full-test failures caused by merged contextAuthority, allow-policy, and execution-binding contract expectations; the separate security fixture-contract failure is repaired and verified by the PR #87 CI follow-up.",
     "No direct MSP/GKS/GenesisBlockDB operation, canonical identity assignment, or graph-completeness claim.",
     "Old active runbook path is permitted only in historical manifests, results, rollback evidence, and non-canonical .brain materialization."
   ],
   "self_hashing": {
     "algorithm": "sha256",
     "canonical_projection": "UTF-8 JSON.stringify of this result with the self_hashing object omitted",
-    "projection_sha256": "403ba951c200268b7c048e421719d29461fd2e396f73b459a36ace7753018c0a",
-    "projection_bytes": 17204,
+    "projection_sha256": "4962815253b679698f6930edabca9bb7ca97b6ce7644679746e450cd3f8dfaae",
+    "projection_bytes": 18166,
     "status": "verified",
     "note": "The projection omits its own hash metadata, preventing a self-referential identity claim while retaining a reproducible result-content digest."
   }
