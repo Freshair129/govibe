@@ -2,7 +2,7 @@
 title: "ROADMAP: Provider Entitlement Runtime"
 doc_id: "ROADMAP-PROVIDER-ENTITLEMENT-RUNTIME"
 id: RM-provider-entitlement-runtime
-version: "0.1.5+draft"
+version: "0.1.6+draft"
 updated: "2026-08-04"
 status: draft
 owner: "LYRA"
@@ -133,7 +133,7 @@ existence of the threat-model document.
 | Item | Observed artifact on `main` | What it does not prove |
 |---|---|---|
 | TASK-PER-58 | `packages/govibe-core/src/provider-entitlement-registry.mjs` and its test (merged in PR #72) | Runtime authorization behavior under real providers |
-| TASK-PER-59 | `packages/govibe-core/src/credential-vault.mjs`, `provider-session-registry.mjs` and their tests; `THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md` (PR #73) | Credential isolation under real adapter dispatch; issue #59 negative-test scope is incomplete |
+| TASK-PER-59 | `packages/govibe-core/src/credential-vault.mjs`, `provider-session-registry.mjs` and their tests; `THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md` (PR #73); `credential-session-boundary.security.test.mjs` closing the dispatch-boundary negative matrix | Compatibility records and derived-token handoff, which are unimplemented; and binding authenticity, which is not verified at dispatch (finding 5.1 in the conformance evidence) |
 | TASK-PER-60 | `packages/govibe-core/src/execution-capability-planner.mjs`, `execution-binding-service.mjs` and their tests (merged in PR #88) | Multi-provider conformance; issue #60 remains open pending #64 |
 | TASK-PER-61 | `packages/govibe-core/src/entitlement-usage-ledger.mjs`, its test, and `docs/security/POLICY-Provider-Entitlement-Usage-Ledger-Redaction-and-Retention.md` | Durable storage, operator retention configuration, or accounting fidelity against a real provider; the ledger is process-memory only and is not wired into dispatch |
 | TASK-PER-62 | `packages/govibe-core/src/execution-router.mjs`, its test, and `docs/architecture/SDD-Execution-Routing-and-Failover.md` | Live routing: the router is not wired into dispatch and no quota, reliability or queue signal source is operated |
@@ -171,6 +171,7 @@ existence of the threat-model document.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.6+draft | 2026-08-04 | ATHER | Recorded the TASK-PER-59 dispatch-boundary negative matrix and a high-severity finding that binding authenticity is not verified at dispatch. The finding is unfixed and blocks the #64 gate; no task advanced to done. |
 | 0.1.5+draft | 2026-08-04 | ATHER | Recorded the conformance suite and evidence package for TASK-PER-64 and moved it to review. The gate is NOT passed: security/release approval and a CI reference on `main` are outstanding, three contract gaps await owner disposition, and no task was promoted to done. |
 | 0.1.4+draft | 2026-08-04 | LYRA | Recorded the observed routing and failover artifacts for TASK-PER-62 and moved it to review; the router is not wired into dispatch and the #64 gate is unchanged. |
 | 0.1.3+draft | 2026-08-04 | LYRA | Recorded the observed provider-adapter artifacts for TASK-PER-63, moved it to review, and corrected its dependency list to include TASK-PER-61 per issue #63; every provider enablement record remains pending and the #64 gate is unchanged. |

@@ -2,7 +2,7 @@
 title: "BACKLOG: Provider Entitlement Runtime"
 doc_id: "BACKLOG-PROVIDER-ENTITLEMENT-RUNTIME"
 status: "draft"
-version: "0.1.4+draft"
+version: "0.1.5+draft"
 updated: "2026-08-04"
 owner: "LYRA"
 auditor: "ATHER"
@@ -69,7 +69,7 @@ implementation claims.
 | ID | Parent ID | Type | Title | PRD System | Priority | Owner | Source Section | Dependencies | Acceptance | Status | Progress |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | TSK-PER-58 | SPR-PER-01 | task | Registry foundation for capability descriptors and entitlements | SYSTEM-06 | P0 | unassigned | Issue #58 | ADR-024; API-008 sections 3-4 | Schema conformance, ownerless rejection, lifecycle enforcement, inspection API | review | 70 |
-| TSK-PER-59 | SPR-PER-01 | task | Credential vault, revocation checks, and provider session isolation | SYSTEM-10 | P0 | unassigned | Issue #59 | TSK-PER-58 | No credential material outside the vault boundary; revoked or expired credentials block dispatch | in-progress | 50 |
+| TSK-PER-59 | SPR-PER-01 | task | Credential vault, revocation checks, and provider session isolation | SYSTEM-10 | P0 | unassigned | Issue #59 | TSK-PER-58 | No credential material outside the vault boundary; revoked or expired credentials block dispatch | in-progress | 70 |
 | TSK-PER-60 | SPR-PER-02 | task | Two-phase capability planning and immutable-context execution binding | SYSTEM-06 | P0 | unassigned | Issue #60 | TSK-PER-58; TSK-PER-59 | Typed rejection codes, persisted-context binding, protected credential channel | review | 70 |
 | TSK-PER-61 | SPR-PER-02 | task | Usage ledger with reported, estimated, and unknown separation | SYSTEM-09 | P1 | unassigned | Issue #61 | TSK-PER-58; TSK-PER-60 | Unit separation, null-on-unknown, no automatic GKS promotion, aggregation by entitlement and workspace | review | 70 |
 | TSK-PER-63 | SPR-PER-03 | task | Provider adapter interface and first bounded adapters | SYSTEM-06 | P1 | unassigned | Issue #63 | TSK-PER-59; TSK-PER-60; TSK-PER-61 | Normalized inspect, execute, cancel; candidate-only output; no direct GKS access | review | 70 |
@@ -108,8 +108,29 @@ implementation claims.
 - **Observed on `main`:** `credential-vault.mjs`, `provider-session-registry.mjs`
   with tests, and `THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md`
   (merged in PR #73).
-- **Remaining:** derived-token handoff to adapters and the full negative-test
-  matrix are not yet evidenced; security review has not signed off.
+- **Observed on this branch:**
+  `packages/govibe-core/src/credential-session-boundary.security.test.mjs`
+  (28 tests) closes the dispatch-boundary negative matrix. Every case asserts on a
+  spy that the provider was never invoked, not merely that a promise rejected:
+  revoked and expired credentials, expired and revoked and replayed grants,
+  cross-entitlement and cross-run and cross-binding grants, principal and actor
+  mismatch, provider mismatch, cross-user and cross-entitlement and cross-run and
+  revoked and expired sessions, fail-closed with no vault or session registry, and
+  no credential material in any rejection message, stack, detail or inspection
+  surface.
+- **Remaining:** two items are missing *implementations*, not missing tests.
+  Compatibility records do not exist as code, so the sharing-policy section 14
+  cases for missing or expired compatibility records and product/plan/surface
+  mismatch cannot be tested. Derived-token handoff is not implemented; the vault
+  hands raw secret bytes to the adapter and wipes them afterwards.
+- **Finding, not fixed here:** binding authenticity is not verified at dispatch.
+  `executionBindingService.assertUsable` is called nowhere on the dispatch path,
+  so a never-issued, expired, or revoked binding reaches the provider and the
+  API-008 `BINDING_EXPIRED` code is unreachable. Four characterization tests named
+  `GAP:` pin the current wrong behavior so it fails when fixed. Recorded in
+  section 5.1 of
+  `docs/assurance/audit/EVIDENCE-Provider-Entitlement-Runtime-Conformance.md`.
+  Security review has not signed off.
 
 ### TSK-PER-60: Planning and execution binding (issue #60)
 
@@ -265,6 +286,7 @@ implementation claims.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.5+draft | 2026-08-04 | ATHER | Recorded the TSK-PER-59 dispatch-boundary negative matrix as closed and the two remaining items as missing implementations. Recorded a high-severity finding: binding authenticity is not verified at dispatch, so never-issued, expired and revoked bindings reach the provider. Not fixed here; it needs owner approval and blocks the #64 gate. |
 | 0.1.4+draft | 2026-08-04 | ATHER | Recorded the conformance suite and evidence package for TSK-PER-64 and moved it to review. The gate is NOT passed: review_state is pending and security/release approval is outstanding. No task was promoted to done and no implementation status was propagated. |
 | 0.1.3+draft | 2026-08-04 | LYRA | Recorded the observed routing and failover module, tests, and design document for TSK-PER-62 and moved it to review; the router is not wired into dispatch, the decision-record schema is not in API-008, and the #64 gate is unchanged. |
 | 0.1.2+draft | 2026-08-04 | LYRA | Recorded the observed provider-adapter modules, tests, and enablement policy for TSK-PER-63, moved it to review, and corrected its dependency list to include TSK-PER-61 per issue #63; every provider record stays pending and the #64 gate is unchanged. |
