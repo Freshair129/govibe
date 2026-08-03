@@ -31,18 +31,50 @@ function requireText(value, field) {
   return value;
 }
 
+function scopeMismatch(field) {
+  fail("EXECUTION_BINDING_SCOPE_MISMATCH", `binding ${field} does not match dispatch scope`, { field });
+}
+
 function validateBinding(provider, request) {
   const binding = request?.executionBinding;
   if (!binding || typeof binding !== "object") {
     fail("EXECUTION_BINDING_REQUIRED", "governed execution binding is required");
   }
 
+  const legacy = !Object.hasOwn(binding, "schema");
+  if (!legacy && binding.schema !== "govibe-execution-binding/v1") {
+    fail("EXECUTION_BINDING_SCHEMA_UNSUPPORTED", "unsupported execution binding schema", { schema: binding.schema });
+  }
+
+  if (legacy) {
+    const extendedFields = ["actor_id", "workspace_id", "task_id", "agent_id", "session_id", "turn_id", "context_id", "cache_id"];
+    const mixedField = extendedFields.find((field) => binding[field] !== undefined);
+    if (mixedField) {
+      fail("EXECUTION_BINDING_LEGACY_INVALID", "schema-less legacy bindings must remain principal-only", { field: mixedField });
+    }
+  }
+
+  const actorId = legacy ? null : requireText(binding.actor_id, "executionBinding.actor_id");
+  const principalId = requireText(binding.principal_id, "executionBinding.principal_id");
+  if (!legacy && actorId !== principalId) {
+    fail("EXECUTION_BINDING_IDENTITY_MISMATCH", "binding actor and principal must match");
+  }
+
   const normalized = {
+    schema: legacy ? null : binding.schema,
     binding_id: requireText(binding.binding_id, "executionBinding.binding_id"),
     provider_id: requireText(binding.provider_id, "executionBinding.provider_id"),
     entitlement_id: requireText(binding.entitlement_id, "executionBinding.entitlement_id"),
-    principal_id: requireText(binding.principal_id, "executionBinding.principal_id"),
+    actor_id: actorId,
+    principal_id: principalId,
+    workspace_id: legacy ? null : requireText(binding.workspace_id, "executionBinding.workspace_id"),
+    task_id: legacy ? null : requireText(binding.task_id, "executionBinding.task_id"),
+    agent_id: legacy ? null : requireText(binding.agent_id, "executionBinding.agent_id"),
     run_id: requireText(binding.run_id, "executionBinding.run_id"),
+    session_id: legacy ? null : requireText(binding.session_id, "executionBinding.session_id"),
+    turn_id: legacy ? null : requireText(binding.turn_id, "executionBinding.turn_id"),
+    context_id: legacy ? null : requireText(binding.context_id, "executionBinding.context_id"),
+    cache_id: legacy ? null : requireText(binding.cache_id, "executionBinding.cache_id"),
     credential_grant_id: binding.credential_grant_id ?? null,
     provider_session_id: binding.provider_session_id ?? null,
   };
@@ -52,11 +84,32 @@ function validateBinding(provider, request) {
       expected_provider: provider,
     });
   }
-  if (request?.run_id && request.run_id !== normalized.run_id) {
+  const requestActorId = requireText(request?.actor_id, "request.actor_id");
+  const requestRunId = requireText(request?.run_id, "request.run_id");
+  if (requestRunId !== normalized.run_id) {
+    if (!legacy) scopeMismatch("run_id");
     fail("EXECUTION_BINDING_RUN_MISMATCH", "binding run does not match request run");
   }
-  if (request?.actor_id && request.actor_id !== normalized.principal_id) {
+  if (requestActorId !== normalized.principal_id) {
     fail("EXECUTION_BINDING_PRINCIPAL_MISMATCH", "binding principal does not match request actor");
+  }
+
+  if (!legacy) {
+    const identity = request.contextAuthority.identity;
+    const lineage = request.contextAuthority.lineage;
+    const expected = {
+      workspace_id: identity.workspaceId,
+      task_id: identity.taskId,
+      agent_id: identity.agentId,
+      run_id: identity.runId,
+      session_id: request.contextLineage.sessionId,
+      turn_id: request.contextLineage.turnId,
+      context_id: lineage.contextId,
+      cache_id: lineage.cacheId,
+    };
+    for (const [field, value] of Object.entries(expected)) {
+      if (normalized[field] !== value) scopeMismatch(field);
+    }
   }
 
   return Object.freeze(normalized);

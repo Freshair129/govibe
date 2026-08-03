@@ -1,8 +1,8 @@
 ---
 title: "CR: Context Authority Runtime Repair and Execution-Binding Contract Gate"
 doc_id: "FUTURE-CR-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
-status: "approved"
-version: "0.2.0"
+status: "verification_pending"
+version: "0.2.1"
 updated: "2026-08-03"
 owner: "Boss"
 decision_owner: "Boss"
@@ -221,10 +221,72 @@ the authoritative RCA is registered outside the non-SOT registry section. It
 also records the direct `git diff --check` completion gate in WP-06. No runtime
 or test mutation was made while applying this documentation correction.
 
+## 13. Implementation verification record (local only)
+
+### Current disposition
+
+The approved WP-06 implementation is locally verified and independently
+reviewed **APPROVED** for the bounded scope. This is not a CI, merge, or
+release claim: `execution_complete: false` remains controlling while remote CI
+and PR merge evidence are pending.
+
+### Base, head, and inventory
+
+- Audited baseline / merge base: `a5c8d2cc9173c99888ffe1c3580ee5f198924f07`.
+- Implementation worktree head before this commit: `3d4cdaef6b918b81cf159997d752c67bb6a566e2`
+  (`docs: authorize context authority runtime repair`).
+- Local inventory: 212 Vitest cases = **211 pass, 0 fail, 1 skip**; the
+  previous 192-case target was superseded by the approved focused regressions.
+- Security inventory: **35/35 pass**; strict fail-closed assertions remain in
+  place.
+- Selected post-repair source blob IDs: `authority-enforcement.mjs`
+  `28eccaffd55c8aaf83c3efaa4b7343a39204502b`, `continue.mjs`
+  `82af5f8b0019ef64d665b1e843fd96a04a31aac4`,
+  `execution-binding-service.mjs` `9414d19261454a85244dd41591926cfd1702d4ef`,
+  `executor-adapter.mjs` `ff24d3a141e95db9061d4f91438ae34e7e2bb4ce`,
+  `workspace-service.mjs` `5797ff314f23be2ec31aa7b96f1596680fad8f28`, and
+  `vault-context-surface.mjs` `4058c80bb28bb610929b50e83bcd1f53f9724c67`.
+
+### Local evidence commands and results
+
+| Command | Result |
+|---|---|
+| `npm test` | PASS — 37 files, 211 pass / 1 skip / 0 fail; its included security gate passed 35/35. |
+| `npm run test:security` | PASS — 35/35. |
+| `npm run lint` | PASS — `tsc --noEmit`. |
+| `npm run build` | PASS — `tsc && vite build`. |
+| `npm run mcp:smoke` | PASS — 15 tools, 90 roadmap nodes, launcher exit 0. |
+| `npm run docs:validate` | PASS — 357 Markdown files, 191 document IDs, 819 path references; only pre-existing baseline warnings. |
+| `npm run roadmap:validate` | PASS — 7 sources, 0 errors; 14 pre-existing quality warnings. |
+
+The commit gate still requires `npm run diff:check` and direct
+`git diff --check` against the final closure-doc diff.
+
+### Bounded impact disposition
+
+| Changed seed | Relation chain / distance | Required action | Disposition |
+|---|---|---|---|
+| Context-authority validation | `ADR-023/API-007 -> continuation / WorkspaceService / legacy resolve -> focused tests` (1-3) | Forward only caller authority; fail closed before MSP. | Implemented and locally verified. |
+| D-01 binding identity correlation | `ADR-024/API-008 -> binding service -> executor adapter -> focused tests` (1-3) | Require the bounded actor/principal and scope tuple; retain only schema-absent principal-only legacy compatibility. | Implemented and locally verified; API-008 remains draft. |
+| Runtime command surface | `WorkspaceService / vault-context surface -> MCP smoke / security controls` (1-2) | Preserve parent-only MSP boundary and no retrieval widening. | Implemented and locally verified. |
+
+Traversal was bounded to the approved CR/WP relations. No canonical graph query
+was available for a completeness claim; no additional `must_update` relation
+was identified in this bounded review. The timestamp-only dirty
+`scripts/mcp/graph-dispatch-authority.security.mjs` has the same blob ID as
+`HEAD` and is explicitly excluded from the commit.
+
+### Remaining gates
+
+- Remote CI evidence has not been obtained.
+- The PR has not been merged.
+- No release, deployment, or final completion claim is authorized.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.1 | 2026-08-03 | ATHER | Recorded local 212-case and 35/35 security evidence, bounded impact disposition, and independent-review approval; status is verification pending while remote CI and merge remain outstanding. |
 | 0.2.0 | 2026-08-03 | Boss | Approved D-01 Option A, D-02 caller-supplied valid authority propagation, and D-03 bounded WP-06 execution; API-008 remains draft pending validated implementation alignment. |
 | 0.1.1+draft | 2026-08-03 | THESEUS / ATHER | Corrected capability-runtime versus MSP-live failure attribution and recorded the review-gate disposition. |
 | 0.1.0+draft | 2026-08-03 | THESEUS / ATHER | Created proposal-only C-3/H3/HIGH repair boundary for the audited 11 Vitest failures, including authority, legacy-surface, and binding-contract owner decisions. |

@@ -1,5 +1,6 @@
 import { govibeRuntime } from "./runtime-core.mjs";
 import { toolCatalog } from "./registry.mjs";
+import { validateContextAuthorityCorrelation } from "../../packages/govibe-core/src/authority-enforcement.mjs";
 
 const CONTEXT_PROFILES = ["T-ctx", "V-ctx", "W-ctx", "M-ctx"];
 
@@ -71,8 +72,9 @@ export const vaultContextToolCatalog = [
         workflowRef: { type: "string" },
         stateKeys: { type: "array", items: { type: "string" } },
         knowledgeRefs: { type: "array", items: { type: "string" } },
+        contextAuthority: { type: "object" },
       },
-      required: ["actor", "workspaceId", "workspacePath", "agentId", "contextProfile"],
+      required: ["actor", "workspaceId", "workspacePath", "agentId", "contextProfile", "contextAuthority"],
     },
   },
   {
@@ -176,18 +178,22 @@ export function createVaultContextToolHandler(runtime) {
         });
         break;
       case "govibe.context.resolve":
+        {
+          const governed = validateContextAuthorityCorrelation(args.contextAuthority, { workspaceId: args.workspaceId, agentId: args.agentId, runId: args.runId, sessionId: args.sessionId, turnId: args.turnId, parentContextId: args.parentContextId, knowledgeRefs: args.knowledgeRefs });
         result = await msp.resolveContext({
           actor,
-          workspaceId: requireString(args.workspaceId, "workspaceId"),
+          workspaceId: governed.identity.workspaceId,
           workspacePath: requireString(args.workspacePath, "workspacePath"),
-          agentId: requireString(args.agentId, "agentId"),
+          agentId: governed.identity.agentId,
           contextProfile: requireString(args.contextProfile, "contextProfile"),
-          parentContextId: args.parentContextId ?? null,
+          parentContextId: governed.lineage.parentContextId,
           workflowRef: args.workflowRef ?? null,
           stateKeys: args.stateKeys ?? [],
-          knowledgeRefs: args.knowledgeRefs ?? [],
+          knowledgeRefs: governed.contextAuthority.knowledgeRefs,
+          contextAuthority: governed.contextAuthority,
           mode: "codev",
         });
+        }
         break;
       case "govibe.context.diff":
         result = await msp.call("msp_context_diff", {

@@ -1,13 +1,14 @@
 ---
 title: "WP-06: Context Authority Runtime Repair"
 doc_id: "WP-06-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
-status: "approved"
-version: "0.2.0"
+status: "verification_pending"
+version: "0.2.1"
 updated: "2026-08-03"
 owner: "Boss"
 approval_owner: "Boss"
 approval_recorded_at: "2026-08-03"
 execution_authorized: true
+execution_complete: false
 complexity: "C-3"
 access_scope: "H3"
 risk: "HIGH"
@@ -68,10 +69,37 @@ access. This approved work packet authorizes only its bounded scope.
 Capture pre-change hashes and inverse patches; revert in reverse dependency
 order, rerun the baseline matrix, and never restore an authority bypass.
 
+## Local verification and closure hold
+
+- Independent implementation review: **APPROVED** for the approved WP-06
+  boundary.
+- `npm test`: PASS — 37 test files, **211 pass / 0 fail / 1 skip** (212 total).
+- `npm run test:security`: PASS — **35/35**.
+- `npm run lint`, `npm run build`, and `npm run mcp:smoke`: PASS.
+- `npm run docs:validate`: PASS (baseline documentation warnings only).
+- `npm run roadmap:validate`: PASS (0 errors; 14 baseline quality warnings).
+- Final-diff gates remain `npm run diff:check` and `git diff --check`.
+
+The 212-case inventory supersedes the original 192-case exit target because
+the approved focused tests were added. The implementation has not completed
+execution: `execution_complete: false` remains controlling until remote CI and
+PR merge evidence exist. No deployment, release, or final completion is
+claimed by this work packet.
+
+### Bounded impact disposition
+
+`ADR-023/API-007 -> continuation, WorkspaceService, legacy resolve -> tests`
+and `ADR-024/API-008 -> binding service, executor adapter -> tests` were
+reviewed at bounded distances 1-3. Required repair actions are locally
+verified; no additional `must_update` artifact was found within the approved
+relation radius. Graph coverage outside this packet is unresolved and does not
+support a completeness claim.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.1 | 2026-08-03 | ATHER | Moved to verification pending; recorded 212-case local gate evidence, bounded impact disposition, and the remote-CI/merge closure hold. |
 | 0.2.0 | 2026-08-03 | Boss | Recorded approval of the bounded WP-06 execution and explicit D-01/D-02 selections; API-008 remains draft pending validated alignment. |
 | 0.1.1+draft | 2026-08-03 | THESEUS / ATHER | Corrected capability-runtime and MSP-live test mapping; added direct `git diff --check` to the exit gate. |
 | 0.1.0+draft | 2026-08-03 | THESEUS / ATHER | Opened owner-gated proposal WP-06; implementation remains unauthorized. |

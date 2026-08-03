@@ -22,6 +22,32 @@ afterEach(async () => {
   }
 });
 
+function contextAuthority(overrides = {}) {
+  return {
+    schemaVersion: "govibe-context-authority/v1",
+    identity: { taskId: "TASK-runtime", agentId: "runtime-agent", workspaceId: "workspace-runtime", runId: "run-runtime", sessionId: "session-runtime", turnId: "turn-runtime" },
+    sources: [{ id: "API-007", version: "0.1.0", hash: "a".repeat(64) }],
+    requiredReasonRefs: ["issue:runtime"],
+    traversal: { relationAllowlist: ["implements"], retrievalRadius: 1, inclusions: [], exclusions: [] },
+    knowledgeRefs: ["gks:policy/project"],
+    budget: { maxTokens: 1024, compaction: "bounded" },
+    lineage: { contextId: "ctx-runtime", cacheId: "cache-runtime", parentContextId: null },
+    unresolvedAssumptions: [],
+    ...overrides,
+  };
+}
+
+async function authorityForWorkspace(initialization, overrides = {}) {
+  const state = JSON.parse(await readFile(initialization.statePath, "utf8"));
+  const base = contextAuthority();
+  return {
+    ...base,
+    ...overrides,
+    identity: { ...base.identity, workspaceId: state.workspaceId, ...overrides.identity },
+    knowledgeRefs: overrides.knowledgeRefs ?? state.knowledgeRefs,
+  };
+}
+
 async function fixture() {
   const root = await mkdtemp(path.join(os.tmpdir(), "govibe-runtime-"));
   roots.push(root);
@@ -87,31 +113,52 @@ describe("GoVibe init and continue", () => {
 
   it("assembles a reference-only packet for non-Claude executors", async () => {
     const root = await fixture();
-    const { client } = mockMsp();
-    await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: client, actor: "test" });
-    const result = await continueWorkflow({ workspacePath: root, mspClient: client, actor: "test", executor: "crewai", globalSkillRoot: path.join(root, "global-skills"), trustedWorkspaceHashes: [builtIn().contentHash] });
+    const { client, calls } = mockMsp();
+    const initialization = await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: client, actor: "test" });
+    const authority = await authorityForWorkspace(initialization);
+    const result = await continueWorkflow({ workspacePath: root, mspClient: client, actor: "test", executor: "crewai", contextAuthority: authority, globalSkillRoot: path.join(root, "global-skills"), trustedWorkspaceHashes: [builtIn().contentHash] });
     expect(result.status).toBe("ready");
     expect(result.packet.schema).toBe("govibe-context-packet/v2");
     expect(result.packet.knowledgeRefs[0].ref).toBe("gks:policy/project");
     expect(JSON.stringify(result.packet)).not.toContain("private");
+    expect(calls.find((call) => call.name === "msp_context_resolve")?.input.context_authority).toBe(authority);
+    expect(calls.find((call) => call.name === "msp_context_injection_record")?.input).toMatchObject({
+      agent_id: authority.identity.agentId,
+      workspace_id: authority.identity.workspaceId,
+      run_id: authority.identity.runId,
+      session_id: authority.identity.sessionId,
+      turn_id: authority.identity.turnId,
+      parent_context_id: authority.lineage.parentContextId,
+    });
   });
 
   it("blocks on missing state, MSP unavailability, and context resolution failure", async () => {
     const root = await fixture();
     expect((await continueWorkflow({ workspacePath: root, mspClient: createUnavailableMspClient() })).reason).toBe("missing_project_state");
     const available = mockMsp();
-    await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: available.client });
-    expect((await continueWorkflow({ workspacePath: root, mspClient: createUnavailableMspClient(), globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] })).reason).toBe("msp_unavailable");
+    const initialization = await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: available.client });
+    const authority = await authorityForWorkspace(initialization);
+    expect((await continueWorkflow({ workspacePath: root, mspClient: createUnavailableMspClient(), contextAuthority: authority, globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] })).reason).toBe("msp_unavailable");
     const { client } = mockMsp({ fail: "msp_context_resolve", message: "GKS unavailable" });
-    expect((await continueWorkflow({ workspacePath: root, mspClient: client, globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] })).reason).toBe("context_resolution_failed");
+    expect((await continueWorkflow({ workspacePath: root, mspClient: client, contextAuthority: authority, globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] })).reason).toBe("context_resolution_failed");
+  });
+
+  it("fails closed without caller-supplied authority before MSP context resolution", async () => {
+    const root = await fixture();
+    const { client, calls } = mockMsp();
+    await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: client });
+    const result = await continueWorkflow({ workspacePath: root, mspClient: client, globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] });
+    expect(result).toMatchObject({ status: "blocked", reason: "missing_runtime_authority", authorityError: { code: "missing_runtime_authority" } });
+    expect(calls.some((call) => call.name === "msp_context_resolve")).toBe(false);
   });
 
   it("blocks when required repository source truth disappears", async () => {
     const root = await fixture();
     const { client } = mockMsp();
-    await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: client });
+    const initialization = await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: client });
+    const authority = await authorityForWorkspace(initialization);
     await rm(path.join(root, "README.md"));
-    const result = await continueWorkflow({ workspacePath: root, mspClient: client, globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] });
+    const result = await continueWorkflow({ workspacePath: root, mspClient: client, contextAuthority: authority, globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] });
     expect(result).toMatchObject({ status: "blocked", reason: "context_resolution_failed" });
   });
 
@@ -123,14 +170,31 @@ describe("GoVibe init and continue", () => {
       if (name === "msp_context_resolve") result.shared_vault_refs[0].payload = "SECRET";
       return result;
     });
-    await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: client });
-    const result = await continueWorkflow({ workspacePath: root, mspClient: client, globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] });
+    const initialization = await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: client });
+    const result = await continueWorkflow({ workspacePath: root, mspClient: client, contextAuthority: await authorityForWorkspace(initialization), globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] });
     expect(JSON.stringify(result)).not.toContain("SECRET");
+  });
+
+  it("fails closed before MSP for cross-workspace, supplied identity, and knowledge-scope mismatches", async () => {
+    const root = await fixture();
+    const { client, calls } = mockMsp();
+    const initialization = await initializeWorkspace({ workspacePath: root, builtInSkill: builtIn(), mspClient: client });
+    const authority = await authorityForWorkspace(initialization);
+
+    const crossWorkspace = await continueWorkflow({ workspacePath: root, mspClient: client, contextAuthority: { ...authority, identity: { ...authority.identity, workspaceId: "workspace-other" } }, globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] });
+    expect(crossWorkspace).toMatchObject({ reason: "authority_identity_mismatch", authorityError: { code: "authority_identity_mismatch" } });
+
+    const crossAgent = await continueWorkflow({ workspacePath: root, mspClient: client, agentId: "agent-other", contextAuthority: authority, globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] });
+    expect(crossAgent).toMatchObject({ reason: "authority_identity_mismatch", authorityError: { code: "authority_identity_mismatch" } });
+
+    const scopeMismatch = await continueWorkflow({ workspacePath: root, mspClient: client, contextAuthority: { ...authority, knowledgeRefs: ["gks:scope/other"] }, globalSkillRoot: path.join(root, "none"), trustedWorkspaceHashes: [builtIn().contentHash] });
+    expect(scopeMismatch).toMatchObject({ reason: "knowledge_scope_mismatch", authorityError: { code: "knowledge_scope_mismatch" } });
+    expect(calls.some((call) => call.name === "msp_context_resolve")).toBe(false);
   });
 
   it("rejects MSP references from the wrong ownership namespace", async () => {
     const client = new MspClient(async () => ({ global_private_vault_refs: [{ ref: "file:secret", source_hash: "a".repeat(64) }] }));
-    await expect(client.resolveContext({ workspacePath: process.cwd() })).rejects.toThrow(/out-of-namespace global private vault/i);
+    await expect(client.resolveContext({ workspacePath: process.cwd(), contextAuthority: contextAuthority() })).rejects.toThrow(/out-of-namespace global private vault/i);
   });
 });
 

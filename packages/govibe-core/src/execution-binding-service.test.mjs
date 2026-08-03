@@ -45,6 +45,19 @@ describe("execution binding service", () => {
 
     expect(binding.binding_id).toBe("bind_1");
     expect(binding.provider_id).toBe("local");
+    expect(binding).toMatchObject({
+      schema: "govibe-execution-binding/v1",
+      actor_id: "user_1",
+      principal_id: "user_1",
+      workspace_id: "ws_1",
+      task_id: "task_1",
+      agent_id: "agent_1",
+      run_id: "run_1",
+      session_id: "session_1",
+      turn_id: "turn_1",
+      context_id: "ctx_1",
+      cache_id: "cache_1",
+    });
     expect(binding.context_hash).toBe("hash_1");
     expect(Object.isFrozen(binding)).toBe(true);
     expect(Object.isFrozen(binding.policy_decision_refs)).toBe(true);

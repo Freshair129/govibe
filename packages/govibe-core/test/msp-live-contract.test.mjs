@@ -9,6 +9,21 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const fixture = path.join(here, "fixtures", "reference-msp-server.mjs");
 const openCalls = [];
 
+function contextAuthority(overrides = {}) {
+  return {
+    schemaVersion: "govibe-context-authority/v1",
+    identity: { taskId: "TASK-live", agentId: "agent-reference", workspaceId: "workspace-reference", runId: "run-live", sessionId: "session-live", turnId: "turn-live" },
+    sources: [{ id: "API-007", version: "0.1.0", hash: "a".repeat(64) }],
+    requiredReasonRefs: ["issue:live"],
+    traversal: { relationAllowlist: ["implements"], retrievalRadius: 1, inclusions: [], exclusions: [] },
+    knowledgeRefs: ["gks:shared/reference"],
+    budget: { maxTokens: 1024, compaction: "bounded" },
+    lineage: { contextId: "ctx-live", cacheId: "cache-live", parentContextId: null },
+    unresolvedAssumptions: [],
+    ...overrides,
+  };
+}
+
 function liveClient(mode = "normal", timeoutMs = 1500) {
   const call = createMspStdioCaller({
     command: process.execPath,
@@ -33,6 +48,7 @@ describe("MSP live stdio contract", () => {
       agentId: "agent-reference",
       contextProfile: "V-ctx",
       workflowRef: "msp:workflow/reference",
+      contextAuthority: contextAuthority(),
     });
 
     expect(result.sharedVaultRefs[0].ref).toBe("gks:shared/reference");
@@ -47,6 +63,7 @@ describe("MSP live stdio contract", () => {
       workspaceId: "workspace-reference",
       agentId: "agent-reference",
       contextProfile: "T-ctx",
+      contextAuthority: contextAuthority(),
     })).rejects.toThrow(/out-of-namespace shared vault/i);
   });
 
