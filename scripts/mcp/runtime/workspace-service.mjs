@@ -1,7 +1,7 @@
 import { realpath } from "node:fs/promises";
 import path from "node:path";
 import {
-  assertPolicyAllows, continueWorkflow, createPolicyEnvelope, createWorkflowPlan, docsVersion, getWorkflowStatus,
+  assertPolicyAllows, continueWorkflow, createPolicyEnvelope, createWorkflowPlan, docsVersion, getWorkflowStatus, validateContextAuthorityCorrelation,
   initializeWorkspace, optimizeMeasured, readSkillDefinition, reviewWorkspace, scanWorkspace, transitionWorkflow, workspaceImpact,
 } from "../../../packages/govibe-core/src/index.mjs";
 
@@ -37,8 +37,9 @@ export class WorkspaceService {
       const event = await transitionWorkflow({ workspacePath: target, runId: args.runId, taskId: args.taskId, status: args.status, idempotencyKey: args.idempotencyKey, verification: args.verification, outputRefs: args.outputRefs });
       const run = await getWorkflowStatus({ workspacePath: target, runId: args.runId }); this.publishRun(run); return { status: run.status, event, run };
     }
+    validateContextAuthorityCorrelation(args.contextAuthority, { workspaceId: args.workspaceId, agentId: args.agentId, runId: args.runId, sessionId: args.sessionId, turnId: args.turnId, parentContextId: args.parentContextId, knowledgeRefs: args.knowledgeRefs });
     const builtInSkill = await readSkillDefinition(path.join(this.workspaceRoot, ".govibe", "skills", "block-decomposition", "1.0.0", "SKILL.md"));
-    const result = await continueWorkflow({ workspacePath: target, mspClient: this.mspClient, actor: args.actor ?? "unknown", executor: args.executor ?? "codex", trustedWorkspaceHashes: [builtInSkill.contentHash] });
+    const result = await continueWorkflow({ workspacePath: target, mspClient: this.mspClient, actor: args.actor ?? "unknown", executor: args.executor ?? "codex", agentId: args.agentId, runId: args.runId, sessionId: args.sessionId, turnId: args.turnId, parentContextId: args.parentContextId, contextAuthority: args.contextAuthority, trustedWorkspaceHashes: [builtInSkill.contentHash] });
     this.snapshotStore.appendTerminal(result.status === "ready" ? "sys" : "warn", `GoVibe continue ${result.status}.`); return result;
   }
   async createPlan(args = {}) { const result = await createWorkflowPlan({ workspacePath: await this.target(args.workspacePath), runId: args.runId, tasks: args.tasks, policyEnvelope: createPolicyEnvelope(args.mode ?? "codev", args.actor ?? "unknown") }); this.publishRun(result); return result; }

@@ -14,6 +14,27 @@ const roots = [];
 async function root() { const value = await mkdtemp(path.join(os.tmpdir(), 'govibe-migration-')); roots.push(value); return value; }
 afterEach(async () => Promise.all(roots.splice(0).map((value) => rm(value, { recursive: true, force: true }))));
 
+function governedRequest() {
+  return {
+    actor_id: 'migration-agent',
+    run_id: 'run-migration',
+    contextAuthority: {
+      schemaVersion: 'govibe-context-authority/v1',
+      identity: { taskId: 'TASK-migration', agentId: 'migration-agent', workspaceId: 'workspace-migration', runId: 'run-migration', sessionId: 'session-migration', turnId: 'turn-migration' },
+      sources: [{ id: 'API-007', version: '0.1.0', hash: 'a'.repeat(64) }],
+      requiredReasonRefs: ['issue:migration'],
+      traversal: { relationAllowlist: ['implements'], retrievalRadius: 1, inclusions: [], exclusions: [] },
+      knowledgeRefs: [],
+      budget: { maxTokens: 1024, compaction: 'bounded' },
+      lineage: { contextId: 'ctx-migration', cacheId: 'cache-migration', parentContextId: null },
+      unresolvedAssumptions: [],
+    },
+    contextLineage: { runId: 'run-migration', sessionId: 'session-migration', turnId: 'turn-migration' },
+    policyDecision: 'allow',
+    executionBinding: { binding_id: 'binding-migration', provider_id: 'codex', entitlement_id: 'entitlement-migration', principal_id: 'migration-agent', run_id: 'run-migration', credential_grant_id: null, provider_session_id: null },
+  };
+}
+
 describe('durable workflow', () => {
   it('creates a deterministic DAG and resumes idempotently from append-only state', async () => {
     const workspacePath = await root();
@@ -48,7 +69,7 @@ describe('providers and policy', () => {
     const registry = createExecutorRegistry({ codex: { execute: async () => ({ ok: true }) } });
     expect(registry.inspect()).toEqual(expect.arrayContaining([expect.objectContaining({ id: 'claude-code', available: false })]));
     await expect(registry.execute('claude-code', {})).rejects.toBeInstanceOf(ProviderUnavailableError);
-    await expect(registry.execute('codex', {})).resolves.toEqual({ ok: true });
+    await expect(registry.execute('codex', governedRequest())).resolves.toEqual({ ok: true });
   });
 
   it('shares skill definitions while separating CoVibe and CoDev authority', () => {

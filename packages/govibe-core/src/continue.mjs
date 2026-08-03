@@ -5,6 +5,7 @@ import path from "node:path";
 
 import { buildContextPacket } from "./context-packet.mjs";
 import { persistContextInjection } from "./context-store.mjs";
+import { RuntimeAuthorityError, validateContextAuthorityCorrelation } from "./authority-enforcement.mjs";
 import { loadGlobalTrustPolicy, loadSkillLock, resolveSkill } from "./skill-registry.mjs";
 
 async function validateRepositoryRefs(projectState, workspacePath) {
@@ -32,15 +33,16 @@ export async function continueWorkflow({
   mspClient,
   actor = "unknown",
   executor = "codex",
-  agentId = "default-agent",
+  agentId,
   contextProfile = "V-ctx",
   workflowRef = null,
-  parentContextId = null,
-  runId = `continue-${Date.now()}`,
-  turnId = "turn-1",
-  sessionId = null,
+  parentContextId,
+  runId,
+  turnId,
+  sessionId,
   globalSkillRoot,
   trustedWorkspaceHashes = [],
+  contextAuthority,
 }) {
   const root = path.resolve(workspacePath);
   let projectState;
@@ -62,12 +64,14 @@ export async function continueWorkflow({
     if (!pin) throw new Error("Skill lock contains no pinned skill.");
     const skill = await resolveSkill({ workspacePath: root, globalRoot: globalSkillRoot ?? path.join(os.homedir(), ".govibe", "skills"), ...pin, trustWorkspaceSkills: trustPolicy.trustWorkspaceSkills, trustedWorkspaceHashes: [...trustPolicy.trustedWorkspaceHashes, ...trustedWorkspaceHashes] });
     projectState = await validateRepositoryRefs(projectState, root);
-    const context = await mspClient.resolveContext({ actor, executor, agentId, contextProfile, parentContextId, workflowRef, mode: "codev", workspaceId: projectState.workspaceId, workspacePath: root, stateKeys: projectState.stateKeys, knowledgeRefs: projectState.knowledgeRefs });
-    const packet = buildContextPacket({ projectState, skill, context, contextProfile, parentContextId });
-    const persisted = await persistContextInjection({ workspacePath: root, packet, agentId, runId, turnId, sessionId, diffRef: context.diffRef ?? null });
+    const governed = validateContextAuthorityCorrelation(contextAuthority, { workspaceId: projectState.workspaceId, agentId, runId, sessionId, turnId, parentContextId, knowledgeRefs: projectState.knowledgeRefs });
+    const context = await mspClient.resolveContext({ actor, executor, agentId: governed.identity.agentId, contextProfile, parentContextId: governed.lineage.parentContextId, workflowRef, mode: "codev", workspaceId: governed.identity.workspaceId, workspacePath: root, stateKeys: projectState.stateKeys, knowledgeRefs: governed.contextAuthority.knowledgeRefs, contextAuthority: governed.contextAuthority });
+    const packet = buildContextPacket({ projectState, skill, context, contextProfile, parentContextId: governed.lineage.parentContextId });
+    const persisted = await persistContextInjection({ workspacePath: root, packet, agentId: governed.identity.agentId, runId: governed.identity.runId, turnId: governed.identity.turnId, sessionId: governed.identity.sessionId, diffRef: context.diffRef ?? null });
     const registered = await mspClient.recordContextInjection(persisted.record);
     return { status: "ready", packet, injectionRef: registered.injectionRef, cachePath: persisted.cachePath };
   } catch (error) {
+    if (error instanceof RuntimeAuthorityError) return { status: "blocked", reason: error.code, error: error.message, authorityError: error.toJSON?.() ?? { code: error.code, message: error.message } };
     const message = error instanceof Error ? error.message : String(error);
     const reason = /MSP|transport|parent/i.test(message) ? "msp_unavailable" : "context_resolution_failed";
     return { status: "blocked", reason, error: message };

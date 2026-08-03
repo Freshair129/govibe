@@ -89,6 +89,7 @@ export function createExecutionBindingService({
       binding_id: `bind_${idFactory()}`,
       binding_request_id: bindingRequestId,
       actor_id: actorId,
+      principal_id: actorId,
       organization_id: organizationId,
       workspace_id: workspaceId,
       project_id: input?.project_id ?? null,
@@ -128,7 +129,21 @@ export function createExecutionBindingService({
     if (binding.state !== "active") fail("EXECUTION_BINDING_REVOKED", "execution binding is not active", { binding_id: bindingId });
     if (Date.parse(binding.expires_at) <= clock().getTime()) fail("EXECUTION_BINDING_EXPIRED", "execution binding expired", { binding_id: bindingId });
 
-    for (const field of ["actor_id", "workspace_id", "run_id", "provider_id", "entitlement_id", "context_hash"]) {
+    for (const field of [
+      "actor_id",
+      "principal_id",
+      "workspace_id",
+      "task_id",
+      "agent_id",
+      "run_id",
+      "session_id",
+      "turn_id",
+      "context_id",
+      "cache_id",
+      "provider_id",
+      "entitlement_id",
+      "context_hash",
+    ]) {
       if (expected[field] !== undefined && binding[field] !== expected[field]) {
         fail("EXECUTION_BINDING_SCOPE_MISMATCH", `execution binding ${field} mismatch`, { field });
       }

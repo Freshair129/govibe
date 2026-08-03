@@ -2,7 +2,7 @@
 title: "GoVibe Documentation Navigation Hub"
 doc_id: "DOCS-NAVIGATION-HUB"
 status: "draft"
-version: "0.2.0+draft"
+version: "0.2.2+draft"
 updated: "2026-08-03"
 owner: "THESEUS / ATHER"
 source_of_truth: true
@@ -62,9 +62,22 @@ non-canonical `.brain` history. The integration result preserves the accepted
 maps and exact recovery chain. It does not close the separate 77 criteria, 14
 legacy-roadmap, or six runtime-test follow-up queues.
 
+## Approval-Gated Runtime Repair
+
+- `docs/change-requests/CR-2026-08-03-Context-Authority-Runtime-Repair.md`
+- `docs/rca/RCA-2026-08-03-Context-Authority-Runtime-Repair.md`
+- `docs/change-control/change-requests/work-packets/WP-06-Context-Authority-Runtime-Repair.md`
+
+Boss approved the bounded runtime-repair packet on 2026-08-03: D-01 Option A
+contract alignment, D-02 caller-supplied valid authority propagation for legacy
+`resolveContext`, and D-03 WP-06 execution. API-008 remains draft until the
+implementation alignment is validated; this index does not claim completion.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.2+draft | 2026-08-03 | Boss / THESEUS | Recorded owner authorization for the bounded runtime-repair packet while preserving API-008 draft status pending validation. |
+| 0.2.1+draft | 2026-08-03 | THESEUS / ATHER | Added navigation for the owner-gated context-authority runtime repair packet without authorizing runtime mutation. |
 | 0.2.0+draft | 2026-08-03 | THESEUS / ATHER | Added Phase 1B / Phase 2 completion, current runbook navigation, integration evidence, and explicit unresolved-queue boundaries. |
 | 0.1.0+draft | 2026-08-03 | THESEUS / ATHER | Added the human navigation hub and cleansing control-packet entry points without changing canonical paths. |

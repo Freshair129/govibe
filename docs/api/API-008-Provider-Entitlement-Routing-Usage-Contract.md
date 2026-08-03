@@ -2,8 +2,8 @@
 doc_id: "API-008-PROVIDER-ENTITLEMENT-ROUTING-USAGE-CONTRACT"
 title: "API-008: Provider Entitlement, Routing and Usage Contract"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-08-02"
+version: "0.2.1+draft"
+updated: "2026-08-03"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 related_issue: 55
@@ -28,6 +28,37 @@ This API consumes MSP-governed context. It does not define knowledge retrieval, 
 - Provider output is candidate state.
 - Reported, estimated, and unknown usage values remain distinguishable.
 - Failover creates a new binding and preserves context lineage.
+
+### 2.1 Execution-binding identity correlation
+
+`actor_id` is the authoritative requester identity on a governed binding
+request. `principal_id` is the exact correlation identity used by adapters,
+credential grants, and provider sessions; it is not independently selectable.
+
+Every `govibe-execution-binding/v1` response must contain non-empty
+`actor_id`, `principal_id`, `workspace_id`, `task_id`, `agent_id`, `run_id`,
+`session_id`, `turn_id`, `context_id`, and `cache_id`. The binding service must
+emit equal `actor_id` and `principal_id`. Before dispatch, the adapter must
+require that equality and correlate the fields as follows:
+
+- `actor_id` and `principal_id` equal the dispatch request `actor_id`;
+- `workspace_id`, `task_id`, `agent_id`, `run_id`, `session_id`, and `turn_id`
+  equal the corresponding validated `contextAuthority.identity` values;
+- `run_id` also equals the dispatch request `run_id`;
+- `session_id` and `turn_id` equal the validated dispatch context lineage; and
+- `context_id` and `cache_id` equal `contextAuthority.lineage`.
+
+Any missing field or mismatch must fail closed. A v1 binding must never fall
+back to legacy interpretation.
+
+The only compatibility path is a principal-only runtime binding whose
+`schema` property is absent. It must contain the legacy binding/provider/
+entitlement/principal/run fields, must not contain `actor_id` or the extended
+workspace/task/agent/session/turn/context/cache fields, and its `principal_id`
+and `run_id` must exactly match the dispatch request. A present null, undefined,
+empty, or unknown `schema` value is unsupported. Legacy compatibility does not
+bypass context-authority, policy-decision, or lineage validation and must not be
+used to reinterpret an incomplete v1 binding.
 
 ## 3. Provider capability descriptor
 
@@ -210,7 +241,16 @@ Schema identifier: `govibe-execution-binding/v1`
 schema: govibe-execution-binding/v1
 binding_id: string
 binding_request_id: string
+actor_id: string
+principal_id: string
+workspace_id: string
+task_id: string
+agent_id: string
+run_id: string
+session_id: string
+turn_id: string
 context_id: string
+cache_id: string
 context_hash: string
 provider_id: string
 adapter_id: string
@@ -395,3 +435,11 @@ This contract extends:
 - API-007 Knowledge and Context Authority Contract.
 
 Where execution-resource behavior conflicts with context authority, API-007 and ADR-023 govern context, and ADR-024/API-008 govern resource binding.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.2.1+draft | 2026-08-03 | ARCHON / ATHER | Made the v1 actor/principal and workspace/task/agent/run/session/turn/context/cache correlation tuple mandatory and fail closed; bounded legacy compatibility to an absent-schema principal-only runtime binding. |
+| 0.2.0+draft | 2026-08-03 | ARCHON / ATHER | Defined D-01 actor/principal correlation: binding-service output carries equal `actor_id` and `principal_id`; adapters fail closed on a supplied mismatch while retaining the bounded legacy single-principal compatibility path. |
+| 0.1.0+draft | 2026-08-02 | ARCHON / ATHER | Initial draft provider-entitlement, routing, usage, affinity, and failover contract. |

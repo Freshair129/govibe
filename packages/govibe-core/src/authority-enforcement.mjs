@@ -36,6 +36,21 @@ export function buildBoundedGraphQuery(contextAuthority) {
     fail("invalid_runtime_authority", "Unsupported context authority schema.", { schemaVersion: authority.schemaVersion });
   }
 
+  const identity = requireObject(authority.identity, "contextAuthority.identity");
+  for (const field of ["taskId", "agentId", "workspaceId", "runId", "sessionId", "turnId"]) {
+    requireString(identity[field], `contextAuthority.identity.${field}`);
+  }
+
+  const lineage = requireObject(authority.lineage, "contextAuthority.lineage");
+  requireString(lineage.contextId, "contextAuthority.lineage.contextId");
+  requireString(lineage.cacheId, "contextAuthority.lineage.cacheId");
+  if (lineage.parentContextId != null) requireString(lineage.parentContextId, "contextAuthority.lineage.parentContextId");
+
+  const unresolvedAssumptions = requireStringArray(authority.unresolvedAssumptions ?? [], "contextAuthority.unresolvedAssumptions");
+  if (unresolvedAssumptions.length > 0) {
+    fail("unresolved_assumption", "Context resolution is blocked while assumptions remain unresolved.", { unresolvedAssumptions });
+  }
+
   const traversal = requireObject(authority.traversal, "contextAuthority.traversal");
   const relationAllowlist = requireStringArray(traversal.relationAllowlist, "contextAuthority.traversal.relationAllowlist", { min: 1 });
   if (relationAllowlist.includes("*") || relationAllowlist.includes("unrestricted")) {
@@ -72,6 +87,36 @@ export function buildBoundedGraphQuery(contextAuthority) {
     source_constraints: sourceConstraints,
     budget: { ...budget, maxTokens },
   };
+}
+
+function assertMatchingField(actual, expected, field, code) {
+  if (actual == null) return;
+  const normalized = requireString(actual, field);
+  if (normalized !== expected) fail(code, `${field} does not match context authority.`, { field, actual: normalized, expected });
+}
+
+function assertMatchingStringArray(actual, expected, field) {
+  if (actual == null) return;
+  const normalized = requireStringArray(actual, field);
+  if (normalized.length !== expected.length || normalized.some((value, index) => value !== expected[index])) {
+    fail("knowledge_scope_mismatch", `${field} does not exactly match authority-controlled knowledge refs.`, { field, actual: normalized, expected });
+  }
+}
+
+export function validateContextAuthorityCorrelation(contextAuthority, actual = {}) {
+  const boundedGraphQuery = buildBoundedGraphQuery(contextAuthority);
+  const identity = contextAuthority.identity;
+  const lineage = contextAuthority.lineage;
+  assertMatchingField(actual.workspaceId, identity.workspaceId, "workspaceId", "authority_identity_mismatch");
+  assertMatchingField(actual.agentId, identity.agentId, "agentId", "authority_identity_mismatch");
+  assertMatchingField(actual.runId, identity.runId, "runId", "authority_identity_mismatch");
+  assertMatchingField(actual.sessionId, identity.sessionId, "sessionId", "authority_identity_mismatch");
+  assertMatchingField(actual.turnId, identity.turnId, "turnId", "authority_identity_mismatch");
+  if (actual.parentContextId !== undefined && actual.parentContextId !== lineage.parentContextId) {
+    fail("authority_lineage_mismatch", "parentContextId does not match context authority lineage.", { actual: actual.parentContextId, expected: lineage.parentContextId });
+  }
+  assertMatchingStringArray(actual.knowledgeRefs, contextAuthority.knowledgeRefs ?? [], "knowledgeRefs");
+  return { contextAuthority, boundedGraphQuery, identity, lineage };
 }
 
 export function assertExecutorDispatchAllowed(request) {
