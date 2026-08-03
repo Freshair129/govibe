@@ -1,9 +1,9 @@
 ---
 title: "TDD: POC Canonical Loop (Graph-to-View)"
 doc_id: "TDD-POC-CANONICAL-LOOP"
-status: "draft"
-version: "0.2.0"
-updated: "2026-08-03"
+status: "approved"
+version: "1.0.0"
+updated: "2026-08-04"
 owner: "Boss / ATHER"
 source_of_truth: false
 conforms_to:
@@ -190,6 +190,61 @@ Gate สุดท้าย: `npm run baseline:check` ต้องเขียว
 | 2 | Export Markdown ควรเป็นไฟล์ projection แยก หรือเขียนกลับ source ใน V1 | เปิด — V0 เลือกไฟล์แยกเพื่อความปลอดภัย |
 | 3 | เมื่อไรจึงสลับ file-backed store เป็น GenesisBlockDB | หลัง POC ผ่านเกณฑ์ครบ 5 ข้อ |
 
-## 10. Rollback / Exit
+## 10. Implementation Evidence (2026-08-04)
+
+POC ถูก implement แล้วเป็นโค้ดคู่ขนานใต้ `packages/govibe-core/src/poc/` — ไม่แตะ runtime path เดิม
+
+| Module | หน้าที่ | Requirement ที่รองรับ |
+| --- | --- | --- |
+| `candidate-extractor.mjs` | semantic front-end: Markdown → Candidate Semantic IR พร้อม source locator + hash | CSIR-FR-001..006 |
+| `msp-stub.mjs` | authority boundary: mint canonical identity, identity decision, conflict record | CSIR-FR-010..015, FR-022/023, FR-030/031 |
+| `promotion-runner.mjs` | ทางเขียนเดียวสู่ canonical ผ่าน `materializeCanonicalKnowledge` | CSIR-FR-020/025 |
+| `canonical-store.mjs` | reference backend หลัง backend-neutral port (append-only revisions) | CSIR-FR-024, FR-060..066 |
+| `view-compiler.mjs` | projection จาก declared graph revision พร้อม manifest | CSIR-FR-040..045 |
+| `semantic-delta.mjs` | reverse path: base-revision check + bounded edit set | CSIR-FR-050..055 |
+| `markdown-projection.mjs` | generated view; ประกาศ revision และ `source_of_truth: false` | CSIR-FR-041/043/045 |
+
+### ผลการทดสอบ
+
+`packages/govibe-core/src/poc/canonical-loop.test.mjs` — **21/21 ผ่าน**; full suite `npm test` 235 ผ่าน (1 skipped); `npm run baseline:check` exit 0
+
+| เกณฑ์ | ผล | หลักฐาน |
+| --- | --- | --- |
+| 1. View จาก canonical graph, ศูนย์การเรียก parser เดิม | ผ่าน | test สแกน import ของทุกโมดูล POC — ไม่มี reference ถึง `roadmap-parser` |
+| 2. Provenance ครบสาย | ผ่าน | ทุก node มี `candidateRef` + `sourcePath` + `sourceSection` + `sourceHash` |
+| 3. Determinism | ผ่าน | recompile byte-identical; `contentHash` คงที่เมื่อเปลี่ยนเฉพาะ clock |
+| 4. Round-trip หนึ่ง field | ผ่าน | `state: planned → done`; field อื่นคงเดิมทั้งหมด; Markdown diff จำกัดเฉพาะแถวที่แก้ + manifest hash |
+| 5. ไม่มี bypass MSP | ผ่าน | rogue/partial MSP ถูก validator ปฏิเสธและ store ยังว่าง; direct GKS ยังปิด |
+
+### ผลเพิ่มเติมที่ได้จาก POC
+
+- **Identity churn (คำถามค้างข้อ 1) มีคำตอบเบื้องต้น:** candidate ref ผูกกับ logical key (`sourcePath#id`) ไม่ใช่ wording — การ rewrite ชื่อเรื่องแบบรักษาความหมายให้ `decision: reuse` และ canonical ref เดิม ขณะที่ `source_hash` เปลี่ยน (ทดสอบแล้ว) ข้อจำกัดที่ยังเปิด: ถ้า **ID** ในเอกสารเปลี่ยน identity จะขาด — ต้องใช้ resolution ที่ลึกกว่า logical key ใน V1
+- **Idempotence:** promote ซ้ำด้วยเนื้อหาเดิมไม่สร้าง revision ใหม่
+- **Multi-view:** `roadmap-board` และ `backlog` compile จาก revision เดียวกันได้ พร้อมรายงาน `omitted`
+- **Parity:** เทียบกับ parser เดิมบน `docs/roadmap/BACKLOG-p1-mvp-core.md` — canonical view ครอบคลุม node ทุกตัวที่ parser เดิมพบ และ `title`/`state` ตรงกัน
+
+### ส่วนที่เกินขอบเขต V0 ที่ตัดสินใจทำเพิ่ม
+
+เพิ่มการสกัด checklist ใน `## Task Breakdown` (นอกเหนือจาก table) เพราะจำเป็นต่อการพิสูจน์ parity กับ parser เดิมบนเอกสารจริง — ถ้าไม่ทำ ต้องลดเกณฑ์ parity ลงแทน ซึ่งจะทำให้หลักฐานอ่อนกว่าที่ TDD กำหนด
+
+### ข้อจำกัดที่ต้องระบุอย่างซื่อสัตย์
+
+- MSP เป็น stub ใน process เดียวกัน ไม่มี auth/network — พิสูจน์ได้แค่ว่า **boundary ถูกเดินจริง** ไม่ได้พิสูจน์ authorization
+- Canonical store เป็น reference backend แบบไฟล์ ยังไม่ได้ทดสอบกับ GenesisBlockDB adapter (CSIR-NFR-009 ยังไม่ครอบคลุม)
+- ครอบคลุม view เดียวจาก 4 view ที่ SRS §7 กำหนด; PRD Markdown / Jira JSON / Agent context ยังไม่ทำ
+- ยังไม่ได้วัด NFR เชิงตัวเลข (identity preservation ≥95%, false merge ≤2%) — ต้องมี labeled fixture set ก่อน
+- `src/mission-auth-bootstrap.test.ts` มี flake ที่มีอยู่เดิม (reassign `window.fetch`) ล้มเป็นครั้งคราวเมื่อรันทั้ง suite ไม่เกี่ยวกับ POC
+
+## 11. Rollback / Exit
 
 POC เป็นโค้ดคู่ขนาน ไม่แตะ runtime path เดิม — exit คือ (a) ผ่านเกณฑ์ → เขียน Blueprint สำหรับ V1 ตาม Docs-First workflow หรือ (b) ไม่ผ่าน → เก็บ evidence report แล้วถอดโค้ด POC ออกได้โดยไม่กระทบระบบเดิม
+
+**สถานะ exit:** ผ่านเกณฑ์ทั้ง 5 (2026-08-04) → เส้นทางต่อไปคือ Blueprint V1 ซึ่งต้องครอบคลุมอย่างน้อย: view ที่เหลือของ SRS §7, GenesisBlockDB adapter conformance (CSIR-NFR-009), labeled fixture สำหรับวัด NFR-002/003, และการสลับ Mission Control roadmap path มาใช้ canonical projection
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 1.0.0 | 2026-08-04 | Boss / ATHER | Ratified; POC implemented under `packages/govibe-core/src/poc/` with 21 passing tests and evidence recorded for all five acceptance criteria. |
+| 0.2.0 | 2026-08-03 | Boss / ATHER | Aligned with merged SRS-Canonical-Semantic-IR (#91): declared as vertical slice 1 of SRS section 7, traced success metrics to CSIR requirement IDs, adopted semantic-delta terminology and view-manifest fields. |
+| 0.1.0 | 2026-08-03 | Boss / ATHER | Initial POC design for the canonical graph-to-view loop. |
