@@ -2,7 +2,7 @@
 title: "BACKLOG: Provider Entitlement Runtime"
 doc_id: "BACKLOG-PROVIDER-ENTITLEMENT-RUNTIME"
 status: "draft"
-version: "0.1.2+draft"
+version: "0.1.3+draft"
 updated: "2026-08-04"
 owner: "LYRA"
 auditor: "ATHER"
@@ -14,6 +14,7 @@ related_docs:
   - "docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md"
   - "docs/security/POLICY-Provider-Entitlement-Usage-Ledger-Redaction-and-Retention.md"
   - "docs/security/POLICY-Provider-Adapter-Enablement.md"
+  - "docs/architecture/SDD-Execution-Routing-and-Failover.md"
   - "docs/assurance/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md"
   - "docs/security/POLICY-Provider-Entitlement-Sharing-Compatibility.md"
   - "docs/change-control/TODO-Execution-Binding-Lifecycle.md"
@@ -50,7 +51,7 @@ implementation claims.
 |---|---|---|---|---:|
 | PHA-PER-01 | | Entitlement authority and credential/session security foundation | review | 60 |
 | PHA-PER-02 | | Governed planning, binding, and usage accounting | in-progress | 70 |
-| PHA-PER-03 | | Bounded adapters and quota-aware routing | in-progress | 35 |
+| PHA-PER-03 | | Bounded adapters and quota-aware routing | in-progress | 70 |
 | PHA-PER-04 | | Runtime conformance verification | planned | 0 |
 
 ## Sprints
@@ -59,7 +60,7 @@ implementation claims.
 |---|---|---|---|---|---|---:|
 | SPR-PER-01 | PHA-PER-01 | Registry and credential/session foundation | 2 | Ownership, lifecycle, and credential-isolation rules are enforced with negative tests | in-progress | 55 |
 | SPR-PER-02 | PHA-PER-02 | Planning, binding, and usage ledger | 2 | Authorization-first planning and non-fabricated usage accounting | in-progress | 70 |
-| SPR-PER-03 | PHA-PER-03 | Adapters and governed routing | 2 | Bounded adapters and auditable failover behind explicit policy | in-progress | 35 |
+| SPR-PER-03 | PHA-PER-03 | Adapters and governed routing | 2 | Bounded adapters and auditable failover behind explicit policy | in-progress | 70 |
 | SPR-PER-04 | PHA-PER-04 | Conformance gate | 1 | Reviewed conformance evidence for the stated provider scope | planned | 0 |
 
 ## Backlog Items
@@ -71,7 +72,7 @@ implementation claims.
 | TSK-PER-60 | SPR-PER-02 | task | Two-phase capability planning and immutable-context execution binding | SYSTEM-06 | P0 | unassigned | Issue #60 | TSK-PER-58; TSK-PER-59 | Typed rejection codes, persisted-context binding, protected credential channel | review | 70 |
 | TSK-PER-61 | SPR-PER-02 | task | Usage ledger with reported, estimated, and unknown separation | SYSTEM-09 | P1 | unassigned | Issue #61 | TSK-PER-58; TSK-PER-60 | Unit separation, null-on-unknown, no automatic GKS promotion, aggregation by entitlement and workspace | review | 70 |
 | TSK-PER-63 | SPR-PER-03 | task | Provider adapter interface and first bounded adapters | SYSTEM-06 | P1 | unassigned | Issue #63 | TSK-PER-59; TSK-PER-60; TSK-PER-61 | Normalized inspect, execute, cancel; candidate-only output; no direct GKS access | review | 70 |
-| TSK-PER-62 | SPR-PER-03 | task | Quota-aware sticky routing with governed failover and rebind | SYSTEM-06 | P1 | unassigned | Issue #62 | TSK-PER-61; TSK-PER-63 | Authorization-first scoring, new binding id on failover, unchanged MSP lineage | planned | 0 |
+| TSK-PER-62 | SPR-PER-03 | task | Quota-aware sticky routing with governed failover and rebind | SYSTEM-06 | P1 | unassigned | Issue #62 | TSK-PER-61; TSK-PER-63 | Authorization-first scoring, new binding id on failover, unchanged MSP lineage | review | 70 |
 | TSK-PER-64 | SPR-PER-04 | task | Multi-provider entitlement runtime conformance gate | SYSTEM-09 | P0 | unassigned | Issue #64 | TSK-PER-58; TSK-PER-59; TSK-PER-60; TSK-PER-61; TSK-PER-62; TSK-PER-63 | Contract, security, end-to-end, negative, failover, and telemetry tests reviewed and passing | planned | 0 |
 
 ## Task definitions
@@ -187,7 +188,20 @@ implementation claims.
 - **Tests:** rate-limit, provider-outage, and downgrade-reporting cases; lineage
   preservation across failover.
 - **Evidence:** merged router module, decision evidence records, and tests.
-- **Observed on `main`:** none.
+- **Observed on this branch:** `packages/govibe-core/src/execution-router.mjs`
+  with `execution-router.test.mjs` (21 tests) and
+  `docs/architecture/SDD-Execution-Routing-and-Failover.md`. Routing scores only
+  targets the planner already authorized, so bypass is prevented by construction
+  rather than by convention. Affinity is capped at a 0.10 bonus and a sticky
+  target that loses authorization is dropped. Quota contributes a preference
+  signal labelled `provider_reported`, `scheduler_estimated`,
+  `observed_rate_limit` or `unknown`, never a token capacity. Rebind re-runs
+  planning, so a fallback entitlement revoked after the original binding is
+  rejected at failover time.
+- **Remaining:** the router is not wired into dispatch and no quota, reliability
+  or queue signal source is operated. `govibe-scheduler-decision/v1` is not
+  defined in API-008 and is treated as GoVibe-internal evidence pending a
+  contract change. The #64 gate still blocks any implemented-capability claim.
 
 ### TSK-PER-64: Conformance gate (issue #64)
 
@@ -231,6 +245,7 @@ implementation claims.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.3+draft | 2026-08-04 | LYRA | Recorded the observed routing and failover module, tests, and design document for TSK-PER-62 and moved it to review; the router is not wired into dispatch, the decision-record schema is not in API-008, and the #64 gate is unchanged. |
 | 0.1.2+draft | 2026-08-04 | LYRA | Recorded the observed provider-adapter modules, tests, and enablement policy for TSK-PER-63, moved it to review, and corrected its dependency list to include TSK-PER-61 per issue #63; every provider record stays pending and the #64 gate is unchanged. |
 | 0.1.1+draft | 2026-08-04 | LYRA | Recorded the observed usage-ledger module, tests, and redaction/retention policy for TSK-PER-61 and moved it to review; process-memory storage and dispatch wiring remain unevidenced and the #64 gate is unchanged. |
 | 0.1.0+draft | 2026-08-04 | LYRA | Initial governed backlog for issues #58-#64 with per-task Definition of Done, tests, evidence, observed repository state, and the #64 conformance gate. |
