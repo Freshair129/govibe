@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.2.7+draft"
+version: "0.2.8+draft"
 updated: "2026-08-04"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -32,7 +32,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.0+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.2.7+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.2.8+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -72,9 +72,9 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
-| Roadmap | `ROADMAP-PROVIDER-ENTITLEMENT-RUNTIME` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/ROADMAP-provider-entitlement-runtime.md` |
+| Roadmap | `ROADMAP-PROVIDER-ENTITLEMENT-RUNTIME` | `0.1.2+draft` | draft | LYRA | `docs/roadmap/ROADMAP-provider-entitlement-runtime.md` |
 | Backlog | `BACKLOG-P1-MVP-CORE` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/BACKLOG-p1-mvp-core.md` |
-| Backlog | `BACKLOG-PROVIDER-ENTITLEMENT-RUNTIME` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-provider-entitlement-runtime.md` |
+| Backlog | `BACKLOG-PROVIDER-ENTITLEMENT-RUNTIME` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/BACKLOG-provider-entitlement-runtime.md` |
 | Backlog | `BACKLOG-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/BACKLOG-task-scoped-context-injection.md` |
 | Implementation Plan | `IMP-SYSTEM05-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.2` | approved | LYRA / ARCHON / ATHER | `docs/roadmap/IMP-SYSTEM05-Task-Scoped-Context-Injection.md` |
 | Backlog | `IMP-GVMP01P05EP01` | `n/a` | tracked-outside-registry | LYRA | `.agents/.devlog/implement/IMP-GVMP01P05EP01.md` |
@@ -131,6 +131,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Architecture | `SDD-VISUAL-AGENT-FLEET` | `0.1.0` | approved | THESEUS / ARCHON | `docs/architecture/SDD-Visual-Agent-Fleet.md` |
 | Architecture | `SDD-GOVIBE-MSP-GKS-INTEGRATION` | `0.1.2+draft` | draft | Boss (CEO) | `docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md` |
 | Policy | `POLICY-PROVIDER-ENTITLEMENT-SHARING-COMPATIBILITY` | `0.1.1+draft` | draft | Boss / ATHER | `docs/security/POLICY-Provider-Entitlement-Sharing-Compatibility.md` |
+| Policy | `POLICY-PROVIDER-ENTITLEMENT-USAGE-LEDGER-REDACTION-AND-RETENTION` | `0.1.0+draft` | draft | Boss / ATHER | `docs/security/POLICY-Provider-Entitlement-Usage-Ledger-Redaction-and-Retention.md` |
 | RCA | `RCA-2026-08-03-CONTEXT-AUTHORITY-RUNTIME-REPAIR` | `0.1.2+draft` | draft | ATHER / THESEUS | `docs/rca/RCA-2026-08-03-Context-Authority-Runtime-Repair.md` |
 
 ## 6. Alignment Conformance Documents
@@ -197,6 +198,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.8+draft | 2026-08-04 | ATHER | Registered the entitlement usage ledger redaction and retention policy delivered under issue #61; no runtime-conformance claim is advanced before issue #64. |
 | 0.2.7+draft | 2026-08-04 | LYRA | Synchronized the provider-entitlement roadmap to 0.1.1+draft after recording the issue #68 implementation sequence packet. |
 | 0.2.6+draft | 2026-08-04 | ATHER | Registered TDD-POC-CANONICAL-LOOP v1.0.0 (approved) for the canonical graph-to-view POC. |
 | 0.2.5+draft | 2026-08-04 | LYRA / ATHER | Registered the provider-entitlement runtime roadmap and backlog for issue #65; both remain draft and make no runtime-conformance claim before issue #64. |

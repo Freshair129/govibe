@@ -1,13 +1,14 @@
 const CAPABILITY_SCHEMA = 'govibe-provider-capability-descriptor/v1';
 const ENTITLEMENT_SCHEMA = 'govibe-provider-entitlement/v1';
 
-const ENTITLEMENT_TYPES = new Set([
+export const ENTITLEMENT_TYPES = Object.freeze([
   'personal_subscription',
   'business_seat',
   'organization_service',
   'api',
   'local_compute',
 ]);
+const ENTITLEMENT_TYPE_SET = new Set(ENTITLEMENT_TYPES);
 const OWNER_TYPES = new Set(['user', 'team', 'organization', 'service']);
 const SHARE_POLICIES = new Set(['owner_only', 'named_principals', 'workspace_pool', 'organization_pool']);
 const STATES = new Set(['active', 'suspended', 'revoked', 'expired']);
@@ -87,7 +88,7 @@ export function normalizeProviderCapabilityDescriptor(input) {
   }) : [];
 
   const entitlementTypes = stringArray(input.entitlement_types, 'entitlement_types', { required: true });
-  entitlementTypes.forEach((type) => assert(ENTITLEMENT_TYPES.has(type), `Invalid entitlement type: ${type}`, { field: 'entitlement_types' }));
+  entitlementTypes.forEach((type) => assert(ENTITLEMENT_TYPE_SET.has(type), `Invalid entitlement type: ${type}`, { field: 'entitlement_types' }));
 
   return Object.freeze({
     schema: CAPABILITY_SCHEMA,
@@ -116,7 +117,7 @@ export function normalizeProviderEntitlement(input) {
   assert(input && typeof input === 'object' && !Array.isArray(input), 'Entitlement must be an object');
   rejectCredentialMaterial(input);
   assert(input.schema === ENTITLEMENT_SCHEMA, `schema must be ${ENTITLEMENT_SCHEMA}`, { field: 'schema' });
-  assert(ENTITLEMENT_TYPES.has(input.entitlement_type), 'Invalid entitlement_type', { field: 'entitlement_type' });
+  assert(ENTITLEMENT_TYPE_SET.has(input.entitlement_type), 'Invalid entitlement_type', { field: 'entitlement_type' });
   assert(input.owner && typeof input.owner === 'object' && !Array.isArray(input.owner), 'owner is required', { field: 'owner' });
   assert(OWNER_TYPES.has(input.owner.owner_type), 'Invalid owner.owner_type', { field: 'owner.owner_type' });
 
