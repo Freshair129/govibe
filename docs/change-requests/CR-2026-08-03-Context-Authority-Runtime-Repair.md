@@ -2,7 +2,7 @@
 title: "CR: Context Authority Runtime Repair and Execution-Binding Contract Gate"
 doc_id: "FUTURE-CR-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
 status: "approved"
-version: "0.2.2"
+version: "0.2.3"
 updated: "2026-08-03"
 owner: "Boss"
 decision_owner: "Boss"
@@ -29,11 +29,12 @@ related_documents:
 
 ## 1. Decision boundary
 
-Boss approved this bounded repair on 2026-08-03. It records an audited baseline
-of 11 failing Vitest cases and the smallest authorized repair. Execution is now
-permitted only within Sections 4, 5, 6, and the explicit D-01/D-02 selections
-in Section 7; `execution_complete: false` remains controlling until the exit
-gates and independent QA evidence are satisfied.
+Boss approved this bounded repair on 2026-08-03. At approval, it recorded an
+audited baseline of 11 failing Vitest cases and the smallest authorized repair;
+the authorization was limited to Sections 4, 5, 6, and the explicit D-01/D-02
+selections in Section 7. The exit gates and independent QA evidence have since
+been satisfied and the merged closure record in Section 14 is controlling:
+`execution_complete: true` for the approved WP-06 scope.
 
 The higher of the two audit classifications governs: `C-3` / `H3` / `HIGH`, not
 the prior `C-2` / `MEDIUM` conclusion. The repair crosses public authority
@@ -137,8 +138,9 @@ runtime-completion claim is blocked.
 **Approved selection (Boss, 2026-08-03): Option A.** The bounded
 contract-alignment slice may define and implement the smallest compatible
 `actor_id` / `principal_id` identity-correlation rule with focused tests.
-API-008 remains `draft` until that implementation alignment is validated by the
-approved exit gate; this authorization does not promote API-008.
+The implementation alignment passed the approved WP-06 exit gate. API-008
+remains `draft` pending a separate lifecycle/promotion decision; this
+authorization and closure do not promote API-008.
 
 ### D-02: Legacy `resolveContext` disposition (blocking)
 
@@ -186,15 +188,18 @@ State final pass/fail/skip counts and any deferred D-01 closure. No raw secret,
 unrestricted traversal, direct GKS, or direct GenesisBlockDB capability may
 appear in code or evidence.
 
-## 10. Pending approved-execution plan
+## 10. Completed execution record
 
-1. Reconfirm base/docs and the 11-failure matrix. Verify captured output/hashes.
-2. Implement only D-01/D-02 selections and smallest fixture/propagation changes.
-   Verify focused positive and fail-closed tests.
-3. Review direct and bounded transitive impact across services, adapters, tests,
-   MCP, docs, and operations. Record unresolved links.
-4. Run security, full suite, lint, build, MCP smoke, docs validation, and diff.
-5. Obtain independent QA acceptance; commit only approved scope with evidence.
+1. Reconfirmed the base/docs and audited 11-failure matrix before mutation.
+2. Implemented only D-01/D-02 selections and smallest fixture/propagation
+   changes, with focused positive and fail-closed tests.
+3. Reviewed direct and bounded transitive impact across services, adapters,
+   tests, MCP, docs, and operations; unresolved coverage is recorded in
+   Section 14.
+4. Ran security, full suite, lint, build, MCP smoke, docs validation, roadmap
+   validation, diff, and whitespace gates.
+5. Obtained independent QA acceptance and merged the approved scope with the
+   evidence recorded in Section 14.
 
 ## 11. Impact/backlink limits and rollback
 
@@ -316,6 +321,7 @@ and evidence.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.3 | 2026-08-03 | ATHER | Corrected historical approval and completed-execution wording after closure review; API-008 alignment passed WP-06 but remains draft pending a separate lifecycle/promotion decision. |
 | 0.2.2 | 2026-08-03 | ATHER | Closed approved WP-06 execution with merged PR #89, remote E2E/P0/Vercel evidence, final gates, bounded impact disposition, and governed schema-less legacy residual; API-008 remains draft. |
 | 0.2.1 | 2026-08-03 | ATHER | Recorded local 212-case and 35/35 security evidence, bounded impact disposition, and independent-review approval; status is verification pending while remote CI and merge remain outstanding. |
 | 0.2.0 | 2026-08-03 | Boss | Approved D-01 Option A, D-02 caller-supplied valid authority propagation, and D-03 bounded WP-06 execution; API-008 remains draft pending validated implementation alignment. |

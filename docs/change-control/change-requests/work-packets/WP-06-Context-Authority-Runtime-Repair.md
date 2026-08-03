@@ -2,7 +2,7 @@
 title: "WP-06: Context Authority Runtime Repair"
 doc_id: "WP-06-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
 status: "approved"
-version: "0.2.2"
+version: "0.2.3"
 updated: "2026-08-03"
 owner: "Boss"
 approval_owner: "Boss"
@@ -28,7 +28,8 @@ access. This approved work packet authorizes only its bounded scope.
 
 - D-01: Boss selected Option A: perform the smallest API-008-governed
   `actor_id` / `principal_id` contract-alignment slice with tests. API-008
-  remains draft until implementation alignment passes the exit gate.
+  remains draft pending a separate lifecycle/promotion decision. The alignment
+  passed the WP-06 exit gate; this work packet does not promote API-008.
 - D-02: Boss selected caller-supplied valid authority propagation for legacy
   `resolveContext`; missing or invalid authority fails closed and is never
   synthesized.
@@ -116,6 +117,7 @@ an authority bypass.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.3 | 2026-08-03 | ATHER | Corrected D-01 lifecycle wording: API-008 alignment passed WP-06 but remains draft pending a separate lifecycle/promotion decision. |
 | 0.2.2 | 2026-08-03 | ATHER | Closed WP-06 execution with PR #89 merge, remote checks, Vercel, final local gates, approved review, bounded impact disposition, and governed legacy residual; API-008 remains draft. |
 | 0.2.1 | 2026-08-03 | ATHER | Moved to verification pending; recorded 212-case local gate evidence, bounded impact disposition, and the remote-CI/merge closure hold. |
 | 0.2.0 | 2026-08-03 | Boss | Recorded approval of the bounded WP-06 execution and explicit D-01/D-02 selections; API-008 remains draft pending validated alignment. |
