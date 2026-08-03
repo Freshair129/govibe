@@ -22,12 +22,25 @@ Thumbs.db
 .govibe/project-state.json
 .govibe/skill-lock.json
 .govibe/runs/
-.agents/devops/session_logs/
+.agents/*/session_logs/
 
 # GoVibe inbound governance
 # Keep raw cognitive-system exports out of commits; derive approved packets through docs/audit first.
 .brain/cognitive-system-knowledge-block/
+.brain/knowledge-block/
 .brain/inbound/
+
+# Engine orchestrator runtime artifacts. Engine source under engine/ stays tracked.
+engine/orchestration/state.json
+engine/orchestration/usage.jsonl
+engine/orchestration/.state.lock
+engine/orchestration/logs/
+engine/orchestration/brain/
+
+# Playwright output
+playwright-report/
+test-results/
+.playwright-cli/
 
 # Reference/sample trees used for comparison only; not live GoVibe source truth.
 ref/
