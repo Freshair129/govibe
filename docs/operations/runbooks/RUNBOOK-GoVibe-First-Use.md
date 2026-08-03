@@ -2,8 +2,8 @@
 title: "RUNBOOK: GoVibe First Use"
 doc_id: "RUNBOOK-GOVIBE-FIRST-USE"
 status: "draft"
-version: "0.1.1+draft"
-updated: "2026-08-02"
+version: "0.1.2+draft"
+updated: "2026-08-03"
 owner: "GoVibe"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -30,7 +30,7 @@ GoVibe ไม่แทนที่ GKS/MSP, ไม่เขียนฐานข
 
 1. ใช้ checkout ที่ติดตั้ง dependencies แล้ว หรือรัน `npm ci` ที่ root ของ GoVibe.
 2. เลือก workspace ที่จะสแกน และอนุญาต root ของมันให้ runtime ก่อนเริ่มงาน.
-3. สำหรับ deep scan จริง ให้ตั้งค่า GKS และ MSP MCP writers ที่ผ่านการอนุมัติแล้ว. หากยังไม่มี adapters ระบบจะรายงาน degraded/failure ตามสัญญา ไม่สร้างที่เก็บ knowledge หรือ evidence ปลอมใน GoVibe.
+3. สำหรับ deep scan จริง ให้ตั้งค่า MSP MCP writer ที่ผ่านการอนุมัติแล้ว. MSP เป็นผู้เชื่อม GKS/storage; GoVibe ไม่มี direct GKS configuration. หากยังไม่มี adapter ระบบจะรายงาน degraded/failure ตามสัญญา ไม่สร้างที่เก็บ knowledge หรือ evidence ปลอมใน GoVibe.
 
 ตัวอย่าง PowerShell สำหรับอนุญาตเฉพาะ root ที่ต้องการ (เปลี่ยนค่า placeholder ก่อนใช้):
 
@@ -114,14 +114,15 @@ Master Plan ที่เป็น `draft` เปิดดูได้ แต่�
 
 run จะถือว่า `complete` ได้เมื่อทั้ง 12 stages เป็น `complete` หรือ `not_applicable` และ Graph validation ผ่านเท่านั้น. `incomplete` หรือ `failed` ห้ามถูกตีความว่าเสร็จแล้ว.
 
-## 7. ตั้งค่า GKS/MSP สำหรับ deep scan
+## 7. ตั้งค่า MSP สำหรับ deep scan
 
-GoVibe เรียก writers แยกกันผ่าน stdio MCP:
+GoVibe เรียก **MSP parent** ผ่าน stdio MCP เพียงเส้นทางเดียว:
 
 - MSP: `GOVIBE_MSP_COMMAND`, `GOVIBE_MSP_ARGS`, `GOVIBE_MSP_CWD`
-- GKS: `GOVIBE_GKS_COMMAND`, `GOVIBE_GKS_ARGS`, `GOVIBE_GKS_CWD`
 
 `*_ARGS` ต้องเป็น JSON array ของ strings. ใช้เฉพาะ command และ paths ของ adapters ที่ owner อนุมัติแล้ว; ห้ามชี้ GoVibe ไป import source จาก checkout ของระบบอื่นโดยตรง. เมื่อ adapter ไม่พร้อมหรือ schema ไม่ตรง ให้แก้ integration ที่ owner ของ GKS/MSP แทนการสร้าง fallback ใน GoVibe.
+
+การตั้งค่า command ถูกต้องยังไม่เท่ากับ MSP/GKS/storage พร้อมใช้งาน: ต้องให้ parent call สำเร็จก่อนจึง dispatch งาน governed ได้. หากไม่มี `GOVIBE_MSP_COMMAND`, ตัวแปรไม่ถูกต้อง, หรือ parent call ล้มเหลว ให้ถือว่า KB ไม่พร้อมและห้ามอ้างว่า scan/promotion/retrieval สำเร็จ.
 
 ## 8. แก้ปัญหาเบื้องต้น
 
@@ -149,5 +150,6 @@ GoVibe เรียก writers แยกกันผ่าน stdio MCP:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-08-03 | GoVibe | Removed obsolete direct GKS configuration; clarified MSP-only preflight and non-dispatchable configuration states. |
 | 0.1.1+draft | 2026-08-02 | GoVibe | Documented the required local sidecar token and explicit browser-origin trust boundary. |
 | 0.1.0+draft | 2026-07-30 | GoVibe | First-use SOP for Mission Control, Master Plan review, and the 12-stage scan MVP. |
