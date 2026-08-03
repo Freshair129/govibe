@@ -2,7 +2,7 @@
 title: "Evidence: Provider Entitlement Runtime Conformance"
 doc_id: "EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.2.0+draft"
 updated: "2026-08-04"
 owner: "ATHER"
 source_of_truth: false
@@ -104,14 +104,36 @@ No live provider was contacted. Quota accuracy, rate-limit semantics, session
 affinity behavior, prompt-cache behavior and adapter error taxonomy for any real
 provider are unevidenced.
 
-### 4.3 Issue #59 negative-test matrix incomplete
+### 4.3 Issue #59 negative-test matrix: mostly closed, two items still open
 
-The sharing policy section 14 list is only partly covered here. Not covered:
-expired compatibility records, product/plan/surface mismatch, cross-workspace
-authorization crossing, cross-user session reuse attempts, and revocation
-occurring between authorization and invocation. Derived-token handoff to adapters
-is also unevidenced. These belong to issue #59 and must be closed before or with
-this gate.
+`packages/govibe-core/src/credential-session-boundary.security.test.mjs`
+(28 tests) closes the dispatch-boundary part of the matrix. Every test asserts on
+a spy that the provider was **never invoked**, not merely that a promise
+rejected:
+
+- revoked credential, expired credential, expired grant, explicitly revoked
+  grant, unknown grant, and replay of a consumed one-time grant;
+- grant issued for another entitlement, run, or binding;
+- binding whose principal is not the dispatch actor, whose actor and principal
+  disagree, or which points at another provider;
+- session belonging to another user or entitlement, cross-run reuse, revoked
+  session, entitlement-wide session revocation, and expired session;
+- fail-closed when a grant or session is presented but no vault or session
+  registry is configured;
+- the adapter request carries no credential-shaped field and no grant id, and
+  the adapter gets a handle to no other credential or session;
+- no secret or external session handle appears in any rejection message, stack,
+  error detail, or inspection surface.
+
+Still open and **not** covered:
+
+- **compatibility records do not exist as code.** Sharing policy section 14
+  requires that missing or expired compatibility records and product/plan/surface
+  mismatches fail closed. No compatibility registry is implemented, so these
+  cannot be tested. This is a missing implementation, not a missing test.
+- **derived-token handoff is not implemented.** Issue #59 scope names it; the
+  vault hands raw secret bytes to the adapter inside `withCredential`. The bytes
+  are wiped afterwards, but no token derivation exists.
 
 ### 4.4 No durable storage
 
@@ -138,6 +160,40 @@ decision before or with this gate.
 Each requires an API-008 or reconciliation change. They are listed here so the
 gate reviewer dispositions them explicitly rather than discovering them later.
 
+## 5.1 Security finding: binding authenticity is not verified at dispatch
+
+**Severity: high. Found while building the issue #59 negative matrix. Not fixed
+in this branch.**
+
+`createExecutorRegistry` validates that an execution binding is *internally
+consistent* and *correlates with the context authority*. It never checks that the
+binding was actually issued by the binding service:
+`executionBindingService.assertUsable` is called nowhere on the dispatch path,
+while `providerSessionRegistry.assertUsable` is.
+
+Demonstrated consequences, each pinned by a characterization test named `GAP:` in
+`credential-session-boundary.security.test.mjs`:
+
+| Consequence | Effect |
+|---|---|
+| a binding object the service never issued dispatches successfully | an arbitrary `entitlement_id` can be asserted at dispatch |
+| an expired binding dispatches successfully | `EXECUTION_BINDING_EXPIRED` exists in the service but is unreachable from dispatch, so the API-008 section 13 `BINDING_EXPIRED` code is never emitted |
+| a revoked binding dispatches successfully | binding revocation has no effect on execution |
+| omitting `credential_grant_id` skips the vault entirely | no credential is demanded |
+
+The last item is only exploitable because of the first: if bindings were verified
+against the issuing service, a caller could not choose to omit the grant.
+
+Those four tests assert the **current, wrong** behavior deliberately, so they
+fail the moment the gap is closed and force whoever fixes it to update them.
+
+Likely fix: pass the binding service into `createExecutorRegistry` and call
+`assertUsable(binding.binding_id, {...})` before any adapter invocation. That is a
+runtime behavior change affecting every caller and is deliberately **not** made
+here; it needs its own change with owner approval.
+
+This finding must be dispositioned before the #64 gate can close.
+
 ## 6. Reviewer checklist
 
 For the accountable security and release reviewer. This document does not
@@ -147,6 +203,8 @@ pre-answer any of these.
       what exact wording may the implementation documents use?
 - [ ] Are the section 4 exclusions acceptable, or must any be closed first?
 - [ ] What is the disposition of each section 5 contract gap?
+- [ ] **Section 5.1: must binding authenticity verification land before this gate,
+      and who approves the resulting dispatch behavior change?**
 - [ ] Is the issue #59 negative-test matrix required before this gate, or tracked
       as a follow-up with a named owner?
 - [ ] Which issues among #58 to #63 may close, and with what stated scope?
@@ -174,4 +232,5 @@ merges to `main`.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0+draft | 2026-08-04 | ATHER | Recorded the issue #59 dispatch-boundary negative matrix as closed, the two remaining #59 items as missing implementations rather than missing tests, and a new high-severity finding in section 5.1: binding authenticity is not verified at dispatch, so expired, revoked and never-issued bindings all reach the provider. Gate remains not passed. |
 | 0.1.0+draft | 2026-08-04 | ATHER | Initial conformance evidence package for issue #64: suite coverage mapped to the acceptance criteria, explicit non-coverage, three recorded contract gaps, and a reviewer checklist. The gate is not passed and no implementation status is propagated. |
