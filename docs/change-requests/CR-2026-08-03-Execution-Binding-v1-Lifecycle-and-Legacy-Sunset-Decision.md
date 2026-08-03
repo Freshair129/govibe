@@ -1,14 +1,16 @@
 ---
 title: "CR: Execution-Binding v1 Lifecycle and Schema-Less Legacy Sunset Decision"
 doc_id: "CR-2026-08-03-EXECUTION-BINDING-V1-LIFECYCLE-DECISION"
-status: "draft"
-version: "0.1.0+draft"
+status: "approved"
+version: "0.2.0"
 updated: "2026-08-03"
 owner: "Boss (CEO)"
 proposal_author: "ATHER"
 decision_owner: "Boss (CEO)"
 approval_owner: "Boss (CEO)"
 source_of_truth: true
+approval_recorded_at: "2026-08-03"
+decision_authorized: true
 execution_authorized: false
 promotion_authorized: false
 complexity: "C-3"
@@ -33,8 +35,10 @@ proposed_work_packets:
 
 ## 1. Decision requested
 
-This is an owner-gated decision packet. It authorizes no execution, no runtime
-or test change, no API/ADR promotion, and no runtime-conformance claim.
+Boss (CEO) approved the selections recorded in Section 6. This decision CR
+authorizes no runtime or test change, no API/ADR promotion, and no
+runtime-conformance claim. It authorizes only WP-10's bounded future scope;
+WP-11 remains unauthorized.
 
 **Recommended selection:** do **not** promote API-008 at this time. Keep the
 parent multi-provider CR, API-007, and API-008 in `draft`. Keep ADR-024 out of
@@ -64,7 +68,7 @@ The governing chain is:
 
 ```text
 Issue #52 -> ADR-023 (accepted) -> API-007 (draft)
-Issue #55 -> parent multi-provider CR (draft) -> ADR-024 (proposed lifecycle)
+Issue #55 -> parent multi-provider CR (draft) -> ADR-024 (draft lifecycle)
   -> API-008 (draft) -> execution binding -> adapter -> candidate output
 
 Executor / Agent -> GoVibe validation -> MSP context authority
@@ -102,15 +106,15 @@ change. The branch must not be removed based only on the fixture inventory.
 
 Two documentation conformance findings are also open:
 
-- ADR-024 has `status: proposed`, while the documented lifecycle vocabulary
+- ADR-024 had `status: proposed`, while the documented lifecycle vocabulary
   uses `draft` for an unsigned document and `accepted` for an ADR decision.
-  This packet treats normalization as an owner-approved documentation-only
-  correction, not as an implicit ADR acceptance.
+  Boss approved its normalization to `draft` as a documentation-only
+  correction; it is not ADR acceptance.
 - `POLICY-Provider-Entitlement-Sharing-Compatibility.md` points to a
   non-existent legacy threat-model filename in its `related_docs` metadata.
   The tracked threat model is
   `docs/assurance/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md`.
-  The proposed correction changes only the reference; it must not be described
+  The approved correction changes only the reference; it must not be described
   as security implementation or provider compatibility approval.
 
 ## 4. Assumptions and unresolved authority
@@ -159,15 +163,16 @@ escalation; they must not be filled from repository silence or model prior.
 
 | ID | Owner option | Consequence | Recommendation |
 |---|---|---|---|
-| D-01 | Keep parent CR, API-007, API-008 `draft`; defer API-008 promotion. | Preserves the explicit WP-06 boundary and prevents a child contract from outrunning its parents. | **Select.** |
-| D-02 | Promote API-008 alone. | Conflicts with its draft parent CR/ADR-024 and draft API-007 predecessor; no whole-contract evidence supports it. | **Reject.** |
-| D-03 | Authorize a later bundled lifecycle-review packet for parent CR, ADR-024, API-007, and API-008. | Allows promotion only after parent, security, compatibility, and enforcement evidence is resolved. | **Select later, not now.** |
-| D-04 | Treat ADR-024 `proposed` -> `draft` as a documentation-only conformance correction. | Does not accept ADR-024 or authorize code; changelog and registry parity are required. | **Select if owner accepts Assumption 3.** |
-| D-05 | Correct the policy threat-model path as a documentation-only correction. | Restores navigability only; no runtime/security/compatibility claim changes. | **Select.** |
-| D-06 | Approve WP-10 after its own review. | Migrates only the three tracked schema-less fixtures to full v1 and gathers consumer evidence. | **Select after D-01.** |
-| D-07 | Approve WP-11 before consumer evidence is complete. | Removes compatibility under unknown external breaking risk. | **Reject.** |
+| D-01 | Keep parent CR, API-007, API-008 `draft`; defer API-008 promotion. | Preserves the explicit WP-06 boundary and prevents a child contract from outrunning its parents. | **Selected, Boss, 2026-08-03.** |
+| D-02 | Promote API-008 alone. | Conflicts with its draft parent CR/ADR-024 and draft API-007 predecessor; no whole-contract evidence supports it. | **Rejected, Boss, 2026-08-03.** |
+| D-03 | Authorize a later bundled lifecycle-review packet for parent CR, ADR-024, API-007, and API-008. | Allows promotion only after parent, security, compatibility, and enforcement evidence is resolved. | **Deferred, Boss, 2026-08-03.** |
+| D-04 | Treat ADR-024 `proposed` -> `draft` as a documentation-only conformance correction. | Does not accept ADR-024 or authorize code; changelog and registry parity are required. | **Selected and applied, Boss, 2026-08-03.** |
+| D-05 | Correct the policy threat-model path as a documentation-only correction. | Restores navigability only; no runtime/security/compatibility claim changes. | **Selected and applied, Boss, 2026-08-03.** |
+| D-06 | Approve WP-10 after its own review. | Migrates only the three tracked schema-less fixtures to full v1 and gathers consumer evidence. | **Selected; WP-10 authorized, Boss, 2026-08-03.** |
+| D-07 | Approve WP-11 before consumer evidence is complete. | Removes compatibility under unknown external breaking risk. | **Rejected, Boss, 2026-08-03.** |
 
-Approval of this packet is not approval of either work packet. Each packet has
+Approval of this packet is not API/ADR promotion. WP-10 alone is approved with
+`execution_authorized: true`; WP-11 remains `draft` with
 `execution_authorized: false` until a separate owner authorization is recorded.
 
 ## 7. Proposed staged sunset
@@ -203,21 +208,21 @@ residual rather than force removal.
 
 ## 8. Acceptance criteria
 
-- AC-01: this packet states that API-008 is not promoted and preserves the
-  parent CR/API-007/API-008 draft lifecycle in the recommended decision.
+- AC-01: this packet records that API-008 is not promoted and preserves the
+  parent CR/API-007/API-008 draft lifecycle in the owner decision.
 - AC-02: it distinguishes WP-06 bounded closure from parent-contract,
   feature, security, and runtime-conformance completion.
 - AC-03: ADR-024 status normalization and the broken policy reference are
-  dispositioned as owner-approved documentation-only corrections, not silent
-  mutations or implied acceptance.
+  applied as owner-approved documentation-only corrections, not implied
+  acceptance or runtime change.
 - AC-04: WP-10 is limited to the three named fixture/helper producers and has
   no production behavior-change authority.
 - AC-05: WP-11 is blocked by incomplete consumer evidence unless the owner
   explicitly accepts the residual HIGH breaking risk.
 - AC-06: all authority, security, provider-compatibility, and graph-coverage
   gaps are stated rather than inferred away.
-- AC-07: each proposed execution packet remains draft and
-  `execution_authorized: false`.
+- AC-07: WP-10 is approved and authorized only for its stated fixture/consumer
+  evidence scope; WP-11 remains draft and `execution_authorized: false`.
 
 ## 9. Success criteria and Definition of Done
 
@@ -227,7 +232,8 @@ evidence.
 
 This proposal is done when:
 
-1. Boss has selected or rejected each D-01 through D-07 option;
+1. Boss's D-01 through D-07 selections are recorded, with only D-06/WP-10
+   execution authorized;
 2. any approved documentation-only correction has a narrow diff, a changelog,
    registry/index parity where required, and `npm run docs:validate` evidence;
 3. any WP-10/WP-11 authorization records exact files, test commands, evidence
@@ -242,9 +248,9 @@ This proposal is done when:
 
 | Changed seed / candidate | Relation chain and distance | Impact score | Required action | Status |
 |---|---|---:|---|---|
-| API-008 v1 binding / schema-less branch | API-008 -> binding service -> executor adapter -> three fixture/helper producers (1-3) | HIGH | Migrate fixtures only in WP-10; retain branch pending evidence. | proposed |
+| API-008 v1 binding / schema-less branch | API-008 -> binding service -> executor adapter -> three fixture/helper producers (1-3) | HIGH | Migrate fixtures only in authorized WP-10; retain branch pending evidence. | authorized |
 | Parent CR / ADR-024 / API-007 lifecycle | parent CR -> ADR/API authority -> API-008 binding contract (1-2) | HIGH | Owner lifecycle decision; no independent child promotion. | unresolved |
-| Compatibility-policy threat-model link | policy -> threat model (1) | MEDIUM | Correct path only after D-05; validate references. | proposed |
+| Compatibility-policy threat-model link | policy -> threat model (1) | MEDIUM | Correct path under D-05; validate references. | corrected |
 | External consumers | API-008 public/adapter surface -> untracked or deployed callers (unknown) | HIGH | Consumer discovery and owner risk decision before WP-11. | unresolved |
 | Canonical relations beyond inspected documents | changed seed -> unknown GKS backlinks | unknown | Escalate; do not claim coverage completeness. | unresolved |
 
@@ -267,4 +273,5 @@ authority bypass or silently reintroduce schema-less interpretation.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-08-03 | Boss / ATHER | Recorded Boss approval: retain parent/API drafts, reject standalone API-008 promotion and WP-11, normalize ADR-024 and policy metadata, and authorize WP-10 only. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Opened owner-gated C-3/H3/HIGH lifecycle and schema-less legacy-sunset decision; no promotion or execution is authorized. |

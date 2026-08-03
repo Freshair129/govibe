@@ -1,7 +1,7 @@
 ---
 title: "Provider Entitlement Sharing Compatibility Policy"
 doc_id: "POLICY-PROVIDER-ENTITLEMENT-SHARING-COMPATIBILITY"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 status: draft
 updated: "2026-08-03"
 owner: "Boss / ATHER"
@@ -15,7 +15,7 @@ related_issues:
 related_docs:
   - "docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md"
   - "docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md"
-  - "docs/security/THREAT-MODEL-Provider-Entitlement-Credentials-and-Sessions.md"
+  - "docs/assurance/security/THREAT-MODEL-Provider-Entitlement-Credential-and-Session-Boundary.md"
 ---
 
 # Provider Entitlement Sharing Compatibility Policy
@@ -215,3 +215,10 @@ Issue #69 is complete when:
 - #59, #63, and #64 reference the policy and reason codes.
 
 This policy does not by itself approve any external provider plan for shared use.
+
+## Changelog
+
+| Version | Date | Owner | Summary |
+|---|---|---|---|
+| 0.1.1+draft | 2026-08-03 | Boss / ATHER | Corrected the threat-model reference as an owner-approved documentation-only conformance change; no compatibility or runtime claim changed. |
+| 0.1.0+draft | 2026-08-03 | Boss / ATHER | Defined default-deny provider entitlement sharing compatibility evidence and enforcement gates. |

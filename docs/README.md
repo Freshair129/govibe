@@ -2,7 +2,7 @@
 title: "GoVibe Documentation Navigation Hub"
 doc_id: "DOCS-NAVIGATION-HUB"
 status: "draft"
-version: "0.2.4+draft"
+version: "0.2.5+draft"
 updated: "2026-08-03"
 owner: "THESEUS / ATHER"
 source_of_truth: true
@@ -82,15 +82,16 @@ defect-closure shortcut.
 - `docs/change-control/change-requests/work-packets/WP-10-Execution-Binding-v1-Fixture-Migration-and-Consumer-Discovery.md`
 - `docs/change-control/change-requests/work-packets/WP-11-Execution-Binding-Schemaless-Legacy-Removal.md`
 
-This draft owner-decision packet retains the parent multi-provider CR,
-API-007, and API-008 as drafts, proposes fixture-only v1 migration and
-consumer discovery before any legacy removal, and does not authorize execution,
-promotion, or runtime-conformance claims.
+Boss approved this decision packet on 2026-08-03: the parent multi-provider CR,
+API-007, and API-008 remain drafts; WP-10 alone is authorized for fixture-only
+v1 migration and consumer discovery; and WP-11 remains draft and unauthorized.
+The authorization does not promote an API/ADR or claim runtime conformance.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.5+draft | 2026-08-03 | Boss / ATHER | Recorded Boss approval of the execution-binding decision and WP-10 only; retained API/ADR promotion and WP-11 as unauthorized. |
 | 0.2.4+draft | 2026-08-03 | ATHER | Added navigation for the owner-gated execution-binding v1 lifecycle and schema-less sunset decision; no execution or promotion is authorized. |
 | 0.2.3+draft | 2026-08-03 | ATHER | Recorded merged WP-06 closure evidence while retaining API-008 draft status and the governed legacy compatibility residual. |
 | 0.2.2+draft | 2026-08-03 | Boss / THESEUS | Recorded owner authorization for the bounded runtime-repair packet while preserving API-008 draft status pending validation. |

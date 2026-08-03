@@ -1,9 +1,9 @@
 ---
 doc_id: "ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY"
 title: "ADR-024: Provider Entitlement and Execution Authority Boundary"
-status: "proposed"
-version: "0.1.0+draft"
-updated: "2026-08-02"
+status: "draft"
+version: "0.1.1+draft"
+updated: "2026-08-03"
 owner: "Boss (CEO)"
 type: adr
 related_issue: 55
@@ -12,7 +12,7 @@ related_adrs: ["ADR-023"]
 
 # ADR-024: Provider Entitlement and Execution Authority Boundary
 
-**Status:** Proposed  
+**Status:** Draft
 **Date:** 2026-08-02  
 **Owner:** Boss (CEO)
 
@@ -210,4 +210,5 @@ Rejected because provider history is not canonical, may expire, may be inaccessi
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-03 | Boss / ATHER | Normalized lifecycle status from `proposed` to `draft` as an owner-approved documentation conformance correction; no ADR acceptance or runtime authorization. |
 | 0.1.0+draft | 2026-08-02 | Boss (CEO) | Proposed execution-resource authority, entitlement ownership, two-phase routing, usage semantics, affinity and failover boundaries. |
