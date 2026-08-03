@@ -1,9 +1,9 @@
----
+﻿---
 title: "Reconciliation: API-005, API-006, API-008 and Executor Router"
 doc_id: "RECONCILIATION-API-005-006-008-EXECUTOR-ROUTER"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-08-03"
+version: "0.1.1+draft"
+updated: "2026-08-04"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 related_issue: 70
@@ -49,7 +49,7 @@ The executor router must not call a provider adapter before a valid API-008 bind
 
 ## 3. Identity and lineage ownership
 
-### 3.1 Context lineage — API-006
+### 3.1 Context lineage â€” API-006
 
 The following fields remain owned by MSP/context contracts:
 
@@ -64,7 +64,7 @@ The following fields remain owned by MSP/context contracts:
 
 These values describe what context was assembled, persisted and injected. The entitlement runtime may validate and reference them but may not issue, rewrite or substitute them.
 
-### 3.2 Execution lineage — API-008
+### 3.2 Execution lineage â€” API-008
 
 The following fields are separate execution-resource lineage:
 
@@ -114,17 +114,36 @@ The binding object may contain an opaque `credential_ref` in protected process m
 
 ## 6. Current executor-router gap
 
-Current `packages/govibe-core/src/executor-adapter.mjs` performs:
+`packages/govibe-core/src/executor-adapter.mjs` now performs:
 
 ```text
 provider string lookup
 -> context authority check
--> adapter.execute(request)
+-> API-008 binding validation (schema, actor/principal, provider, scope fields)
+-> provider session assertion
+-> run-scoped credential grant
+-> adapter.execute(safeRequest)
 ```
 
-This enforces API-006/API-007 context authority but does not enforce API-008 entitlement binding.
+`packages/govibe-core/src/provider-adapter-host.mjs` wraps that path with the
+adapter enablement gate and result normalization added under issue #63.
 
-The current path is a compatibility seam, not the target architecture.
+Measured against the section 7 target contract:
+
+| Target step | State | Owner |
+|---|---|---|
+| verify binding schema/version | present | #60 |
+| verify binding run/session/turn identity | present | #60 |
+| verify API-006 context IDs and hashes | present | #60 |
+| recheck entitlement lifecycle and compatibility policy | **absent at dispatch** â€” eligibility is evaluated during planning, not rechecked before invocation | #59, #64 |
+| acquire run-scoped credential grant | present | #59 |
+| invoke adapter selected by `binding.adapter_id` | **partial** â€” dispatch selects by `provider_id`; `adapter_id` is carried on the enablement record, not used for selection | #63, #62 |
+| normalize provider result | present | #63 |
+| revoke/expire grant | present | #59 |
+| emit usage event | **not wired** â€” the ledger exists but no dispatch path writes to it | #61, #64 |
+
+The remaining path is still a compatibility seam, not the target architecture, and
+no row above is a runtime conformance claim before issue #64.
 
 ## 7. Target executor-router contract
 
@@ -147,7 +166,7 @@ The adapter must not select another entitlement, model or context. It may reject
 
 ## 8. Compatibility migration
 
-### Phase A — additive binding gate
+### Phase A â€” additive binding gate
 
 Add `createBoundExecutorRegistry` or equivalent internal service while retaining the existing public registry facade.
 
@@ -164,7 +183,7 @@ must become a compatibility wrapper that either:
 
 It must not synthesize an entitlement from the provider string.
 
-### Phase B — caller migration
+### Phase B â€” caller migration
 
 Migrate every caller to:
 
@@ -172,7 +191,7 @@ Migrate every caller to:
 2. request an API-008 binding;
 3. dispatch using the binding.
 
-### Phase C — remove provider-string authorization
+### Phase C â€” remove provider-string authorization
 
 After all callers migrate, provider string lookup remains only inside the adapter registry using `binding.adapter_id`. Direct provider-selected dispatch is deprecated and removed.
 
@@ -221,7 +240,7 @@ The following behavior is deprecated immediately:
 | #61 | Usage events and quota snapshots |
 | #63 | Binding-only adapter dispatch and normalized results |
 | #62 | Rebind/failover after authorization-first filtering |
-| #64 | End-to-end proof across API-005 → API-006 → API-008 → adapter |
+| #64 | End-to-end proof across API-005 â†’ API-006 â†’ API-008 â†’ adapter |
 
 ## 13. Acceptance verification
 
