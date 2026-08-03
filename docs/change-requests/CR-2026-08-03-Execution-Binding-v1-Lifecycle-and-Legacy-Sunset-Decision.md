@@ -2,7 +2,7 @@
 title: "CR: Execution-Binding v1 Lifecycle and Schema-Less Legacy Sunset Decision"
 doc_id: "CR-2026-08-03-EXECUTION-BINDING-V1-LIFECYCLE-DECISION"
 status: "approved"
-version: "0.2.3"
+version: "0.2.4"
 updated: "2026-08-03"
 owner: "Boss (CEO)"
 proposal_author: "ATHER"
@@ -16,6 +16,8 @@ execution_complete: true
 promotion_authorized: false
 wp_10_evidence_status: "complete"
 wp_10_execution_complete: true
+wp_11_execution_authorized: true
+wp_11_external_breaking_risk: "accepted-by-owner"
 wp_10_consumer_evidence: "docs/assurance/audit/EVIDENCE-WP-10-Execution-Binding-v1-Consumer-Discovery.md"
 complexity: "C-3"
 access_scope: "H3"
@@ -173,11 +175,12 @@ escalation; they must not be filled from repository silence or model prior.
 | D-04 | Treat ADR-024 `proposed` -> `draft` as a documentation-only conformance correction. | Does not accept ADR-024 or authorize code; changelog and registry parity are required. | **Selected and applied, Boss, 2026-08-03.** |
 | D-05 | Correct the policy threat-model path as a documentation-only correction. | Restores navigability only; no runtime/security/compatibility claim changes. | **Selected and applied, Boss, 2026-08-03.** |
 | D-06 | Approve WP-10 after its own review. | Migrates only the three tracked schema-less fixtures to full v1 and gathers consumer evidence. | **Selected; WP-10 authorized, Boss, 2026-08-03.** |
-| D-07 | Approve WP-11 before consumer evidence is complete. | Removes compatibility under unknown external breaking risk. | **Rejected, Boss, 2026-08-03.** |
+| D-07 | Approve WP-11 with explicit acceptance of incomplete consumer evidence. | Removes compatibility under documented unknown external breaking risk; rollback remains mandatory. | **Selected; Boss accepted the remaining HIGH external-consumer breaking risk and authorized WP-11, 2026-08-03.** |
 
-Approval of this packet is not API/ADR promotion. WP-10 alone is approved with
-`execution_authorized: true`; WP-11 remains `draft` with
-`execution_authorized: false` until a separate owner authorization is recorded.
+Approval of this packet is not API/ADR promotion. WP-10 is complete and WP-11
+is approved with `execution_authorized: true` under D-07's explicit owner risk
+acceptance. The parent multi-provider CR, API-007, and API-008 remain `draft`,
+and promotion remains unauthorized.
 
 ## 7. Proposed staged sunset
 
@@ -200,7 +203,9 @@ Before any removal proposal, the owner must receive a bounded report containing:
   applicable with evidence, retained under compatibility, or unknown.
 
 Any `unknown` consumer blocks schema-less removal unless the owner explicitly
-accepts the documented breaking risk and authorizes WP-11.
+accepts the documented breaking risk and authorizes WP-11. Boss recorded that
+acceptance and authorization under D-07 on 2026-08-03; it is a risk acceptance,
+not evidence that unknown consumers are safe or absent.
 
 ### WP-10 evidence state
 
@@ -209,17 +214,17 @@ The commit-pinned repository discovery is recorded in
 Its evidence state is `complete` for the authorized WP-10 scope: PR #93 has
 merged and its remote E2E, P0 verify, Vercel, local-gate, and independent-review
 evidence are recorded. The artifact still records unknown external-consumer,
-deployment, telemetry, attestation, and canonical-graph surfaces. Those gaps
-block WP-11 removal readiness; WP-10 completion does not authorize WP-11 or
-promote API-008/ADR-024.
+deployment, telemetry, attestation, and canonical-graph surfaces. Boss has
+accepted the resulting HIGH external-consumer breaking risk and authorized
+WP-11 under D-07; the gaps remain unresolved and do not promote API-008/ADR-024.
 
 ### WP-B: remove schema-less compatibility only after owner acceptance
 
-WP-11 may remove the absent-schema principal-only branch only after WP-10's
-exit evidence and an owner decision that accepts the remaining external risk.
-It must not turn an unknown consumer into an assertion of safety. If evidence
-is incomplete, the approved outcome is to retain the branch and record the
-residual rather than force removal.
+WP-11 may remove the absent-schema principal-only branch under the D-07 owner
+authorization recorded on 2026-08-03. The acceptance of remaining external risk
+does not turn an unknown consumer into an assertion of safety. The executing
+packet must retain the residual and use the approved rollback path if an
+affected consumer is identified.
 
 ## 8. Acceptance criteria
 
@@ -301,17 +306,33 @@ merged from head `152161edd9de816eb47eea02dfd17e257239fe6d` as
 | Other local gates | lint, build, MCP smoke, docs validation, roadmap validation, diff check, and whitespace check passed |
 | Independent review | approved |
 
-This closure neither changes this CR's `execution_authorized: false` decision
-posture nor authorizes an additional packet. The parent multi-provider CR,
-API-007, and API-008 remain `draft`; API promotion remains unauthorized.
-WP-11 remains `draft` with `execution_authorized: false`. External consumers
-and GKS coverage remain unknown, so the schema-less compatibility branch is
-not removal-ready.
+This WP-10 closure did not itself authorize WP-11. The subsequent D-07 owner
+decision authorizes WP-11 while retaining the parent multi-provider CR,
+API-007, and API-008 as `draft` and API promotion as unauthorized. External
+consumers and GKS coverage remain unknown; the authorization is an explicit
+acceptance of that breaking risk, not a removal-readiness assertion.
+
+## 13. D-07 accepted-risk authorization and rollback
+
+Boss (CEO) authorized WP-11 on 2026-08-03 and explicitly accepted the remaining
+HIGH breaking risk from unknown external consumers, external version support,
+provider compatibility, deployment telemetry, and canonical GKS coverage.
+This decision permits the bounded WP-11 removal scope; it does not assert that
+any unknown consumer is migrated, absent, safe, or covered by repository
+discovery.
+
+Before any runtime or test mutation, WP-11 must capture pre-removal source
+hashes, inverse patches, and the affected consumer communication record. If an
+affected consumer or approved rollback trigger is identified, restore the exact
+prior compatibility branch, rerun the approved baseline, record the consumer,
+and preserve authority validation without widening scope. This authorization
+does not promote the parent CR, API-007, API-008, or ADR-024.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.4 | 2026-08-03 | Boss / ATHER | Recorded D-07 selection: Boss authorized WP-11 and accepted the documented HIGH unknown-external-consumer breaking risk with mandatory rollback; parent/API drafts and promotion prohibition remain unchanged. |
 | 0.2.3 | 2026-08-03 | ATHER | Closed the authorized WP-10 scope with merged PR #93, remote E2E/P0/Vercel evidence, final local gates, and independent approval; parent/API drafts, unknown consumer/GKS coverage, and the WP-11 removal block remain unchanged. |
 | 0.2.2 | 2026-08-03 | ATHER | Linked WP-10 local-gate and independent-review evidence; remote CI/merge and all promotion/removal gates remain pending. |
 | 0.2.1 | 2026-08-03 | ATHER | Linked WP-10 commit-pinned consumer evidence as verification-pending; execution completion, API/ADR promotion, and WP-11 remain blocked. |

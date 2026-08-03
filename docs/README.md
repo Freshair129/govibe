@@ -2,7 +2,7 @@
 title: "GoVibe Documentation Navigation Hub"
 doc_id: "DOCS-NAVIGATION-HUB"
 status: "draft"
-version: "0.2.6+draft"
+version: "0.2.7+draft"
 updated: "2026-08-03"
 owner: "THESEUS / ATHER"
 source_of_truth: true
@@ -84,15 +84,17 @@ defect-closure shortcut.
 
 Boss approved this decision packet on 2026-08-03. WP-10's fixture-only v1
 migration and consumer-discovery scope is complete with merged PR #93 and
-recorded CI/Vercel/local-review evidence. The parent multi-provider CR, API-007,
-and API-008 remain drafts; WP-11 remains draft and unauthorized. Unknown
-external-consumer and GKS coverage keep schema-less removal blocked. This does
-not promote an API/ADR or claim runtime conformance.
+recorded CI/Vercel/local-review evidence. Boss then approved and authorized
+WP-11 on 2026-08-03, explicitly accepting the remaining HIGH risk from unknown
+external consumers and GKS coverage with mandatory rollback. The parent
+multi-provider CR, API-007, and API-008 remain drafts; this does not promote an
+API/ADR or claim runtime conformance.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.7+draft | 2026-08-03 | ATHER | Updated execution-binding navigation for Boss's D-07 WP-11 authorization and explicit accepted-risk/rollback boundary; parent/API drafts remain unchanged. |
 | 0.2.6+draft | 2026-08-03 | ATHER | Updated the execution-binding navigation with the authorized WP-10 PR #93 closure while retaining parent/API drafts and the WP-11 removal block. |
 | 0.2.5+draft | 2026-08-03 | Boss / ATHER | Recorded Boss approval of the execution-binding decision and WP-10 only; retained API/ADR promotion and WP-11 as unauthorized. |
 | 0.2.4+draft | 2026-08-03 | ATHER | Added navigation for the owner-gated execution-binding v1 lifecycle and schema-less sunset decision; no execution or promotion is authorized. |
