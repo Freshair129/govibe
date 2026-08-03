@@ -1,17 +1,21 @@
 ---
 title: "Evidence: WP-10 Execution-Binding v1 Consumer Discovery"
 doc_id: "EVIDENCE-WP-10-EXECUTION-BINDING-V1-CONSUMER-DISCOVERY"
-status: "draft"
-version: "0.1.2+draft"
+status: "approved"
+version: "0.2.0"
 updated: "2026-08-03"
 owner: "ATHER"
 source_of_truth: false
 parent_change_request: "CR-2026-08-03-EXECUTION-BINDING-V1-LIFECYCLE-DECISION"
 work_packet: "WP-10-EXECUTION-BINDING-V1-FIXTURE-MIGRATION-AND-CONSUMER-DISCOVERY"
 related_apis: ["API-008"]
-evidence_source_commit: "e8a756dc6c0681fed55d257087601a81f2e55505"
-evidence_status: "verification-pending"
-execution_complete: false
+evidence_source_commit: "d3f2b38bb8add90baaaf88b10de50370569c5de3"
+baseline_evidence_commit: "e8a756dc6c0681fed55d257087601a81f2e55505"
+pr_head_commit: "152161edd9de816eb47eea02dfd17e257239fe6d"
+merge_commit: "d3f2b38bb8add90baaaf88b10de50370569c5de3"
+merged_at: "2026-08-03T09:35:52Z"
+evidence_status: "complete"
+execution_complete: true
 complexity: "C-3"
 access_scope: "H3"
 risk: "HIGH"
@@ -22,20 +26,22 @@ risk: "HIGH"
 ## 1. Decision boundary
 
 This is a commit-pinned, repository-only consumer-discovery record for WP-10.
-It records neither fixture-migration completion nor runtime conformance.
+It records the authorized fixture-migration completion, but not runtime
+conformance.
 `API-008` remains `draft`; no API/ADR promotion is implied. WP-11 remains
 unauthorized, and this record does not authorize compatibility removal.
 
-**Evidence state: verification-pending.** WP-10 `execution_complete` remains
-`false` pending remote CI, branch integration/merge, and independent QA
-acceptance. Local validation and an independent bounded-diff review are
-recorded in Section 8; neither substitutes for those pending gates.
+**Evidence state: complete for the authorized WP-10 scope.** PR #93 merged and
+the remote CI, Vercel, local validation, and independent-review evidence is
+recorded in Section 8. This does not clear external-consumer, deployment,
+telemetry, attestation, or canonical-graph gaps.
 
 ## 2. Scope, method, and evidence limits
 
-The source boundary is commit
+The pre-migration discovery boundary is commit
 `e8a756dc6c0681fed55d257087601a81f2e55505` (`docs(governance): authorize
-binding v1 fixture migration`). Discovery inspected tracked files only. It did
+binding v1 fixture migration`); closure is pinned to merge commit
+`d3f2b38bb8add90baaaf88b10de50370569c5de3`. Discovery inspected tracked files only. It did
 not contact package registries, deployed systems, providers, MSP/GKS, users,
 or operator owners.
 
@@ -147,10 +153,10 @@ evidence file remains historical and is not a removal authorization.
 
 ## 8. Post-migration local verification
 
-The bounded worktree review on 2026-08-03 found exactly seven intended changed
-files: the three authorized fixture/helper producers and this evidence record,
-WP-10, the parent CR, and the document registry. No production implementation
-file changed. `dist/` and `node_modules/` are ignored and were not staged.
+The bounded WP-10 review found exactly seven intended changed files: the three
+authorized fixture/helper producers and this evidence record, WP-10, the parent
+CR, and the document registry. No production implementation file changed.
+`dist/` and `node_modules/` are ignored and were not staged.
 
 The after-migration source hashes are:
 
@@ -173,7 +179,7 @@ Local gates passed:
 
 | Gate | Result |
 |---|---|
-| `npm test` | PASS: 37 files, 212 passed, 1 skipped; included security suite |
+| `npm test` | PASS: 37 files, 212 passed, 0 failed, 1 skipped (213 total); included security suite |
 | `npm run test:security` | PASS: 35 tests |
 | `npm run lint` | PASS |
 | `npm run build` | PASS |
@@ -183,9 +189,11 @@ Local gates passed:
 | `npm run diff:check` and `git diff --check` | PASS |
 
 The assigned independent reviewer outcome for the combined bounded diff was
-`APPROVE`. This local evidence remains `verification-pending`: remote CI,
-branch integration/merge, and any required independent QA acceptance have not
-been evidenced here.
+`APPROVE`. PR [#93](https://github.com/Freshair129/govibe/pull/93) merged from
+head `152161edd9de816eb47eea02dfd17e257239fe6d` as
+`d3f2b38bb8add90baaaf88b10de50370569c5de3` at `2026-08-03T09:35:52Z`.
+Remote E2E succeeded (run `30801950051`, job `91648318474`), remote P0 verify
+succeeded (run `30801949933`, job `91648317503`), and Vercel succeeded.
 
 ## 9. Unresolved items and escalation
 
@@ -194,12 +202,12 @@ been evidenced here.
 3. `provider_compatibility_evidence`: unknown; requires provider-adapter owner evidence.
 4. `deployment_binding_telemetry`: unknown; requires a binding-schema/version observability source and dated capture.
 5. `canonical_graph_coverage`: unknown; requires an authorized MSP-scoped GKS impact query.
-6. Remote CI, branch integration/merge, and any required independent-QA acceptance: pending; `execution_complete` remains `false`.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-08-03 | ATHER | Closed authorized WP-10 evidence with PR #93 merge, remote E2E/P0/Vercel success, 212 pass/0 fail/1 skip local suite, 35/35 security, all listed local gates, and independent approval; consumer/GKS gaps still block WP-11 removal. |
 | 0.1.2+draft | 2026-08-03 | ATHER | Recorded the bounded after-migration inventory, local gate results, and independent `APPROVE` review; remote CI/merge and execution completion remain pending. |
 | 0.1.1+draft | 2026-08-03 | ATHER | Corrected the `index.mjs` commit-pinned blob hash after independent HEAD verification. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Recorded commit-pinned WP-10 consumer discovery, source hashes, public-export risk, unknown external evidence, and a blocked WP-11 removal gate. |

@@ -2,7 +2,7 @@
 title: "CR: Execution-Binding v1 Lifecycle and Schema-Less Legacy Sunset Decision"
 doc_id: "CR-2026-08-03-EXECUTION-BINDING-V1-LIFECYCLE-DECISION"
 status: "approved"
-version: "0.2.2"
+version: "0.2.3"
 updated: "2026-08-03"
 owner: "Boss (CEO)"
 proposal_author: "ATHER"
@@ -12,8 +12,10 @@ source_of_truth: true
 approval_recorded_at: "2026-08-03"
 decision_authorized: true
 execution_authorized: false
+execution_complete: true
 promotion_authorized: false
-wp_10_evidence_status: "verification-pending"
+wp_10_evidence_status: "complete"
+wp_10_execution_complete: true
 wp_10_consumer_evidence: "docs/assurance/audit/EVIDENCE-WP-10-Execution-Binding-v1-Consumer-Discovery.md"
 complexity: "C-3"
 access_scope: "H3"
@@ -204,11 +206,11 @@ accepts the documented breaking risk and authorizes WP-11.
 
 The commit-pinned repository discovery is recorded in
 `docs/assurance/audit/EVIDENCE-WP-10-Execution-Binding-v1-Consumer-Discovery.md`.
-Its evidence state is `verification-pending`: passed local gates and an
-independent bounded-diff `APPROVE` review are recorded, while remote CI, branch
-integration/merge, and any required independent QA acceptance remain pending.
-The artifact records unknown external-consumer, deployment, telemetry,
-attestation, and canonical-graph surfaces; it does not authorize WP-11 or
+Its evidence state is `complete` for the authorized WP-10 scope: PR #93 has
+merged and its remote E2E, P0 verify, Vercel, local-gate, and independent-review
+evidence are recorded. The artifact still records unknown external-consumer,
+deployment, telemetry, attestation, and canonical-graph surfaces. Those gaps
+block WP-11 removal readiness; WP-10 completion does not authorize WP-11 or
 promote API-008/ADR-024.
 
 ### WP-B: remove schema-less compatibility only after owner acceptance
@@ -282,10 +284,35 @@ WP-10 or WP-11 must capture pre-change hashes and inverse patches, roll back in
 reverse dependency order, rerun the approved baseline, and never restore an
 authority bypass or silently reintroduce schema-less interpretation.
 
+## 12. Authorized WP-10 execution closure
+
+The decision CR is execution-complete only for its authorized WP-10 fixture
+migration and consumer-discovery scope. PR [#93](https://github.com/Freshair129/govibe/pull/93)
+merged from head `152161edd9de816eb47eea02dfd17e257239fe6d` as
+`d3f2b38bb8add90baaaf88b10de50370569c5de3` at `2026-08-03T09:35:52Z`.
+
+| Evidence | Recorded result |
+|---|---|
+| Remote E2E | success: run `30801950051`, job `91648318474` |
+| Remote P0 verify | success: run `30801949933`, job `91648317503` |
+| Vercel | success |
+| Final local suite | 213 total: 212 pass, 0 fail, 1 skip |
+| Security | 35/35 pass |
+| Other local gates | lint, build, MCP smoke, docs validation, roadmap validation, diff check, and whitespace check passed |
+| Independent review | approved |
+
+This closure neither changes this CR's `execution_authorized: false` decision
+posture nor authorizes an additional packet. The parent multi-provider CR,
+API-007, and API-008 remain `draft`; API promotion remains unauthorized.
+WP-11 remains `draft` with `execution_authorized: false`. External consumers
+and GKS coverage remain unknown, so the schema-less compatibility branch is
+not removal-ready.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.3 | 2026-08-03 | ATHER | Closed the authorized WP-10 scope with merged PR #93, remote E2E/P0/Vercel evidence, final local gates, and independent approval; parent/API drafts, unknown consumer/GKS coverage, and the WP-11 removal block remain unchanged. |
 | 0.2.2 | 2026-08-03 | ATHER | Linked WP-10 local-gate and independent-review evidence; remote CI/merge and all promotion/removal gates remain pending. |
 | 0.2.1 | 2026-08-03 | ATHER | Linked WP-10 commit-pinned consumer evidence as verification-pending; execution completion, API/ADR promotion, and WP-11 remain blocked. |
 | 0.2.0 | 2026-08-03 | Boss / ATHER | Recorded Boss approval: retain parent/API drafts, reject standalone API-008 promotion and WP-11, normalize ADR-024 and policy metadata, and authorize WP-10 only. |
