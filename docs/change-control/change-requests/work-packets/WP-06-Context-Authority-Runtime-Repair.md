@@ -1,14 +1,14 @@
 ---
 title: "WP-06: Context Authority Runtime Repair"
 doc_id: "WP-06-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
-status: "verification_pending"
-version: "0.2.1"
+status: "approved"
+version: "0.2.2"
 updated: "2026-08-03"
 owner: "Boss"
 approval_owner: "Boss"
 approval_recorded_at: "2026-08-03"
 execution_authorized: true
-execution_complete: false
+execution_complete: true
 complexity: "C-3"
 access_scope: "H3"
 risk: "HIGH"
@@ -81,10 +81,7 @@ order, rerun the baseline matrix, and never restore an authority bypass.
 - Final-diff gates remain `npm run diff:check` and `git diff --check`.
 
 The 212-case inventory supersedes the original 192-case exit target because
-the approved focused tests were added. The implementation has not completed
-execution: `execution_complete: false` remains controlling until remote CI and
-PR merge evidence exist. No deployment, release, or final completion is
-claimed by this work packet.
+the approved focused tests were added.
 
 ### Bounded impact disposition
 
@@ -95,10 +92,31 @@ verified; no additional `must_update` artifact was found within the approved
 relation radius. Graph coverage outside this packet is unresolved and does not
 support a completeness claim.
 
+## Final execution closure
+
+The approved WP-06 scope is complete: PR [#89](https://github.com/Freshair129/govibe/pull/89)
+merged from head `80e4746b86fa3164a22cf732b63d6a27d835aa9b` as
+`d34cf9c917a0bc4b002bd2970657f5dad30e08a6` at `2026-08-03T08:27:14Z`.
+Remote E2E succeeded (run `30797326373`, job `91633754354`), remote P0 verify
+succeeded (run `30797326425`, job `91633754461`), and Vercel succeeded.
+
+The final local evidence is 211 pass / 0 fail / 1 skip (212 total), security
+35/35, and passing lint, build, MCP smoke, docs validation, roadmap validation,
+diff check, and whitespace check. Independent review approved the bounded
+scope. This is execution closure only, not a deployment/release assertion and
+not a promotion of draft API-008 or parent contracts.
+
+The bounded impact disposition remains unchanged: all required actions within
+the reviewed distance 1-3 chains were completed; graph coverage beyond that
+radius is unresolved. Schema-less principal-only legacy binding remains a
+governed compatibility residual under draft API-008, not a closed defect or
+an authority bypass.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.2 | 2026-08-03 | ATHER | Closed WP-06 execution with PR #89 merge, remote checks, Vercel, final local gates, approved review, bounded impact disposition, and governed legacy residual; API-008 remains draft. |
 | 0.2.1 | 2026-08-03 | ATHER | Moved to verification pending; recorded 212-case local gate evidence, bounded impact disposition, and the remote-CI/merge closure hold. |
 | 0.2.0 | 2026-08-03 | Boss | Recorded approval of the bounded WP-06 execution and explicit D-01/D-02 selections; API-008 remains draft pending validated alignment. |
 | 0.1.1+draft | 2026-08-03 | THESEUS / ATHER | Corrected capability-runtime and MSP-live test mapping; added direct `git diff --check` to the exit gate. |

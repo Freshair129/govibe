@@ -1,15 +1,15 @@
 ---
 title: "CR: Context Authority Runtime Repair and Execution-Binding Contract Gate"
 doc_id: "FUTURE-CR-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
-status: "verification_pending"
-version: "0.2.1"
+status: "approved"
+version: "0.2.2"
 updated: "2026-08-03"
 owner: "Boss"
 decision_owner: "Boss"
 approval_owner: "Boss"
 approval_recorded_at: "2026-08-03"
 execution_authorized: true
-execution_complete: false
+execution_complete: true
 complexity: "C-3"
 access_scope: "H3"
 context_profiles: ["T-ctx", "W-ctx"]
@@ -226,9 +226,9 @@ or test mutation was made while applying this documentation correction.
 ### Current disposition
 
 The approved WP-06 implementation is locally verified and independently
-reviewed **APPROVED** for the bounded scope. This is not a CI, merge, or
-release claim: `execution_complete: false` remains controlling while remote CI
-and PR merge evidence are pending.
+reviewed **APPROVED** for the bounded scope. This local record was subsequently
+confirmed by the remote merge and required remote checks; final closure evidence
+is recorded below.
 
 ### Base, head, and inventory
 
@@ -276,16 +276,47 @@ was identified in this bounded review. The timestamp-only dirty
 `scripts/mcp/graph-dispatch-authority.security.mjs` has the same blob ID as
 `HEAD` and is explicitly excluded from the commit.
 
-### Remaining gates
+## 14. Final execution-closure evidence
 
-- Remote CI evidence has not been obtained.
-- The PR has not been merged.
-- No release, deployment, or final completion claim is authorized.
+WP-06 execution is complete for the approved bounded scope. This closure does
+not promote API-008, ADR-024, API-007, or any other parent contract beyond its
+current lifecycle state.
+
+| Evidence | Recorded result |
+|---|---|
+| Pull request | [#89](https://github.com/Freshair129/govibe/pull/89) |
+| PR head | `80e4746b86fa3164a22cf732b63d6a27d835aa9b` |
+| Merge commit | `d34cf9c917a0bc4b002bd2970657f5dad30e08a6` on `origin/main` |
+| Merged at | `2026-08-03T08:27:14Z` |
+| Remote E2E | success: run `30797326373`, job `91633754354` |
+| Remote P0 verify | success: run `30797326425`, job `91633754461` |
+| Vercel | success |
+| Final local suite | 212 total: 211 pass, 0 fail, 1 skip |
+| Security | 35/35 pass |
+| Other local gates | lint, build, MCP smoke, docs validation, roadmap validation, diff check, and whitespace check passed |
+| Independent review | approved |
+
+### Final bounded impact disposition and residual
+
+The approved relations remain bounded to `ADR-023/API-007 -> continuation /
+WorkspaceService / legacy resolve -> tests` and `ADR-024/API-008 -> binding
+service / executor adapter -> tests`, at graph distances 1-3. The merged
+repair satisfied every required action inside that radius; no additional
+`must_update` artifact was identified. Coverage outside this bounded review
+remains unresolved and no completeness claim is made.
+
+The schema-less, principal-only legacy binding path remains a governed
+compatibility residual, not a defect closure: it is allowed only under the
+strict absent-schema conditions already defined in draft API-008 and never
+bypasses context authority, policy decision, lineage, or identity checks.
+Future schema retirement or API promotion requires its own governed decision
+and evidence.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.2 | 2026-08-03 | ATHER | Closed approved WP-06 execution with merged PR #89, remote E2E/P0/Vercel evidence, final gates, bounded impact disposition, and governed schema-less legacy residual; API-008 remains draft. |
 | 0.2.1 | 2026-08-03 | ATHER | Recorded local 212-case and 35/35 security evidence, bounded impact disposition, and independent-review approval; status is verification pending while remote CI and merge remain outstanding. |
 | 0.2.0 | 2026-08-03 | Boss | Approved D-01 Option A, D-02 caller-supplied valid authority propagation, and D-03 bounded WP-06 execution; API-008 remains draft pending validated implementation alignment. |
 | 0.1.1+draft | 2026-08-03 | THESEUS / ATHER | Corrected capability-runtime versus MSP-live failure attribution and recorded the review-gate disposition. |

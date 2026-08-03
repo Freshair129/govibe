@@ -2,7 +2,7 @@
 title: "RCA: Context Authority Runtime Repair and Execution-Binding Contract Mismatch"
 doc_id: "RCA-2026-08-03-CONTEXT-AUTHORITY-RUNTIME-REPAIR"
 status: "draft"
-version: "0.1.1+draft"
+version: "0.1.2+draft"
 updated: "2026-08-03"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -82,9 +82,28 @@ it cannot be hidden by a fixture patch or weakened adapter validation.
 defines the owner-gated repair. This RCA authorizes no mutation. Its `.brain`
 companion is a workspace-continuity pointer only; this file is canonical.
 
+## Closure evidence and governed residual
+
+The approved corrective scope merged through PR
+[#89](https://github.com/Freshair129/govibe/pull/89), head
+`80e4746b86fa3164a22cf732b63d6a27d835aa9b`, merge
+`d34cf9c917a0bc4b002bd2970657f5dad30e08a6`, at
+`2026-08-03T08:27:14Z`. Remote E2E (run `30797326373`, job `91633754354`),
+remote P0 verify (run `30797326425`, job `91633754461`), and Vercel all
+succeeded. Final local evidence was 211 pass / 0 fail / 1 skip (212 total),
+security 35/35, and passing lint, build, MCP smoke, docs/roadmap validation,
+diff, and whitespace gates; independent review approved.
+
+The residual schema-less principal-only legacy binding is a governed
+compatibility boundary, not evidence that the defect remains open or that
+API-008 is promoted. It remains constrained by draft API-008 and retains every
+context-authority, policy, lineage, and identity check. Its retirement or the
+promotion of any draft parent contract requires separate authorization.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-08-03 | ATHER | Added PR #89 merge and remote/local closure evidence plus the bounded schema-less legacy compatibility residual; this RCA and API-008 remain draft. |
 | 0.1.1+draft | 2026-08-03 | ATHER / THESEUS | Corrected attribution: the propagation defect is capability-runtime; both MSP-live failures are fixture drift. |
 | 0.1.0+draft | 2026-08-03 | ATHER / THESEUS | Recorded audited fixture drift, continuation propagation defect, legacy-path gap, and separate binding-contract decision gate. |
