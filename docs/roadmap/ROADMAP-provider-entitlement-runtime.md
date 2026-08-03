@@ -2,7 +2,7 @@
 title: "ROADMAP: Provider Entitlement Runtime"
 doc_id: "ROADMAP-PROVIDER-ENTITLEMENT-RUNTIME"
 id: RM-provider-entitlement-runtime
-version: "0.1.2+draft"
+version: "0.1.3+draft"
 updated: "2026-08-04"
 status: draft
 owner: "LYRA"
@@ -17,6 +17,7 @@ related_docs:
   - "docs/roadmap/BACKLOG-provider-entitlement-runtime.md"
   - "docs/change-control/TODO-Execution-Binding-Lifecycle.md"
   - "docs/security/POLICY-Provider-Entitlement-Usage-Ledger-Redaction-and-Retention.md"
+  - "docs/security/POLICY-Provider-Adapter-Enablement.md"
 ---
 
 # ROADMAP: Provider Entitlement Runtime
@@ -60,7 +61,7 @@ with auditable failover — proven by an independent conformance gate.
 |---|---|---|---|---|---|---|
 | PHASE-PER-01 | Establish entitlement authority and credential/session security foundations | SYSTEM-06, SYSTEM-10 | ADR-024, API-008, threat model, sharing policy | Registry and credential/session boundaries exist with negative tests and no credential material outside the vault | review | 60 |
 | PHASE-PER-02 | Add governed capability planning, execution binding, and non-fabricated usage accounting | SYSTEM-06, SYSTEM-09 | API-008 sections 5-11 | Planning and binding reject unauthorized or integrity-failed context, and usage records separate reported from estimated values | in-progress | 70 |
-| PHASE-PER-03 | Add bounded provider adapters and quota-aware routing with governed failover | SYSTEM-06, SYSTEM-10 | API-008 sections 9-12, provider policy records | Adapters normalize results without GKS access and failover re-evaluates entitlement policy under a new binding id | planned | 0 |
+| PHASE-PER-03 | Add bounded provider adapters and quota-aware routing with governed failover | SYSTEM-06, SYSTEM-10 | API-008 sections 9-12, provider policy records | Adapters normalize results without GKS access and failover re-evaluates entitlement policy under a new binding id | in-progress | 35 |
 | PHASE-PER-04 | Prove runtime conformance to ADR-024 and API-008 | SYSTEM-09, SYSTEM-10 | API-008, threat model, audit evidence | Conformance suite passes and is reviewed; only then may any runtime capability be reported as implemented | planned | 0 |
 
 ## Sprints
@@ -71,7 +72,7 @@ with auditable failover — proven by an independent conformance gate.
 | SPRINT-PER-02 | PHASE-PER-01 | Credential vault and provider session isolation | 1 | Credential material is absent from context, ledger, logs and candidates; revoked credentials block dispatch | in-progress | 50 |
 | SPRINT-PER-03 | PHASE-PER-02 | Governed capability planning and execution binding | 1 | Planning never selects knowledge or mutates MSP context; binding rejects unpersisted or integrity-failed context | review | 70 |
 | SPRINT-PER-04 | PHASE-PER-02 | Entitlement usage ledger and quota visibility | 1 | Estimated values never populate provider-reported fields and unavailable telemetry stays unknown | review | 70 |
-| SPRINT-PER-05 | PHASE-PER-03 | Provider adapter contract and first bounded adapters | 1 | Adapter output conforms to the run-result and candidate schemas with no direct GKS or GenesisBlockDB access | planned | 0 |
+| SPRINT-PER-05 | PHASE-PER-03 | Provider adapter contract and first bounded adapters | 1 | Adapter output conforms to the run-result and candidate schemas with no direct GKS or GenesisBlockDB access | review | 70 |
 | SPRINT-PER-06 | PHASE-PER-03 | Quota-aware sticky routing and governed failover | 1 | Routing cannot bypass authorization and failover creates a new binding id with re-evaluated policy | planned | 0 |
 | SPRINT-PER-07 | PHASE-PER-04 | Multi-provider entitlement runtime conformance gate | 1 | The full conformance suite passes and security/release review accepts the evidence | planned | 0 |
 
@@ -83,7 +84,7 @@ with auditable failover — proven by an independent conformance gate.
 | TASK-PER-59 | SPRINT-PER-02 | task | Credential vault and provider session isolation (issue #59) | SYSTEM-10 | P0 | unassigned | Issue #59 | TASK-PER-58 | Raw credentials never enter MSP context, GKS, candidates, ledger or traces; revoked or expired credentials block dispatch; sessions are isolated per user and entitlement | in-progress | 50 |
 | TASK-PER-60 | SPRINT-PER-03 | task | Governed execution planning and entitlement binding (issue #60) | SYSTEM-06 | P0 | unassigned | Issue #60 | TASK-PER-58; TASK-PER-59 | Planning selects no knowledge and mutates no context; binding rejects missing, unpersisted or integrity-failed context; `credential_ref` travels only on the protected runtime channel | review | 70 |
 | TASK-PER-61 | SPRINT-PER-04 | task | Entitlement usage ledger and quota visibility (issue #61) | SYSTEM-09 | P1 | unassigned | Issue #61 | TASK-PER-58; TASK-PER-60 | Provider-reported, estimated and unknown values stay separate; unavailable telemetry stays null; raw events are not promoted to GKS | review | 70 |
-| TASK-PER-63 | SPRINT-PER-05 | task | Provider adapter contract and first bounded adapters (issue #63) | SYSTEM-06 | P1 | unassigned | Issue #63 | TASK-PER-59; TASK-PER-60 | Adapters reach no GKS or GenesisBlockDB path, results conform to `govibe-provider-run-result/v1`, output stays `govibe-provider-candidate/v1`, unsupported fields stay unknown | planned | 0 |
+| TASK-PER-63 | SPRINT-PER-05 | task | Provider adapter contract and first bounded adapters (issue #63) | SYSTEM-06 | P1 | unassigned | Issue #63 | TASK-PER-59; TASK-PER-60; TASK-PER-61 | Adapters reach no GKS or GenesisBlockDB path, results conform to `govibe-provider-run-result/v1`, output stays `govibe-provider-candidate/v1`, unsupported fields stay unknown | review | 70 |
 | TASK-PER-62 | SPRINT-PER-06 | task | Quota-aware sticky routing and governed failover (issue #62) | SYSTEM-06 | P1 | unassigned | Issue #62 | TASK-PER-61; TASK-PER-63 | Routing cannot bypass authorization, affinity is never a memory-validity signal, failover creates a new binding id and re-evaluates entitlement policy | planned | 0 |
 | TASK-PER-64 | SPRINT-PER-07 | task | Multi-provider entitlement runtime conformance gate (issue #64) | SYSTEM-09 | P0 | unassigned | Issue #64 | TASK-PER-58; TASK-PER-59; TASK-PER-60; TASK-PER-61; TASK-PER-62; TASK-PER-63 | Contract, security, end-to-end, negative, failover and partial-telemetry tests pass and are reviewed; implementation status is propagated only after this gate | planned | 0 |
 | TASK-PER-65 | SPRINT-PER-01 | task | Governed roadmap and backlog for the provider entitlement runtime (issue #65) | SYSTEM-02 | P0 | unassigned | Issue #65 | ADR-024; API-008 | This roadmap and its backlog are registered in the document registry and merged to main with one task per GitHub issue | done | 100 |
@@ -116,7 +117,7 @@ recorded here so the sequence stays traceable after #68 is closed.
 | 2b | #59 | Credential vault, revocation checks, session isolation | TASK-PER-59 | open, gated by #64 | `credential-vault.mjs`, `provider-session-registry.mjs` and their tests |
 | 3 | #60 | Governed capability planning and execution binding | TASK-PER-60 | open, gated by #64 | `execution-capability-planner.mjs`, `execution-binding-service.mjs` and their tests (PR #88) |
 | 4 | #61 | Entitlement usage ledger and quota visibility | TASK-PER-61 | open, gated by #64 | `entitlement-usage-ledger.mjs` and its test, plus the redaction/retention policy |
-| 5 | #63 | Provider adapter contract and first bounded adapters | TASK-PER-63 | open | `executor-adapter.mjs` scaffold only |
+| 5 | #63 | Provider adapter contract and first bounded adapters | TASK-PER-63 | open, gated by #64 | `provider-adapter-host.mjs`, `provider-adapters.mjs` and their test, plus the adapter enablement policy |
 | 6 | #62 | Quota-aware sticky routing and governed failover | TASK-PER-62 | open | none |
 | 7 | #64 | Runtime conformance gate | TASK-PER-64 | open | none |
 
@@ -134,7 +135,7 @@ existence of the threat-model document.
 | TASK-PER-60 | `packages/govibe-core/src/execution-capability-planner.mjs`, `execution-binding-service.mjs` and their tests (merged in PR #88) | Multi-provider conformance; issue #60 remains open pending #64 |
 | TASK-PER-61 | `packages/govibe-core/src/entitlement-usage-ledger.mjs`, its test, and `docs/security/POLICY-Provider-Entitlement-Usage-Ledger-Redaction-and-Retention.md` | Durable storage, operator retention configuration, or accounting fidelity against a real provider; the ledger is process-memory only and is not wired into dispatch |
 | TASK-PER-62 | none | — |
-| TASK-PER-63 | `packages/govibe-core/src/executor-adapter.mjs` scaffold only; no bounded provider adapter | Any adapter contract conformance |
+| TASK-PER-63 | `packages/govibe-core/src/provider-adapter-host.mjs`, `provider-adapters.mjs`, their test, and `docs/security/POLICY-Provider-Adapter-Enablement.md` | Live provider dispatch: every provider record in the enablement policy is `pending`, so no adapter is approved for production use |
 | TASK-PER-64 | none | — |
 
 ## Acceptance Criteria
@@ -168,6 +169,7 @@ existence of the threat-model document.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.3+draft | 2026-08-04 | LYRA | Recorded the observed provider-adapter artifacts for TASK-PER-63, moved it to review, and corrected its dependency list to include TASK-PER-61 per issue #63; every provider enablement record remains pending and the #64 gate is unchanged. |
 | 0.1.2+draft | 2026-08-04 | LYRA | Recorded the observed usage-ledger artifacts for TASK-PER-61 and moved it to review; the #64 conformance gate is unchanged and no runtime capability is claimed. |
 | 0.1.1+draft | 2026-08-04 | LYRA | Recorded the issue #68 implementation sequence packet, including the closed #66 and #67 prerequisites and their observed artifacts; marked the #65 planning task and the #68 sequence task done without advancing the #64 gate. |
 | 0.1.0+draft | 2026-08-04 | LYRA | Initial governed roadmap for issues #58-#64 with dependency and release-gate mapping, observed-state evidence, and the #64 conformance gate retained as a non-claim boundary. |

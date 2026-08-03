@@ -2,8 +2,8 @@
 title: "Reconciliation: API-005, API-006, API-008 and Executor Router"
 doc_id: "RECONCILIATION-API-005-006-008-EXECUTOR-ROUTER"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-08-03"
+version: "0.1.1+draft"
+updated: "2026-08-04"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 related_issue: 70
@@ -114,17 +114,36 @@ The binding object may contain an opaque `credential_ref` in protected process m
 
 ## 6. Current executor-router gap
 
-Current `packages/govibe-core/src/executor-adapter.mjs` performs:
+`packages/govibe-core/src/executor-adapter.mjs` now performs:
 
 ```text
 provider string lookup
 -> context authority check
--> adapter.execute(request)
+-> API-008 binding validation (schema, actor/principal, provider, scope fields)
+-> provider session assertion
+-> run-scoped credential grant
+-> adapter.execute(safeRequest)
 ```
 
-This enforces API-006/API-007 context authority but does not enforce API-008 entitlement binding.
+`packages/govibe-core/src/provider-adapter-host.mjs` wraps that path with the
+adapter enablement gate and result normalization added under issue #63.
 
-The current path is a compatibility seam, not the target architecture.
+Measured against the section 7 target contract:
+
+| Target step | State | Owner |
+|---|---|---|
+| verify binding schema/version | present | #60 |
+| verify binding run/session/turn identity | present | #60 |
+| verify API-006 context IDs and hashes | present | #60 |
+| recheck entitlement lifecycle and compatibility policy | **absent at dispatch**: eligibility is evaluated during planning, not rechecked before invocation | #59, #64 |
+| acquire run-scoped credential grant | present | #59 |
+| invoke adapter selected by `binding.adapter_id` | **partial**: dispatch selects by `provider_id`; `adapter_id` is carried on the enablement record, not used for selection | #63, #62 |
+| normalize provider result | present | #63 |
+| revoke/expire grant | present | #59 |
+| emit usage event | **not wired**: the ledger exists but no dispatch path writes to it | #61, #64 |
+
+The remaining path is still a compatibility seam, not the target architecture, and
+no row above is a runtime conformance claim before issue #64.
 
 ## 7. Target executor-router contract
 
