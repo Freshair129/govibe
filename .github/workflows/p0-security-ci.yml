@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "scripts/mcp/**"
+      - "packages/msp-runtime/**"
       - "src/mission-auth-bootstrap.ts"
       - "src/main.tsx"
       - ".env.example"
@@ -24,6 +25,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm ci --prefix packages/msp-runtime
       - run: npm run test:security
       - run: npm run lint
       - run: npm run build
