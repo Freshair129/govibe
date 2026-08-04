@@ -8,7 +8,8 @@
     "msp-runtime": "./bin/msp-runtime.mjs"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run && npm run test:security",
+    "test:security": "node --test test/*.security.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^11.10.0"

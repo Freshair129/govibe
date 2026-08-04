@@ -1,14 +1,20 @@
-// AC-06: mirrors scripts/mcp/runtime/dependency-boundaries.test.mjs's
-// regex-extraction technique to enforce ADR-027 / SDD §3's layering for the
-// modules that exist in this packet:
+// AC-06 (WP-12) / AC-07 (WP-13): mirrors
+// scripts/mcp/runtime/dependency-boundaries.test.mjs's regex-extraction
+// technique to enforce ADR-027 / SDD §3's layering for the modules that
+// exist in this packet:
 //   db <- domain <- retrieval, domain <- contracts,
 //   {db, domain, retrieval, contracts} <- transport.
 //   domain never imports retrieval or contracts.
-// retrieval/ and contracts/ are not implemented until later phases, so this
-// asserts the rule two ways: (1) those directories must not exist yet in
+// WP-13 Phase 2 adds contracts/: it may import domain/ids.mjs,
+// domain/errors.mjs, or other contracts/ files ONLY -- never
+// domain/entity-store.mjs or domain/vault-registry.mjs directly (those are
+// called from transport/handlers/*, contracts/ only shapes/validates
+// responses). retrieval/ remains a Phase 3 concern and must not exist yet;
+// this test asserts that two ways: (1) retrieval/ must not exist yet in
 // this phase, and (2) even if that first assertion is ever loosened, no
-// domain/ file may import from them -- this test must fail closed if a
-// future edit violates the layering rule without updating this test.
+// domain/ or contracts/ file may import from it -- this test must fail
+// closed if a future edit violates the layering rule without updating this
+// test.
 //
 // server.mjs (composition root) is intentionally excluded, mirroring how
 // runtime-core.mjs/sidecar-server.mjs/govibe-mcp-server.mjs are excluded
@@ -69,38 +75,69 @@ describe("packages/msp-runtime dependency boundaries (AC-06)", () => {
     }
   });
 
-  it("retrieval/ and contracts/ do not exist yet in Phase 0/1 (WP-12 exclusion); fails closed if added without updating this test", () => {
+  it("retrieval/ does not exist yet (Phase 3 exclusion); fails closed if added without updating this test", () => {
     const retrievalDir = path.join(srcRoot, "retrieval");
-    const contractsDir = path.join(srcRoot, "contracts");
 
     expect(existsSync(retrievalDir), "retrieval/ is a Phase 3 concern and must not exist yet").toBe(false);
-    expect(existsSync(contractsDir), "contracts/ is a Phase 2 concern and must not exist yet").toBe(false);
 
-    // Belt-and-braces: even if retrieval/ or contracts/ appear in a future
-    // edit without this test being updated, no domain/ file may import them.
+    // Belt-and-braces: even if retrieval/ appears in a future edit without
+    // this test being updated, no domain/ or contracts/ file may import it.
     const domainDir = path.join(srcRoot, "domain");
-    for (const file of collectFiles(domainDir)) {
+    const contractsDir = path.join(srcRoot, "contracts");
+    for (const file of [...collectFiles(domainDir), ...collectFiles(contractsDir)]) {
       const specifiers = relativeImportSpecifiers(readFileSync(file, "utf8"));
       for (const specifier of specifiers) {
         const resolved = resolveSpecifier(file, specifier);
         expect(isWithin(resolved, retrievalDir), `${file} must never import retrieval/`).toBe(false);
-        expect(isWithin(resolved, contractsDir), `${file} must never import contracts/`).toBe(false);
       }
     }
   });
 
-  it("transport/ may import db/ and domain/ (and other transport/ files)", () => {
+  // WP-13 AC-07 / Bounded Scope item 7: contracts/ may import
+  // domain/ids.mjs and domain/errors.mjs ONLY -- never
+  // domain/entity-store.mjs or domain/vault-registry.mjs directly (those
+  // are called from transport/handlers/*; contracts/ only shapes/validates
+  // responses), and never transport/ or retrieval/. Imports of other
+  // contracts/ files are allowed.
+  it("contracts/ may only import domain/ids.mjs, domain/errors.mjs, or other contracts/ files", () => {
+    const contractsDir = path.join(srcRoot, "contracts");
+    const domainDir = path.join(srcRoot, "domain");
+    const allowedDomainFiles = new Set([path.join(domainDir, "ids.mjs"), path.join(domainDir, "errors.mjs")]);
+
+    for (const file of collectFiles(contractsDir)) {
+      const specifiers = relativeImportSpecifiers(readFileSync(file, "utf8"));
+      for (const specifier of specifiers) {
+        const resolved = resolveSpecifier(file, specifier);
+        const allowed = isWithin(resolved, contractsDir) || allowedDomainFiles.has(resolved);
+        expect(
+          allowed,
+          `${file} imports "${specifier}" -- contracts/ may only import domain/ids.mjs, domain/errors.mjs, or other contracts/ files`,
+        ).toBe(true);
+        if (isWithin(resolved, domainDir)) {
+          expect(allowedDomainFiles.has(resolved), `${file} imports "${specifier}" -- contracts/ must never import domain/entity-store.mjs or domain/vault-registry.mjs directly`).toBe(true);
+        }
+      }
+    }
+  });
+
+  it("transport/ may import db/, domain/, contracts/ (and other transport/ files)", () => {
     const transportDir = path.join(srcRoot, "transport");
     const dbDir = path.join(srcRoot, "db");
     const domainDir = path.join(srcRoot, "domain");
+    const contractsDir = path.join(srcRoot, "contracts");
     for (const file of collectFiles(transportDir)) {
       const specifiers = relativeImportSpecifiers(readFileSync(file, "utf8"));
       for (const specifier of specifiers) {
         const resolved = resolveSpecifier(file, specifier);
-        const allowed = isWithin(resolved, dbDir) || isWithin(resolved, domainDir) || isWithin(resolved, transportDir);
-        expect(allowed, `${file} imports "${specifier}" -- transport/ may only import db/, domain/, or transport/`).toBe(
-          true,
-        );
+        const allowed =
+          isWithin(resolved, dbDir) ||
+          isWithin(resolved, domainDir) ||
+          isWithin(resolved, contractsDir) ||
+          isWithin(resolved, transportDir);
+        expect(
+          allowed,
+          `${file} imports "${specifier}" -- transport/ may only import db/, domain/, contracts/, or transport/`,
+        ).toBe(true);
       }
     }
   });
@@ -130,6 +167,34 @@ describe("packages/msp-runtime dependency boundaries (AC-06)", () => {
     const visited = new Set();
     function visit(file) {
       if (visiting.has(file)) throw new Error(`domain/ import cycle detected at ${file}`);
+      if (visited.has(file)) return;
+      visiting.add(file);
+      for (const dependency of graph.get(file) ?? []) visit(dependency);
+      visiting.delete(file);
+      visited.add(file);
+    }
+    expect(() => {
+      for (const file of files) visit(file);
+    }).not.toThrow();
+  });
+
+  it("contains no import cycles among contracts/ modules", () => {
+    const contractsDir = path.join(srcRoot, "contracts");
+    const files = collectFiles(contractsDir);
+    const graph = new Map();
+    for (const file of files) {
+      const specifiers = relativeImportSpecifiers(readFileSync(file, "utf8")).filter((specifier) =>
+        isWithin(resolveSpecifier(file, specifier), contractsDir),
+      );
+      graph.set(
+        file,
+        specifiers.map((specifier) => resolveSpecifier(file, specifier)),
+      );
+    }
+    const visiting = new Set();
+    const visited = new Set();
+    function visit(file) {
+      if (visiting.has(file)) throw new Error(`contracts/ import cycle detected at ${file}`);
       if (visited.has(file)) return;
       visiting.add(file);
       for (const dependency of graph.get(file) ?? []) visit(dependency);

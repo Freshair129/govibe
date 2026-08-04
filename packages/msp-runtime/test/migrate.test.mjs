@@ -93,14 +93,17 @@ describe("db/migrate (AC-03)", () => {
     expect(() => runMigrations(db, migrationsDir)).toThrow(/downgrade|newer than the newest/i);
   });
 
-  it("applies the real packaged 0001_init.sql without error", () => {
+  it("applies the real packaged migrations (0001_init.sql + 0002_phase2.sql, WP-13) without error", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     const result = runMigrations(db, migrationsDir);
-    expect(result.appliedCount).toBe(1);
+    expect(result.appliedCount).toBe(2);
     const tables = db
-      .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('entities','entity_history')")
+      .prepare(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name IN " +
+          "('entities','entity_history','vaults','vault_mounts','contexts','journal','state','promotions')",
+      )
       .all();
-    expect(tables).toHaveLength(2);
+    expect(tables).toHaveLength(8);
   });
 });

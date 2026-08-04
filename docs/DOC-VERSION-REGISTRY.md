@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.6+draft"
-updated: "2026-08-04"
+version: "0.3.9+draft"
+updated: "2026-08-05"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -32,7 +32,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.6+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.9+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -53,6 +53,8 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Change Request | `CR-2026-08-04-DOC-GOVERNANCE-REFINEMENT` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Doc-Governance-Refinement.md` |
 | Change Request | `CR-2026-08-04-PERSISTENT-MEMORY-MSP-RUNTIME` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md` |
 | Work Packet | `WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-12-Persistent-Memory-MSP-Runtime-Phase-0-1.md` |
+| Work Packet | `WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-13-Persistent-Memory-MSP-Runtime-Phase-2.md` |
+| Work Packet | `WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-14-Vault-Scoping-Msp-Runtime-Entities.md` |
 | Change Request | `CR-2026-08-03-DOCUMENT-IA-KNOWLEDGE-GRAPH-READINESS` | `0.3.0+draft` | draft | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Document-IA-and-Knowledge-Graph-Readiness.md` |
 | Change Request | `CR-2026-08-03-PHASE1B-METADATA-DECISION-PACKET` | `0.2.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Phase1B-Metadata-Decision-Packet.md` |
 | Change Request | `CR-2026-08-03-PHASE2-SEMANTIC-AUTHORITY-DECISION-PACKET` | `0.2.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Phase2-Semantic-Authority-Decision-Packet.md` |
@@ -213,6 +215,9 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.9+draft | 2026-08-05 | Claude (final-gate session) | Owner-approved governance correction pass on the persistent-memory MSP runtime doc set. Synchronized WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1 to 0.1.2+draft (honest execution-closure record; false "no tool implemented"/"32/32 tests" claims removed; true root-vitest-failure cause and Gate-0 remediation recorded; Deviations section added), WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2 to 0.1.2+draft (removed a stray NUL byte that made the file appear binary to git; corrected `proposal_author` and `approval_recorded_at`; honest execution-closure record that implementation preceded authorization and the executing session self-flipped its own authorization flags; AC-09 marked "met retroactively, out of sequence"; Deviations section added, including the cross-agent Global-Private disclosure risk from a globally-unique `promotions.idempotency_key`), API-009-PERSISTENT-MEMORY-CONTRACT to 0.1.1+draft (§4.1 upsert no-op/`changed` field corrected; §6 vault-scope-enforcement-not-yet-implemented amendment note added), and ADR-027-IN-REPO-MSP-RUNTIME-PACKAGE-BOUNDARY to 0.1.1+draft (added required "Service health states" and "Contract version and compatibility" sections per issue #75; `status` remains `proposed`). Registered new Work Packet WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES (0.1.0+draft, draft, blocking gate before multi-agent `msp_memory_promote` use). No document status changed to approved/accepted/candidate by this row. |
+| 0.3.8+draft | 2026-08-04 | Claude (final-gate session) | Synchronized WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2 to 0.1.1+draft after independent verification and closure of its Phase 2 (eleven-tool `msp_*` contract surface) execution in `packages/msp-runtime`: AC-01 through AC-08 re-run and spot-checked directly by the final-gate session (68/68 tests reproduced), including resolving one flagged concern as a false positive (`domain/ids.mjs` NUL-byte separator, verified correct via direct source inspection). No document status changed to approved/accepted/candidate by this row. |
+| 0.3.7+draft | 2026-08-04 | Claude (final-gate session) | Registered WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2 (Phase 2: existing eleven-tool `msp_*` contract surface), depending on WP-12's execution-complete Phase 0+1 foundation. No document status changed to approved/accepted/candidate by this row. |
 | 0.3.6+draft | 2026-08-04 | Claude (final-gate session) | Synchronized WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1 to 0.1.1+draft after independent verification and closure of its Phase 0 (transport parity) + Phase 1 (storage foundation) execution in `packages/msp-runtime`: AC-01 through AC-07 re-run and spot-checked directly by the final-gate session, not only accepted from the executing agent's report. No document status changed to approved/accepted/candidate by this row. |
 | 0.3.5+draft | 2026-08-04 | Claude (final-gate session) | Registered the persistent-memory MSP runtime documentation set (CR-2026-08-04-Persistent-Memory-MSP-Runtime): ADR-027, the governing CR, WP-12, API-009, SDD-Persistent-Memory-MSP-Runtime, SRS-Persistent-Memory-MSP-Runtime, RUNBOOK-Persistent-Memory-Runtime, ROADMAP/BACKLOG-persistent-memory-runtime. Synchronized ADR-026 to 0.1.1+draft (ADR-027 amendment note), FEAT-PER-AGENT-MEMORY-UNIT to 0.2.0+draft, LLD-GOVIBE-MCP-TOOLS to 0.3.0, and DESIGN-SITE-MAP/DESIGN-DOMAIN-DETAILS to 1.1.0 (planned Domain E). No document was set to approved/accepted/candidate by this change. |
 | 0.3.4+draft | 2026-08-04 | Claude (final-gate session) | Doc-governance refinement (CR-2026-08-04-Doc-Governance-Refinement): synchronized STD-DOCUMENT-VERSIONING-GOVERNANCE to 0.2.1+draft and ADR-020 to 0.1.2+draft, registered DESIGN-SITE-MAP and DESIGN-DOMAIN-DETAILS at 1.0.0 (approved) and the CR-2026-08-04-DOC-GOVERNANCE-REFINEMENT decision packet itself, and amended Section 9 so change requests carrying decision authority are registered while feedback/work-packet artifacts remain optional. |
