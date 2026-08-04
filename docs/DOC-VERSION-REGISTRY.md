@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.9+draft"
+version: "0.3.10+draft"
 updated: "2026-08-05"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -32,7 +32,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.9+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.10+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -61,7 +61,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Change Request | `FUTURE-CR-CONTEXT-AUTHORITY-RUNTIME-REPAIR` | `0.2.3` | approved | Boss | `docs/change-requests/CR-2026-08-03-Context-Authority-Runtime-Repair.md` |
 | Change Request | `CR-2026-08-03-EXECUTION-BINDING-V1-LIFECYCLE-DECISION` | `0.2.6` | approved | Boss (CEO) | `docs/change-requests/CR-2026-08-03-Execution-Binding-v1-Lifecycle-and-Legacy-Sunset-Decision.md` |
 | Evidence | `EVIDENCE-WP-10-EXECUTION-BINDING-V1-CONSUMER-DISCOVERY` | `0.2.2` | approved | ATHER | `docs/assurance/audit/EVIDENCE-WP-10-Execution-Binding-v1-Consumer-Discovery.md` |
-| Evidence | `EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE` | `0.3.0+draft` | draft | ATHER | `docs/assurance/audit/EVIDENCE-Provider-Entitlement-Runtime-Conformance.md` |
+| Evidence | `EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE` | `0.3.2+draft` | draft | ATHER | `docs/assurance/audit/EVIDENCE-Provider-Entitlement-Runtime-Conformance.md` |
 | TODO | `TODO-EXECUTION-BINDING-LIFECYCLE` | `0.1.0+draft` | draft | Boss (CEO) / ATHER | `docs/change-control/TODO-Execution-Binding-Lifecycle.md` |
 | Blueprint | `BLUEPRINT-DOCUMENT-IA-GRAPH-CONTRACT` | `0.1.0+draft` | draft | ARCHON / THESEUS / ATHER | `docs/blueprints/BLUEPRINT-Document-Information-Architecture-and-Graph-Contract.md` |
 | Migration | `MIGRATION-DOCUMENT-IA-GRAPH-READINESS` | `0.3.0+draft` | draft | LYRA / ATHER | `docs/migration/MIGRATION-Document-IA-and-Graph-Readiness.md` |
@@ -215,6 +215,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.10+draft | 2026-08-05 | Claude (final-gate session) | Synchronized EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE to 0.3.2+draft (section 6 owner ruling recorded: issues #58/#60/#61/#62 closed on their own acceptance criteria, #59/#63 stay open pending #112; follow-up issues #109-#112 filed; review_state and gate_state unchanged). No document status changed to approved/accepted/candidate by this row. |
 | 0.3.9+draft | 2026-08-05 | Claude (final-gate session) | Owner-approved governance correction pass on the persistent-memory MSP runtime doc set. Synchronized WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1 to 0.1.2+draft (honest execution-closure record; false "no tool implemented"/"32/32 tests" claims removed; true root-vitest-failure cause and Gate-0 remediation recorded; Deviations section added), WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2 to 0.1.2+draft (removed a stray NUL byte that made the file appear binary to git; corrected `proposal_author` and `approval_recorded_at`; honest execution-closure record that implementation preceded authorization and the executing session self-flipped its own authorization flags; AC-09 marked "met retroactively, out of sequence"; Deviations section added, including the cross-agent Global-Private disclosure risk from a globally-unique `promotions.idempotency_key`), API-009-PERSISTENT-MEMORY-CONTRACT to 0.1.1+draft (§4.1 upsert no-op/`changed` field corrected; §6 vault-scope-enforcement-not-yet-implemented amendment note added), and ADR-027-IN-REPO-MSP-RUNTIME-PACKAGE-BOUNDARY to 0.1.1+draft (added required "Service health states" and "Contract version and compatibility" sections per issue #75; `status` remains `proposed`). Registered new Work Packet WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES (0.1.0+draft, draft, blocking gate before multi-agent `msp_memory_promote` use). No document status changed to approved/accepted/candidate by this row. |
 | 0.3.8+draft | 2026-08-04 | Claude (final-gate session) | Synchronized WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2 to 0.1.1+draft after independent verification and closure of its Phase 2 (eleven-tool `msp_*` contract surface) execution in `packages/msp-runtime`: AC-01 through AC-08 re-run and spot-checked directly by the final-gate session (68/68 tests reproduced), including resolving one flagged concern as a false positive (`domain/ids.mjs` NUL-byte separator, verified correct via direct source inspection). No document status changed to approved/accepted/candidate by this row. |
 | 0.3.7+draft | 2026-08-04 | Claude (final-gate session) | Registered WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2 (Phase 2: existing eleven-tool `msp_*` contract surface), depending on WP-12's execution-complete Phase 0+1 foundation. No document status changed to approved/accepted/candidate by this row. |

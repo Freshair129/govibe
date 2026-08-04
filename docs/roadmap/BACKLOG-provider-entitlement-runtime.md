@@ -110,7 +110,7 @@ implementation claims.
   (merged in PR #73).
 - **Observed on this branch:**
   `packages/govibe-core/src/credential-session-boundary.security.test.mjs`
-  (28 tests) closes the dispatch-boundary negative matrix. Every case asserts on a
+  (30 tests) closes the dispatch-boundary negative matrix. Every case asserts on a
   spy that the provider was never invoked, not merely that a promise rejected:
   revoked and expired credentials, expired and revoked and replayed grants,
   cross-entitlement and cross-run and cross-binding grants, principal and actor
