@@ -2,8 +2,8 @@
 title: "Evidence: Provider Entitlement Runtime Conformance"
 doc_id: "EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE"
 status: "draft"
-version: "0.3.0+draft"
-updated: "2026-08-04"
+version: "0.3.2+draft"
+updated: "2026-08-05"
 owner: "ATHER"
 source_of_truth: false
 review_state: "pending"
@@ -92,11 +92,36 @@ This section exists so the gate reviewer is not asked to infer absence.
 
 ### 4.1 Not wired into the product
 
-None of the entitlement runtime is reachable from the MCP server, the sidecar, or
-`packages/govibe-core/src/index.mjs`. The modules are deliberately unexported,
-because exporting them would imply an available capability before this gate.
-Consequently there is **no evidence of behavior under the real dispatch path**,
-only under the suite's own wiring.
+Eight of the nine entitlement runtime modules — the planner, router, execution
+binding service, credential vault, provider session registry, usage ledger,
+adapter host, and entitlement registry — are not reachable from the MCP
+server, the sidecar, or `packages/govibe-core/src/index.mjs`. They stay
+deliberately unexported, because exporting them would imply an available
+capability before this gate.
+
+One module is not in that set. `createExecutorRegistry`
+(`executor-adapter.mjs`) **is exported** from
+`packages/govibe-core/src/index.mjs` (line 20:
+`export { createExecutorRegistry, ProviderUnavailableError } from "./executor-adapter.mjs";`)
+and **is constructed in the production runtime**, in
+`scripts/mcp/runtime-core.mjs` (line 76:
+`this.executorRegistry = createExecutorRegistry(options.executorAdapters ?? {});`).
+No second argument is passed, so `credentialVault`, `sessionRegistry`, and
+`bindingService` all default to `null`. The only method the production
+runtime calls on the resulting registry is `.inspect()`
+(`scripts/mcp/runtime-core.mjs` line 80:
+`this.snapshot.providers = this.executorRegistry.inspect();`); `.execute()`
+is never called from production code.
+
+**Implication:** no dispatch path is live today — with all three services
+null, a call to `.execute()` from production code would fail closed on
+`EXECUTION_BINDING_SERVICE_REQUIRED` (section 5.1) before it could reach a
+provider. But this one module is production-reachable in a way the other
+eight are not, and it is the fail-closed
+`EXECUTION_BINDING_SERVICE_REQUIRED` guard — not the absence of an exported,
+constructed registry — that is protecting it. Consequently there is **no
+evidence of behavior under the real dispatch path**, only under the suite's
+own wiring and under `.inspect()` in the production runtime.
 
 ### 4.2 No real provider
 
@@ -107,9 +132,13 @@ provider are unevidenced.
 ### 4.3 Issue #59 negative-test matrix: mostly closed, two items still open
 
 `packages/govibe-core/src/credential-session-boundary.security.test.mjs`
-(28 tests) closes the dispatch-boundary part of the matrix. Every test asserts on
-a spy that the provider was **never invoked**, not merely that a promise
-rejected:
+(30 tests) closes the dispatch-boundary part of the matrix. PR #108 landed
+alongside the section 5.1 binding-authenticity fix: it flipped four existing
+`GAP:` characterization tests to assert rejection instead of demonstrating the
+vulnerability, and added two new tests — a binding whose claimed entitlement
+differs from the issued one, and dispatch with no binding service wired at
+all — bringing the file from 28 to 30 tests. Every test asserts on a spy that
+the provider was **never invoked**, not merely that a promise rejected:
 
 - revoked credential, expired credential, expired grant, explicitly revoked
   grant, unknown grant, and replay of a consumed one-time grant;
@@ -237,7 +266,14 @@ pre-answer any of these.
       must land before this gate.**
 - [ ] Is the issue #59 negative-test matrix required before this gate, or tracked
       as a follow-up with a named owner?
-- [ ] Which issues among #58 to #63 may close, and with what stated scope?
+- [x] Which issues among #58 to #63 may close, and with what stated scope?
+      Owner ruling (Boss, 2026-08-05, recorded by the final-gate session):
+      #58, #60, #61 and #62 close on their own acceptance criteria, each with a
+      scoped closure comment stating that runtime conformance remains gated on
+      #64. #59 and #63 stay open pending the compatibility registry (#112) and
+      the #59 scope items. Follow-up issues #109, #110, #111 and #112 were
+      filed for the section 5 gaps and the compatibility registry before
+      #61/#62 closed.
 - [ ] Does the parent lifecycle decision T-01 in
       `docs/change-control/TODO-Execution-Binding-Lifecycle.md` need to land
       first? T-01 remains blocked on the owner, and this gate does not resolve it.
@@ -255,13 +291,22 @@ npm run baseline:check
 ```
 
 Recorded run on this branch: 44 test files, 334 tests passed, 1 skipped;
-`docs:validate` PASS; build clean. A CI run reference is added when this branch
-merges to `main`.
+`docs:validate` PASS; build clean.
+
+This branch has merged to `main`: commit `b8604d7`
+(full sha `b8604d701fc58d62a4de0ab72b35099bfa688c12`) is the merge commit for
+PR #108 ("fix(security): verify binding authenticity at dispatch (#59)",
+branch `fix/issue-59-binding-authenticity`). CI run for that commit: workflow
+**"E2E Tests — CI Pipeline"**, conclusion `success`,
+<https://github.com/Freshair129/govibe/actions/runs/30863047065> (run id
+`30863047065`).
 
 ## 8. Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.2+draft | 2026-08-05 | Claude (final-gate session) | Recorded the owner's section 6 ruling: #58, #60, #61, #62 closed on their own acceptance criteria with scoped comments; #59/#63 stay open pending #112 and the #59 scope items; follow-up issues #109–#112 filed for the section 5 gaps. No change to review_state or gate_state. |
+| 0.3.1+draft | 2026-08-05 | Claude (adversarial gate correction) | Factual corrections from adversarial gate review: section 4.1 boundary statement (createExecutorRegistry is exported and constructed in runtime-core.mjs with null services, inspect-only usage), test count 28→30 in section 4.3, and CI reference status in section 7 (merge commit b8604d7, run id 30863047065, success). No change to review_state or gate_state. |
 | 0.3.0+draft | 2026-08-04 | ATHER | Section 5.1 fixed: dispatch now verifies binding authenticity, expiry and revocation against the issuing service, fail-closed, and emits the API-008 BINDING_EXPIRED code for the first time. Recorded the remaining entitlement-lifecycle recheck gap. Gate remains not passed. |
 | 0.2.0+draft | 2026-08-04 | ATHER | Recorded the issue #59 dispatch-boundary negative matrix as closed, the two remaining #59 items as missing implementations rather than missing tests, and a new high-severity finding in section 5.1: binding authenticity is not verified at dispatch, so expired, revoked and never-issued bindings all reach the provider. Gate remains not passed. |
 | 0.1.0+draft | 2026-08-04 | ATHER | Initial conformance evidence package for issue #64: suite coverage mapped to the acceptance criteria, explicit non-coverage, three recorded contract gaps, and a reviewer checklist. The gate is not passed and no implementation status is propagated. |
