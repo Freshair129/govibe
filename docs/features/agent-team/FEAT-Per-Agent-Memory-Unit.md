@@ -2,8 +2,8 @@
 title: "FEAT: Per-Agent Memory Unit"
 doc_id: "FEAT-PER-AGENT-MEMORY-UNIT"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-23"
+version: "0.2.0+draft"
+updated: "2026-08-04"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -14,6 +14,10 @@ related_docs:
   - "docs/features/genesis-knowledge-system/FEAT-GenesisBlockDB-Core.md"
   - "docs/features/traceability-audit/FEAT-Bi-Temporal-Versioning.md"
   - ".agents/FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS.md"
+  - "docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md"
+  - "docs/srs/SRS-Persistent-Memory-MSP-Runtime.md"
+  - "docs/architecture/SDD-Persistent-Memory-MSP-Runtime.md"
+  - "docs/api/API-009-Persistent-Memory-Contract.md"
 ---
 
 # FEAT: Per-Agent Memory Unit
@@ -151,7 +155,50 @@ The result is a single reconciled GKS truth; the losing claim is marked `Depreca
 | audit time fields | `temporal-versioning.mjs` (`FEAT-Bi-Temporal-Versioning`) |
 | **net-new** | episodic-unit schema + 8-8-8 distillation cadence + promotion pipeline + LCA reconcile |
 
-## 11. Acceptance Criteria
+## 11. Concrete Persistence and Retrieval Realization (ADR-027)
+
+Sections 4 and 10 above specify this feature's persistence/retrieval
+requirement compositionally ("storage = GenesisBlockDB; knowledge = GKS;
+passport/retrieval = MSP") without naming where that MSP-side persistence
+actually runs. `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md`
+resolves that: the MSP runtime backing this feature's memory unit is
+`packages/msp-runtime`, an in-repo package spawned as a separate OS process
+per `docs/adr/ADR-026-MSP-External-Runtime-Deployment.md`, never imported as
+a library into GoVibe's own server process.
+
+`docs/srs/SRS-Persistent-Memory-MSP-Runtime.md` and
+`docs/architecture/SDD-Persistent-Memory-MSP-Runtime.md` are the concrete
+requirements and design records for that runtime; this FEAT document remains
+the product-level contract for *why* per-agent memory exists and what shape
+it takes (tiers, epistemic states, promotion pipeline, LCA), while the SRS/SDD
+own *how* it is stored and retrieved. `docs/api/API-009-Persistent-Memory-Contract.md`
+is the wire contract for the `msp_memory_*` tool surface this feature's
+future implementation calls.
+
+Two items from this FEAT's own contract map directly onto the runtime:
+
+- The bitemporal entry schema in §7 (`valid_from`/`valid_to`,
+  `recorded_at`/`superseded_at`) is implemented by
+  `packages/msp-runtime`'s `domain/temporal-engine`, a vendored port of
+  `scripts/mcp/temporal-versioning.mjs` semantics — the same primitive named
+  in §10's composition table, now with a concrete implementation location.
+- The promotion pipeline in §8 still routes through the existing Verify Gate
+  before any claim becomes shared GKS truth; the runtime's own
+  `msp_knowledge_promote`/`msp_memory_promote` (`target_scope=shared`) stay
+  fail-closed (`gks_provider_unconfigured`) until a real GKS provider exists,
+  consistent with this FEAT never having claimed shared promotion is solved.
+
+This subsection does not change this feature's tier model, entry schema,
+promotion pipeline, or LCA conflict resolution (Sections 5, 7, 8, 9 are
+unchanged). `T0`/`T1`/`T2` tiering, 8-8-8 distillation, and LCA reconciliation
+remain explicitly out of scope for the runtime's first implementation slice
+(see the exclusions in
+`docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md`);
+this feature's acceptance criteria below are not satisfied merely because the
+runtime package exists — they require the tiering and promotion behavior
+this FEAT specifies, which is separate, later work.
+
+## 12. Acceptance Criteria
 
 - A canonical, governed contract exists for a tiered per-agent memory unit.
 - Ephemeral workers carry only a failure-log slice; full units are reserved for `T1`/`T2`.
@@ -161,23 +208,26 @@ The result is a single reconciled GKS truth; the losing claim is marked `Depreca
 - 8-8-8 distillation is named distinctly from spatial compaction and reuses GKS for output.
 - No new storage/retrieval/compaction engine is introduced.
 
-## 12. Success Criteria
+## 13. Success Criteria
 
 - Repeated failures (e.g. hallucinated tooling) drop after a lesson enters role/shared memory.
 - Frontier-token spend on re-deriving known context drops (distilled memory reused).
 - Fleet beliefs stay reconciled (no two agents acting on contradictory shared "facts").
 - Every promoted memory is traceable to its source episode/observation (explainability).
 
-## 13. Definition Of Done
+## 14. Definition Of Done
 
 - Feature doc registered in `docs/DOC-VERSION-REGISTRY.md`.
 - `docs:validate` passes.
 - `docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md` references this contract for the
   episodic-unit + distillation + promotion wiring.
+- `docs/architecture/SDD-Persistent-Memory-MSP-Runtime.md` references this contract as the
+  product-level source for the runtime's persistence/retrieval requirement.
 - Future implementation plans can cite this doc when adding per-agent memory.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0+draft | 2026-08-04 | Claude (final-gate session) | Added Section 11, pointing this feature's persistence/retrieval requirement at `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md` and `packages/msp-runtime` as the concrete realization; renumbered Acceptance Criteria/Success Criteria/Definition of Done to 12/13/14 without changing their content; added SRS/SDD/API-009 to related_docs and to Definition of Done. Tier model, entry schema, promotion pipeline, and LCA resolution (Sections 5, 7, 8, 9) are unchanged. |
 | 0.1.0+draft | 2026-06-23 | ARCHON / ATHER | Initial tiered per-agent memory unit contract: T0/T1/T2 tiers, 3-file re-grounded unit, epistemic + bitemporal entry schema, Verify-Gate promotion pipeline, LCA conflict resolution, 8-8-8 distillation distinct from spatial compaction, composition over rebuild. |

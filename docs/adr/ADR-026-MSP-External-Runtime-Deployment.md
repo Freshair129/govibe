@@ -2,12 +2,13 @@
 doc_id: "ADR-026-MSP-EXTERNAL-RUNTIME-DEPLOYMENT"
 title: "ADR-026: MSP external runtime deployment boundary"
 status: "proposed"
-version: "0.1.0+draft"
-updated: "2026-08-03"
+version: "0.1.1+draft"
+updated: "2026-08-04"
 owner: "Boss (CEO)"
 type: adr
 related_issue: 75
-related_adrs: ["ADR-023"]
+related_adrs: ["ADR-023", "ADR-027"]
+amended_by: ["ADR-027"]
 ---
 
 # ADR-026: MSP external runtime deployment boundary
@@ -61,6 +62,19 @@ Executor -> GoVibe MCP -> external MSP process -> GKS -> GenesisBlockDB
 - (-) Local development needs an approved MSP command; fixtures remain test
   evidence only.
 
+**Amendment (ADR-027):** For the persistent-memory MSP runtime scoped by
+`docs/srs/SRS-Persistent-Memory-MSP-Runtime.md`, ADR-027 resolves this ADR's
+"MSP runtime repository ... not yet selected" finding: the repository is this
+monorepo (`packages/msp-runtime`), launched as a separate OS process per the
+`Executor -> GoVibe MCP -> external MSP process -> GKS -> GenesisBlockDB`
+diagram above. This does not change this ADR's parent-child process boundary,
+fail-closed requirements, or its refusal to claim GKS/restart evidence that
+has not been proven by a real test. Other, future MSP-adjacent work is not
+automatically covered by this amendment; it would need its own decision
+record if it chooses a different repository or process model. This note is an
+addition; the Decision text above is unchanged and remains the historical
+record of what was decided on 2026-08-03.
+
 ## Required follow-up
 
 - Owner approves or rejects this proposal and records the MSP runtime location.
@@ -81,4 +95,5 @@ Executor -> GoVibe MCP -> external MSP process -> GKS -> GenesisBlockDB
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-04 | Claude (final-gate session) | Recorded that ADR-027 amends and resolves this ADR's unselected MSP runtime repository/process finding for the persistent-memory MSP runtime instance (`packages/msp-runtime`, in-repo, separate OS process). Appended an amendment note to Consequences; the Decision text and status are unchanged. |
 | 0.1.0+draft | 2026-08-03 | Boss (CEO) | Proposed the external MSP stdio deployment boundary while leaving the production runtime owner/provider explicitly unresolved. |

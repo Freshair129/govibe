@@ -2,8 +2,8 @@
 title: "ADR: Per-Agent Memory via Composed Tiered Units (EVA Memory-OS Subset Port)"
 doc_id: "ADR-020-PER-AGENT-MEMORY-UNIT"
 status: "proposed"
-version: "0.1.1+draft"
-updated: "2026-08-01"
+version: "0.1.2+draft"
+updated: "2026-08-04"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -22,9 +22,11 @@ related_docs:
 
 ## Status
 
-Proposed. Awaiting GoVibe human-owner sign-off (`docs:register` → `docs:ratify`). This decision
-governs `FEAT-PER-AGENT-MEMORY-UNIT` (draft); the feature cannot be ratified until this ADR is
-accepted.
+Proposed. Awaiting GoVibe human-owner sign-off. Acceptance is recorded by the owner approving in
+this ADR's frontmatter (the approval fields used by the CR convention: `approval_owner`,
+`approval_recorded_at`, and `status` moving from `proposed` to `accepted`) and by updating this
+document's row in `docs/DOC-VERSION-REGISTRY.md` to match. This decision governs
+`FEAT-PER-AGENT-MEMORY-UNIT` (draft); the feature cannot be ratified until this ADR is accepted.
 
 ## Context
 
@@ -135,5 +137,6 @@ accepted.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-08-04 | Claude (final-gate session) | Replaced the dead `docs:register` / `docs:ratify` command reference in Status with the actual acceptance procedure: owner approval recorded in this ADR's frontmatter plus a `docs/DOC-VERSION-REGISTRY.md` row update. Status remains `proposed`; acceptance is still the owner's call. |
 | 0.1.1+draft | 2026-08-01 | GPT-5.6 Thinking / ATHER | Replaced legacy spatial `D/H` language with explicit `D/R` semantics and reserved `H` for executor Access Scope per ADR-021. |
 | 0.1.0+draft | 2026-06-23 | ARCHON / ATHER | Initial decision: composed, tiered per-agent memory (Option A); runnable EVA Memory-OS subset port re-grounded for SWE; epistemic-state + Verify-Gate promotion for anti-hallucination; LCA bitemporal conflict resolution; 8-8-8 "Memory Distillation" named distinct from spatial Hierarchy-Compaction; governs FEAT-PER-AGENT-MEMORY-UNIT. |

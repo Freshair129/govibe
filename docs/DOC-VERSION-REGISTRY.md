@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.4+draft"
+version: "0.3.6+draft"
 updated: "2026-08-04"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -32,7 +32,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.4+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.6+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -47,9 +47,12 @@ This registry is the audit sitemap for active canonical and registered conforman
 | API | `API-006-VAULT-CONTEXT-REPLAY-CONTRACTS` | `1.1.0` | approved | Boss / ATHER | `docs/api/API-006-Vault-Context-and-Replay-Contracts.md` |
 | API | `API-007-KNOWLEDGE-CONTEXT-AUTHORITY-CONTRACT` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/api/API-007-Knowledge-Context-Authority-Contract.md` |
 | API | `API-008-PROVIDER-ENTITLEMENT-ROUTING-USAGE-CONTRACT` | `0.3.0+draft` | draft | ARCHON / ATHER | `docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md` |
+| API | `API-009-PERSISTENT-MEMORY-CONTRACT` | `0.1.1+draft` | draft | Boss (CEO) | `docs/api/API-009-Persistent-Memory-Contract.md` |
 | Change Request | `CR-2026-07-26-govibe-rwang-capability-absorption` | `1.0.0` | approved | Boss (Product Authority) | `docs/change-control/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md` |
 | Change Request | `CR-2026-08-02-MULTI-PROVIDER-ENTITLEMENT-ROUTING` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md` |
 | Change Request | `CR-2026-08-04-DOC-GOVERNANCE-REFINEMENT` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Doc-Governance-Refinement.md` |
+| Change Request | `CR-2026-08-04-PERSISTENT-MEMORY-MSP-RUNTIME` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md` |
+| Work Packet | `WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-12-Persistent-Memory-MSP-Runtime-Phase-0-1.md` |
 | Change Request | `CR-2026-08-03-DOCUMENT-IA-KNOWLEDGE-GRAPH-READINESS` | `0.3.0+draft` | draft | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Document-IA-and-Knowledge-Graph-Readiness.md` |
 | Change Request | `CR-2026-08-03-PHASE1B-METADATA-DECISION-PACKET` | `0.2.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Phase1B-Metadata-Decision-Packet.md` |
 | Change Request | `CR-2026-08-03-PHASE2-SEMANTIC-AUTHORITY-DECISION-PACKET` | `0.2.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Phase2-Semantic-Authority-Decision-Packet.md` |
@@ -65,6 +68,8 @@ This registry is the audit sitemap for active canonical and registered conforman
 | PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.1+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
 | Design | `DESIGN-GOVIBE-DOCUMENT-HIERARCHY` | `0.2.0+draft` | draft | ARCHON / THESEUS / ATHER | `docs/design/GoVibe-Document-Hierarchy.md` |
 | Design | `DESIGN-WIREFRAME-A2-ROADMAP-BOARD` | `0.1.1+draft` | draft | THESEUS / VIBE | `docs/design/WIREFRAME-A2-Roadmap-Board.md` |
+| Design | `DESIGN-SITE-MAP` | `1.1.0` | approved | Boss (CEO) | `docs/design/SITE_MAP.md` |
+| Design | `DESIGN-DOMAIN-DETAILS` | `1.1.0` | approved | Boss (CEO) | `docs/design/DOMAIN_DETAILS.md` |
 
 ## 4. Roadmap and Planning
 
@@ -78,6 +83,8 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Backlog | `BACKLOG-P1-MVP-CORE` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/BACKLOG-p1-mvp-core.md` |
 | Backlog | `BACKLOG-PROVIDER-ENTITLEMENT-RUNTIME` | `0.1.6+draft` | draft | LYRA | `docs/roadmap/BACKLOG-provider-entitlement-runtime.md` |
 | Backlog | `BACKLOG-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/BACKLOG-task-scoped-context-injection.md` |
+| Roadmap | `ROADMAP-PERSISTENT-MEMORY-RUNTIME` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/ROADMAP-persistent-memory-runtime.md` |
+| Backlog | `BACKLOG-PERSISTENT-MEMORY-RUNTIME` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-persistent-memory-runtime.md` |
 | Implementation Plan | `IMP-SYSTEM05-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.2` | approved | LYRA / ARCHON / ATHER | `docs/roadmap/IMP-SYSTEM05-Task-Scoped-Context-Injection.md` |
 | Backlog | `IMP-GVMP01P05EP01` | `n/a` | tracked-outside-registry | LYRA | `.agents/.devlog/implement/IMP-GVMP01P05EP01.md` |
 
@@ -88,7 +95,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Feature | `FEAT-DOCUMENT-VERSION-GOVERNANCE` | `0.1.0` | approved | ATHER / THESEUS | `docs/features/traceability-audit/FEAT-Document-Version-Governance.md` |
 | Feature | `FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.1` | approved | ATHER / KIN | `docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md` |
 | Feature | `FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION` | `0.1.1` | approved | LYRA / ATHER | `docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md` |
-| Feature | `FEAT-PER-AGENT-MEMORY-UNIT` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/features/agent-team/FEAT-Per-Agent-Memory-Unit.md` |
+| Feature | `FEAT-PER-AGENT-MEMORY-UNIT` | `0.2.0+draft` | draft | ARCHON / ATHER | `docs/features/agent-team/FEAT-Per-Agent-Memory-Unit.md` |
 | Feature | `FEAT-TIERED-REVIEW` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/features/agent-team/FEAT-Tiered-Review.md` |
 | Feature | `FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION` | `0.2.0` | approved | THESEUS | `docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md` |
 | Feature | `FEAT-CODEV-MODULE` | `0.2.0` | approved | THESEUS | `docs/features/agent-team/FEAT-CoDev-Module.md` |
@@ -112,12 +119,13 @@ This registry is the audit sitemap for active canonical and registered conforman
 | ADR | `ADR-017-GOVIBE-GOVERNANCE-TRANSLATOR-GKS-INTERLINGUA` | `0.2.0` | accepted | Boss (CEO) | `docs/adr/ADR-017-GoVibe-Governance-Translator-GKS-Interlingua.md` |
 | ADR | `ADR-018-STRUCTURAL-DECOMPOSITION-CONTAINMENT-WIKILINK` | `0.2.0` | accepted | Boss (CEO) | `docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md` |
 | ADR | `ADR-019-UNIVERSAL-CODE-IN-MCP-OUT` | `0.2.0` | accepted | Boss (CEO) | `docs/adr/ADR-019-Universal-Code-In-MCP-Out.md` |
-| ADR | `ADR-020-PER-AGENT-MEMORY-UNIT` | `0.1.1+draft` | proposed | ARCHON / ATHER | `docs/adr/ADR-020-Per-Agent-Memory-Unit.md` |
+| ADR | `ADR-020-PER-AGENT-MEMORY-UNIT` | `0.1.2+draft` | proposed | ARCHON / ATHER | `docs/adr/ADR-020-Per-Agent-Memory-Unit.md` |
+| ADR | `ADR-027-IN-REPO-MSP-RUNTIME-PACKAGE-BOUNDARY` | `0.1.1+draft` | proposed | Boss (CEO) | `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md` |
 | ADR | `ADR-022-VAULT-OWNERSHIP-CONTEXT-LINEAGE` | `1.0.0` | approved | Boss / ATHER | `docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md` |
 | ADR | `ADR-023-KNOWLEDGE-AUTHORITY-CONTEXT-AUTHORITY-BOUNDARY` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-023-Knowledge-Authority-Context-Authority-Boundary.md` |
 | ADR | `ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY` | `0.1.1+draft` | draft | Boss (CEO) | `docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md` |
 | ADR | `ADR-025-STORAGE-BACKEND-INDEPENDENCE` | `0.1.0+draft` | proposed | Boss / ARCHON / ATHER | `docs/adr/ADR-025-Storage-Backend-Independence-and-GenesisBlockDB-Adapter-Boundary.md` |
-| ADR | `ADR-026-MSP-EXTERNAL-RUNTIME-DEPLOYMENT` | `0.1.0+draft` | proposed | Boss (CEO) | `docs/adr/ADR-026-MSP-External-Runtime-Deployment.md` |
+| ADR | `ADR-026-MSP-EXTERNAL-RUNTIME-DEPLOYMENT` | `0.1.1+draft` | proposed | Boss (CEO) | `docs/adr/ADR-026-MSP-External-Runtime-Deployment.md` |
 | Architecture | `BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.1` | approved | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md` |
 | Architecture | `BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE` | `3.1.0` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md` |
 | Architecture | `BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT` | `0.1.1` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-Mission-Gateway-Runtime-Responsibility-Split.md` |
@@ -133,6 +141,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Architecture | `SDD-SYMBOL-GRAPH-TRACEABILITY-BOUNDARY` | `0.1.1` | approved | ARCHON / THESEUS / ATHER | `docs/architecture/SDD-Symbol-Graph-Traceability-Boundary.md` |
 | Architecture | `SDD-VISUAL-AGENT-FLEET` | `0.1.0` | approved | THESEUS / ARCHON | `docs/architecture/SDD-Visual-Agent-Fleet.md` |
 | Architecture | `SDD-GOVIBE-MSP-GKS-INTEGRATION` | `0.1.2+draft` | draft | Boss (CEO) | `docs/architecture/SDD-GoVibe-MSP-GKS-Integration.md` |
+| Architecture | `SDD-PERSISTENT-MEMORY-MSP-RUNTIME` | `0.1.0+draft` | draft | Boss (CEO) | `docs/architecture/SDD-Persistent-Memory-MSP-Runtime.md` |
 | Policy | `POLICY-PROVIDER-ENTITLEMENT-SHARING-COMPATIBILITY` | `0.1.1+draft` | draft | Boss / ATHER | `docs/security/POLICY-Provider-Entitlement-Sharing-Compatibility.md` |
 | Policy | `POLICY-PROVIDER-ENTITLEMENT-USAGE-LEDGER-REDACTION-AND-RETENTION` | `0.1.0+draft` | draft | Boss / ATHER | `docs/security/POLICY-Provider-Entitlement-Usage-Ledger-Redaction-and-Retention.md` |
 | Policy | `POLICY-PROVIDER-ADAPTER-ENABLEMENT` | `0.1.0+draft` | draft | Boss / ATHER | `docs/security/POLICY-Provider-Adapter-Enablement.md` |
@@ -157,14 +166,16 @@ These files map historical or cross-document terminology into canonical owners. 
 | Runbook | `RUNBOOK-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.0+draft` | draft | JANUS / KIN | `docs/operations/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md` |
 | Runbook | `RUNBOOK-GOVIBE-FIRST-USE` | `0.1.3+draft` | draft | GoVibe | `docs/operations/runbooks/RUNBOOK-GoVibe-First-Use.md` |
 | Runbook | `RUNBOOK-GOVIBE-MULTI-AGENT` | `0.2.0+draft` | draft | GoVibe | `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` |
+| Runbook | `RUNBOOK-PERSISTENT-MEMORY-RUNTIME` | `0.1.0+draft` | draft | Boss (CEO) | `docs/operations/runbooks/RUNBOOK-Persistent-Memory-Runtime.md` |
 | Handover | `GVDOC-1004` | `2.3.0+draft` | draft | THESEUS | `docs/handover/GVDOC-1004-Handover Specification.md` |
 | SRS | `SRS-GOVIBE-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | ARCHON / ATHER | `docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md` |
 | SRS | `SRS-GOVIBE-MCP-SERVER` | `0.2.1` | approved | GoVibe | `docs/srs/SRS-GoVibe-MCP-Server.md` |
 | SRS | `SRS-OLLAMA-SIDECAR-EXECUTION` | `0.2.1` | approved | THESEUS | `docs/srs/SRS-Ollama-Sidecar-Execution.md` |
 | SRS | `SRS-GKS-RETRIEVAL-LAYER` | `0.1.1+draft` | draft | Boss (CEO) | `docs/srs/SRS-GKS-Retrieval-Layer.md` |
 | SRS | `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` | `0.1.1+draft` | draft | Boss (CEO) | `docs/srs/SRS-GoVibe-Translator-Core-Slice.md` |
+| SRS | `SRS-PERSISTENT-MEMORY-MSP-RUNTIME` | `0.1.0+draft` | draft | Boss (CEO) | `docs/srs/SRS-Persistent-Memory-MSP-Runtime.md` |
 | Architecture | `SEQ-OLLAMA-SIDECAR-FLOW` | `0.1.2` | approved | THESEUS | `docs/architecture/SEQ-Ollama-Sidecar-Flow.md` |
-| LLD | `LLD-GOVIBE-MCP-TOOLS` | `0.2.1` | approved | GoVibe | `docs/lld/LLD-GoVibe-MCP-Tools.md` |
+| LLD | `LLD-GOVIBE-MCP-TOOLS` | `0.3.0` | approved | GoVibe | `docs/lld/LLD-GoVibe-MCP-Tools.md` |
 | LLD | `LLD-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/lld/LLD-Translator-Core-Slice.md` |
 | LLD | `LLD-AGENT-LAUNCHER-EXECUTION-ROUTER` | `0.1.2` | approved | THESEUS | `docs/lld/LLD-Agent-Launcher-Execution-Router.md` |
 | Context | `AGENT-BRIDGE-QWEN-COMPAT` | `1.2.1+draft` | draft | ATHER / THESEUS | `AGENT.md` |
@@ -202,6 +213,8 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.6+draft | 2026-08-04 | Claude (final-gate session) | Synchronized WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1 to 0.1.1+draft after independent verification and closure of its Phase 0 (transport parity) + Phase 1 (storage foundation) execution in `packages/msp-runtime`: AC-01 through AC-07 re-run and spot-checked directly by the final-gate session, not only accepted from the executing agent's report. No document status changed to approved/accepted/candidate by this row. |
+| 0.3.5+draft | 2026-08-04 | Claude (final-gate session) | Registered the persistent-memory MSP runtime documentation set (CR-2026-08-04-Persistent-Memory-MSP-Runtime): ADR-027, the governing CR, WP-12, API-009, SDD-Persistent-Memory-MSP-Runtime, SRS-Persistent-Memory-MSP-Runtime, RUNBOOK-Persistent-Memory-Runtime, ROADMAP/BACKLOG-persistent-memory-runtime. Synchronized ADR-026 to 0.1.1+draft (ADR-027 amendment note), FEAT-PER-AGENT-MEMORY-UNIT to 0.2.0+draft, LLD-GOVIBE-MCP-TOOLS to 0.3.0, and DESIGN-SITE-MAP/DESIGN-DOMAIN-DETAILS to 1.1.0 (planned Domain E). No document was set to approved/accepted/candidate by this change. |
 | 0.3.4+draft | 2026-08-04 | Claude (final-gate session) | Doc-governance refinement (CR-2026-08-04-Doc-Governance-Refinement): synchronized STD-DOCUMENT-VERSIONING-GOVERNANCE to 0.2.1+draft and ADR-020 to 0.1.2+draft, registered DESIGN-SITE-MAP and DESIGN-DOMAIN-DETAILS at 1.0.0 (approved) and the CR-2026-08-04-DOC-GOVERNANCE-REFINEMENT decision packet itself, and amended Section 9 so change requests carrying decision authority are registered while feedback/work-packet artifacts remain optional. |
 | 0.3.3+draft | 2026-08-04 | ATHER | Synchronized the conformance evidence to 0.3.0+draft and the backlog to 0.1.6+draft after fixing the binding-authenticity finding at the dispatch boundary. |
 | 0.3.2+draft | 2026-08-04 | ATHER | Synchronized the conformance evidence package to 0.2.0+draft after recording the issue #59 dispatch-boundary negative matrix and the unfixed binding-authenticity finding. |
