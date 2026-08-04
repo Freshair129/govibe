@@ -1,0 +1,19 @@
+{
+  "name": "@govibe/msp-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "In-repo, separate-process persistent-memory MSP runtime (Phase 0 + Phase 1 foundation only: transport parity and storage foundation). See docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md and docs/change-control/change-requests/work-packets/WP-12-Persistent-Memory-MSP-Runtime-Phase-0-1.md. Not wired into GoVibe's own process; never imported as a library (ADR-027).",
+  "bin": {
+    "msp-runtime": "./bin/msp-runtime.mjs"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.9"
+  }
+}

@@ -1,3 +1,17 @@
+---
+title: "GoVibe Domain Details & Verification Matrix"
+doc_id: "DESIGN-DOMAIN-DETAILS"
+status: "approved"
+version: "1.1.0"
+updated: "2026-08-04"
+owner: "Boss (CEO)"
+source_of_truth: true
+related_docs:
+  - "docs/design/SITE_MAP.md"
+  - "docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md"
+  - "docs/api/API-009-Persistent-Memory-Contract.md"
+---
+
 # GoVibe Domain Details & Verification Matrix
 
 This file is the design verification companion for the current React/Vite Mission Control app.
@@ -22,6 +36,7 @@ The dashboard renders from:
 - `heatmap`
 - `campaignLogs`
 - `roadmap`
+- `memory` (planned; see MemorySnapshot below)
 
 ### A2 Task Container
 
@@ -41,6 +56,31 @@ Required task container fields:
 - `export.json`, `export.yaml`, and `export.markdown`
 - `ui_state.dropdown_default`, `expanded`, and `disabled_reason`
 
+### MemorySnapshot (planned)
+
+Field contract for Domain E, specified ahead of implementation per
+`docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md`
+and `docs/api/API-009-Persistent-Memory-Contract.md`. Not yet produced by any
+runtime code; `src/mission/domain.ts` does not define these types yet.
+
+Required fields:
+
+- `entities: MemoryEntityRecord[]` — current-state projection; each record
+  carries `entity_id`, `vault_id`, `category`, `key`, `epistemic_state`
+  (`hypothesis`\|`confirmed`\|`contested`\|`deprecated`), `confidence`,
+  `lifecycle_state` (`active`\|`decayed`\|`archived`\|`forgotten`),
+  `decay_score`, `current_version`, `valid_from`, `valid_to`, `recorded_at`,
+  `superseded_at` — mirroring `MemoryEntity` in API-009 §3.
+- `searchMode: "hybrid" | "fts_only" | "vector_only"` and
+  `vectorAvailable: boolean` — the last known degraded-search state; E1 must
+  render this, not infer it from result count.
+- `selectedEntityId: string | null` — set by `govibe.memory.select`.
+- `lastDecayTick: { evaluated: number; transitioned: number; dryRun: boolean; at: string } | null`.
+
+E1/E2/E3 must render an explicit empty state when `entities.length === 0` and
+must never fabricate a `MemoryEntityRecord`, matching the no-mock-telemetry
+rule already stated in this file's Acceptance Criteria.
+
 ### MissionEvent
 
 Supported event types:
@@ -57,6 +97,10 @@ Supported event types:
 - `roadmap.assignment`
 - `roadmap.handoff`
 - `roadmap.verification`
+- `memory.snapshot` (planned — requires the `packages/mission-protocol/index.js`
+  `isMissionEvent` allow-list addition specified in
+  `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md`)
+- `memory.entity.update` (planned, same dependency)
 
 ### MissionCommand
 
@@ -66,6 +110,11 @@ Supported command types:
 - `agent.select`
 - `reactor.run`
 - `file.save`
+- `memory.search`, `memory.select`, `memory.forget`, `memory.decay.run` (planned
+  — requires the `packages/mission-protocol/index.js` `isMissionCommand`
+  allow-list addition; without it these commands are silently dropped with
+  only a logged warning at the wire-level security boundary enforced by both
+  `sidecar-server.mjs` and the browser gateway, not an error)
 
 ## Domain Verification
 
@@ -108,6 +157,19 @@ Each domain and module below must match `docs/design/SITE_MAP.md`, `src/mission.
 | D2 Cyber Reactor Heatmap | Renders reactor overview and 8x8 heatmap from `snapshot.heatmap` or blueprint cells. | Switch to D2; overview and 64 grid cells appear. Ingest heatmap; live values render. |
 | D3 EABS-01 Campaign Logs | Renders `snapshot.campaignLogs` or blueprint campaign rows. | Switch to D3; log panel appears. Ingest logs; live log lines appear. |
 
+### Domain E: Memory (planned)
+
+Domain E is specified ahead of implementation; no module below is
+implemented in `src/App.tsx` yet. This section exists so implementation has a
+governed verification target, matching this file's role as the design
+verification companion for the other domains.
+
+| Module | Implemented Evidence | Verification |
+| --- | --- | --- |
+| E1 Memory Browser | Not implemented. Will render `MemorySnapshot.entities` in a filterable/searchable list, sourced from `msp_memory_search`/`msp_memory_list` via `govibe.memory.search`. | Once implemented: switch to E1 with no memory snapshot; an explicit empty state must appear, not fabricated rows. Ingest a `memory.snapshot` event; entity rows must appear and match `entities`. |
+| E2 Temporal & Decay | Not implemented. Will render `msp_memory_history` for a selected entity and expose a manual `govibe.memory.decay.run` trigger. | Once implemented: select an entity; history rows must appear in version order. Trigger a decay run; `lastDecayTick` must update and no in-app scheduler must exist. |
+| E3 Vault & Promotion | Not implemented. Will render vault scope and `govibe.memory.promote` state for a selected entity. | Once implemented: attempt a shared-scope promotion; the UI must show the denial reason `gks_provider_unconfigured` explicitly, not a generic failure or a silent no-op. |
+
 ## Global Verification
 
 | Surface | Implemented Evidence | Verification |
@@ -135,10 +197,16 @@ Each domain and module below must match `docs/design/SITE_MAP.md`, `src/mission.
 - Add schema-specific events for roadmap tasks, AST trees, ERD tables, and vector map nodes.
 - Add runtime support for A2 Task Container records after the design/data contract is approved.
 - Add automated browser smoke tests for ingest, terminal command, and domain switching.
+- Implement Domain E (E1/E2/E3), `MemorySnapshot`, the `memory.*` event/command
+  types, and the `packages/mission-protocol/index.js` allow-list additions
+  they depend on, per
+  `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md`.
 
 ## Changelog
 
-| Version | Date | Summary |
-| --- | --- | --- |
-| 0.2.1 | 2026-06-18 | Added A2 roadmap header verification for GoVibe naming and feature/backlog stat labels. |
-| 0.2.0 | 2026-06-14 | Added A2 Task Container verification requirements for template-parity roadmap task detail dropdowns. |
+| Version | Date | Owner | Summary |
+| --- | --- | --- | --- |
+| 1.1.0 | 2026-08-04 | Claude (final-gate session) | Added the planned `MemorySnapshot` field contract, `memory.snapshot`/`memory.entity.update` event types, `memory.*` command types, and a Domain E (Memory) verification-matrix section; all marked not-yet-implemented ahead of the persistent-memory MSP runtime work in CR-2026-08-04. |
+| 1.0.0 | 2026-08-04 | Claude (final-gate session) | Backfilled governance frontmatter (doc_id, status, version, owner, source_of_truth) and registered in DOC-VERSION-REGISTRY.md; no body content changed. |
+| 0.2.1 | 2026-06-18 | THESEUS | Added A2 roadmap header verification for GoVibe naming and feature/backlog stat labels. |
+| 0.2.0 | 2026-06-14 | THESEUS | Added A2 Task Container verification requirements for template-parity roadmap task detail dropdowns. |
