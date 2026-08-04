@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.3+draft"
+version: "0.3.4+draft"
 updated: "2026-08-04"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -31,8 +31,8 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
-| Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.0+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.3+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.4+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -49,6 +49,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | API | `API-008-PROVIDER-ENTITLEMENT-ROUTING-USAGE-CONTRACT` | `0.3.0+draft` | draft | ARCHON / ATHER | `docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md` |
 | Change Request | `CR-2026-07-26-govibe-rwang-capability-absorption` | `1.0.0` | approved | Boss (Product Authority) | `docs/change-control/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md` |
 | Change Request | `CR-2026-08-02-MULTI-PROVIDER-ENTITLEMENT-ROUTING` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md` |
+| Change Request | `CR-2026-08-04-DOC-GOVERNANCE-REFINEMENT` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Doc-Governance-Refinement.md` |
 | Change Request | `CR-2026-08-03-DOCUMENT-IA-KNOWLEDGE-GRAPH-READINESS` | `0.3.0+draft` | draft | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Document-IA-and-Knowledge-Graph-Readiness.md` |
 | Change Request | `CR-2026-08-03-PHASE1B-METADATA-DECISION-PACKET` | `0.2.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Phase1B-Metadata-Decision-Packet.md` |
 | Change Request | `CR-2026-08-03-PHASE2-SEMANTIC-AUTHORITY-DECISION-PACKET` | `0.2.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Phase2-Semantic-Authority-Decision-Packet.md` |
@@ -192,7 +193,7 @@ them into product authority.
 ## 9. Migration Notes
 
 - Status values for canonical documents are defined in `docs/STD-Document-Versioning-Governance.md` Section 13.
-- Change-request and feedback artifacts under `docs/change-requests/**` remain review artifacts and are not required in this registry.
+- Change requests carrying decision authority (a recorded owner decision, approval, or authorization) are registered in this registry, matching the Section 3 practice for CR entries. Feedback and work-packet artifacts under `docs/change-requests/**` and `docs/change-control/change-requests/**` remain optional to register.
 - Alignment files are registered conformance artifacts and must declare canonical owners through `conforms_to`.
 - When an alignment document conflicts with a canonical API, ADR, architecture or Blueprint, the canonical document wins and the alignment document must be revised.
 - Cross-repository mirrors are distribution copies only; authority, semantic versioning, and conflict resolution remain with the registered GoVibe canonical document.
@@ -201,6 +202,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.4+draft | 2026-08-04 | Claude (final-gate session) | Doc-governance refinement (CR-2026-08-04-Doc-Governance-Refinement): synchronized STD-DOCUMENT-VERSIONING-GOVERNANCE to 0.2.1+draft and ADR-020 to 0.1.2+draft, registered DESIGN-SITE-MAP and DESIGN-DOMAIN-DETAILS at 1.0.0 (approved) and the CR-2026-08-04-DOC-GOVERNANCE-REFINEMENT decision packet itself, and amended Section 9 so change requests carrying decision authority are registered while feedback/work-packet artifacts remain optional. |
 | 0.3.3+draft | 2026-08-04 | ATHER | Synchronized the conformance evidence to 0.3.0+draft and the backlog to 0.1.6+draft after fixing the binding-authenticity finding at the dispatch boundary. |
 | 0.3.2+draft | 2026-08-04 | ATHER | Synchronized the conformance evidence package to 0.2.0+draft after recording the issue #59 dispatch-boundary negative matrix and the unfixed binding-authenticity finding. |
 | 0.3.1+draft | 2026-08-04 | ATHER | Registered the provider entitlement runtime conformance evidence package for issue #64. The gate is not passed: the record carries review_state pending and no implementation status was propagated. |

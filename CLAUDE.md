@@ -137,10 +137,10 @@ score, and unresolved links. Plain substring search is not accepted as impact an
 
 ## Canonical governance axes
 
-Canonical Execution Governance lives in RWANG PROMAX
-(`skills/rwang/references/EXECUTION-GOVERNANCE.md`); `docs/STD-Execution-Governance.md` here is a
-mirror. `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` is the binding GoVibe semantic
-separation decision.
+GoVibe's `docs/STD-Execution-Governance.md` (v2.4.0+ga §12.1) is the canonical single source of
+truth for Execution Governance; RWANG-PROMAX (`skills/rwang/references/EXECUTION-GOVERNANCE.md`)
+holds a read-only distribution mirror. `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md`
+is the binding GoVibe semantic separation decision.
 
 Claude must keep these meanings separate in planning, docs, schemas, symbols, and code:
 

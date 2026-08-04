@@ -32,8 +32,6 @@ function listChangedFiles() {
 }
 
 function classify(file) {
-  if (/^docs\//i.test(file) || /^\.agents\//i.test(file) || /^implementation_plan_template\.md$/i.test(file)) return "docs";
-  if (/^(src|scripts|packages|public|tests|test|app|views|components)\//i.test(file)) return "code";
   if (
     /^docs\/roadmap\//i.test(file) ||
     /^docs\/features\/project-roadmap\//i.test(file) ||
@@ -44,6 +42,8 @@ function classify(file) {
   ) {
     return "masterplan";
   }
+  if (/^docs\//i.test(file) || /^\.agents\//i.test(file) || /^implementation_plan_template\.md$/i.test(file)) return "docs";
+  if (/^(src|scripts|packages|public|tests|test|app|views|components)\//i.test(file)) return "code";
   return "other";
 }
 
