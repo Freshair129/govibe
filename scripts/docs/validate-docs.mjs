@@ -21,6 +21,8 @@ const requiredTemplates = [
   "RCA-template.md",
   "MIGRATION-PLAN-template.md",
   "UI-UX-DESIGN-template.md",
+  "CR-template.md",
+  "WP-template.md",
 ];
 
 const requiredFrontmatter = ["doc_id", "status", "version"];
@@ -33,6 +35,7 @@ const governedDocPatterns = [
   /^docs\/CONCEPT--.+\.md$/i,
   /^docs\/DOC-VERSION-REGISTRY\.md$/i,
   /^docs\/features\/traceability-audit\/.+\.md$/i,
+  /^docs\/change-control\/change-requests\/[^/]+\.md$/i,
   /^\.agents\/auditor\/AGENT\.md$/i,
   /^\.agents\/pm\/AGENT\.md$/i,
   /^\.agents\/doc_writer\/THESEUS\.md$/i,

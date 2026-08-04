@@ -2,8 +2,8 @@
 title: "STD: Document Versioning Governance"
 doc_id: "STD-DOCUMENT-VERSIONING-GOVERNANCE"
 status: "draft"
-version: "0.2.0+draft"
-updated: "2026-08-03"
+version: "0.2.1+draft"
+updated: "2026-08-04"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 prd_system: "SYSTEM-09::Traceability-Audit-Verification-System"
@@ -167,6 +167,17 @@ The registry is an audit sitemap. It does not replace document content. It recor
 - canonical path
 - parent grouping such as PRD, system, module, standard, or runbook
 
+### 9.1 Canonical Artifact Homes
+
+- `docs/change-control/change-requests/` is the single canonical home for new
+  Change Request (CR) and Work Packet (WP) artifacts. New CRs and WPs must be
+  authored there, using `template/CR-template.md` and `template/WP-template.md`.
+- `docs/change-requests/` is frozen legacy: existing files remain in place for
+  history and traceability, but no new files may be added there.
+- `docs/change-control/rca/` is the canonical home for Root Cause Analysis
+  (RCA) artifacts.
+- `docs/assurance/audit/` is the canonical home for audit artifacts.
+
 ## 10. Enforcement Phases
 
 ### Phase 1: New and Touched Documents
@@ -227,12 +238,20 @@ npm run diff:check
 The `status` frontmatter field records a document's lifecycle state. Allowed values:
 
 - `draft` — authored, not yet signed off.
+- `proposed` — a decision doc awaiting owner acceptance (used by ADRs).
+- `candidate` — a promoted draft awaiting approval (used by roadmap docs).
 - `approved` — signed off for active use (planning and specification docs).
 - `accepted` — signed off (decision records such as ADRs).
 - `stable` — generally approved and durable (standards, typically at `+ga`).
 - `deprecated` — still referenceable but not preferred for new work.
 - `archived` — retained for history only.
 - `superseded` — replaced by a newer canonical document (record it in `superseded_by`).
+
+The roadmap promotion contract enforced by `scripts/docs/validate-docs.mjs`
+restricts roadmap documents (`docs/roadmap/MASTERPLAN|ROADMAP|BACKLOG|SPRINT-*.md`)
+to the subset `draft`, `candidate`, `approved`, `superseded`, `deprecated`. A
+roadmap document's `status` must use only that subset even though the full
+lifecycle vocabulary above is wider.
 
 The registry (`docs/DOC-VERSION-REGISTRY.md`) may additionally use transitional
 operational markers — `migration-needed`, `proposed-migration`, `pending-classification`,
@@ -257,6 +276,7 @@ identities remain MSP/GKS-owned and must not be minted during cleansing.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.1+draft | 2026-08-04 | Claude (final-gate session) | Added Section 9.1 canonical artifact homes for CR/WP, RCA, and audit documents, and added `proposed`/`candidate` to Section 13's allowed status values with a note on the roadmap promotion contract's restricted subset. |
 | 0.2.0+draft | 2026-08-03 | ATHER / THESEUS | Added commit-pinned cleansing inventory, external exclusion, stable identity, bounded batch, and rollback requirements. |
 | 0.1.2+draft | 2026-06-20 | ATHER / THESEUS | Added Section 13 allowed document status values, registered `+draft` as a sanctioned pre-approval edition marker, and bound the `status` frontmatter field to the defined lifecycle set. |
 | 0.1.1+draft | 2026-06-15 | ATHER / THESEUS | Added repository diff gate automation requirements for docs/code/masterplan scope validation and staged-only review support. |
