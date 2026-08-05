@@ -2,14 +2,14 @@
 title: "WP-16: Persistent-Memory MSP Runtime — Phase 4 (Temporal Decay Lifecycle)"
 doc_id: "WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-08-05"
 owner: "Boss (CEO)"
 proposal_author: "Claude (final-gate session)"
 approval_owner: "Boss (CEO)"
 source_of_truth: false
-approval_recorded_at: ""
-execution_authorized: false
+approval_recorded_at: "2026-08-05"
+execution_authorized: true
 execution_complete: false
 complexity: "C-2"
 access_scope: "H3"
@@ -223,11 +223,16 @@ that reset must be stated in the rollback record.
 
 ## Owner accepted-risk record
 
-Not applicable at proposal time. This packet is not authorized for execution
-(`execution_authorized: false`). Per the process correction established by
-WP-14, authorization must be recorded in this document's frontmatter
-**before** implementation is dispatched — an executing session must not set
-its own authorization flags.
+Authorized 2026-08-05 by Boss (CEO), owner and approval owner, in the
+resuming session's chat channel (directive: "เริ่ม WP-16" — start WP-16),
+after that session presented this packet's Ground truth section, Bounded
+scope, and risk framing (caller-triggered only, reversible archival, `dry_run`
+required) for review. Recorded here, in frontmatter, before implementation is
+dispatched, per the process correction established by WP-14 (and the
+deviation recorded in WP-13): an executing session must not set its own
+`execution_authorized` / `execution_complete` flags. This entry sets
+`execution_authorized` only; `execution_complete` remains false until
+independent post-execution verification is recorded separately.
 
 ## Execution closure
 
@@ -237,4 +242,5 @@ Not yet executed.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-05 | Boss (CEO) | Owner-authorized for execution in chat ("เริ่ม WP-16"), with WP-15 already execution-complete and independently verified on `feat/wp-15-msp-runtime-phase-3` (commit `9bb5a6a`). `execution_authorized` set to `true`, `approval_recorded_at` set; `execution_complete` remains `false` pending independent verification after implementation. Authorization recorded before dispatch, per the process WP-14 established. |
 | 0.1.0+draft | 2026-08-05 | Claude (final-gate session) | Proposed WP-16, scoped to Phase 4 (Ebbinghaus decay scoring, `active -> decayed -> archived -> forgotten` lifecycle, reinforcement-on-access, `msp_memory_decay_tick` per API-009 §4.7). Records the ground-truth state of `packages/msp-runtime` as of 2026-08-05, the pre-existing decay columns not to re-add, the missing `last_accessed_at` column, and an explicit requirement to reconcile the decay lifecycle's terminal state with the existing manual `forget()` path rather than silently overloading `forgotten`. Caller-triggered only — no background daemon. Execution remains unauthorized at proposal time. |
