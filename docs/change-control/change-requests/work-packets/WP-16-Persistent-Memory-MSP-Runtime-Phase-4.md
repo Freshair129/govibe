@@ -2,7 +2,7 @@
 title: "WP-16: Persistent-Memory MSP Runtime — Phase 4 (Temporal Decay Lifecycle)"
 doc_id: "WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4"
 status: "draft"
-version: "0.1.1+draft"
+version: "0.1.3+draft"
 updated: "2026-08-05"
 owner: "Boss (CEO)"
 proposal_author: "Claude (final-gate session)"
@@ -10,7 +10,7 @@ approval_owner: "Boss (CEO)"
 source_of_truth: false
 approval_recorded_at: "2026-08-05"
 execution_authorized: true
-execution_complete: false
+execution_complete: true
 complexity: "C-2"
 access_scope: "H3"
 risk: "MEDIUM"
@@ -236,11 +236,120 @@ independent post-execution verification is recorded separately.
 
 ## Execution closure
 
-Not yet executed.
+Executed on `feat/wp-16-msp-runtime-phase-4` (branched from
+`feat/wp-15-msp-runtime-phase-3` at commit `ca4989e`, itself
+`9bb5a6a` + the WP-16 authorization commit). Bounded Scope items 1-6 built:
+
+1. Migration `0005_decay_lifecycle.sql`: `entities.last_accessed_at`
+   (nullable), a table-level `CHECK (lifecycle_state IN ('active', 'decayed',
+   'archived', 'forgotten'))`, the same 12-step rebuild pattern
+   `0003_vault_scoping.sql` established (SQLite cannot `ALTER TABLE ADD
+   CHECK`), and re-creation of the three `trg_entities_fts_*` triggers the
+   rebuild drops (`entities_fts` itself is untouched). Added
+   `idx_entities_decay_sweep` supporting the sweep query.
+2. `domain/decay-engine.mjs`: `recomputeDecayScore(entity, now)` (Ebbinghaus
+   `R = e^(-t/S)`, stability `S` growing with `accessCount`, no internal
+   `Date.now()`), `runDecayTick(db, {vaultId, dryRun, now, thresholds})`
+   (cascades forward through both thresholds in one call rather than
+   requiring one tick per threshold crossing -- see the file's own comment;
+   `dryRun: true` issues zero write statements, not merely a rolled-back
+   transaction), and `touch(db, entityId, now)`.
+3. Reinforcement wired into `transport/handlers/memory-handlers.mjs`:
+   `msp_memory_get` touches on a current-state read only (a point-in-time
+   read does not reinforce -- a documented design choice, not literally
+   specified by the packet); `msp_memory_search` touches every returned hit.
+4. Reconciliation (Bounded Scope item 4): resolution (a), the packet's
+   recommendation, was adopted as-is -- `runDecayTick`'s transition table
+   stops at `archived` and never writes `forgotten`; `forget()` remains the
+   sole writer of `forgotten`. Directly tested (`test/decay-engine.test.mjs`,
+   "AC-07" describe block): an entity decayed ~10 years past the archived
+   threshold stays `archived`, never transitions further.
+5. `msp_memory_decay_tick` added to `memory-handlers.mjs`, journaling one row
+   per call including `dry_run: true` calls.
+6. Default-recall exclusion: `domain/entity-store.mjs`'s `list()` now
+   excludes `lifecycle_state NOT IN ('archived', 'forgotten')` by default
+   (was `!= 'forgotten'` only); `retrieval/fts.mjs`, `retrieval/vector.mjs`,
+   and `retrieval/retrieval-service.mjs`'s exact-match short-circuit apply
+   the same exclusion. No row is hard-deleted anywhere in this packet's code.
+
+**Deviation 1 (documented, mirrors WP-15's own precedent, not a silent
+guess).** Bounded Scope item 5 asked for `msp_memory_decay_tick` to be
+vault-scoped "through the same `contracts/vault-scope-guard.mjs` +
+`isVaultAccessibleTo` pattern WP-14 established (handler computes the
+boolean, guard receives it)." API-009 §4.7's documented request shape for
+`msp_memory_decay_tick` is `{vault_id, dry_run}` -- exactly like the six
+`msp_memory_*` tools WP-15 built, it carries no caller-identity field, so
+there is no caller-ownership boolean to compute and pass to
+`assertVaultScope`. This file's existing header comment already records this
+exact reasoning for the other six tools; `msp_memory_decay_tick` follows the
+same resolution rather than inventing an undocumented identity field or
+minting a `vault_scope_denied` that would mean nothing more than "this
+vault_id exists" (blurring WP-14's own `msp_vault_mount` precedent that an
+unknown vault_id is the distinct `not_found` condition). AC-06's actual
+security property -- a sweep scoped to vault A never alters vault B -- is
+enforced and proven instead by `runDecayTick`'s strict
+`WHERE vault_id = ?` scoping, verified end-to-end in
+`test/memory-decay-vault-scoping.security.mjs`.
+
+**Deviation 2 (documented, not a silent guess).** AC-05's "still returned
+under an explicit `lifecycle_state` filter" applies to `msp_memory_list`
+(which has that parameter). `msp_memory_search` (API-009 §4.6) has no
+`lifecycle_state` parameter on the wire at all; inventing one would widen a
+documented wire shape, which this packet's own precedent (memory-handlers.mjs's
+header comment) already treats as out of bounds. `msp_memory_search`
+therefore excludes `archived` unconditionally, with no override; archived
+entities remain reachable via `msp_memory_list`'s explicit filter or
+`msp_memory_history`.
+
+**Testing.** `packages/msp-runtime`'s baseline was re-measured before any
+edit: 132 vitest + 26 `node --test` = 158/158 (WP-15's closed baseline,
+reproduced). After this packet: 154 vitest + 28 `node --test` = **182/182
+passing**, zero regressions. Three pre-existing test files required
+mechanical (not behavioral) updates -- each asserted an exact count/list of
+applied migrations, which every new migration file bumps by construction:
+`test/migrate.test.mjs` (4→5, plus three new cases: `last_accessed_at`
+column presence, the `lifecycle_state` CHECK constraint rejecting an
+out-of-enum value, and `entities_fts` triggers surviving 0005's rebuild --
+AC-01's explicit requirement), `test/retrieval-fts-sync.test.mjs` (WP-15's
+own file, `[1,2,3,4]`→`[1,2,3,4,5]`), and `test/vault-scoping.test.mjs`
+(WP-14's own file, same reason). New test files: `test/decay-engine.test.mjs`
+(AC-02/AC-03/AC-04/AC-07, pure domain-layer, real temp-file SQLite, no stdio
+process needed), `test/memory-decay-tick.test.mjs` (AC-05/AC-07 end-to-end
+over the real stdio child process -- entities are backdated via a second DB
+connection to drive real, deterministic transitions, since `msp_memory_decay_tick`'s
+wire request has no `now` override), and `test/memory-decay-vault-scoping.security.mjs`
+(AC-06, `node --test`, mirrors `memory-search-vault-scoping.security.mjs`'s
+convention).
+
+**Gates (AC-09).** Root `npm run lint` (tsc --noEmit): PASS. Root
+`npm run build`: PASS. Root `npm test`: PASS (64 files, 518 passed + 1
+skipped; a first run hit transient vitest-worker-pool timeouts on five
+unrelated frontend test files under load, not reproduced on immediate
+re-run and not touched by this packet). `npm run docs:validate`: PASS.
+`npm run diff:check`: PASS (this Execution closure section is the
+accompanying docs change for the code diff, matching WP-15's own commit
+shape).
+
+**AC-10 / independent review, honestly stated.** This packet was executed
+and self-verified (all gates re-run from a clean state, as recorded above)
+within a single continuous session -- unlike WP-14/WP-15, no *separate*
+dispatching/final-gate session re-ran and independently reproduced these
+results before this record was written. That gap is recorded here, not
+hidden: `execution_complete` was left `false` by the execution commit, and
+this Execution closure section (including the two Deviations above) was
+presented to the owner in chat verbatim before any closure flag was set.
+Boss (CEO), owner and approval owner, reviewed it and responded "ปิดงานเลย
+ตั้ง execution_complete: true" (close it out, set execution_complete: true)
+in the same chat channel on 2026-08-05. `execution_complete: true` is set by
+this same versioned record, per that explicit instruction -- AC-10 is closed
+on the owner's own review standing in for the separate-session pattern,
+not on a claim that a second session independently reproduced the results.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.3+draft | 2026-08-05 | Boss (CEO) | AC-10 closed: `execution_complete` set `true` after the owner reviewed this packet's Execution closure section (182/182 passing, all gates green, two documented Deviations) presented in chat, and explicitly approved closure ("ปิดงานเลย ตั้ง execution_complete: true"). Recorded honestly: this was owner review of a single-session self-verified execution, not a separate dispatching/final-gate session independently reproducing the results the way WP-14/WP-15 closed -- see the Execution closure section's AC-10 note for the full record. |
+| 0.1.2+draft | 2026-08-05 | Claude (WP-16 execution session) | Executed Bounded Scope items 1-6: migration `0005_decay_lifecycle.sql`, `domain/decay-engine.mjs` (`recomputeDecayScore`, `runDecayTick`, `touch`), reinforcement-on-access wired into `msp_memory_get`/`msp_memory_search`, `msp_memory_decay_tick` handler, default-recall exclusion of `archived` in `msp_memory_list`/`msp_memory_search`. 154 vitest + 28 `node --test` = 182/182 passing (baseline 158/158 reproduced first). Recorded two Deviations (both mirroring WP-15's own precedent, not silent guesses): `msp_memory_decay_tick` cannot use the caller-ownership `vault_scope_denied` pattern literally as instructed because API-009 §4.7's wire shape carries no caller identity (same gap WP-15 recorded for its six tools) -- per-request `vault_id` data scoping was built and proven instead; `msp_memory_search` has no `lifecycle_state` override parameter on the wire, so its `archived` exclusion is unconditional, unlike `msp_memory_list`'s. Root lint/build/test/docs:validate/diff:check gates all pass. `execution_complete` intentionally left `false` -- this session executed AND self-verified in one continuous session, not the arm's-length dispatching/final-gate-session pattern WP-14/WP-15 used; AC-10 (independent review, owner approval) remains to be closed. |
 | 0.1.1+draft | 2026-08-05 | Boss (CEO) | Owner-authorized for execution in chat ("เริ่ม WP-16"), with WP-15 already execution-complete and independently verified on `feat/wp-15-msp-runtime-phase-3` (commit `9bb5a6a`). `execution_authorized` set to `true`, `approval_recorded_at` set; `execution_complete` remains `false` pending independent verification after implementation. Authorization recorded before dispatch, per the process WP-14 established. |
 | 0.1.0+draft | 2026-08-05 | Claude (final-gate session) | Proposed WP-16, scoped to Phase 4 (Ebbinghaus decay scoring, `active -> decayed -> archived -> forgotten` lifecycle, reinforcement-on-access, `msp_memory_decay_tick` per API-009 §4.7). Records the ground-truth state of `packages/msp-runtime` as of 2026-08-05, the pre-existing decay columns not to re-add, the missing `last_accessed_at` column, and an explicit requirement to reconcile the decay lifecycle's terminal state with the existing manual `forget()` path rather than silently overloading `forgotten`. Caller-triggered only — no background daemon. Execution remains unauthorized at proposal time. |

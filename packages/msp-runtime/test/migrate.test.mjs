@@ -93,11 +93,11 @@ describe("db/migrate (AC-03)", () => {
     expect(() => runMigrations(db, migrationsDir)).toThrow(/downgrade|newer than the newest/i);
   });
 
-  it("applies the real packaged migrations (0001_init.sql + 0002_phase2.sql + 0003_vault_scoping.sql + 0004_retrieval.sql, WP-15) without error", () => {
+  it("applies the real packaged migrations (0001_init.sql + 0002_phase2.sql + 0003_vault_scoping.sql + 0004_retrieval.sql + 0005_decay_lifecycle.sql, WP-16) without error", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     const result = runMigrations(db, migrationsDir);
-    expect(result.appliedCount).toBe(4);
+    expect(result.appliedCount).toBe(5);
     const tables = db
       .prepare(
         "SELECT name FROM sqlite_master WHERE type='table' AND name IN " +
@@ -119,6 +119,9 @@ describe("db/migrate (AC-03)", () => {
     expect(promotionCols).toContain("vault_id");
     const vaultCols = db.prepare("PRAGMA table_info(vaults)").all().map((col) => col.name);
     expect(vaultCols).toContain("role");
+
+    // WP-16 AC-01: last_accessed_at exists.
+    expect(entityCols).toContain("last_accessed_at");
   });
 
   it("re-applying the packaged migrations directory a second time is a no-op (AC-01: migrations apply idempotently)", () => {
@@ -127,6 +130,47 @@ describe("db/migrate (AC-03)", () => {
     runMigrations(db, migrationsDir);
     const second = runMigrations(db, migrationsDir);
     expect(second.appliedCount).toBe(0);
-    expect(second.currentVersion).toBe(4);
+    expect(second.currentVersion).toBe(5);
+  });
+
+  it("WP-16 AC-01: the lifecycle_state CHECK constraint rejects an out-of-enum value", () => {
+    const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
+    const db = freshDb();
+    runMigrations(db, migrationsDir);
+    db.prepare("INSERT INTO vaults (vault_id, vault_type, status, created_at) VALUES (?, 'workspace_private', 'active', ?)").run(
+      "vault_check-constraint-test",
+      "2020-01-01T00:00:00.000Z",
+    );
+    expect(() => {
+      db.prepare(
+        `INSERT INTO entities
+           (entity_id, vault_id, category, key, body_json, valid_from, recorded_at, lifecycle_state, source_hash, created_at, updated_at)
+         VALUES ('msp:entity/bad-lifecycle', 'vault_check-constraint-test', 'cat', 'k', '{}', '2020-01-01T00:00:00Z', '2020-01-01T00:00:00Z', 'not-a-real-state', 'deadbeef', '2020-01-01T00:00:00Z', '2020-01-01T00:00:00Z')`,
+      ).run();
+    }).toThrow(/CHECK constraint failed/i);
+  });
+
+  it("WP-16 AC-01: entities_fts triggers survive migration 0005's rebuild of entities -- a post-migration mutation still projects into entities_fts", () => {
+    const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
+    const db = freshDb();
+    runMigrations(db, migrationsDir);
+    db.prepare("INSERT INTO vaults (vault_id, vault_type, status, created_at) VALUES (?, 'workspace_private', 'active', ?)").run(
+      "vault_fts-survival-test",
+      "2020-01-01T00:00:00.000Z",
+    );
+
+    db.prepare(
+      `INSERT INTO entities
+         (entity_id, vault_id, category, key, body_json, valid_from, recorded_at, source_hash, created_at, updated_at)
+       VALUES ('msp:entity/fts-survival', 'vault_fts-survival-test', 'cat', 'searchable-key', '{"hello":"world"}', '2020-01-01T00:00:00Z', '2020-01-01T00:00:00Z', 'deadbeef', '2020-01-01T00:00:00Z', '2020-01-01T00:00:00Z')`,
+    ).run();
+    expect(db.prepare("SELECT COUNT(*) AS count FROM entities_fts WHERE entity_id = ?").get("msp:entity/fts-survival").count).toBe(1);
+
+    db.prepare("UPDATE entities SET body_json = '{\"hello\":\"updated\"}' WHERE entity_id = ?").run("msp:entity/fts-survival");
+    const afterUpdate = db.prepare("SELECT body_text FROM entities_fts WHERE entity_id = ?").get("msp:entity/fts-survival");
+    expect(afterUpdate.body_text).toBe('{"hello":"updated"}');
+
+    db.prepare("DELETE FROM entities WHERE entity_id = ?").run("msp:entity/fts-survival");
+    expect(db.prepare("SELECT COUNT(*) AS count FROM entities_fts WHERE entity_id = ?").get("msp:entity/fts-survival").count).toBe(0);
   });
 });

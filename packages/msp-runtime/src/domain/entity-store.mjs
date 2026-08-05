@@ -304,8 +304,10 @@ export class EntityStore {
    * Paginated list over the current-state `entities` table, scoped to a
    * single vaultId (WP-14: listing without a vault scope would leak
    * cross-vault entities, so vaultId is mandatory here, not optional).
-   * Excludes forgotten entities unless lifecycleState is explicitly set to
-   * 'forgotten' (or another explicit value).
+   * Excludes forgotten AND archived entities by default (WP-16 Bounded
+   * Scope item 6) unless lifecycleState is explicitly set to 'forgotten',
+   * 'archived', or another explicit value -- the explicit filter always
+   * wins over the default exclusion.
    */
   list({ vaultId, category = null, lifecycleState = null, limit = 50, cursor = null } = {}) {
     if (!vaultId) throw new TypeError("entity-store.list requires vaultId.");
@@ -321,7 +323,7 @@ export class EntityStore {
       conditions.push("lifecycle_state = ?");
       params.push(lifecycleState);
     } else {
-      conditions.push("lifecycle_state != 'forgotten'");
+      conditions.push("lifecycle_state NOT IN ('archived', 'forgotten')");
     }
     if (cursor) {
       conditions.push("entity_id > ?");
