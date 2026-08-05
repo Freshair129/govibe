@@ -2,7 +2,7 @@
 title: "WP-17: Persistent-Memory MSP Runtime — Phase 5 Stage A (Links + GoVibe Bridge)"
 doc_id: "WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A"
 status: "draft"
-version: "0.2.2+draft"
+version: "0.2.3+draft"
 updated: "2026-08-06"
 owner: "Boss (CEO)"
 proposal_author: "Claude (final-gate session)"
@@ -10,7 +10,7 @@ approval_owner: "Boss (CEO)"
 source_of_truth: false
 approval_recorded_at: "2026-08-06"
 execution_authorized: true
-execution_complete: false
+execution_complete: true
 complexity: "C-3"
 access_scope: "H4"
 risk: "HIGH"
@@ -410,15 +410,21 @@ registry sync are the accompanying docs change for the code diff).
 was executed and self-verified (all gates re-run from a clean state, as
 recorded above) within a single continuous session -- no *separate*
 dispatching/final-gate session independently reproduced these results before
-this record was written. `execution_complete` is therefore left `false` by
-this commit; this report is presented to the owner in chat for review, and a
-follow-up commit sets `execution_complete: true` only after that review and
-explicit owner approval are recorded, per AC-10.
+this record was written. That gap is recorded here, not hidden: this
+Execution closure section (including the two Deviations above) was presented
+to the owner in chat verbatim before any closure flag was set. Boss (CEO),
+owner and approval owner, reviewed it and responded "ปิดงานเลย ตั้ง
+execution_complete: true" (close it out, set execution_complete: true) in
+the same chat channel on 2026-08-06. `execution_complete: true` is set by
+this same versioned record, per that explicit instruction -- AC-10 is closed
+on the owner's own review standing in for the separate-session pattern, not
+on a claim that a second session independently reproduced the results.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.3+draft | 2026-08-06 | Boss (CEO) | AC-10 closed: `execution_complete` set `true` after the owner reviewed this packet's Execution closure section (194/194 msp-runtime tests, 553+1 root tests, all gates green, two documented Deviations) presented in chat and explicitly approved closure ("ปิดงานเลย ตั้ง execution_complete: true"). Recorded honestly: this is owner review of a single-session self-verified execution, not a separate dispatching/final-gate session independently reproducing the results the way WP-14/WP-15 closed -- see the Execution closure section's AC-10 note for the full record. |
 | 0.2.2+draft | 2026-08-06 | Claude (WP-17 execution session) | Executed Bounded Scope items 1-6: `packages/msp-runtime` links table + tools; `scripts/mcp/msp-memory-contracts.mjs` + `memory-service.mjs` + `memory-surface.mjs` GoVibe-side bridge; `packages/mission-protocol` allow-list; `src/mission/domain.ts` + `snapshot-reducer.ts` frontend data layer; `docs/lld/LLD-GoVibe-MCP-Tools.md` synchronized. 164 vitest + 30 `node --test` = 194/194 passing in `packages/msp-runtime` (baseline 182/182 reproduced first); root suite 69 files / 553 passed + 1 skipped (up from 64/518+1). Two documented Deviations: `msp_memory_links_create`'s vault check reuses `assertVaultScope` with an endpoint-consistency boolean rather than caller-ownership (same wire-shape gap WP-15/WP-16 recorded); the LLD's MSP-side table's false "called by" claims for `msp_memory_get`/`upsert`/`list`/`history` were corrected, not left stale. Root lint/build/test/docs:validate/diff:check gates all pass. `execution_complete` intentionally left `false` -- single-session self-verified execution, not the arm's-length dispatching/final-gate-session pattern; AC-10 remains to be closed. |
 | 0.2.1+draft | 2026-08-06 | Boss (CEO) | Owner-authorized for execution in chat ("เริ่ม WP-17"), with WP-16 already `execution_complete: true` (its precondition), closed by explicit owner approval on 2026-08-05. `execution_authorized` set to `true`, `approval_recorded_at` set; `execution_complete` remains `false` pending independent post-execution verification. Authorization recorded before dispatch, per the process WP-14 established. |
 | 0.2.0+draft | 2026-08-05 | Boss (CEO) / Claude (final-gate session) | **Split applied, owner-directed.** Re-scoped this packet to Phase 5 Stage A (data only): runtime links, the GoVibe-side bridge, the mission-protocol allow-list, and the `MissionSnapshot` type plus reducer/merge wiring. All Mission Control UI moved to the new `WP-18-Persistent-Memory-MSP-Runtime-Phase-5-Stage-B`. The split boundary was refined from the original marking: the snapshot type and reducer wiring stay in Stage A, because `mergeMissionSnapshot` silently drops fields it does not explicitly carry — shipping the emit path without the merge path would produce a bridge that appears to work and delivers nothing. Complexity lowered C-4 -> C-3 accordingly; risk stays HIGH (first packet to modify GoVibe's own runtime, protocol, and frontend). |
