@@ -246,7 +246,6 @@ AC-08 (independent review and owner approval recorded before closure) is
 recorded by this closure note plus the version bump below; this is the
 correctly-sequenced record this time — authorization preceded execution,
 which was WP-14's own explicit purpose in part.
-
 **Post-PR CI finding (2026-08-06, owner-directed: "Fix the concurrency issue
 properly").** PR #118 (this packet)'s P0 Security CI `verify` job was found
 hung for the full 15-minute timeout. Root cause: root `npm run test:security`

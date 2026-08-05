@@ -45,7 +45,12 @@ function computeSourceHash({ bodyJson, epistemicState, confidence }) {
   return sha256Hex(stableStringify({ bodyJson: bodyJson ?? {}, epistemicState, confidence }));
 }
 
-function rowToEntity(row) {
+// Exported (WP-15 Bounded Scope item 2/3): retrieval/fts.mjs and
+// retrieval/vector.mjs both join back to `entities` for the full
+// MemoryEntity projection and reuse this exact mapping rather than
+// duplicating it -- ADR-027's layering rule permits retrieval/ to import
+// domain/, so this is the DRY choice over a second, drifting copy.
+export function rowToEntity(row) {
   if (!row) return null;
   return {
     entity_id: row.entity_id,
@@ -335,6 +340,25 @@ export class EntityStore {
       entities: page.map(rowToEntity),
       nextCursor: hasMore ? page[page.length - 1].entity_id : null,
     };
+  }
+
+  /**
+   * WP-15 Bounded Scope item 6: msp_memory_history/msp_memory_forget's wire
+   * request (API-009 SS4.4/SS4.5) carries only entity_id -- no vaultId,
+   * category, or key -- unlike every other entity-store method above, which
+   * predates this packet and is vault-scoped by (vaultId, category, key).
+   * This is a direct-by-primary-key lookup so transport/handlers/
+   * memory-handlers.mjs can resolve entity_id -> {vaultId, category, key}
+   * before delegating to the vault-scoped methods above. It performs no
+   * additional scoping of its own because entity_id itself already
+   * uniquely, non-forgeably determines its vault (WP-14's computeEntityId
+   * folds vaultId into the hash) -- there is no cross-vault ambiguity a
+   * second scope parameter could resolve here. Returns null, never throws,
+   * on an unknown entity_id.
+   */
+  getById(entityId) {
+    if (!entityId) throw new TypeError("entity-store.getById requires entityId.");
+    return rowToEntity(this.#selectById.get(entityId));
   }
 
   /** Full entity_history ledger for (vaultId, category, key), newest-first. */
