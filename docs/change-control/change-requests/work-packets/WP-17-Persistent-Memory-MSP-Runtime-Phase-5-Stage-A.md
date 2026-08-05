@@ -2,14 +2,14 @@
 title: "WP-17: Persistent-Memory MSP Runtime — Phase 5 Stage A (Links + GoVibe Bridge)"
 doc_id: "WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A"
 status: "draft"
-version: "0.2.0+draft"
-updated: "2026-08-05"
+version: "0.2.1+draft"
+updated: "2026-08-06"
 owner: "Boss (CEO)"
 proposal_author: "Claude (final-gate session)"
 approval_owner: "Boss (CEO)"
 source_of_truth: false
-approval_recorded_at: ""
-execution_authorized: false
+approval_recorded_at: "2026-08-06"
+execution_authorized: true
 execution_complete: false
 complexity: "C-3"
 access_scope: "H4"
@@ -294,11 +294,19 @@ rollback step.
 
 ## Owner accepted-risk record
 
-Not applicable at proposal time. This packet is not authorized for execution
-(`execution_authorized: false`). Per the process correction established by
-WP-14, authorization must be recorded in this document's frontmatter
-**before** implementation is dispatched — an executing session must not set
-its own authorization flags.
+Authorized 2026-08-06 by Boss (CEO), owner and approval owner, in the
+resuming session's chat channel (directive: "เริ่ม WP-17" — start WP-17),
+after that session presented this packet's Ground truth, Bounded scope, and
+risk framing (C-3/H4, risk HIGH — the first packet in the series to modify
+GoVibe's own runtime code, protocol allow-list, and frontend data layer, with
+the silent-drop failure mode of `packages/mission-protocol/index.js` called
+out explicitly) for review, with WP-16 already `execution_complete: true`
+(its precondition), closed by explicit owner approval in chat on 2026-08-05.
+Recorded here, in frontmatter, before implementation is dispatched, per the
+process correction established by WP-14: an executing session must not set
+its own `execution_authorized` / `execution_complete` flags. This entry sets
+`execution_authorized` only; `execution_complete` remains false until
+independent post-execution verification is recorded separately.
 
 ## Execution closure
 
@@ -308,5 +316,6 @@ Not yet executed.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.1+draft | 2026-08-06 | Boss (CEO) | Owner-authorized for execution in chat ("เริ่ม WP-17"), with WP-16 already `execution_complete: true` (its precondition), closed by explicit owner approval on 2026-08-05. `execution_authorized` set to `true`, `approval_recorded_at` set; `execution_complete` remains `false` pending independent post-execution verification. Authorization recorded before dispatch, per the process WP-14 established. |
 | 0.2.0+draft | 2026-08-05 | Boss (CEO) / Claude (final-gate session) | **Split applied, owner-directed.** Re-scoped this packet to Phase 5 Stage A (data only): runtime links, the GoVibe-side bridge, the mission-protocol allow-list, and the `MissionSnapshot` type plus reducer/merge wiring. All Mission Control UI moved to the new `WP-18-Persistent-Memory-MSP-Runtime-Phase-5-Stage-B`. The split boundary was refined from the original marking: the snapshot type and reducer wiring stay in Stage A, because `mergeMissionSnapshot` silently drops fields it does not explicitly carry — shipping the emit path without the merge path would produce a bridge that appears to work and delivers nothing. Complexity lowered C-4 -> C-3 accordingly; risk stays HIGH (first packet to modify GoVibe's own runtime, protocol, and frontend). |
 | 0.1.0+draft | 2026-08-05 | Claude (final-gate session) | Proposed WP-17 covering all of Phase 5 (links, bridge, and Domain E dashboard) with a pre-marked Stage A / Stage B split recommendation for the owner to decide at authorization. Recorded the ground-truth state of the runtime package, GoVibe's MCP server patterns, and the frontend/protocol gate as of 2026-08-05, including the silent-drop failure mode of `packages/mission-protocol/index.js` and the `eventBytes` cap. |
