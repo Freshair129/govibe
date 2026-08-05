@@ -6,6 +6,7 @@
 // paraphrased) as this packet's ground truth.
 import { workspaceRef, vaultRegistryRef } from "../../contracts/refs.mjs";
 import { ValidationError } from "../../contracts/errors.mjs";
+import { assertVaultScope } from "../../contracts/vault-scope-guard.mjs";
 
 function requireString(value, label) {
   if (typeof value !== "string" || !value.trim()) {
@@ -99,6 +100,19 @@ export function createVaultHandlers({ vaultRegistry, journal }) {
     // Request fields as built by mountVault in
     // msp-vault-context-contracts.mjs: actor, workspace_id, workspace_path,
     // vault_id, mount_alias, access_mode, reason.
+    //
+    // WP-14 AC-04: of the tools in this packet's actual delivered surface
+    // (see the final report's Bounded-Scope investigation), this is the
+    // ONLY one whose request carries a real, caller-supplied vault_id --
+    // msp_context_resolve and msp_memory_promote derive their scope from
+    // workspace_id/agent_id internally and accept no vault_id parameter
+    // (Explicit Exclusion #1 forbids adding one to their wire shape). So
+    // vault_scope_denied enforcement is implemented here: reject before the
+    // mutating vaultRegistry.mountVault() call (which writes a vault_mounts
+    // row) if the caller's workspace does not actually own vault_id, or
+    // has not already legitimately mounted it. An unknown vault_id is left
+    // to mountVault()'s own existing not_found path, unchanged from WP-13
+    // -- it is a different condition from "known vault I don't own".
     async msp_vault_mount(args = {}) {
       const actor = requireString(args.actor, "actor");
       const workspaceId = requireString(args.workspace_id, "workspace_id");
@@ -107,6 +121,14 @@ export function createVaultHandlers({ vaultRegistry, journal }) {
       const mountAlias = requireString(args.mount_alias, "mount_alias");
       const accessMode = args.access_mode ?? "read";
       const reason = requireString(args.reason, "reason");
+
+      const knownVault = vaultRegistry.getVaultById(vaultId);
+      if (knownVault) {
+        assertVaultScope(
+          vaultRegistry.isVaultAccessibleTo(vaultId, { workspaceId }),
+          `vault_scope_denied: vault_id "${vaultId}" is not owned by, or already mounted for, workspace "${workspaceId}".`,
+        );
+      }
 
       const { mount, vault } = vaultRegistry.mountVault({ vaultId, workspaceId, mountAlias, accessMode });
 

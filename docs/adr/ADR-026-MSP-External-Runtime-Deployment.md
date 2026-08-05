@@ -2,8 +2,8 @@
 doc_id: "ADR-026-MSP-EXTERNAL-RUNTIME-DEPLOYMENT"
 title: "ADR-026: MSP external runtime deployment boundary"
 status: "proposed"
-version: "0.1.1+draft"
-updated: "2026-08-04"
+version: "0.1.2+draft"
+updated: "2026-08-05"
 owner: "Boss (CEO)"
 type: adr
 related_issue: 75
@@ -77,7 +77,14 @@ record of what was decided on 2026-08-03.
 
 ## Required follow-up
 
-- Owner approves or rejects this proposal and records the MSP runtime location.
+- ~~Owner approves or rejects this proposal and records the MSP runtime
+  location.~~ **Closed 2026-08-05 (Issue #75).** The MSP runtime location is
+  recorded by `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md`
+  (accepted 2026-08-05 by Boss (CEO)): in-repo, `packages/msp-runtime`, a
+  separate OS process. This ADR's own `status` remains `proposed` — closing
+  #75 resolves this specific follow-up item, it is not itself an acceptance
+  of ADR-026's Decision text, which stands as originally proposed and is
+  unaffected by this closure.
 - #76 adds configuration preflight and fail-closed operator guidance.
 - #77 runs an E2E test against a non-fixture MSP/GKS provider across restart.
 - #78 documents installation, health verification, recovery, and evidence
@@ -95,5 +102,6 @@ record of what was decided on 2026-08-03.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-08-05 | Boss (CEO) | Closed Required-follow-up Issue #75: "Owner approves or rejects this proposal and records the MSP runtime location" — resolved by the acceptance of `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md`, which records the location (in-repo `packages/msp-runtime`, separate OS process). This ADR's own `status` remains `proposed`; closing #75 does not itself change ADR-026's Decision text or acceptance state. |
 | 0.1.1+draft | 2026-08-04 | Claude (final-gate session) | Recorded that ADR-027 amends and resolves this ADR's unselected MSP runtime repository/process finding for the persistent-memory MSP runtime instance (`packages/msp-runtime`, in-repo, separate OS process). Appended an amendment note to Consequences; the Decision text and status are unchanged. |
 | 0.1.0+draft | 2026-08-03 | Boss (CEO) | Proposed the external MSP stdio deployment boundary while leaving the production runtime owner/provider explicitly unresolved. |
