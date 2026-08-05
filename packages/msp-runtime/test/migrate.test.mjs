@@ -93,18 +93,24 @@ describe("db/migrate (AC-03)", () => {
     expect(() => runMigrations(db, migrationsDir)).toThrow(/downgrade|newer than the newest/i);
   });
 
-  it("applies the real packaged migrations (0001_init.sql + 0002_phase2.sql + 0003_vault_scoping.sql, WP-14) without error", () => {
+  it("applies the real packaged migrations (0001_init.sql + 0002_phase2.sql + 0003_vault_scoping.sql + 0004_retrieval.sql, WP-15) without error", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     const result = runMigrations(db, migrationsDir);
-    expect(result.appliedCount).toBe(3);
+    expect(result.appliedCount).toBe(4);
     const tables = db
       .prepare(
         "SELECT name FROM sqlite_master WHERE type='table' AND name IN " +
-          "('entities','entity_history','vaults','vault_mounts','contexts','journal','state','promotions')",
+          "('entities','entity_history','vaults','vault_mounts','contexts','journal','state','promotions','embeddings')",
       )
       .all();
-    expect(tables).toHaveLength(8);
+    expect(tables).toHaveLength(9);
+    // WP-15: entities_fts is a virtual table (type='table' in sqlite_master
+    // for FTS5's shadow-table implementation detail is not guaranteed
+    // portable, so check by name against the sqlite_master rows FTS5 itself
+    // registers instead).
+    const ftsRows = db.prepare("SELECT name FROM sqlite_master WHERE name = 'entities_fts'").all();
+    expect(ftsRows).toHaveLength(1);
 
     // WP-14 AC-01/AC-05: the new columns this migration adds are present.
     const entityCols = db.prepare("PRAGMA table_info(entities)").all().map((col) => col.name);
@@ -115,12 +121,12 @@ describe("db/migrate (AC-03)", () => {
     expect(vaultCols).toContain("role");
   });
 
-  it("re-applying 0003_vault_scoping.sql's migrations directory a second time is a no-op (AC-01: migration 0003 applies idempotently)", () => {
+  it("re-applying the packaged migrations directory a second time is a no-op (AC-01: migrations apply idempotently)", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     runMigrations(db, migrationsDir);
     const second = runMigrations(db, migrationsDir);
     expect(second.appliedCount).toBe(0);
-    expect(second.currentVersion).toBe(3);
+    expect(second.currentVersion).toBe(4);
   });
 });
