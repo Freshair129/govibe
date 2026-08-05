@@ -2,7 +2,7 @@
 title: "WP-16: Persistent-Memory MSP Runtime — Phase 4 (Temporal Decay Lifecycle)"
 doc_id: "WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4"
 status: "draft"
-version: "0.1.2+draft"
+version: "0.1.3+draft"
 updated: "2026-08-05"
 owner: "Boss (CEO)"
 proposal_author: "Claude (final-gate session)"
@@ -10,7 +10,7 @@ approval_owner: "Boss (CEO)"
 source_of_truth: false
 approval_recorded_at: "2026-08-05"
 execution_authorized: true
-execution_complete: false
+execution_complete: true
 complexity: "C-2"
 access_scope: "H3"
 risk: "MEDIUM"
@@ -334,16 +334,22 @@ shape).
 and self-verified (all gates re-run from a clean state, as recorded above)
 within a single continuous session -- unlike WP-14/WP-15, no *separate*
 dispatching/final-gate session re-ran and independently reproduced these
-results before this record was written. `execution_complete` is therefore
-left `false` by this commit, exactly as the frontmatter's Ground rule
-requires; this report is presented to the owner in chat for review, and a
-follow-up commit sets `execution_complete: true` only after that review and
-explicit owner approval are recorded, per AC-10.
+results before this record was written. That gap is recorded here, not
+hidden: `execution_complete` was left `false` by the execution commit, and
+this Execution closure section (including the two Deviations above) was
+presented to the owner in chat verbatim before any closure flag was set.
+Boss (CEO), owner and approval owner, reviewed it and responded "ปิดงานเลย
+ตั้ง execution_complete: true" (close it out, set execution_complete: true)
+in the same chat channel on 2026-08-05. `execution_complete: true` is set by
+this same versioned record, per that explicit instruction -- AC-10 is closed
+on the owner's own review standing in for the separate-session pattern,
+not on a claim that a second session independently reproduced the results.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.3+draft | 2026-08-05 | Boss (CEO) | AC-10 closed: `execution_complete` set `true` after the owner reviewed this packet's Execution closure section (182/182 passing, all gates green, two documented Deviations) presented in chat, and explicitly approved closure ("ปิดงานเลย ตั้ง execution_complete: true"). Recorded honestly: this was owner review of a single-session self-verified execution, not a separate dispatching/final-gate session independently reproducing the results the way WP-14/WP-15 closed -- see the Execution closure section's AC-10 note for the full record. |
 | 0.1.2+draft | 2026-08-05 | Claude (WP-16 execution session) | Executed Bounded Scope items 1-6: migration `0005_decay_lifecycle.sql`, `domain/decay-engine.mjs` (`recomputeDecayScore`, `runDecayTick`, `touch`), reinforcement-on-access wired into `msp_memory_get`/`msp_memory_search`, `msp_memory_decay_tick` handler, default-recall exclusion of `archived` in `msp_memory_list`/`msp_memory_search`. 154 vitest + 28 `node --test` = 182/182 passing (baseline 158/158 reproduced first). Recorded two Deviations (both mirroring WP-15's own precedent, not silent guesses): `msp_memory_decay_tick` cannot use the caller-ownership `vault_scope_denied` pattern literally as instructed because API-009 §4.7's wire shape carries no caller identity (same gap WP-15 recorded for its six tools) -- per-request `vault_id` data scoping was built and proven instead; `msp_memory_search` has no `lifecycle_state` override parameter on the wire, so its `archived` exclusion is unconditional, unlike `msp_memory_list`'s. Root lint/build/test/docs:validate/diff:check gates all pass. `execution_complete` intentionally left `false` -- this session executed AND self-verified in one continuous session, not the arm's-length dispatching/final-gate-session pattern WP-14/WP-15 used; AC-10 (independent review, owner approval) remains to be closed. |
 | 0.1.1+draft | 2026-08-05 | Boss (CEO) | Owner-authorized for execution in chat ("เริ่ม WP-16"), with WP-15 already execution-complete and independently verified on `feat/wp-15-msp-runtime-phase-3` (commit `9bb5a6a`). `execution_authorized` set to `true`, `approval_recorded_at` set; `execution_complete` remains `false` pending independent verification after implementation. Authorization recorded before dispatch, per the process WP-14 established. |
 | 0.1.0+draft | 2026-08-05 | Claude (final-gate session) | Proposed WP-16, scoped to Phase 4 (Ebbinghaus decay scoring, `active -> decayed -> archived -> forgotten` lifecycle, reinforcement-on-access, `msp_memory_decay_tick` per API-009 §4.7). Records the ground-truth state of `packages/msp-runtime` as of 2026-08-05, the pre-existing decay columns not to re-add, the missing `last_accessed_at` column, and an explicit requirement to reconcile the decay lifecycle's terminal state with the existing manual `forget()` path rather than silently overloading `forgotten`. Caller-triggered only — no background daemon. Execution remains unauthorized at proposal time. |
