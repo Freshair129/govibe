@@ -2,14 +2,14 @@
 title: "WP-15: Persistent-Memory MSP Runtime — Phase 3 (Hybrid Retrieval)"
 doc_id: "WP-15-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-3"
 status: "draft"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 updated: "2026-08-05"
 owner: "Boss (CEO)"
 proposal_author: "Claude (final-gate session)"
 approval_owner: "Boss (CEO)"
 source_of_truth: false
-approval_recorded_at: ""
-execution_authorized: false
+approval_recorded_at: "2026-08-05"
+execution_authorized: true
 execution_complete: false
 complexity: "C-3"
 access_scope: "H3"
@@ -258,12 +258,16 @@ record the trigger without widening scope or restoring an authority bypass.
 
 ## Owner accepted-risk record
 
-Not applicable at proposal time. This packet is not authorized for execution
-(`execution_authorized: false`). Per the process correction established by
-WP-14 (and the deviation recorded in WP-13), authorization must be recorded
-in this document's frontmatter **before** implementation is dispatched — an
-executing session must not set its own `execution_authorized` /
-`execution_complete` flags.
+Authorized 2026-08-05 by Boss (CEO), owner and approval owner, in the
+resuming session's chat channel (directive: "commit WP-14 ก่อน แล้วค่อยเริ่ม
+WP-15" — commit WP-14 first, then start WP-15), after that session presented
+this packet's Ground truth section, scope, and risk framing for review.
+Recorded here, in frontmatter, before implementation is dispatched, per the
+process correction established by WP-14 (and the deviation recorded in
+WP-13): an executing session must not set its own `execution_authorized` /
+`execution_complete` flags. This entry sets `execution_authorized` only;
+`execution_complete` remains false until independent post-execution
+verification is recorded separately.
 
 ## Execution closure
 
@@ -273,4 +277,5 @@ Not yet executed.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-05 | Boss (CEO) | Owner-authorized for execution in chat after WP-14 was committed (`feat/wp-14-vault-scoping-msp-runtime`, commit `30ee737`). `execution_authorized` set to `true`, `approval_recorded_at` set; `execution_complete` remains `false` pending independent verification after implementation. Authorization recorded before dispatch, per the process WP-14 established. |
 | 0.1.0+draft | 2026-08-05 | Claude (final-gate session) | Proposed WP-15, scoped to Phase 3 (hybrid retrieval: FTS5, bge-m3 vectors via Ollama with fail-soft circuit breaker, RRF fusion, retrieval-service façade) plus API-009 §4.1-4.6's entity CRUD and search tools. Records the scope decision moving the five CRUD tools from Phase 5 into Phase 3 (search is untestable without a write path) and the ground-truth state of `packages/msp-runtime` as of 2026-08-05 so a session with no prior context can execute this packet. Execution remains unauthorized at proposal time. |
