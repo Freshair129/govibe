@@ -33,21 +33,22 @@ function freshDb() {
 }
 
 describe("WP-14 AC-01: migration 0003_vault_scoping.sql", () => {
-  it("applies idempotently against a fresh database (five migrations, no error, no duplicate application)", () => {
+  it("applies idempotently against a fresh database (six migrations, no error, no duplicate application)", () => {
     const db = freshDb();
     const first = runMigrations(db, migrationsDir);
-    expect(first.appliedCount).toBe(5);
-    expect(first.currentVersion).toBe(5);
+    expect(first.appliedCount).toBe(6);
+    expect(first.currentVersion).toBe(6);
 
     const second = runMigrations(db, migrationsDir);
     expect(second.appliedCount).toBe(0);
-    expect(second.currentVersion).toBe(5);
+    expect(second.currentVersion).toBe(6);
 
     const rows = db.prepare("SELECT version, name FROM schema_migrations ORDER BY version").all();
-    expect(rows.map((row) => row.version)).toEqual([1, 2, 3, 4, 5]);
+    expect(rows.map((row) => row.version)).toEqual([1, 2, 3, 4, 5, 6]);
     expect(rows[2].name).toBe("0003_vault_scoping.sql");
     expect(rows[3].name).toBe("0004_retrieval.sql");
     expect(rows[4].name).toBe("0005_decay_lifecycle.sql");
+    expect(rows[5].name).toBe("0006_links.sql");
   });
 
   it("entities.vault_id exists, is NOT NULL, and foreign-key-references vaults(vault_id)", () => {

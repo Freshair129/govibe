@@ -7,6 +7,7 @@ import { parseAgentRegistry } from "./runtime/agent-registry-service.mjs";
 import { createRuntimeSnapshot, RuntimeSnapshotStore } from "./runtime/snapshot-store.mjs";
 import { TemporalOverlayStore } from "./runtime/temporal-overlay-store.mjs";
 import { MissionCommandRouter } from "./runtime/mission-command-router.mjs";
+import { MemoryService } from "./runtime/memory-service.mjs";
 import { WorkspaceService } from "./runtime/workspace-service.mjs";
 import { TranslatorService } from "./runtime/translator-service.mjs";
 import { OrchestrationService } from "./runtime/orchestration-service.mjs";
@@ -82,6 +83,7 @@ export class GovibeRuntime {
     this.translatorService = new TranslatorService({ workspaceRoot, appendTerminal: (type, text) => this.appendTerminal(type, text) });
     this.roadmapService = new RoadmapService({ snapshotStore: this.snapshotStore, temporalOverlayStore: this.temporalOverlayStore, allowedRoadmapReadRoots: this.allowedRoadmapReadRoots, allowedRoadmapWriteRoots: this.allowedRoadmapWriteRoots });
     this.orchestrationService = new OrchestrationService({ workspaceRoot, runAgent: (args) => this.runAgent(args), applyMutation: (args) => this.applyRoadmapMutation(args), appendTerminal: (type, text) => this.appendTerminal(type, text), logEvent: (name, payload) => this.sessionTracker.logEvent(name, payload), emit: (event) => this.emit(event) });
+    this.memoryService = new MemoryService({ snapshotStore: this.snapshotStore, mspClient: this.mspClient });
     this.commandRouter = new MissionCommandRouter(this);
   }
 
@@ -240,6 +242,11 @@ export class GovibeRuntime {
   async applyRoadmapMutation(args = {}) { return this.roadmapService.applyRoadmapMutation(args); }
   async exportRoadmapMarkdown(args = {}) { return this.roadmapService.exportRoadmapMarkdown(args); }
   applyMissionEvent(event) { return this.roadmapService.applyMissionEvent(event); }
+
+  async searchMemory(args = {}) { return this.memoryService.search(args); }
+  selectMemory(args = {}) { return this.memoryService.select(args); }
+  async forgetMemory(args = {}) { return this.memoryService.forget(args); }
+  async runMemoryDecay(args = {}) { return this.memoryService.decayRun(args); }
 
   async handleMissionCommand(command) {
     return this.commandRouter.route(command);

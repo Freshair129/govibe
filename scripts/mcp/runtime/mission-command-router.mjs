@@ -46,6 +46,25 @@ export class MissionCommandRouter {
       service.appendTerminal("sys", `File save command received for hash: ${command.hash}`);
       return { ok: true, action: "file.save" };
     }
+    if (command.type === "memory.search") {
+      const result = await service.searchMemory({ vault_id: command.vaultId, query: command.query, mode: command.mode, limit: command.limit });
+      service.appendTerminal("sys", `Memory search: "${command.query}" (${result.hits.length} hit${result.hits.length === 1 ? "" : "s"}).`);
+      return { ok: true, action: "memory.search", result, snapshot: service.getSnapshot() };
+    }
+    if (command.type === "memory.select") {
+      const result = service.selectMemory({ entity_id: command.entityId });
+      return { ok: true, action: "memory.select", result, snapshot: service.getSnapshot() };
+    }
+    if (command.type === "memory.forget") {
+      const result = await service.forgetMemory({ entity_id: command.entityId, reason: command.reason });
+      service.appendTerminal("sys", `Memory forgotten: ${command.entityId}.`);
+      return { ok: true, action: "memory.forget", result, snapshot: service.getSnapshot() };
+    }
+    if (command.type === "memory.decay.run") {
+      const result = await service.runMemoryDecay({ vault_id: command.vaultId, dry_run: command.dryRun });
+      service.appendTerminal("sys", `Memory decay tick (${command.dryRun ? "dry run" : "applied"}): ${result.evaluated} evaluated, ${result.transitioned.length} transitioned.`);
+      return { ok: true, action: "memory.decay.run", result, snapshot: service.getSnapshot() };
+    }
     return { ok: false, action: "unknown-command" };
   }
 }

@@ -57,6 +57,13 @@ describe("mission protocol v1", () => {
       { type: "workspace.scan", workspacePath: "C:/workspace", deep: true, runId: "run-1" },
       { type: "reactor.run", profile: "safe" },
       { type: "file.save", hash: "a".repeat(64), data: [0, 127, 255], meta: { name: "proof.bin" } },
+      { type: "memory.search", vaultId: "vault_a", query: "hello" },
+      { type: "memory.search", vaultId: "vault_a", query: "hello", mode: "fts", limit: 10 },
+      { type: "memory.select", entityId: "msp:entity/x" },
+      { type: "memory.select", entityId: null },
+      { type: "memory.forget", entityId: "msp:entity/x", reason: "gdpr" },
+      { type: "memory.decay.run", vaultId: "vault_a" },
+      { type: "memory.decay.run", vaultId: "vault_a", dryRun: true },
     ];
     expect(commands.every(isMissionCommand)).toBe(true);
   });
@@ -76,6 +83,11 @@ describe("mission protocol v1", () => {
       { type: "roadmap.handoff", handoff: { taskId: "task-1" } },
       { type: "roadmap.verification", verification: { taskId: "task-1" } },
       { type: "workflow.run", run: { runId: "run-1" } },
+      { type: "memory.search.result", result: { query: "hello", vaultId: "vault_a", hits: [] } },
+      { type: "memory.selection", entityId: "msp:entity/x" },
+      { type: "memory.selection", entityId: null },
+      { type: "memory.forgotten", entityId: "msp:entity/x", vaultId: "vault_a" },
+      { type: "memory.decay.result", result: { vaultId: "vault_a", evaluated: 0, transitioned: [] } },
       { type: "command.ack", commandId: "cmd-1", ok: true },
     ];
     expect(events.every(isMissionEvent)).toBe(true);
@@ -88,6 +100,15 @@ describe("mission protocol v1", () => {
     expect(isMissionEvent({ type: "metrics.update", metrics: [], trusted: true })).toBe(false);
     expect(isMissionEvent({ type: "command.ack", commandId: 1, ok: true })).toBe(false);
     expect(isMissionEvent({ type: "unknown.event" })).toBe(false);
+    // WP-17: memory.* commands/events reject unknown fields, missing
+    // required fields, and wrong types, matching every other discriminator.
+    expect(isMissionCommand({ type: "memory.search", vaultId: "vault_a", query: "hello", admin: true })).toBe(false);
+    expect(isMissionCommand({ type: "memory.search", vaultId: "vault_a" })).toBe(false);
+    expect(isMissionCommand({ type: "memory.search", vaultId: "vault_a", query: "hello", mode: "not-a-mode" })).toBe(false);
+    expect(isMissionCommand({ type: "memory.forget", entityId: "msp:entity/x" })).toBe(false);
+    expect(isMissionCommand({ type: "memory.decay.run", vaultId: "vault_a", dryRun: "yes" })).toBe(false);
+    expect(isMissionEvent({ type: "memory.search.result", result: { query: "hello" }, trusted: true })).toBe(false);
+    expect(isMissionEvent({ type: "memory.forgotten", entityId: "msp:entity/x" })).toBe(false);
   });
 
   it("enforces documented string, path, array, metadata, and file limits", () => {
@@ -97,6 +118,18 @@ describe("mission protocol v1", () => {
     expect(isMissionCommand({ type: "file.save", hash: "hash", data: [256], meta: {} })).toBe(false);
     expect(isMissionCommand({ type: "file.save", hash: "hash", data: [], meta: { payload: "x".repeat(MISSION_PROTOCOL_LIMITS.metadataBytes) } })).toBe(false);
     expect(isMissionCommand({ type: "file.save", hash: "hash", data: new ArrayBuffer(MISSION_PROTOCOL_LIMITS.fileBytes + 1), meta: {} })).toBe(false);
+    // WP-17 AC-05: an oversized memory.search.result event is rejected by
+    // the same generic isBoundedJson(eventBytes) check every event goes
+    // through -- proving the gate itself would catch a cap that somehow
+    // slipped past scripts/mcp/runtime/memory-service.mjs's own server-side
+    // truncation, not relying on that service alone.
+    expect(
+      isMissionEvent({
+        type: "memory.search.result",
+        result: { query: "q", vaultId: "vault_a", hits: [{ entity: { bodyPreview: "x".repeat(MISSION_PROTOCOL_LIMITS.eventBytes) } }] },
+      }),
+    ).toBe(false);
+    expect(isMissionCommand({ type: "memory.search", vaultId: "vault_a", query: "x".repeat(MISSION_PROTOCOL_LIMITS.commandChars + 1) })).toBe(false);
   });
 
   it("creates and validates correlated command response envelopes", () => {

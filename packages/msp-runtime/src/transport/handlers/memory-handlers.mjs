@@ -39,6 +39,7 @@
 // scoping already enforced here.
 import { runDecayTick, touch } from "../../domain/decay-engine.mjs";
 import { MemoryNotFoundError, ValidationError } from "../../contracts/errors.mjs";
+import { assertVaultScope } from "../../contracts/vault-scope-guard.mjs";
 import { vectorToBlob } from "../../retrieval/vector.mjs";
 
 const VALID_SEARCH_MODES = new Set(["hybrid", "fts", "vector"]);
@@ -67,7 +68,7 @@ function toWireEntity(entity) {
   return entity;
 }
 
-export function createMemoryHandlers({ db, entityStore, vaultRegistry, journal, retrievalService, vectorClient }) {
+export function createMemoryHandlers({ db, entityStore, vaultRegistry, journal, retrievalService, vectorClient, linksStore }) {
   const upsertEmbedding = db.prepare(`
     INSERT INTO embeddings (entity_id, collection, model, dim, vector, content_hash, created_at)
     VALUES (@entity_id, @collection, @model, @dim, @vector, @content_hash, @created_at)
@@ -351,6 +352,79 @@ export function createMemoryHandlers({ db, entityStore, vaultRegistry, journal, 
       });
 
       return { evaluated, transitioned, dry_run: dryRun };
+    },
+
+    // API-009 SS4.8 (WP-17 Bounded Scope item 2). Request: {entity_id, direction}.
+    // No vault-scope check of its own is needed beyond resolving the entity:
+    // entity_id already uniquely, non-forgeably determines its vault (WP-14's
+    // computeEntityId folds vault_id into the hash), and every link row that
+    // could reference it was itself vault-checked at create time (below) --
+    // there is no cross-vault link for this query to accidentally surface.
+    async msp_memory_links_list(args = {}) {
+      const entityId = requireString(args.entity_id, "entity_id");
+      requireEntityById(entityId);
+      const direction = ["outgoing", "incoming", "both"].includes(args.direction) ? args.direction : "both";
+
+      const links = linksStore.list({ entityId, direction });
+      return {
+        links: links.map((link) => ({
+          from_entity_id: link.from_entity_id,
+          to_entity_id: link.to_entity_id,
+          link_type: link.link_type,
+        })),
+      };
+    },
+
+    // API-009 SS4.9 (WP-17 Bounded Scope item 2). Request:
+    // {from_entity_id, to_entity_id, link_type}. Both endpoints must be
+    // vault-scoped, and a link whose endpoints are in two different vaults
+    // must be rejected (AC-01) -- this is where that rejection actually
+    // happens, since domain/links.mjs (see its own header comment) trusts
+    // its caller to have already confirmed same-vault. Reuses
+    // contracts/vault-scope-guard.mjs's assertVaultScope (the "established
+    // pattern" this packet's Bounded Scope item 2 names) with an
+    // endpoint-consistency boolean rather than a caller-ownership one -- the
+    // same documented deviation WP-15/WP-16 recorded for the other
+    // msp_memory_* tools applies here too: this wire request carries no
+    // caller identity (workspace_id/agent_id) for isVaultAccessibleTo to
+    // check against, so "both endpoints share a vault" is the actual,
+    // testable security property AC-01 asks for, and assertVaultScope's
+    // typed VaultScopeDeniedError is the honest way to signal it fails
+    // closed rather than inventing a new error shape.
+    async msp_memory_links_create(args = {}) {
+      const fromEntityId = requireString(args.from_entity_id, "from_entity_id");
+      const toEntityId = requireString(args.to_entity_id, "to_entity_id");
+      const linkType = requireString(args.link_type, "link_type");
+      const actor = resolveActor(args);
+
+      const fromEntity = requireEntityById(fromEntityId);
+      const toEntity = requireEntityById(toEntityId);
+      assertVaultScope(
+        fromEntity.vault_id === toEntity.vault_id,
+        `msp_memory_links_create: from_entity_id and to_entity_id belong to different vaults ` +
+          `("${fromEntity.vault_id}" vs "${toEntity.vault_id}"); a link may not cross a vault boundary.`,
+      );
+
+      const { link, created } = linksStore.create({
+        vaultId: fromEntity.vault_id,
+        fromEntityId,
+        toEntityId,
+        linkType,
+        validFrom: new Date().toISOString(),
+      });
+
+      if (created) {
+        journal.append({
+          actor,
+          toolName: "msp_memory_links_create",
+          ref: link.link_id,
+          workspaceId: null,
+          payload: { vault_id: link.vault_id, from_entity_id: fromEntityId, to_entity_id: toEntityId, link_type: linkType },
+          policyDecision: "allow",
+        });
+      }
+
+      return { link: { from_entity_id: link.from_entity_id, to_entity_id: link.to_entity_id, link_type: link.link_type } };
     },
   };
 }

@@ -4,6 +4,7 @@ import { startSidecarServer } from "./sidecar-server.mjs";
 import { handleResourceRead, handleToolCall } from "./handlers.mjs";
 import { resourceCatalog, serverInfo, toolCatalog } from "./registry.mjs";
 import { handleVaultContextTool, handlesVaultContextTool } from "./vault-context-surface-v2.mjs";
+import { handleMemoryTool, handlesMemoryTool } from "./memory-surface.mjs";
 
 const protocolVersion = "2024-11-05";
 let readBuffer = Buffer.alloc(0);
@@ -57,6 +58,8 @@ async function onRequest(message) {
         const args = params?.arguments ?? {};
         const result = handlesVaultContextTool(name)
           ? await handleVaultContextTool(name, args)
+          : handlesMemoryTool(name)
+          ? await handleMemoryTool(name, args)
           : await handleToolCall(name, args);
         success(id, result);
         return;

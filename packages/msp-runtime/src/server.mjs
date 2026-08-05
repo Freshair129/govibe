@@ -20,6 +20,7 @@ import { open } from "./db/connection.mjs";
 import { runMigrations } from "./db/migrate.mjs";
 import { EntityStore } from "./domain/entity-store.mjs";
 import { Journal } from "./domain/journal.mjs";
+import { LinksStore } from "./domain/links.mjs";
 import { VaultRegistry } from "./domain/vault-registry.mjs";
 import { createRetrievalService } from "./retrieval/retrieval-service.mjs";
 import { createVectorClient } from "./retrieval/vector.mjs";
@@ -51,13 +52,14 @@ export function createServer({ dbPath, migrationsDir = DEFAULT_MIGRATIONS_DIR, i
   const entityStore = new EntityStore(db);
   const journal = new Journal(db);
   const vaultRegistry = new VaultRegistry(db);
+  const linksStore = new LinksStore(db);
   const vectorClient = createVectorClient();
   const retrievalService = createRetrievalService({ db, vectorClient });
 
   const vaultHandlers = createVaultHandlers({ vaultRegistry, journal });
   const contextHandlers = createContextHandlers({ db, journal });
   const lifecycleHandlers = createLifecycleHandlers({ db, entityStore, vaultRegistry, journal });
-  const memoryHandlers = createMemoryHandlers({ db, entityStore, vaultRegistry, journal, retrievalService, vectorClient });
+  const memoryHandlers = createMemoryHandlers({ db, entityStore, vaultRegistry, journal, retrievalService, vectorClient, linksStore });
 
   const toolRegistry = new ToolRegistry();
   toolRegistry.register("msp_ping", async () => ({ ok: true, timestamp: new Date().toISOString() }));
@@ -73,5 +75,5 @@ export function createServer({ dbPath, migrationsDir = DEFAULT_MIGRATIONS_DIR, i
     db.close();
   }
 
-  return { db, entityStore, journal, vaultRegistry, retrievalService, vectorClient, toolRegistry, transport, close };
+  return { db, entityStore, journal, vaultRegistry, linksStore, retrievalService, vectorClient, toolRegistry, transport, close };
 }
