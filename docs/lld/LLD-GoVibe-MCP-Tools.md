@@ -2,8 +2,8 @@
 title: "LLD: GoVibe MCP Tools"
 doc_id: "LLD-GOVIBE-MCP-TOOLS"
 status: "approved"
-version: "0.3.0"
-updated: "2026-08-04"
+version: "0.3.1"
+updated: "2026-08-06"
 owner: "GoVibe"
 source_of_truth: true
 prd_system: "SYSTEM-06::Integration-Bridge-System"
@@ -55,13 +55,15 @@ them).
 | `govibe.memory.decay.run` | `actor`, `vault_id` |
 | `govibe.memory.promote` | `actor`, `entity_id`, `target_scope` |
 
-Status for the last five rows: **planned, not yet implemented.** They are
-specified here in advance of the persistent-memory MSP runtime work sequenced
-by `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md`
-and `docs/change-control/change-requests/work-packets/WP-12-Persistent-Memory-MSP-Runtime-Phase-0-1.md`.
-`govibe.memory.promote` already exists in the registry (it is not a new tool);
-it is listed here only to record that Phase 5 wiring reuses it rather than
-introducing a duplicate promotion tool.
+Status for the first four of the last five rows: **implemented** (WP-17,
+Phase 5 Stage A: `scripts/mcp/memory-surface.mjs`, `scripts/mcp/runtime/memory-service.mjs`,
+`scripts/mcp/msp-memory-contracts.mjs`). `govibe.memory.promote` already
+existed in the registry before this packet (it is not a new tool); it is
+listed here only to record that Phase 5 wiring reuses it rather than
+introducing a duplicate promotion tool -- see `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md`
+and `docs/change-control/change-requests/work-packets/WP-17-Persistent-Memory-MSP-Runtime-Phase-5-Stage-A.md`.
+No Mission Control UI consumes these tools yet -- that is Stage B
+(WP-18-Persistent-Memory-MSP-Runtime-Phase-5-Stage-B), not this packet.
 
 ### 3.1 `govibe.agent.run`
 
@@ -237,8 +239,7 @@ Behavior:
 
 ### 3.10 `govibe.memory.search`
 
-Status: **planned, not yet implemented** (Phase 5,
-`docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md`).
+Status: **implemented** (WP-17, Phase 5 Stage A).
 
 Purpose:
 - resolve a hybrid (FTS + vector, RRF-fused) memory search against the
@@ -262,7 +263,9 @@ Outputs:
 
 ### 3.11 `govibe.memory.select`
 
-Status: **planned, not yet implemented** (Phase 5).
+Status: **implemented** (WP-17, Phase 5 Stage A). Local snapshot/UI state
+only (`MissionSnapshot.memory.selectedEntityId`); no Mission Control UI
+consumes it yet -- that is Stage B (WP-18).
 
 Purpose:
 - record a Mission Control operator's selection of a memory entity for
@@ -280,7 +283,7 @@ Outputs:
 
 ### 3.12 `govibe.memory.forget`
 
-Status: **planned, not yet implemented** (Phase 5).
+Status: **implemented** (WP-17, Phase 5 Stage A).
 
 Purpose:
 - soft-delete a memory entity through the persistent-memory MSP runtime
@@ -299,7 +302,7 @@ Outputs:
 
 ### 3.13 `govibe.memory.decay.run`
 
-Status: **planned, not yet implemented** (Phase 5).
+Status: **implemented** (WP-17, Phase 5 Stage A).
 
 Purpose:
 - trigger a decay tick against the persistent-memory MSP runtime from an
@@ -338,17 +341,28 @@ The full request/response contract for each is in
 tool names and their GoVibe-facing caller, matching this document's format
 for the rest of the tool set.
 
+Correction (WP-17): the original planning-stage rows below predicted
+`govibe.memory.select` would call `msp_memory_get` and that
+`memory-service.mjs` would call `msp_memory_upsert`/`list`/`history`. Neither
+happened, and neither is a gap -- API-009 SS2's own tool-list comment is
+explicit that `govibe.memory.select` "records a UI selection, no MSP call",
+and WP-17's Bounded Scope item 3 lists only search/forget/decay_tick as the
+tools this phase's bridge calls. Those four `msp_memory_*` tools stay
+`planned`, corrected below to remove the false "called by" claim; a future
+phase (a memory detail view, an authoring surface) is what would actually
+need them.
+
 | MSP tool | Called by | Status |
 |---|---|---|
-| `msp_memory_upsert` | `scripts/mcp/runtime/memory-service.mjs` | planned |
-| `msp_memory_get` | `scripts/mcp/runtime/memory-service.mjs`, `govibe.memory.select` | planned |
-| `msp_memory_list` | `scripts/mcp/runtime/memory-service.mjs` | planned |
-| `msp_memory_history` | `scripts/mcp/runtime/memory-service.mjs` | planned |
-| `msp_memory_forget` | `govibe.memory.forget` | planned |
-| `msp_memory_search` | `govibe.memory.search` | planned |
-| `msp_memory_decay_tick` | `govibe.memory.decay.run` | planned |
-| `msp_memory_links_list` | `scripts/mcp/runtime/memory-service.mjs` | planned |
-| `msp_memory_links_create` | `scripts/mcp/runtime/memory-service.mjs` | planned |
+| `msp_memory_upsert` | *(none yet)* | planned |
+| `msp_memory_get` | *(none yet)* | planned |
+| `msp_memory_list` | *(none yet)* | planned |
+| `msp_memory_history` | *(none yet)* | planned |
+| `msp_memory_forget` | `govibe.memory.forget` | implemented |
+| `msp_memory_search` | `govibe.memory.search` | implemented |
+| `msp_memory_decay_tick` | `govibe.memory.decay.run` | implemented |
+| `msp_memory_links_list` | *(none -- `packages/msp-runtime` only, no GoVibe-facing wrapper in this phase; API-009 SS2's `govibe.memory.*` list has no links equivalent)* | implemented (msp-runtime only) |
+| `msp_memory_links_create` | *(none -- `packages/msp-runtime` only, same reason)* | implemented (msp-runtime only) |
 
 ## 4. Resource Model
 
@@ -439,6 +453,7 @@ Deferred from the first implementation:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.1 | 2026-08-06 | Claude (WP-17 execution session) | Flipped `govibe.memory.search`/`select`/`forget`/`decay.run` from planned to **implemented** (WP-17, Phase 5 Stage A: `scripts/mcp/memory-surface.mjs`, `scripts/mcp/runtime/memory-service.mjs`, `scripts/mcp/msp-memory-contracts.mjs`; no Mission Control UI yet -- that is Stage B/WP-18). Corrected the SS3.15 MSP-side table: removed the false "called by `govibe.memory.select`/`memory-service.mjs`" claim for `msp_memory_get`/`upsert`/`list`/`history` (API-009 SS2 is explicit that `govibe.memory.select` makes no MSP call; WP-17's actual scope only wires search/forget/decay_tick), and added `msp_memory_links_list`/`links_create` as implemented in `packages/msp-runtime` with no GoVibe-facing wrapper in this phase. |
 | 0.3.0 | 2026-08-04 | Claude (final-gate session) | Documented the planned `govibe.memory.*` tools (search, select, forget, decay.run, and reuse of the existing promote tool) and the underlying `msp_memory_*` MSP-side surface from `docs/api/API-009-Persistent-Memory-Contract.md`, ahead of the persistent-memory MSP runtime work in CR-2026-08-04. All new entries are marked planned/not yet implemented; no existing tool entry was changed. |
 | 0.2.1 | 2026-06-20 | GoVibe | Signed off; promoted draft -> approved (as-built, verified against current runtime code). |
 | 0.2.0 | 2026-06-20 | GoVibe | Aligned the tool set with the live `registry.mjs` catalog: documented all nine `govibe.*` tools (added `roadmap.export`, `workspace.initialize`, `workspace.validate`, `doc.create`), noted required args per tool, flagged `deploy.vercel` as a scaffold, and corrected the internal responsibilities tree (removed non-existent ProgressTools/AuditTools). |

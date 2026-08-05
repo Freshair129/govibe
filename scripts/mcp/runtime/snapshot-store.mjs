@@ -3,6 +3,10 @@ export function createRuntimeSnapshot(capabilities = []) {
     connectionState: "connected", updatedAt: new Date().toISOString(), metrics: [], chart: { labels: [], series: [] }, reactor: [],
     agents: [], capabilities, terminal: [], graph: { nodes: [], edges: [] }, specs: [], symbols: [], campaignLogs: [],
     orchestration: { waves: [], updatedAt: new Date().toISOString() }, workflowRuns: [], providers: [],
+    // WP-17 Bounded Scope item 3: the memory slice, always a real object
+    // (never undefined), matching every other array-typed field's
+    // empty-value convention.
+    memory: { results: [], selectedEntityId: null, lastQuery: null, lastSearchedAt: null, lastDecayResult: null },
   };
 }
 

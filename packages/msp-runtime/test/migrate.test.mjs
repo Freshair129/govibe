@@ -93,18 +93,18 @@ describe("db/migrate (AC-03)", () => {
     expect(() => runMigrations(db, migrationsDir)).toThrow(/downgrade|newer than the newest/i);
   });
 
-  it("applies the real packaged migrations (0001_init.sql + 0002_phase2.sql + 0003_vault_scoping.sql + 0004_retrieval.sql + 0005_decay_lifecycle.sql, WP-16) without error", () => {
+  it("applies the real packaged migrations (0001-0006, through WP-17's links table) without error", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     const result = runMigrations(db, migrationsDir);
-    expect(result.appliedCount).toBe(5);
+    expect(result.appliedCount).toBe(6);
     const tables = db
       .prepare(
         "SELECT name FROM sqlite_master WHERE type='table' AND name IN " +
-          "('entities','entity_history','vaults','vault_mounts','contexts','journal','state','promotions','embeddings')",
+          "('entities','entity_history','vaults','vault_mounts','contexts','journal','state','promotions','embeddings','links')",
       )
       .all();
-    expect(tables).toHaveLength(9);
+    expect(tables).toHaveLength(10);
     // WP-15: entities_fts is a virtual table (type='table' in sqlite_master
     // for FTS5's shadow-table implementation detail is not guaranteed
     // portable, so check by name against the sqlite_master rows FTS5 itself
@@ -122,6 +122,12 @@ describe("db/migrate (AC-03)", () => {
 
     // WP-16 AC-01: last_accessed_at exists.
     expect(entityCols).toContain("last_accessed_at");
+
+    // WP-17 AC-01: links table exists with its documented columns.
+    const linkCols = db.prepare("PRAGMA table_info(links)").all().map((col) => col.name);
+    expect(linkCols).toEqual(
+      expect.arrayContaining(["link_id", "vault_id", "from_entity_id", "to_entity_id", "link_type", "confidence", "valid_from", "valid_to", "recorded_at", "created_at"]),
+    );
   });
 
   it("re-applying the packaged migrations directory a second time is a no-op (AC-01: migrations apply idempotently)", () => {
@@ -130,7 +136,7 @@ describe("db/migrate (AC-03)", () => {
     runMigrations(db, migrationsDir);
     const second = runMigrations(db, migrationsDir);
     expect(second.appliedCount).toBe(0);
-    expect(second.currentVersion).toBe(5);
+    expect(second.currentVersion).toBe(6);
   });
 
   it("WP-16 AC-01: the lifecycle_state CHECK constraint rejects an out-of-enum value", () => {

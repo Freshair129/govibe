@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.21+draft"
+version: "0.3.22+draft"
 updated: "2026-08-05"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -32,7 +32,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.21+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.22+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -57,7 +57,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Work Packet | `WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-14-Vault-Scoping-Msp-Runtime-Entities.md` |
 | Work Packet | `WP-15-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-3` | `0.1.3+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-15-Persistent-Memory-MSP-Runtime-Phase-3.md` |
 | Work Packet | `WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4` | `0.1.3+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-16-Persistent-Memory-MSP-Runtime-Phase-4.md` |
-| Work Packet | `WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A` | `0.2.1+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-17-Persistent-Memory-MSP-Runtime-Phase-5-Stage-A.md` |
+| Work Packet | `WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A` | `0.2.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-17-Persistent-Memory-MSP-Runtime-Phase-5-Stage-A.md` |
 | Work Packet | `WP-18-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-B` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-18-Persistent-Memory-MSP-Runtime-Phase-5-Stage-B.md` |
 | Change Request | `CR-2026-08-03-DOCUMENT-IA-KNOWLEDGE-GRAPH-READINESS` | `0.3.0+draft` | draft | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Document-IA-and-Knowledge-Graph-Readiness.md` |
 | Change Request | `CR-2026-08-03-PHASE1B-METADATA-DECISION-PACKET` | `0.2.0` | approved | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Phase1B-Metadata-Decision-Packet.md` |
@@ -181,7 +181,7 @@ These files map historical or cross-document terminology into canonical owners. 
 | SRS | `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` | `0.1.1+draft` | draft | Boss (CEO) | `docs/srs/SRS-GoVibe-Translator-Core-Slice.md` |
 | SRS | `SRS-PERSISTENT-MEMORY-MSP-RUNTIME` | `0.1.0+draft` | draft | Boss (CEO) | `docs/srs/SRS-Persistent-Memory-MSP-Runtime.md` |
 | Architecture | `SEQ-OLLAMA-SIDECAR-FLOW` | `0.1.2` | approved | THESEUS | `docs/architecture/SEQ-Ollama-Sidecar-Flow.md` |
-| LLD | `LLD-GOVIBE-MCP-TOOLS` | `0.3.0` | approved | GoVibe | `docs/lld/LLD-GoVibe-MCP-Tools.md` |
+| LLD | `LLD-GOVIBE-MCP-TOOLS` | `0.3.1` | approved | GoVibe | `docs/lld/LLD-GoVibe-MCP-Tools.md` |
 | LLD | `LLD-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/lld/LLD-Translator-Core-Slice.md` |
 | LLD | `LLD-AGENT-LAUNCHER-EXECUTION-ROUTER` | `0.1.2` | approved | THESEUS | `docs/lld/LLD-Agent-Launcher-Execution-Router.md` |
 | Context | `AGENT-BRIDGE-QWEN-COMPAT` | `1.2.1+draft` | draft | ATHER / THESEUS | `AGENT.md` |
@@ -219,6 +219,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.22+draft | 2026-08-06 | Claude (WP-17 execution session) | Synchronized WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A to `0.2.2+draft` (Execution closure recorded: Bounded Scope items 1-6 built across `packages/msp-runtime`, `scripts/mcp/**`, `packages/mission-protocol/**`, `src/mission/**`; 194/194 msp-runtime tests, 553+1 root tests, zero regressions; two Deviations recorded). Synchronized LLD-GOVIBE-MCP-TOOLS to `0.3.1` (§3.10-§3.13 planned -> implemented; §3.15 MSP-side table corrected). `execution_authorized`/`approval_recorded_at`/`status` frontmatter fields left untouched by this row, per this packet's own Ground rule -- `execution_complete` remains `false` pending independent review and owner approval (AC-10). No document status changed to `approved`/`accepted`/`candidate` by this row (LLD-GOVIBE-MCP-TOOLS's own `status: approved` was already approved before this packet and is unaffected). |
 | 0.3.21+draft | 2026-08-06 | Boss (CEO) | Synchronized WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A to `0.2.1+draft` (`execution_authorized: true`, `approval_recorded_at` set). Owner authorized execution in chat ("เริ่ม WP-17"), with WP-16 already `execution_complete: true` (its precondition), closed by explicit owner approval on 2026-08-05. `execution_complete` remains `false` pending independent post-execution verification. No document status changed to `approved`/`accepted`/`candidate` by this row. |
 | 0.3.20+draft | 2026-08-05 | Boss (CEO) | Synchronized WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4 to `0.1.3+draft` (`execution_complete: true`). Owner reviewed the Execution closure section (182/182 passing, gates green, two documented Deviations) presented in chat and explicitly approved closure ("ปิดงานเลย ตั้ง execution_complete: true"). Recorded honestly as owner review of a single-session self-verified execution, not a separate dispatching/final-gate session's independent reproduction. No document status changed to `approved`/`accepted`/`candidate` by this row. |
 | 0.3.19+draft | 2026-08-05 | Claude (WP-16 execution session) | Synchronized WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4 to `0.1.2+draft` (Execution closure recorded: Bounded Scope items 1-6 built -- migration `0005_decay_lifecycle.sql`, `domain/decay-engine.mjs`, reinforcement-on-access, `msp_memory_decay_tick`, default-recall archived-exclusion; 154 vitest + 28 `node --test` = 182/182 passing; two Deviations recorded, both mirroring WP-15's own caller-identity-gap precedent; root lint/build/test/docs:validate/diff:check gates pass). `execution_authorized`/`approval_recorded_at`/`status` frontmatter fields left untouched by this row, per this packet's own Ground rule 3 -- `execution_complete` remains `false` pending independent review and owner approval (AC-10). No document status changed to `approved`/`accepted`/`candidate` by this row. |

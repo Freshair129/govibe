@@ -2,7 +2,7 @@
 title: "WP-17: Persistent-Memory MSP Runtime — Phase 5 Stage A (Links + GoVibe Bridge)"
 doc_id: "WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A"
 status: "draft"
-version: "0.2.1+draft"
+version: "0.2.2+draft"
 updated: "2026-08-06"
 owner: "Boss (CEO)"
 proposal_author: "Claude (final-gate session)"
@@ -310,12 +310,116 @@ independent post-execution verification is recorded separately.
 
 ## Execution closure
 
-Not yet executed.
+Executed on `feat/wp-17-msp-runtime-phase-5-stage-a` (branched from
+`feat/wp-16-msp-runtime-phase-4` at the WP-17 authorization commit). Bounded
+Scope items 1-6 built:
+
+1. **`domain/links.mjs` + `db/migrations/0006_links.sql`**
+   (`packages/msp-runtime`): a flat `links` table (bi-temporal columns
+   consistent with `domain/temporal-engine.mjs`'s naming), create/list only,
+   idempotent by `(vault_id, from_entity_id, to_entity_id, link_type)`. No
+   traversal, no backlink materialization, no graph query.
+2. **`msp_memory_links_list`/`msp_memory_links_create`**
+   (API-009 §4.8/§4.9) added to the existing `memory-handlers.mjs`. One
+   journal row per successful create.
+3. **GoVibe-side bridge**: `scripts/mcp/msp-memory-contracts.mjs` (typed
+   client for search/forget/decay_tick, rejecting any `gks:`-namespaced
+   reference recursively in the response), `scripts/mcp/runtime/memory-service.mjs`
+   (search/select/forget/decayRun, server-side result-count cap of 20 hits
+   and 500-char body-preview truncation per hit), wired into
+   `runtime-core.mjs` (constructor + four delegate methods) and
+   `mission-command-router.mjs` (four `memory.*` command branches).
+   `scripts/mcp/memory-surface.mjs` exposes the four `govibe.memory.*` tools
+   (search/select/forget/decay.run), reusing the pre-existing
+   `govibe.memory.promote` without duplication. `snapshot-store.mjs`'s
+   `createRuntimeSnapshot()` gained the `memory` slice, always a real object.
+4. **Protocol allow-list**: `packages/mission-protocol/index.js` and
+   `index.d.ts` gained `isMissionCommand`/`isMissionEvent` cases for the four
+   new command types and four new event types, same `hasOnlyKeys` +
+   bounded-length discipline as every existing case.
+5. **Frontend data layer**: `src/mission/domain.ts` gained
+   `MissionMemory*` types, the `MissionSnapshot.memory` slice, and the eight
+   new `MissionEvent`/`MissionCommand` variants (no `DomainId` `"E"`, no
+   `ViewId`, per Explicit Exclusions). `src/mission/snapshot-reducer.ts`
+   updated `emptyMissionSnapshot`, `mergeMissionSnapshot`, and
+   `reduceMissionEvent` accordingly.
+6. **Doc updates**: `docs/lld/LLD-GoVibe-MCP-Tools.md` synchronized to
+   `0.3.1` (§3.10-§3.13 flipped planned -> implemented; §3.15's MSP-side
+   table corrected -- see Deviation 2 below) and `docs/DOC-VERSION-REGISTRY.md`
+   synchronized in the same change.
+
+**Deviation 1 (documented, mirrors WP-15/WP-16's own precedent, not a silent
+guess).** Bounded Scope item 2 asked for `msp_memory_links_create` to be
+vault-scoped through the established `vault-scope-guard.mjs` +
+`isVaultAccessibleTo` caller-ownership pattern. API-009 §4.9's documented
+request shape (`{from_entity_id, to_entity_id, link_type}`) carries no
+caller identity, exactly like the six `msp_memory_*` tools WP-15 built and
+`msp_memory_decay_tick` WP-16 added -- there is no `isVaultAccessibleTo`
+boolean this wire shape can support. This packet still reuses
+`assertVaultScope`/`VaultScopeDeniedError` (the guard mechanism itself),
+just computed from an endpoint-consistency boolean (`fromEntity.vault_id ===
+toEntity.vault_id`) rather than caller ownership -- the actual, testable
+security property AC-01 asks for (a link may not cross a vault boundary),
+proven end-to-end in `test/memory-links-vault-scoping.security.mjs`.
+
+**Deviation 2 (a doc-accuracy correction, recorded not silently absorbed).**
+`docs/lld/LLD-GoVibe-MCP-Tools.md` §3.15's original planning-stage table
+claimed `govibe.memory.select` would call `msp_memory_get` and that
+`memory-service.mjs` would call `msp_memory_upsert`/`list`/`history`.
+Neither happened, and neither is a gap: API-009 §2's own tool-list comment
+is explicit that `govibe.memory.select` "records a UI selection, no MSP
+call", and this packet's own Bounded Scope item 3 lists only
+search/forget/decay_tick as the tools this phase's bridge calls. The LLD's
+false "called by" claims for those four tools were corrected in the same
+change (§3.15), not left stale; those four `msp_memory_*` tools remain
+`planned` with no caller. `msp_memory_links_list`/`links_create` are marked
+implemented in `packages/msp-runtime` with no GoVibe-facing wrapper in this
+phase -- API-009 §2's `govibe.memory.*` list has no links equivalent, and
+Explicit Exclusions rule out any traversal/graph consumption of `links` in
+this packet regardless.
+
+**Testing.** `packages/msp-runtime`'s baseline was re-measured before any
+edit: 154 vitest + 28 `node --test` = 182/182 (WP-16's closed baseline,
+reproduced). After this packet: 164 vitest + 30 `node --test` = **194/194
+passing**, zero regressions. Three pre-existing test files required the same
+mechanical migration-count bump WP-16 already established as normal
+(`test/migrate.test.mjs`, `test/retrieval-fts-sync.test.mjs`,
+`test/vault-scoping.test.mjs`: 5 -> 6 applied migrations). New test files:
+`test/links.test.mjs` (domain-level, in-process), `test/memory-links.test.mjs`
+(AC-01, real stdio process), `test/memory-links-vault-scoping.security.mjs`
+(AC-01 cross-vault rejection, `node --test`). At the repo root:
+`scripts/mcp/msp-memory-contracts.test.mjs` (AC-02, fake-client `gks:`
+rejection), `scripts/mcp/runtime/memory-service.test.mjs` (server-side caps,
+AC-05, plus end-to-end `GovibeRuntime.handleMissionCommand` router wiring),
+`scripts/mcp/sidecar-memory-bridge.test.mjs` (AC-03, real `startSidecarServer`
++ real WebSocket client -- both a well-formed event surviving the gate and a
+malformed/oversized one being silently dropped), and additions to
+`src/missionProtocol.test.ts` (unit-level command/event validation) and
+`src/mission/snapshot-reducer.test.ts` (AC-06: reduction for all four new
+event types, plus the explicit merge-fallback assertion that a patch
+omitting `memory` does not drop it). Root suite: 69 files, 553 passed + 1
+skipped (up from 64 files / 518 passed + 1 skipped before this packet), zero
+regressions.
+
+**Gates (AC-08/AC-09).** Root `npm run lint` (tsc --noEmit): PASS. Root
+`npm run build`: PASS. Root `npm test`: PASS. `npm run docs:validate`: PASS.
+`npm run diff:check`: PASS (this Execution closure section plus the LLD/
+registry sync are the accompanying docs change for the code diff).
+
+**AC-10 / independent review, honestly stated.** As with WP-16, this packet
+was executed and self-verified (all gates re-run from a clean state, as
+recorded above) within a single continuous session -- no *separate*
+dispatching/final-gate session independently reproduced these results before
+this record was written. `execution_complete` is therefore left `false` by
+this commit; this report is presented to the owner in chat for review, and a
+follow-up commit sets `execution_complete: true` only after that review and
+explicit owner approval are recorded, per AC-10.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.2+draft | 2026-08-06 | Claude (WP-17 execution session) | Executed Bounded Scope items 1-6: `packages/msp-runtime` links table + tools; `scripts/mcp/msp-memory-contracts.mjs` + `memory-service.mjs` + `memory-surface.mjs` GoVibe-side bridge; `packages/mission-protocol` allow-list; `src/mission/domain.ts` + `snapshot-reducer.ts` frontend data layer; `docs/lld/LLD-GoVibe-MCP-Tools.md` synchronized. 164 vitest + 30 `node --test` = 194/194 passing in `packages/msp-runtime` (baseline 182/182 reproduced first); root suite 69 files / 553 passed + 1 skipped (up from 64/518+1). Two documented Deviations: `msp_memory_links_create`'s vault check reuses `assertVaultScope` with an endpoint-consistency boolean rather than caller-ownership (same wire-shape gap WP-15/WP-16 recorded); the LLD's MSP-side table's false "called by" claims for `msp_memory_get`/`upsert`/`list`/`history` were corrected, not left stale. Root lint/build/test/docs:validate/diff:check gates all pass. `execution_complete` intentionally left `false` -- single-session self-verified execution, not the arm's-length dispatching/final-gate-session pattern; AC-10 remains to be closed. |
 | 0.2.1+draft | 2026-08-06 | Boss (CEO) | Owner-authorized for execution in chat ("เริ่ม WP-17"), with WP-16 already `execution_complete: true` (its precondition), closed by explicit owner approval on 2026-08-05. `execution_authorized` set to `true`, `approval_recorded_at` set; `execution_complete` remains `false` pending independent post-execution verification. Authorization recorded before dispatch, per the process WP-14 established. |
 | 0.2.0+draft | 2026-08-05 | Boss (CEO) / Claude (final-gate session) | **Split applied, owner-directed.** Re-scoped this packet to Phase 5 Stage A (data only): runtime links, the GoVibe-side bridge, the mission-protocol allow-list, and the `MissionSnapshot` type plus reducer/merge wiring. All Mission Control UI moved to the new `WP-18-Persistent-Memory-MSP-Runtime-Phase-5-Stage-B`. The split boundary was refined from the original marking: the snapshot type and reducer wiring stay in Stage A, because `mergeMissionSnapshot` silently drops fields it does not explicitly carry — shipping the emit path without the merge path would produce a bridge that appears to work and delivers nothing. Complexity lowered C-4 -> C-3 accordingly; risk stays HIGH (first packet to modify GoVibe's own runtime, protocol, and frontend). |
 | 0.1.0+draft | 2026-08-05 | Claude (final-gate session) | Proposed WP-17 covering all of Phase 5 (links, bridge, and Domain E dashboard) with a pre-marked Stage A / Stage B split recommendation for the owner to decide at authorization. Recorded the ground-truth state of the runtime package, GoVibe's MCP server patterns, and the frontend/protocol gate as of 2026-08-05, including the silent-drop failure mode of `packages/mission-protocol/index.js` and the `eventBytes` cap. |

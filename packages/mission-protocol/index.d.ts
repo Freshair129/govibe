@@ -21,7 +21,11 @@ export type MissionCommand =
   | { type: "masterplan.preview"; sourcePath: string }
   | { type: "workspace.scan"; workspacePath: string; deep: boolean; runId?: string }
   | { type: "reactor.run"; profile: string }
-  | { type: "file.save"; hash: string; data: number[] | ArrayBuffer; meta: Record<string, unknown> };
+  | { type: "file.save"; hash: string; data: number[] | ArrayBuffer; meta: Record<string, unknown> }
+  | { type: "memory.search"; vaultId: string; query: string; mode?: "hybrid" | "fts" | "vector"; limit?: number }
+  | { type: "memory.select"; entityId: string | null }
+  | { type: "memory.forget"; entityId: string; reason: string }
+  | { type: "memory.decay.run"; vaultId: string; dryRun?: boolean };
 
 export type MissionSnapshot = {
   connectionState: "disconnected" | "connecting" | "connected" | "error";
@@ -42,6 +46,7 @@ export type MissionSnapshot = {
   roadmapSources?: unknown[];
   workflowRuns?: unknown[];
   providers?: unknown[];
+  memory?: Record<string, unknown>;
   [forwardCompatibleField: string]: unknown;
 };
 
@@ -59,6 +64,10 @@ export type MissionEvent =
   | { type: "roadmap.handoff"; handoff: Record<string, unknown> & { taskId: string } }
   | { type: "roadmap.verification"; verification: Record<string, unknown> & { taskId: string } }
   | { type: "workflow.run"; run: Record<string, unknown> & { runId: string } }
+  | { type: "memory.search.result"; result: Record<string, unknown> & { query: string } }
+  | { type: "memory.selection"; entityId: string | null }
+  | { type: "memory.forgotten"; entityId: string; vaultId: string | null }
+  | { type: "memory.decay.result"; result: Record<string, unknown> & { vaultId: string } }
   | { type: "command.ack"; commandId: string; ok: boolean; message?: string; snapshot?: Partial<MissionSnapshot> };
 
 export type CommandResponse = {
