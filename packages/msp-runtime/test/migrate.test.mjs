@@ -93,11 +93,11 @@ describe("db/migrate (AC-03)", () => {
     expect(() => runMigrations(db, migrationsDir)).toThrow(/downgrade|newer than the newest/i);
   });
 
-  it("applies the real packaged migrations (0001_init.sql + 0002_phase2.sql, WP-13) without error", () => {
+  it("applies the real packaged migrations (0001_init.sql + 0002_phase2.sql + 0003_vault_scoping.sql, WP-14) without error", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     const result = runMigrations(db, migrationsDir);
-    expect(result.appliedCount).toBe(2);
+    expect(result.appliedCount).toBe(3);
     const tables = db
       .prepare(
         "SELECT name FROM sqlite_master WHERE type='table' AND name IN " +
@@ -105,5 +105,22 @@ describe("db/migrate (AC-03)", () => {
       )
       .all();
     expect(tables).toHaveLength(8);
+
+    // WP-14 AC-01/AC-05: the new columns this migration adds are present.
+    const entityCols = db.prepare("PRAGMA table_info(entities)").all().map((col) => col.name);
+    expect(entityCols).toContain("vault_id");
+    const promotionCols = db.prepare("PRAGMA table_info(promotions)").all().map((col) => col.name);
+    expect(promotionCols).toContain("vault_id");
+    const vaultCols = db.prepare("PRAGMA table_info(vaults)").all().map((col) => col.name);
+    expect(vaultCols).toContain("role");
+  });
+
+  it("re-applying 0003_vault_scoping.sql's migrations directory a second time is a no-op (AC-01: migration 0003 applies idempotently)", () => {
+    const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
+    const db = freshDb();
+    runMigrations(db, migrationsDir);
+    const second = runMigrations(db, migrationsDir);
+    expect(second.appliedCount).toBe(0);
+    expect(second.currentVersion).toBe(3);
   });
 });

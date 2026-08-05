@@ -120,6 +120,33 @@ describe("packages/msp-runtime dependency boundaries (AC-06)", () => {
     }
   });
 
+  // WP-14 AC-06: contracts/vault-scope-guard.mjs backs the new
+  // vault_scope_denied enforcement (AC-04). Per WP-14 Bounded Scope item 4's
+  // layering decision, contracts/ stays decoupled from
+  // domain/vault-registry.mjs -- the actual mount-ownership lookup runs in
+  // transport/handlers/vault-handlers.mjs (which is unrestricted in what it
+  // may import from domain/), and only the resulting plain boolean crosses
+  // into contracts/vault-scope-guard.mjs's assertVaultScope(). The generic
+  // "contracts/ may only import domain/ids.mjs, domain/errors.mjs, or other
+  // contracts/ files" test above already enforces this for every file under
+  // contracts/, including this new one; this test adds an explicit,
+  // named assertion so a future edit that widens contracts/'s allowed-
+  // imports set (rather than relying solely on the generic sweep) is still
+  // caught with a specific, readable failure message.
+  it("contracts/vault-scope-guard.mjs exists and does not import domain/vault-registry.mjs directly (WP-14 AC-04/AC-06)", () => {
+    const guardFile = path.join(srcRoot, "contracts", "vault-scope-guard.mjs");
+    expect(existsSync(guardFile), "contracts/vault-scope-guard.mjs must exist (WP-14 Bounded Scope item 4)").toBe(true);
+    const specifiers = relativeImportSpecifiers(readFileSync(guardFile, "utf8"));
+    const vaultRegistryFile = path.join(srcRoot, "domain", "vault-registry.mjs");
+    for (const specifier of specifiers) {
+      const resolved = resolveSpecifier(guardFile, specifier);
+      expect(
+        resolved,
+        "contracts/vault-scope-guard.mjs must never import domain/vault-registry.mjs directly -- it receives the mount-ownership boolean as a plain argument from transport/handlers/*.mjs instead",
+      ).not.toBe(vaultRegistryFile);
+    }
+  });
+
   it("transport/ may import db/, domain/, contracts/ (and other transport/ files)", () => {
     const transportDir = path.join(srcRoot, "transport");
     const dbDir = path.join(srcRoot, "db");
