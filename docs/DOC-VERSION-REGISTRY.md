@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.15+draft"
-updated: "2026-08-05"
+version: "0.3.16+draft"
+updated: "2026-08-06"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -32,7 +32,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.15+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.16+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -54,7 +54,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Change Request | `CR-2026-08-04-PERSISTENT-MEMORY-MSP-RUNTIME` | `0.2.1+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md` |
 | Work Packet | `WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-12-Persistent-Memory-MSP-Runtime-Phase-0-1.md` |
 | Work Packet | `WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-13-Persistent-Memory-MSP-Runtime-Phase-2.md` |
-| Work Packet | `WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-14-Vault-Scoping-Msp-Runtime-Entities.md` |
+| Work Packet | `WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES` | `0.1.3+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-14-Vault-Scoping-Msp-Runtime-Entities.md` |
 | Work Packet | `WP-15-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-3` | `0.1.1+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-15-Persistent-Memory-MSP-Runtime-Phase-3.md` |
 | Work Packet | `WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-16-Persistent-Memory-MSP-Runtime-Phase-4.md` |
 | Work Packet | `WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A` | `0.2.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-17-Persistent-Memory-MSP-Runtime-Phase-5-Stage-A.md` |
@@ -219,6 +219,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.16+draft | 2026-08-06 | Claude (CI-fix session) | Synchronized WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES to `0.1.3+draft` (post-closure CI fix, owner-directed: `--test-concurrency=1` added to `test:security` scripts; a two-process migration race in this packet's own `test/shared-scope-fail-closed.security.mjs` sequenced). Fixes PR #118's 15-minute `verify` hang. `execution_complete` was already `true` and is unaffected. No document status changed to `approved`/`accepted`/`candidate` by this row. |
 | 0.3.15+draft | 2026-08-05 | Boss (CEO) | Synchronized WP-15-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-3 to `0.1.1+draft` (`execution_authorized: true`, `approval_recorded_at` set). Owner authorized execution in chat, in the resuming session, after WP-14 was committed to `feat/wp-14-vault-scoping-msp-runtime` (commit `30ee737`) and after reviewing this packet's Ground truth, scope, and risk framing. `execution_complete` remains `false` pending independent post-execution verification. No document status changed to `approved`/`accepted`/`candidate` by this row. |
 | 0.3.14+draft | 2026-08-05 | Boss (CEO) / Claude (final-gate session) | **Owner-directed Phase 5 split applied.** Re-registered WP-17 as `WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A` at `0.2.0+draft` (data only: runtime links, GoVibe-side bridge, mission-protocol allow-list, `MissionSnapshot` types and reducer wiring) and registered the new `WP-18-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-B` at `0.1.0+draft` (Mission Control Domain E presentation only). The combined Phase 5 packet file authored earlier the same day was removed, having never been authorized or executed. Split boundary refined from the original marking: the snapshot type and reducer wiring stay in Stage A, since `mergeMissionSnapshot` silently drops fields it does not explicitly carry. Both packets remain `execution_authorized: false`. No document status changed to approved/accepted/candidate by this row. |
 | 0.3.13+draft | 2026-08-05 | Claude (final-gate session) | Synchronized CR-2026-08-04-PERSISTENT-MEMORY-MSP-RUNTIME to `0.2.0+draft` (Work packet index added — the entry point for a resuming session). Registered the three remaining persistent-memory MSP runtime work packets as a handoff set for a future session: WP-15 (Phase 3, hybrid retrieval — FTS5/bge-m3/RRF plus API-009 §4.1-4.6 entity CRUD and search), WP-16 (Phase 4, Ebbinghaus decay lifecycle, caller-triggered only), WP-17 (Phase 5, links + GoVibe-side bridge + Mission Control Domain E, with a pre-marked Stage A/Stage B split recommendation). Each records the verified ground-truth state of `packages/msp-runtime` and its GoVibe-side integration points as of 2026-08-05 so a session with no prior context can execute them. All three are `execution_authorized: false` pending owner authorization, which must precede execution per the process correction WP-14 established. No document status changed to approved/accepted/candidate by this row. |
