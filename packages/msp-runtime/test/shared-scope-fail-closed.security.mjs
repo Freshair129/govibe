@@ -137,7 +137,17 @@ test("AC-02: msp_context_resolve returns shared_vault_refs: [] across repeated c
 
 test("AC-03: msp_knowledge_promote always responds isError:true, reason gks_provider_unconfigured, never a fabricated gks: success", async () => {
   const { dbPath, cleanup } = tempDbPath();
-  const runtime = spawnRuntime(dbPath);
+  // createMspStdioCaller (spawnRuntime) and rawToolCall's own spawn() each
+  // start a child process eagerly, and each child independently runs
+  // db/migrate.mjs's runMigrations() against MSP_DB_PATH on startup, before
+  // the transport ever accepts a request. Against a brand-new, empty dbPath,
+  // two such processes started concurrently race two independent
+  // connections' schema_migrations reads/writes -- observed in CI as
+  // "SqliteError: duplicate column name: role" (0003_vault_scoping.sql's
+  // ALTER TABLE, applied twice). Fixed here by not spawning the second
+  // (runtime) process until rawToolCall's ephemeral one has fully exited,
+  // so the two processes' migration runs are strictly sequential, never
+  // concurrent, against this shared fresh file.
   try {
     const raw = await rawToolCall(dbPath, "msp_knowledge_promote", {
       schema_version: "govibe-knowledge-candidate/v1",
@@ -151,19 +161,23 @@ test("AC-03: msp_knowledge_promote always responds isError:true, reason gks_prov
     assert.match(raw.structuredContent.message, /gks_provider_unconfigured/);
     assert.equal(JSON.stringify(raw).toLowerCase().includes("gks:"), false);
 
-    await assert.rejects(
-      runtime.client.submitKnowledgeCandidate({
-        schema_version: "govibe-knowledge-candidate/v1",
-        idempotency_key: "kc-sec-2",
-        run_id: "run-sec",
-        stage: 1,
-        source_snapshot_hash: "a".repeat(64),
-        provenance_ref: "msp:proof/sec-2",
-      }),
-      /gks_provider_unconfigured/,
-    );
+    const runtime = spawnRuntime(dbPath);
+    try {
+      await assert.rejects(
+        runtime.client.submitKnowledgeCandidate({
+          schema_version: "govibe-knowledge-candidate/v1",
+          idempotency_key: "kc-sec-2",
+          run_id: "run-sec",
+          stage: 1,
+          source_snapshot_hash: "a".repeat(64),
+          provenance_ref: "msp:proof/sec-2",
+        }),
+        /gks_provider_unconfigured/,
+      );
+    } finally {
+      runtime.call.close();
+    }
   } finally {
-    runtime.call.close();
     cleanup();
   }
 });
