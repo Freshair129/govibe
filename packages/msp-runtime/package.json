@@ -9,7 +9,7 @@
   },
   "scripts": {
     "test": "vitest run && npm run test:security",
-    "test:security": "node --test test/*.security.mjs"
+    "test:security": "node --test --test-concurrency=1 test/*.security.mjs"
   },
   "dependencies": {
     "better-sqlite3": "^11.10.0"
