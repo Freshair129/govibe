@@ -13,7 +13,7 @@
     "lint": "tsc --noEmit",
     "test": "vitest run && npm run test:security",
     "test:watch": "vitest",
-    "test:security": "node --test scripts/mcp/*.security.mjs packages/msp-runtime/test/*.security.mjs",
+    "test:security": "node --test --test-concurrency=1 scripts/mcp/*.security.mjs packages/msp-runtime/test/*.security.mjs",
     "e2e": "playwright test",
     "e2e:debug": "playwright test --debug",
     "e2e:headed": "playwright test --headed",
