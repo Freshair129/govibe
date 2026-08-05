@@ -2,7 +2,7 @@
 title: "WP-17: Persistent-Memory MSP Runtime — Phase 5 Stage A (Links + GoVibe Bridge)"
 doc_id: "WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A"
 status: "draft"
-version: "0.2.4+draft"
+version: "0.2.5+draft"
 updated: "2026-08-06"
 owner: "Boss (CEO)"
 proposal_author: "Claude (final-gate session)"
@@ -429,6 +429,32 @@ locally (3 consecutive clean runs) and re-verified through the exact CI
 command, `npm run test:security` (65/65 passing) plus the full `packages/msp-runtime`
 suite (194/194) and all other gates, before pushing.
 
+**Second post-PR CI finding: the broader concurrency issue, fixed.**
+Checking the rest of the WP-14-17 PR series after the fix above, PR #118
+(WP-14)'s `verify` job was found hung for the full 15-minute CI timeout --
+a *different*, broader instance of the same class of problem, independently
+diagnosed (but not fixed) by a concurrent session's own investigation (see
+`.brain/session/2026-08-06-msp-runtime-wp14-wp15-parallel-collision.md`,
+not part of this packet). Root cause: root `npm run test:security` runs
+`node --test scripts/mcp/*.security.mjs packages/msp-runtime/test/*.security.mjs`
+-- 10 files, 8 of which spawn one or more real MSP child processes over
+stdio each. `node --test`'s default file-level concurrency runs several of
+these files in parallel; under a CI runner's constrained CPU, enough
+concurrently-spawned real child processes (each independently opening
+SQLite, running migrations, and completing a JSON-RPC handshake) contend for
+scheduling and can miss a client's 10-second request timeout on
+`initialize` -- nondeterministically (PR #119/#120/#121 all passed `verify`
+on the same code path; only #118 happened to hit it), which is why this
+class of failure reads as CI flake rather than a consistent break. Fixed by
+adding `--test-concurrency=1` to both the root `test:security` script and
+`packages/msp-runtime`'s own (for the same reason, standalone), fully
+serializing these files' execution rather than tuning concurrency down to a
+still-nondeterministic middle value. Verified locally: full serial run is
+~23s (root) / ~22s (`packages/msp-runtime`), both 65/65 and 30/30 passing
+respectively -- trivially inside the CI job's 15-minute budget, trading a
+few seconds of wall-clock time for eliminating the contention class of
+failure entirely rather than reducing its odds.
+
 **AC-10 / independent review, honestly stated.** As with WP-16, this packet
 was executed and self-verified (all gates re-run from a clean state, as
 recorded above) within a single continuous session -- no *separate*
@@ -447,6 +473,7 @@ on a claim that a second session independently reproduced the results.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.5+draft | 2026-08-06 | Claude (CI-fix session) | Post-closure CI fix #2, owner-directed ("Fix the concurrency issue properly"): PR #118 (WP-14)'s `verify` job was found hung for the full 15-minute timeout -- root `npm run test:security` runs 10 `*.security.mjs` files, 8 spawning real MSP child processes, with `node --test`'s default file-level concurrency letting several run in parallel; under CI's constrained CPU, contention can push a real child process's `initialize` handshake past its 10s client timeout, nondeterministically (only #118 hit it; #119/#120/#121 all passed the same code path). Fixed by adding `--test-concurrency=1` to both root `package.json` and `packages/msp-runtime/package.json`'s `test:security` scripts, fully serializing rather than tuning down to a still-nondeterministic value. Verified locally: ~23s/~22s full serial runtime, 65/65 and 30/30 passing, trivially inside the 15-minute CI budget. See Execution closure's second "Post-PR CI finding" for the full record. `execution_complete` was already `true`; this row does not reopen it. |
 | 0.2.4+draft | 2026-08-06 | Claude (CI-fix session) | Post-closure CI fix: PR #121's P0 Security CI `verify` job failed once on `test/shared-scope-fail-closed.security.mjs`'s WP-13-authored "AC-03: msp_knowledge_promote..." test (`SqliteError: duplicate column name: role`) -- a pre-existing two-process concurrent-migration race against a shared fresh `dbPath`, unrelated to this packet's own code but plausibly surfaced by this packet's sixth migration file widening the race window. Fixed by sequencing the test's two spawned processes (see Execution closure's "Post-PR CI finding" for the full record); reproduced clean 3x locally and re-verified via `npm run test:security` (65/65) plus the full gate sweep before push. `execution_complete` was already `true`; this row does not reopen it. |
 | 0.2.3+draft | 2026-08-06 | Boss (CEO) | AC-10 closed: `execution_complete` set `true` after the owner reviewed this packet's Execution closure section (194/194 msp-runtime tests, 553+1 root tests, all gates green, two documented Deviations) presented in chat and explicitly approved closure ("ปิดงานเลย ตั้ง execution_complete: true"). Recorded honestly: this is owner review of a single-session self-verified execution, not a separate dispatching/final-gate session independently reproducing the results the way WP-14/WP-15 closed -- see the Execution closure section's AC-10 note for the full record. |
 | 0.2.2+draft | 2026-08-06 | Claude (WP-17 execution session) | Executed Bounded Scope items 1-6: `packages/msp-runtime` links table + tools; `scripts/mcp/msp-memory-contracts.mjs` + `memory-service.mjs` + `memory-surface.mjs` GoVibe-side bridge; `packages/mission-protocol` allow-list; `src/mission/domain.ts` + `snapshot-reducer.ts` frontend data layer; `docs/lld/LLD-GoVibe-MCP-Tools.md` synchronized. 164 vitest + 30 `node --test` = 194/194 passing in `packages/msp-runtime` (baseline 182/182 reproduced first); root suite 69 files / 553 passed + 1 skipped (up from 64/518+1). Two documented Deviations: `msp_memory_links_create`'s vault check reuses `assertVaultScope` with an endpoint-consistency boolean rather than caller-ownership (same wire-shape gap WP-15/WP-16 recorded); the LLD's MSP-side table's false "called by" claims for `msp_memory_get`/`upsert`/`list`/`history` were corrected, not left stale. Root lint/build/test/docs:validate/diff:check gates all pass. `execution_complete` intentionally left `false` -- single-session self-verified execution, not the arm's-length dispatching/final-gate-session pattern; AC-10 remains to be closed. |
