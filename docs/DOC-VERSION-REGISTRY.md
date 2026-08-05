@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.18+draft"
+version: "0.3.19+draft"
 updated: "2026-08-05"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -32,7 +32,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.18+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.19+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -56,7 +56,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Work Packet | `WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-13-Persistent-Memory-MSP-Runtime-Phase-2.md` |
 | Work Packet | `WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-14-Vault-Scoping-Msp-Runtime-Entities.md` |
 | Work Packet | `WP-15-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-3` | `0.1.3+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-15-Persistent-Memory-MSP-Runtime-Phase-3.md` |
-| Work Packet | `WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4` | `0.1.1+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-16-Persistent-Memory-MSP-Runtime-Phase-4.md` |
+| Work Packet | `WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-16-Persistent-Memory-MSP-Runtime-Phase-4.md` |
 | Work Packet | `WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A` | `0.2.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-17-Persistent-Memory-MSP-Runtime-Phase-5-Stage-A.md` |
 | Work Packet | `WP-18-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-B` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-18-Persistent-Memory-MSP-Runtime-Phase-5-Stage-B.md` |
 | Change Request | `CR-2026-08-03-DOCUMENT-IA-KNOWLEDGE-GRAPH-READINESS` | `0.3.0+draft` | draft | Boss (Product Authority) | `docs/change-requests/CR-2026-08-03-Document-IA-and-Knowledge-Graph-Readiness.md` |
@@ -219,6 +219,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.19+draft | 2026-08-05 | Claude (WP-16 execution session) | Synchronized WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4 to `0.1.2+draft` (Execution closure recorded: Bounded Scope items 1-6 built -- migration `0005_decay_lifecycle.sql`, `domain/decay-engine.mjs`, reinforcement-on-access, `msp_memory_decay_tick`, default-recall archived-exclusion; 154 vitest + 28 `node --test` = 182/182 passing; two Deviations recorded, both mirroring WP-15's own caller-identity-gap precedent; root lint/build/test/docs:validate/diff:check gates pass). `execution_authorized`/`approval_recorded_at`/`status` frontmatter fields left untouched by this row, per this packet's own Ground rule 3 -- `execution_complete` remains `false` pending independent review and owner approval (AC-10). No document status changed to `approved`/`accepted`/`candidate` by this row. |
 | 0.3.18+draft | 2026-08-05 | Boss (CEO) | Synchronized WP-16-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-4 to `0.1.1+draft` (`execution_authorized: true`, `approval_recorded_at` set). Owner authorized execution in chat ("เริ่ม WP-16"), with WP-15 already `execution_complete: true` (its precondition) on `feat/wp-15-msp-runtime-phase-3` (commit `9bb5a6a`), after the resuming session presented this packet's Ground truth, Bounded scope, and risk framing. `execution_complete` remains `false` pending independent post-execution verification. No document status changed to `approved`/`accepted`/`candidate` by this row. |
 | 0.3.17+draft | 2026-08-05 | Boss (CEO) | Synchronized WP-15-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-3 to `0.1.3+draft` (`execution_complete: true`). The dispatching/final-gate session independently reproduced the 158/158 test result (including a second full run with `OLLAMA_BASE_URL` forced unreachable), independently re-ran `validate-docs.mjs`/`diff-check.mjs`, and independently confirmed the HIGH-severity caller-identity deviation by reading API-009 §4.1-4.6 directly rather than trusting the executing session's report. Presented to owner in chat with that deviation explicitly flagged; owner approved closure and elected to leave the caller-identity/authorization gap as a documented gap for a future work packet. No document status changed to `approved`/`accepted`/`candidate` by this row. |
 | 0.3.16+draft | 2026-08-05 | Claude (WP-15 execution session) | Synchronized WP-15-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-3 to `0.1.2+draft` (Execution closure recorded: Bounded Scope items 1-8 built — migration `0004_retrieval.sql`, `retrieval/{fts,vector,fusion,retrieval-service}.mjs`, `transport/handlers/memory-handlers.mjs`'s six `msp_memory_*` tools, embedding-on-write, extended dependency-boundary test; 132 vitest + 26 `node --test` = 158/158 passing; five Deviations recorded including a HIGH-severity precondition gap — API-009's memory-tool wire shapes carry no caller-identity field, so Bounded Scope item 6's caller-ownership `vault_scope_denied` pattern could not be built as literally instructed, and per-request data-isolation scoping was built and proven instead). `execution_authorized`/`execution_complete`/`approval_recorded_at`/`status` frontmatter fields left untouched by this row, per this packet's own Ground rule 3 — `execution_complete` remains `false` pending the dispatching/final-gate session's independent verification. No document status changed to `approved`/`accepted`/`candidate` by this row. |

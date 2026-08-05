@@ -203,7 +203,7 @@ export function createVectorClient({
            JOIN entities e ON e.entity_id = em.entity_id
            WHERE em.collection = ?
              AND e.vault_id IN (${vaultPlaceholders})
-             AND e.lifecycle_state != 'forgotten'`,
+             AND e.lifecycle_state NOT IN ('archived', 'forgotten')`,
         )
         .all(collection, ...vaultIds);
 

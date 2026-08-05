@@ -34,8 +34,19 @@ export function createRetrievalService({ db, vectorClient }) {
     throw new TypeError("createRetrievalService requires a vectorClient with embed() and vectorSearch().");
   }
 
+  // WP-16 Bounded Scope item 6: archived entities are excluded from default
+  // msp_memory_search results, same as forgotten -- this exact-match
+  // short-circuit and the FTS/vector legs below (retrieval/fts.mjs,
+  // retrieval/vector.mjs) all apply the same NOT IN ('archived', 'forgotten')
+  // exclusion. Unlike msp_memory_list, API-009 SS4.6's msp_memory_search
+  // request carries no lifecycle_state override field -- inventing one would
+  // widen the wire shape beyond what's documented (the same restraint
+  // memory-handlers.mjs's header comment already applies to caller
+  // identity), so search has no explicit-filter escape hatch; archived
+  // results always remain reachable through msp_memory_list's explicit
+  // lifecycle_state filter or msp_memory_history.
   const selectExactByKey = db.prepare(
-    "SELECT * FROM entities WHERE vault_id = ? AND key = ? AND lifecycle_state != 'forgotten'",
+    "SELECT * FROM entities WHERE vault_id = ? AND key = ? AND lifecycle_state NOT IN ('archived', 'forgotten')",
   );
 
   function findExactMatch(vaultIds, query) {

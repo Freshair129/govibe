@@ -65,7 +65,7 @@ export function ftsSearch(db, { query, vaultIds, category = null, limit = 20 } =
        JOIN entities e ON e.entity_id = f.entity_id
        WHERE entities_fts MATCH ?
          AND f.vault_id IN (${vaultPlaceholders})
-         AND e.lifecycle_state != 'forgotten'
+         AND e.lifecycle_state NOT IN ('archived', 'forgotten')
          ${categoryClause}
        ORDER BY rank
        LIMIT ?`,

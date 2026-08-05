@@ -37,6 +37,7 @@
 // tools' wire shapes can layer real isVaultAccessibleTo-based
 // vault_scope_denied enforcement on top of this without changing the data
 // scoping already enforced here.
+import { runDecayTick, touch } from "../../domain/decay-engine.mjs";
 import { MemoryNotFoundError, ValidationError } from "../../contracts/errors.mjs";
 import { vectorToBlob } from "../../retrieval/vector.mjs";
 
@@ -181,7 +182,15 @@ export function createMemoryHandlers({ db, entityStore, vaultRegistry, journal, 
             (asOfValidAt || asOfRecordedAt ? " at the requested point in time." : "."),
         );
       }
-      return { entity: toWireEntity(entity), point_in_time: Boolean(asOfValidAt || asOfRecordedAt) };
+      const pointInTime = Boolean(asOfValidAt || asOfRecordedAt);
+      // WP-16 Bounded Scope item 3: reinforcement on access. Only a
+      // current-state read counts as "using" this memory right now -- a
+      // point-in-time/historical read is a forensic/audit lookup, not a
+      // present recall, so it does not reinforce decay_score.
+      if (!pointInTime) {
+        touch(db, entity.entity_id, new Date().toISOString());
+      }
+      return { entity: toWireEntity(entity), point_in_time: pointInTime };
     },
 
     // API-009 SS4.3. Request: {vault_id, category, lifecycle_state, page_size, page_token}.
@@ -290,12 +299,58 @@ export function createMemoryHandlers({ db, entityStore, vaultRegistry, journal, 
 
       const result = await retrievalService.search({ vaultIds: [vaultId], query, mode, limit });
 
+      // WP-16 Bounded Scope item 3: reinforcement on access -- every search
+      // hit counts as a real recall of that memory, so every hit is touched,
+      // not just the top one.
+      const now = new Date().toISOString();
+      for (const hit of result.hits) {
+        touch(db, hit.entity.entity_id, now);
+      }
+
       return {
         hits: result.hits.map((hit) => ({ entity: toWireEntity(hit.entity), score: hit.score, matched_by: hit.matchedBy })),
         layers_used: result.layersUsed,
         vector_available: result.vectorAvailable,
         searchMode: result.searchMode,
       };
+    },
+
+    // API-009 SS4.7 (WP-16 Bounded Scope item 5). Request: {vault_id, dry_run}.
+    // Vault-scoping note (mirrors this file's header comment for the other
+    // six msp_memory_* tools): API-009 SS4.7's documented request shape
+    // carries no caller-identity field either, so -- for the same reason
+    // this file does not call contracts/vault-scope-guard.mjs's
+    // assertVaultScope for any of the tools above -- this handler does not
+    // fabricate one for decay_tick. An unknown vault_id fails closed as
+    // not_found (requireKnownVault, same as every other tool here); the
+    // actual security property AC-06 requires (a sweep scoped to vault A
+    // never alters vault B) is enforced by domain/decay-engine.mjs's
+    // runDecayTick() itself, which only ever selects/updates rows matching
+    // the given vaultId -- strict per-request data scoping, not a
+    // caller-ownership check this wire contract cannot support.
+    async msp_memory_decay_tick(args = {}) {
+      const vaultId = requireString(args.vault_id, "vault_id");
+      requireKnownVault(vaultId);
+      const dryRun = args.dry_run === true;
+      const actor = resolveActor(args);
+      const now = new Date().toISOString();
+
+      const { evaluated, transitioned } = runDecayTick(db, { vaultId, dryRun, now });
+
+      // API-009 SS6: "every mutating call (... decay_tick with
+      // dry_run: false ...) is recorded"; this packet's Bounded Scope item 5
+      // additionally requires a journal row for dry_run calls too (an
+      // operator asking "what would this do" is itself an auditable event).
+      journal.append({
+        actor,
+        toolName: "msp_memory_decay_tick",
+        ref: null,
+        workspaceId: null,
+        payload: { vault_id: vaultId, dry_run: dryRun, evaluated, transitioned_count: transitioned.length },
+        policyDecision: "allow",
+      });
+
+      return { evaluated, transitioned, dry_run: dryRun };
     },
   };
 }
