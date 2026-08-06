@@ -82,6 +82,19 @@ export function isMissionCommand(value) {
       && isBoundedString(value.hash, MISSION_PROTOCOL_LIMITS.idChars)
       && isFileData(value.data)
       && isFileSaveMetadata(value.meta);
+    case "memory.search": return hasOnlyKeys(value, ["type", "vaultId", "query", "mode", "limit"])
+      && isBoundedString(value.vaultId, MISSION_PROTOCOL_LIMITS.idChars)
+      && isBoundedString(value.query, MISSION_PROTOCOL_LIMITS.commandChars)
+      && (value.mode === undefined || ["hybrid", "fts", "vector"].includes(value.mode))
+      && (value.limit === undefined || (Number.isInteger(value.limit) && value.limit > 0 && value.limit <= MISSION_PROTOCOL_LIMITS.arrayItems));
+    case "memory.select": return hasOnlyKeys(value, ["type", "entityId"])
+      && (value.entityId === null || isBoundedString(value.entityId, MISSION_PROTOCOL_LIMITS.idChars));
+    case "memory.forget": return hasOnlyKeys(value, ["type", "entityId", "reason"])
+      && isBoundedString(value.entityId, MISSION_PROTOCOL_LIMITS.idChars)
+      && isBoundedString(value.reason, MISSION_PROTOCOL_LIMITS.commandChars);
+    case "memory.decay.run": return hasOnlyKeys(value, ["type", "vaultId", "dryRun"])
+      && isBoundedString(value.vaultId, MISSION_PROTOCOL_LIMITS.idChars)
+      && (value.dryRun === undefined || typeof value.dryRun === "boolean");
     default: return false;
   }
 }
@@ -116,6 +129,10 @@ export function isMissionEvent(value) {
     case "roadmap.handoff": return hasOnlyKeys(value, ["type", "handoff"]) && isBoundedRecord(value.handoff) && isBoundedString(value.handoff.taskId, MISSION_PROTOCOL_LIMITS.idChars);
     case "roadmap.verification": return hasOnlyKeys(value, ["type", "verification"]) && isBoundedRecord(value.verification) && isBoundedString(value.verification.taskId, MISSION_PROTOCOL_LIMITS.idChars);
     case "workflow.run": return hasOnlyKeys(value, ["type", "run"]) && isBoundedRecord(value.run) && isBoundedString(value.run.runId, MISSION_PROTOCOL_LIMITS.idChars);
+    case "memory.search.result": return hasOnlyKeys(value, ["type", "result"]) && isBoundedRecord(value.result) && isBoundedString(value.result.query, MISSION_PROTOCOL_LIMITS.commandChars);
+    case "memory.selection": return hasOnlyKeys(value, ["type", "entityId"]) && (value.entityId === null || isBoundedString(value.entityId, MISSION_PROTOCOL_LIMITS.idChars));
+    case "memory.forgotten": return hasOnlyKeys(value, ["type", "entityId", "vaultId"]) && isBoundedString(value.entityId, MISSION_PROTOCOL_LIMITS.idChars) && (value.vaultId === null || isBoundedString(value.vaultId, MISSION_PROTOCOL_LIMITS.idChars));
+    case "memory.decay.result": return hasOnlyKeys(value, ["type", "result"]) && isBoundedRecord(value.result) && isBoundedString(value.result.vaultId, MISSION_PROTOCOL_LIMITS.idChars);
     case "command.ack": return hasOnlyKeys(value, ["type", "commandId", "ok", "message", "snapshot"])
       && isBoundedString(value.commandId, MISSION_PROTOCOL_LIMITS.idChars)
       && typeof value.ok === "boolean"

@@ -2,8 +2,8 @@
 title: "CR: Persistent-Memory MSP Runtime"
 doc_id: "CR-2026-08-04-PERSISTENT-MEMORY-MSP-RUNTIME"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-08-04"
+version: "0.2.1+draft"
+updated: "2026-08-05"
 owner: "Boss (CEO)"
 source_of_truth: true
 proposal_author: "Claude (final-gate session)"
@@ -123,6 +123,35 @@ scoped to Phase 0 + Phase 1 — the foundational, highest-risk-if-wrong phases
 reviewed evidence; this CR records that sequencing but does not pre-author or
 pre-authorize WP-13 through WP-17.
 
+### Work packet index (added 2026-08-05)
+
+The sequencing above has since been realized. This table is the entry point
+for any session picking up this feature:
+
+| Packet (under `work-packets/`) | Covers | State |
+|---|---|---|
+| `WP-12-Persistent-Memory-MSP-Runtime-Phase-0-1.md` | Phase 0 (transport parity) + Phase 1 (storage foundation) | Execution complete, independently verified |
+| `WP-13-Persistent-Memory-MSP-Runtime-Phase-2.md` | Phase 2 (the eleven existing `msp_*` contract tools) | Execution complete, independently verified; a HIGH-severity technical deviation found at its gate review is remediated by WP-14 |
+| `WP-14-Vault-Scoping-Msp-Runtime-Entities.md` | Unplanned remediation: `entities.vault_id`, vault-scoped uniqueness, `vault_scope_denied` enforcement — closes a confirmed cross-agent Global-Private disclosure | Execution complete, independently verified |
+| `WP-15-Persistent-Memory-MSP-Runtime-Phase-3.md` | Phase 3 (hybrid retrieval) **plus** API-009 §4.1-4.6 entity CRUD and search — see that packet's recorded scope decision amending a forward guess in WP-13 | Proposed, **not authorized** |
+| `WP-16-Persistent-Memory-MSP-Runtime-Phase-4.md` | Phase 4 (Ebbinghaus decay lifecycle, caller-triggered only) | Proposed, **not authorized** |
+| `WP-17-Persistent-Memory-MSP-Runtime-Phase-5-Stage-A.md` | Phase 5 **Stage A** — data only: runtime links, the GoVibe-side bridge (typed client, memory-service, command routing, `govibe.memory.*` tools), the mission-protocol allow-list, and the `MissionSnapshot` memory slice with its reducer wiring. No UI. | Proposed, **not authorized** |
+| `WP-18-Persistent-Memory-MSP-Runtime-Phase-5-Stage-B.md` | Phase 5 **Stage B** — presentation only: Mission Control Domain E registration, views under `src/features/memory/`, styling, and reconciling SITE_MAP / DOMAIN_DETAILS from planned to delivered. Consumes Stage A's snapshot slice; adds no data path. | Proposed, **not authorized** |
+
+Two process points a resuming session must honor, both learned in this series
+and restated inside the packets themselves:
+
+1. **Authorization precedes execution.** WP-13's gate review found that its
+   implementing session executed first and then set its own
+   `execution_authorized` / `execution_complete` flags. WP-14 corrected the
+   sequence; WP-15 through WP-17 each restate the rule. An executing session
+   must never set its own authorization flags — owner authorization goes into
+   the packet's frontmatter *before* implementation is dispatched.
+2. **Packet number is not phase number.** WP-14 was spent on unplanned
+   security remediation and Phase 5 was split across WP-17 and WP-18, so the
+   two diverged in both directions. Read each packet's title and
+   `depends_on`, not its number.
+
 ## Explicit Exclusions
 
 This CR does not authorize, and no work packet under it may claim, any of the
@@ -241,4 +270,6 @@ is no runtime or code behavior to roll back because none was changed.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.1+draft | 2026-08-05 | Boss (CEO) | Recorded the owner-directed split of Phase 5 into WP-17 (Stage A, data: links, bridge, protocol, snapshot slice) and WP-18 (Stage B, presentation: Mission Control Domain E). Work packet index updated accordingly; the combined Phase 5 packet authored earlier the same day was removed, having never been authorized or executed. This row records the split only; it authorizes nothing. |
+| 0.2.0+draft | 2026-08-05 | Claude (final-gate session) | Added a Work packet index recording every packet under this CR and its real state: WP-12, WP-13, and WP-14 execution-complete and independently verified; WP-15, WP-16, and WP-17 proposed and awaiting owner authorization. Recorded the two process points a resuming session must honor (authorization precedes execution — the correction WP-14 made after WP-13's gate review; and packet number no longer equals phase number after WP-14 was spent on unplanned security remediation). This row records sequencing and state only; it authorizes nothing. |
 | 0.1.0+draft | 2026-08-04 | Claude (final-gate session) | Initial governance record for the persistent-memory MSP runtime: recorded the lead-decided architecture (ADR-027), scoped the six-phase delivery plan, authorized WP-12 (Phase 0 + Phase 1 only) as the first reviewable work packet, and recorded explicit exclusions including the cut Perseus Vault surface (graph traversal, multi-tenant ACL/RBAC, historical-version search, filesystem-path tool arguments). |

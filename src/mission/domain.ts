@@ -182,6 +182,56 @@ export type RoadmapSnapshot = TemporalVersion & {
   taskContainers?: TaskContainer[];
 };
 
+// WP-17 Phase 5 Stage A: data-layer types for the persistent-memory MSP
+// runtime bridge. No DomainId "E" and no ViewId are added here -- Stage B
+// (WP-18) owns navigation and presentation; this is data only, per this
+// packet's Explicit Exclusions.
+export type MissionMemoryEntitySummary = {
+  entityId: string;
+  vaultId: string | null;
+  category: string | null;
+  key: string | null;
+  bodyPreview: string;
+  epistemicState: string | null;
+  confidence: number | null;
+  lifecycleState: string | null;
+  decayScore: number | null;
+};
+
+export type MissionMemoryHit = {
+  entity: MissionMemoryEntitySummary;
+  score: number;
+  matchedBy: string[];
+};
+
+export type MissionMemorySearchResult = {
+  query: string;
+  vaultId: string;
+  hits: MissionMemoryHit[];
+  layersUsed: string[];
+  vectorAvailable: boolean;
+  searchMode: string;
+  updatedAt: string;
+};
+
+export type MissionMemoryDecayTransition = { entityId: string; from: string; to: string };
+
+export type MissionMemoryDecayResult = {
+  vaultId: string;
+  evaluated: number;
+  transitioned: MissionMemoryDecayTransition[];
+  dryRun: boolean;
+  updatedAt: string;
+};
+
+export type MissionMemorySnapshot = {
+  results: MissionMemoryHit[];
+  selectedEntityId: string | null;
+  lastQuery: string | null;
+  lastSearchedAt: string | null;
+  lastDecayResult: MissionMemoryDecayResult | null;
+};
+
 export type MissionScanStage = {
   stage: number;
   name: string;
@@ -222,6 +272,7 @@ export type MissionSnapshot = {
   roadmapSources?: RoadmapSourceRecord[];
   workflowRuns?: MissionWorkflowRun[];
   providers?: Array<{ id: string; available: boolean; capabilities: string[] }>;
+  memory?: MissionMemorySnapshot;
 };
 
 export type MissionEvent =
@@ -237,7 +288,11 @@ export type MissionEvent =
   | { type: "roadmap.assignment"; assignment: WorkflowAssignment }
   | { type: "roadmap.handoff"; handoff: WorkflowHandoff }
   | { type: "roadmap.verification"; verification: WorkflowVerification }
-  | { type: "workflow.run"; run: MissionWorkflowRun };
+  | { type: "workflow.run"; run: MissionWorkflowRun }
+  | { type: "memory.search.result"; result: MissionMemorySearchResult }
+  | { type: "memory.selection"; entityId: string | null }
+  | { type: "memory.forgotten"; entityId: string; vaultId: string | null }
+  | { type: "memory.decay.result"; result: MissionMemoryDecayResult };
 
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
@@ -246,4 +301,8 @@ export type MissionCommand =
   | { type: "masterplan.preview"; sourcePath: string }
   | { type: "workspace.scan"; workspacePath: string; deep: boolean; runId?: string }
   | { type: "reactor.run"; profile: string }
-  | { type: "file.save"; hash: string; data: ArrayBuffer; meta: Record<string, unknown> };
+  | { type: "file.save"; hash: string; data: ArrayBuffer; meta: Record<string, unknown> }
+  | { type: "memory.search"; vaultId: string; query: string; mode?: "hybrid" | "fts" | "vector"; limit?: number }
+  | { type: "memory.select"; entityId: string | null }
+  | { type: "memory.forget"; entityId: string; reason: string }
+  | { type: "memory.decay.run"; vaultId: string; dryRun?: boolean };

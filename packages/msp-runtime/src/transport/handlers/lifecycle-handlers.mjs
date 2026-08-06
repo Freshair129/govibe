@@ -45,19 +45,31 @@ function validateProofBatch(input) {
 }
 
 export function createLifecycleHandlers({ db, entityStore, vaultRegistry, journal }) {
-  const selectPromotion = db.prepare("SELECT * FROM promotions WHERE idempotency_key = ?");
+  // WP-14: promotions is re-keyed to UNIQUE(vault_id, idempotency_key) (was
+  // UNIQUE(idempotency_key) globally) -- this is the direct fix for the
+  // cross-agent Global-Private disclosure this packet exists to close (see
+  // migration 0003_vault_scoping.sql's header comment). The idempotency
+  // check and the promotions row itself are now both scoped by the calling
+  // agent's Global-Private vault_id, not by idempotency_key alone.
+  const selectPromotion = db.prepare("SELECT * FROM promotions WHERE vault_id = ? AND idempotency_key = ?");
   const insertPromotion = db.prepare(`
-    INSERT INTO promotions (promotion_ref, idempotency_key, source_memory_ref, target_scope, target_ref, policy_decision, source_hash, recorded_at)
-    VALUES (@promotion_ref, @idempotency_key, @source_memory_ref, @target_scope, @target_ref, @policy_decision, @source_hash, @recorded_at)
+    INSERT INTO promotions (promotion_ref, vault_id, idempotency_key, source_memory_ref, target_scope, target_ref, policy_decision, source_hash, recorded_at)
+    VALUES (@promotion_ref, @vault_id, @idempotency_key, @source_memory_ref, @target_scope, @target_ref, @policy_decision, @source_hash, @recorded_at)
   `);
 
-  // AC-04: the whole idempotency-check-then-write path runs inside one
-  // db.transaction() (better-sqlite3 nests entity-store's own internal
-  // transaction() call as a SAVEPOINT) so a retry with the same
-  // idempotency_key can never observe or create a duplicate entity, even
-  // under pipelined concurrent calls.
+  // AC-04 (WP-13) / AC-03 (WP-14): the whole vault-provision + idempotency-
+  // check + write path runs inside one db.transaction() (better-sqlite3
+  // nests entity-store's own internal transaction() call as a SAVEPOINT) so
+  // a retry with the same idempotency_key can never observe or create a
+  // duplicate entity, even under pipelined concurrent calls -- and, as of
+  // WP-14, so the vault_id used for the idempotency check and the vault_id
+  // used for the entity-store write are always the exact same value,
+  // computed once.
   const runGlobalPrivatePromotion = db.transaction(({ actor, agentId, idempotencyKey, sourceMemoryRef, targetScope, candidate, evidenceRefs, reason }) => {
-    const existing = selectPromotion.get(idempotencyKey);
+    const globalPrivateVault = vaultRegistry.provisionGlobalPrivateVault(agentId);
+    const vaultId = globalPrivateVault.vault_id;
+
+    const existing = selectPromotion.get(vaultId, idempotencyKey);
     if (existing) {
       return {
         promotion_ref: existing.promotion_ref,
@@ -67,9 +79,8 @@ export function createLifecycleHandlers({ db, entityStore, vaultRegistry, journa
       };
     }
 
-    vaultRegistry.provisionGlobalPrivateVault(agentId);
-
     const { entity } = entityStore.upsert({
+      vaultId,
       category: "memory-promotion",
       key: idempotencyKey,
       bodyJson: { candidate, sourceMemoryRef, evidenceRefs, reason },
@@ -77,9 +88,10 @@ export function createLifecycleHandlers({ db, entityStore, vaultRegistry, journa
       reason: "memory_promote:global_private",
     });
 
-    const promotion_ref = memoryPromotionRef(idempotencyKey);
+    const promotion_ref = memoryPromotionRef(vaultId, idempotencyKey);
     insertPromotion.run({
       promotion_ref,
+      vault_id: vaultId,
       idempotency_key: idempotencyKey,
       source_memory_ref: sourceMemoryRef,
       target_scope: targetScope,

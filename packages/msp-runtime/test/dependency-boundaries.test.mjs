@@ -75,15 +75,38 @@ describe("packages/msp-runtime dependency boundaries (AC-06)", () => {
     }
   });
 
-  it("retrieval/ does not exist yet (Phase 3 exclusion); fails closed if added without updating this test", () => {
+  // WP-15 Bounded Scope item 8: retrieval/ now exists (FTS5 + vector + RRF
+  // fusion + the retrieval-service façade). It may import db/ and domain/
+  // (mirroring transport/'s own allowed set minus contracts/ -- retrieval/
+  // has no need to shape/validate wire requests, that stays contracts/'s
+  // job) but never contracts/ or transport/. domain/ must still never
+  // import retrieval/ -- the belt-and-braces half of this test (previously
+  // the only half, when retrieval/ didn't exist yet) stays in force so this
+  // fails closed if a future edit violates the layering rule without
+  // updating this test.
+  it("retrieval/ may only import db/ and domain/ -- never contracts/ or transport/; domain/ never imports retrieval/", () => {
     const retrievalDir = path.join(srcRoot, "retrieval");
-
-    expect(existsSync(retrievalDir), "retrieval/ is a Phase 3 concern and must not exist yet").toBe(false);
-
-    // Belt-and-braces: even if retrieval/ appears in a future edit without
-    // this test being updated, no domain/ or contracts/ file may import it.
+    const dbDir = path.join(srcRoot, "db");
     const domainDir = path.join(srcRoot, "domain");
     const contractsDir = path.join(srcRoot, "contracts");
+    const transportDir = path.join(srcRoot, "transport");
+
+    expect(existsSync(retrievalDir), "retrieval/ is a WP-15 (Phase 3) concern and must exist now").toBe(true);
+
+    for (const file of collectFiles(retrievalDir)) {
+      const specifiers = relativeImportSpecifiers(readFileSync(file, "utf8"));
+      for (const specifier of specifiers) {
+        const resolved = resolveSpecifier(file, specifier);
+        const allowed = isWithin(resolved, dbDir) || isWithin(resolved, domainDir) || isWithin(resolved, retrievalDir);
+        expect(allowed, `${file} imports "${specifier}" -- retrieval/ may only import db/, domain/, or retrieval/`).toBe(true);
+        expect(isWithin(resolved, contractsDir), `${file} must never import contracts/`).toBe(false);
+        expect(isWithin(resolved, transportDir), `${file} must never import transport/`).toBe(false);
+      }
+    }
+
+    // Belt-and-braces: no domain/ or contracts/ file may import retrieval/,
+    // regardless of the above -- this is the invariant that must fail
+    // closed even if retrieval/'s own rules above are ever loosened.
     for (const file of [...collectFiles(domainDir), ...collectFiles(contractsDir)]) {
       const specifiers = relativeImportSpecifiers(readFileSync(file, "utf8"));
       for (const specifier of specifiers) {
@@ -120,10 +143,44 @@ describe("packages/msp-runtime dependency boundaries (AC-06)", () => {
     }
   });
 
-  it("transport/ may import db/, domain/, contracts/ (and other transport/ files)", () => {
+  // WP-14 AC-06: contracts/vault-scope-guard.mjs backs the new
+  // vault_scope_denied enforcement (AC-04). Per WP-14 Bounded Scope item 4's
+  // layering decision, contracts/ stays decoupled from
+  // domain/vault-registry.mjs -- the actual mount-ownership lookup runs in
+  // transport/handlers/vault-handlers.mjs (which is unrestricted in what it
+  // may import from domain/), and only the resulting plain boolean crosses
+  // into contracts/vault-scope-guard.mjs's assertVaultScope(). The generic
+  // "contracts/ may only import domain/ids.mjs, domain/errors.mjs, or other
+  // contracts/ files" test above already enforces this for every file under
+  // contracts/, including this new one; this test adds an explicit,
+  // named assertion so a future edit that widens contracts/'s allowed-
+  // imports set (rather than relying solely on the generic sweep) is still
+  // caught with a specific, readable failure message.
+  it("contracts/vault-scope-guard.mjs exists and does not import domain/vault-registry.mjs directly (WP-14 AC-04/AC-06)", () => {
+    const guardFile = path.join(srcRoot, "contracts", "vault-scope-guard.mjs");
+    expect(existsSync(guardFile), "contracts/vault-scope-guard.mjs must exist (WP-14 Bounded Scope item 4)").toBe(true);
+    const specifiers = relativeImportSpecifiers(readFileSync(guardFile, "utf8"));
+    const vaultRegistryFile = path.join(srcRoot, "domain", "vault-registry.mjs");
+    for (const specifier of specifiers) {
+      const resolved = resolveSpecifier(guardFile, specifier);
+      expect(
+        resolved,
+        "contracts/vault-scope-guard.mjs must never import domain/vault-registry.mjs directly -- it receives the mount-ownership boolean as a plain argument from transport/handlers/*.mjs instead",
+      ).not.toBe(vaultRegistryFile);
+    }
+  });
+
+  // WP-15 Bounded Scope item 8: transport/handlers/memory-handlers.mjs is
+  // the first transport/ file to import retrieval/ (retrieval-service.mjs
+  // for msp_memory_search, vector.mjs's vectorToBlob for embedding-on-write)
+  // -- ADR-027's layering rule already permits this ("{db, domain,
+  // retrieval, contracts} <- transport"), this test just widens its allowed
+  // set to match.
+  it("transport/ may import db/, domain/, retrieval/, contracts/ (and other transport/ files)", () => {
     const transportDir = path.join(srcRoot, "transport");
     const dbDir = path.join(srcRoot, "db");
     const domainDir = path.join(srcRoot, "domain");
+    const retrievalDir = path.join(srcRoot, "retrieval");
     const contractsDir = path.join(srcRoot, "contracts");
     for (const file of collectFiles(transportDir)) {
       const specifiers = relativeImportSpecifiers(readFileSync(file, "utf8"));
@@ -132,11 +189,12 @@ describe("packages/msp-runtime dependency boundaries (AC-06)", () => {
         const allowed =
           isWithin(resolved, dbDir) ||
           isWithin(resolved, domainDir) ||
+          isWithin(resolved, retrievalDir) ||
           isWithin(resolved, contractsDir) ||
           isWithin(resolved, transportDir);
         expect(
           allowed,
-          `${file} imports "${specifier}" -- transport/ may only import db/, domain/, contracts/, or transport/`,
+          `${file} imports "${specifier}" -- transport/ may only import db/, domain/, retrieval/, contracts/, or transport/`,
         ).toBe(true);
       }
     }

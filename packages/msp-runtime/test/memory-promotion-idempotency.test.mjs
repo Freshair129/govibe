@@ -19,6 +19,7 @@ import { createTypedVaultContextMsp } from "../../../scripts/mcp/msp-vault-conte
 
 import { open } from "../src/db/connection.mjs";
 import { EntityStore } from "../src/domain/entity-store.mjs";
+import { stableId } from "../src/domain/ids.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const packageRoot = path.resolve(here, "..");
@@ -66,6 +67,14 @@ describe("AC-04: msp_memory_promote(target_scope=global_private) idempotency", (
     };
   }
 
+  // WP-14: msp_memory_promote's Global-Private vault_id is derived from
+  // agentId via the same stableId("vault", "global-private", agentId)
+  // convention domain/vault-registry.mjs's provisionGlobalPrivateVault
+  // uses -- recomputed here (not read back off the wire, which does not
+  // expose vault_id for this tool) so this file's own direct
+  // entity-store.list() checks can pass the now-mandatory vaultId.
+  const globalPrivateVaultId = stableId("vault", "global-private", "agent-idem");
+
   it("two calls with the same idempotency_key return identical promotion_ref and target_ref", async () => {
     const first = await typed.promoteMemory(promoteInput());
     const second = await typed.promoteMemory(promoteInput());
@@ -73,7 +82,13 @@ describe("AC-04: msp_memory_promote(target_scope=global_private) idempotency", (
     expect(second.promotionRef).toBe(first.promotionRef);
     expect(second.targetRef).toBe(first.targetRef);
     expect(second.sourceHash).toBe(first.sourceHash);
-    expect(first.promotionRef).toMatch(/^msp:memory-promotion\/idem-key-1$/);
+    // WP-14: promotion_ref is now minted from (vault_id, idempotency_key)
+    // (contracts/refs.mjs's memoryPromotionRef), not idempotency_key alone
+    // -- see that file's header comment for why (AC-03 requires the ref to
+    // differ across vaults for the same idempotency_key). Every real
+    // consumer only checks this prefix, never the exact suffix, so only
+    // the prefix is asserted here.
+    expect(first.promotionRef).toMatch(/^msp:memory-promotion\//);
   });
 
   it("a third call with the same idempotency_key still does not create a duplicate entity (verified via domain/entity-store.mjs's list())", async () => {
@@ -82,7 +97,7 @@ describe("AC-04: msp_memory_promote(target_scope=global_private) idempotency", (
     const db = open(dbPath);
     try {
       const store = new EntityStore(db);
-      const { entities } = store.list({ category: "memory-promotion", limit: 200 });
+      const { entities } = store.list({ vaultId: globalPrivateVaultId, category: "memory-promotion", limit: 200 });
       const matches = entities.filter((entity) => entity.key === "idem-key-1");
       expect(matches).toHaveLength(1);
       expect(matches[0].current_version).toBe(1);
@@ -101,7 +116,7 @@ describe("AC-04: msp_memory_promote(target_scope=global_private) idempotency", (
     const db = open(dbPath);
     try {
       const store = new EntityStore(db);
-      const { entities } = store.list({ category: "memory-promotion", limit: 200 });
+      const { entities } = store.list({ vaultId: globalPrivateVaultId, category: "memory-promotion", limit: 200 });
       expect(entities.map((entity) => entity.key).sort()).toEqual(["idem-key-1", "idem-key-2"]);
     } finally {
       db.close();

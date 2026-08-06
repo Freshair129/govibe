@@ -40,3 +40,19 @@ export class GksProviderUnconfiguredError extends MspRuntimeError {
     super(message, "gks_provider_unconfigured");
   }
 }
+
+/**
+ * WP-14 AC-04: the caller's vault_id is not mounted/owned for them. The
+ * `.code` and the literal string "vault_scope_denied" in the message both
+ * matter -- transport/stdio-jsonrpc-server.mjs's tool-call error envelope
+ * only carries the error's .message text on the wire (structuredContent.code
+ * there is a fixed JSON-RPC -32601, not this domain code), so every test
+ * asserting this rejection (mirroring how gks_provider_unconfigured is
+ * already asserted elsewhere in this packet) matches on the message text.
+ * Documented in docs/api/API-009-Persistent-Memory-Contract.md §5.
+ */
+export class VaultScopeDeniedError extends MspRuntimeError {
+  constructor(message = "vault_scope_denied: caller's mounted vault does not include the requested vault_id.") {
+    super(message, "vault_scope_denied");
+  }
+}

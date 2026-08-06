@@ -1,10 +1,12 @@
 ---
 doc_id: "ADR-027-IN-REPO-MSP-RUNTIME-PACKAGE-BOUNDARY"
 title: "ADR-027: In-repo MSP runtime package boundary"
-status: "proposed"
-version: "0.1.1+draft"
+status: "accepted"
+version: "0.2.0"
 updated: "2026-08-05"
 owner: "Boss (CEO)"
+approval_owner: "Boss (CEO)"
+approval_recorded_at: "2026-08-05"
 source_of_truth: true
 type: adr
 amends: ["ADR-026"]
@@ -25,17 +27,21 @@ related_docs:
 
 ## Status
 
-Proposed. Awaiting GoVibe human-owner sign-off. This ADR amends
+**Accepted 2026-08-05 by Boss (CEO).** This ADR amends
 `docs/adr/ADR-026-MSP-External-Runtime-Deployment.md`: it resolves ADR-026's
 explicitly unresolved "MSP runtime repository, release/version, and deployment
 supervisor" prerequisites for this one runtime instance. It does not rewrite
 ADR-026's historical Decision text; ADR-026 keeps its own status and record,
 and receives a Status/Consequences amendment note pointing here (see
-"Amendment to ADR-026" below). Acceptance of this ADR is recorded the same way
-as ADR-026 and ADR-020: an owner-approved `status` transition to `accepted`
-plus a matching row update in `docs/DOC-VERSION-REGISTRY.md`. This decision
-governs the persistent-memory MSP runtime work sequenced in
+"Amendment to ADR-026" below). Acceptance closes ADR-026's Required-follow-up
+item "Owner approves or rejects this proposal and records the MSP runtime
+location" (Issue #75) — see the matching update in
+`docs/adr/ADR-026-MSP-External-Runtime-Deployment.md`. This decision governs
+the persistent-memory MSP runtime work sequenced in
 `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md`.
+Acceptance of this ADR does not itself authorize any specific work packet's
+execution — each work packet (WP-12 through WP-17 and beyond) is authorized
+separately per the governing CR's own gate.
 
 ## Context
 
@@ -302,5 +308,6 @@ Consequences section (ADR-026's own Decision text is not rewritten):
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-08-05 | Boss (CEO) | **Accepted.** `status: proposed -> accepted`. Closes ADR-026's Required-follow-up item "Owner approves or rejects this proposal and records the MSP runtime location" (Issue #75). Recorded `approval_owner`/`approval_recorded_at`. Acceptance covers the architecture decision only; it does not itself authorize any specific work packet's execution — WP-12 and WP-13 were already independently authorized/executed/verified before this acceptance landed (see their own Execution closure sections), and WP-14 onward remain gated by the CR's own per-packet authorization step. |
 | 0.1.1+draft | 2026-08-05 | Boss (CEO) / Claude (final-gate session) | Added two required sections (issue #75 acceptance criteria): "Service health states" (the `ready`/`unavailable`/`degraded`/`blocked` four-state contract, per-state permitted-operations table, `health_state` and `reason` fields; implementation tracked by issue #76, not claimed here) and "Contract version and compatibility" (the wire contract is governed by API-009, currently `0.1.1+draft`; breaking changes require an API-009 version bump plus Changelog row). Added `docs/api/API-009-Persistent-Memory-Contract.md` to `related_docs`. `status` remains `proposed`; not an owner acceptance of this ADR. |
 | 0.1.0+draft | 2026-08-04 | Claude (final-gate session) | Proposed resolving ADR-026's unresolved MSP runtime repository/process prerequisite as in-repo `packages/msp-runtime`, spawned as a separate OS process; recorded relationship to ADR-020 (memory-unit shape), ADR-023 (knowledge/context authority boundary, no `gks:` minting), and ADR-025 (storage-backend independence scope); recorded the ADR-026 amendment note. Status remains proposed pending owner acceptance. |

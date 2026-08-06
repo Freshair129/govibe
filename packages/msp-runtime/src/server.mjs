@@ -10,7 +10,9 @@
 // adds the eleven-tool `msp_*` contract surface (vault registry, context
 // tools, promotion tools) that packages/govibe-core/src/msp-client.mjs and
 // scripts/mcp/msp-vault-context-contracts.mjs already call today. `msp_ping`
-// stays registered alongside them.
+// stays registered alongside them. WP-15 Phase 3 adds the six-tool
+// `msp_memory_*` CRUD/search surface, backed by the new retrieval/ layer
+// (FTS5 + bge-m3 vectors + RRF fusion).
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -18,9 +20,13 @@ import { open } from "./db/connection.mjs";
 import { runMigrations } from "./db/migrate.mjs";
 import { EntityStore } from "./domain/entity-store.mjs";
 import { Journal } from "./domain/journal.mjs";
+import { LinksStore } from "./domain/links.mjs";
 import { VaultRegistry } from "./domain/vault-registry.mjs";
+import { createRetrievalService } from "./retrieval/retrieval-service.mjs";
+import { createVectorClient } from "./retrieval/vector.mjs";
 import { createContextHandlers } from "./transport/handlers/context-handlers.mjs";
 import { createLifecycleHandlers } from "./transport/handlers/lifecycle-handlers.mjs";
+import { createMemoryHandlers } from "./transport/handlers/memory-handlers.mjs";
 import { createVaultHandlers } from "./transport/handlers/vault-handlers.mjs";
 import { createStdioJsonRpcServer } from "./transport/stdio-jsonrpc-server.mjs";
 import { ToolRegistry } from "./transport/tool-registry.mjs";
@@ -46,16 +52,21 @@ export function createServer({ dbPath, migrationsDir = DEFAULT_MIGRATIONS_DIR, i
   const entityStore = new EntityStore(db);
   const journal = new Journal(db);
   const vaultRegistry = new VaultRegistry(db);
+  const linksStore = new LinksStore(db);
+  const vectorClient = createVectorClient();
+  const retrievalService = createRetrievalService({ db, vectorClient });
 
   const vaultHandlers = createVaultHandlers({ vaultRegistry, journal });
   const contextHandlers = createContextHandlers({ db, journal });
   const lifecycleHandlers = createLifecycleHandlers({ db, entityStore, vaultRegistry, journal });
+  const memoryHandlers = createMemoryHandlers({ db, entityStore, vaultRegistry, journal, retrievalService, vectorClient, linksStore });
 
   const toolRegistry = new ToolRegistry();
   toolRegistry.register("msp_ping", async () => ({ ok: true, timestamp: new Date().toISOString() }));
   for (const [name, handler] of Object.entries(vaultHandlers)) toolRegistry.register(name, handler);
   for (const [name, handler] of Object.entries(contextHandlers)) toolRegistry.register(name, handler);
   for (const [name, handler] of Object.entries(lifecycleHandlers)) toolRegistry.register(name, handler);
+  for (const [name, handler] of Object.entries(memoryHandlers)) toolRegistry.register(name, handler);
 
   const transport = createStdioJsonRpcServer({ toolRegistry, input, output });
 
@@ -64,5 +75,5 @@ export function createServer({ dbPath, migrationsDir = DEFAULT_MIGRATIONS_DIR, i
     db.close();
   }
 
-  return { db, entityStore, journal, vaultRegistry, toolRegistry, transport, close };
+  return { db, entityStore, journal, vaultRegistry, linksStore, retrievalService, vectorClient, toolRegistry, transport, close };
 }

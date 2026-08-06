@@ -31,6 +31,7 @@ function rowToVault(row) {
     project_id: row.project_id,
     workspace_id: row.workspace_id,
     agent_id: row.agent_id,
+    role: row.role ?? null,
     status: row.status,
     created_at: row.created_at,
   };
@@ -60,6 +61,7 @@ export class VaultRegistry {
   #insertVault;
   #backfillProjectId;
   #selectMount;
+  #selectAnyMount;
   #insertMount;
 
   constructor(db) {
@@ -69,13 +71,16 @@ export class VaultRegistry {
     this.#selectGlobalPrivate = db.prepare("SELECT * FROM vaults WHERE vault_type = 'global_private' AND agent_id = ?");
     this.#selectById = db.prepare("SELECT * FROM vaults WHERE vault_id = ?");
     this.#insertVault = db.prepare(`
-      INSERT INTO vaults (vault_id, vault_type, project_id, workspace_id, agent_id, status, created_at)
-      VALUES (@vault_id, @vault_type, @project_id, @workspace_id, @agent_id, 'active', @created_at)
+      INSERT INTO vaults (vault_id, vault_type, project_id, workspace_id, agent_id, role, status, created_at)
+      VALUES (@vault_id, @vault_type, @project_id, @workspace_id, @agent_id, @role, 'active', @created_at)
     `);
     this.#backfillProjectId = db.prepare(
       "UPDATE vaults SET project_id = @project_id WHERE vault_id = @vault_id AND project_id IS NULL",
     );
     this.#selectMount = db.prepare("SELECT * FROM vault_mounts WHERE vault_id = ? AND workspace_id = ? AND mount_alias = ?");
+    this.#selectAnyMount = db.prepare(
+      "SELECT 1 FROM vault_mounts WHERE vault_id = ? AND workspace_id = ? AND status = 'mounted' LIMIT 1",
+    );
     this.#insertMount = db.prepare(`
       INSERT INTO vault_mounts (mount_id, vault_id, workspace_id, mount_alias, access_mode, status, mounted_at)
       VALUES (@mount_id, @vault_id, @workspace_id, @mount_alias, @access_mode, 'mounted', @mounted_at)
@@ -100,6 +105,11 @@ export class VaultRegistry {
         project_id: projectId,
         workspace_id: null,
         agent_id: null,
+        // WP-14: `role` is an agent-role/tiering concept (ADR-020, "memory
+        // is keyed by role / named-agent"). A Shared vault has no single
+        // owning agent, so it has no natural role value -- left null rather
+        // than inventing one.
+        role: null,
         created_at: new Date().toISOString(),
       });
       return rowToVault(this.#selectById.get(vaultId));
@@ -130,6 +140,9 @@ export class VaultRegistry {
         project_id: projectId,
         workspace_id: workspaceId,
         agent_id: null,
+        // Same reasoning as provisionSharedVault: a Workspace-Private vault
+        // is not agent-role scoped, so `role` is left null.
+        role: null,
         created_at: new Date().toISOString(),
       });
       return rowToVault(this.#selectById.get(vaultId));
@@ -137,8 +150,23 @@ export class VaultRegistry {
     return run();
   }
 
-  /** Lazy, idempotent by agent_id. */
-  provisionGlobalPrivateVault(agentId) {
+  /**
+   * Lazy, idempotent by agent_id.
+   *
+   * WP-14 `role`: per ADR-020 ("memory is keyed by role / named-agent, not
+   * per ephemeral instance"), a Global-Private vault is the one vault_type
+   * that genuinely has a role concept -- it belongs to exactly one agent
+   * identity. If an explicit `role` is supplied (e.g. a role-aggregate
+   * identifier distinct from the raw agent_id), it is recorded as-is; if
+   * omitted, this falls back to agentId itself (an honest default: the
+   * agent's own identity acts as its own role when no separate role
+   * aggregate is known) rather than leaving it unset. Callers cannot
+   * supply role today (no msp_* request in this packet's Explicit
+   * Exclusions carries one on the wire) -- this parameter exists so
+   * domain-level callers and future work packets have it, verified directly
+   * by test/vaults-role-column.test.mjs (AC-05).
+   */
+  provisionGlobalPrivateVault(agentId, { role = null } = {}) {
     if (!agentId) throw new TypeError("provisionGlobalPrivateVault requires agentId.");
     const run = this.#db.transaction(() => {
       const existing = this.#selectGlobalPrivate.get(agentId);
@@ -150,6 +178,7 @@ export class VaultRegistry {
         project_id: null,
         workspace_id: null,
         agent_id: agentId,
+        role: role ?? agentId,
         created_at: new Date().toISOString(),
       });
       return rowToVault(this.#selectById.get(vaultId));
@@ -182,6 +211,60 @@ export class VaultRegistry {
 
   getVaultById(vaultId) {
     return rowToVault(this.#selectById.get(vaultId));
+  }
+
+  /**
+   * WP-14 AC-04: the ownership/scope check backing `vault_scope_denied`
+   * enforcement. Returns a plain boolean -- never throws, never itself
+   * shapes an error -- so transport/handlers/*.mjs can pass the result
+   * across the contracts/domain boundary as a plain argument into
+   * contracts/vault-scope-guard.mjs's assertVaultScope(), keeping
+   * contracts/ decoupled from this module (see that file's header comment
+   * for the layering rationale).
+   *
+   * A caller (identified by workspaceId and/or agentId, whichever the
+   * calling tool's request shape actually carries) is considered
+   * authorized for vaultId if:
+   *   - the vault is unknown: false (an unknown vault_id is a distinct
+   *     not_found condition, not a scope question -- callers check
+   *     getVaultById() separately when they need to tell the two apart);
+   *   - a workspace_mounts row already links vaultId to workspaceId
+   *     (status='mounted'): true -- a previously-authorized mount remains
+   *     authorized (idempotent re-mount with a different alias, etc.);
+   *   - vault_type is 'workspace_private': true only if the vault's own
+   *     workspace_id equals the caller's workspaceId (a workspace never
+   *     owns another workspace's private vault);
+   *   - vault_type is 'global_private': true only if the vault's own
+   *     agent_id equals the caller's agentId (this cannot be satisfied
+   *     through a request shape that carries no agentId, e.g.
+   *     msp_vault_mount's current request -- that is a deliberate,
+   *     conservative consequence of this fix, not an oversight: a
+   *     workspace-scoped mount request has no way to prove agent
+   *     ownership of a Global-Private vault, so it is denied);
+   *   - vault_type is 'shared': true only if the caller's own
+   *     workspace-private vault (looked up by workspaceId) is already
+   *     known to belong to the same project_id as the shared vault.
+   */
+  isVaultAccessibleTo(vaultId, { workspaceId = null, agentId = null } = {}) {
+    const vault = this.#selectById.get(vaultId);
+    if (!vault) return false;
+
+    if (workspaceId && this.#selectAnyMount.get(vaultId, workspaceId)) {
+      return true;
+    }
+
+    if (vault.vault_type === "workspace_private") {
+      return Boolean(workspaceId) && vault.workspace_id === workspaceId;
+    }
+    if (vault.vault_type === "global_private") {
+      return Boolean(agentId) && vault.agent_id === agentId;
+    }
+    if (vault.vault_type === "shared") {
+      if (!workspaceId) return false;
+      const callerWorkspaceVault = this.#selectWorkspacePrivate.get(workspaceId);
+      return Boolean(callerWorkspaceVault?.project_id) && callerWorkspaceVault.project_id === vault.project_id;
+    }
+    return false;
   }
 
   /**
