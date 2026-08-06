@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.10+draft"
-updated: "2026-08-05"
+version: "0.3.15+draft"
+updated: "2026-08-06"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -31,8 +31,9 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
+| Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.10+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.15+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -79,6 +80,8 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.1.4+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
 | Roadmap | `ROADMAP-PROVIDER-ENTITLEMENT-RUNTIME` | `0.1.6+draft` | draft | LYRA | `docs/roadmap/ROADMAP-provider-entitlement-runtime.md` |
@@ -215,6 +218,11 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.15+draft | 2026-08-06 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.3+draft: registered TASK-PRD-011, the Mission Control readiness tracking and command view, doc-first per its own §11.2 execution order. No document status changed to approved/accepted/candidate by this row. |
+| 0.3.14+draft | 2026-08-06 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.2+draft: codified the per-task document-driven execution order (doc first, symbol links before code, code with gate evidence, impact before completion) and dependency-ordered phase execution. No document status changed to approved/accepted/candidate by this row. |
+| 0.3.13+draft | 2026-08-06 | Claude Fable 5 | Registered STD-SLM-TIERED-ROUTING (0.1.0+draft, draft, owner GoVibe, distribution_role canonical): upstreamed the RWANG-PROMAX tiered-swarm SLM routing guide (two-axis taxonomy, T0-T3 ladder, cheap-eligibility keystone, three-stage verify gate, GoVibe bindings). The two RWANG tiered-swarm reference files became distribution mirrors with source_of_truth false headers under canonical-wins sync. No document status changed to approved/accepted/candidate by this row. |
+| 0.3.12+draft | 2026-08-06 | Claude Fable 5 | Registered BACKLOG-PRODUCTION-READINESS-EXECUTION (0.1.0+draft, draft): local-packet pilot decomposing TASK-PRD-005 and TASK-PRD-008 into seven micro/atomic packets under the canonical L0/L1/L2 tiered review gate (FEAT-TIERED-REVIEW) and the approved quota-aware packet policy, with T-ctx worker context per AGENTS.md §5. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.1+draft (§11.1 execution-decomposition binding; GAP-08 evidence extended with legacy Context-Scaling-Tier wording in FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION §3). No document status changed to approved/accepted/candidate by this row. |
+| 0.3.11+draft | 2026-08-06 | Claude Opus 5 | Registered MASTERPLAN-GOVIBE-PRODUCTION-READINESS (0.1.0+draft, draft) as the live plan of record for production-readiness work. The plan derives from a direct evidence sweep on commit 87c313d and records nine verified gaps, six readiness gates, and ten complete Task Containers. It is scoped to readiness only and does not supersede MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL. No document status changed to approved/accepted/candidate by this row; ratification of the readiness plan remains an owner decision. |
 | 0.3.10+draft | 2026-08-05 | Claude (final-gate session) | Synchronized EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE to 0.3.2+draft (section 6 owner ruling recorded: issues #58/#60/#61/#62 closed on their own acceptance criteria, #59/#63 stay open pending #112; follow-up issues #109-#112 filed; review_state and gate_state unchanged). No document status changed to approved/accepted/candidate by this row. |
 | 0.3.9+draft | 2026-08-05 | Claude (final-gate session) | Owner-approved governance correction pass on the persistent-memory MSP runtime doc set. Synchronized WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1 to 0.1.2+draft (honest execution-closure record; false "no tool implemented"/"32/32 tests" claims removed; true root-vitest-failure cause and Gate-0 remediation recorded; Deviations section added), WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2 to 0.1.2+draft (removed a stray NUL byte that made the file appear binary to git; corrected `proposal_author` and `approval_recorded_at`; honest execution-closure record that implementation preceded authorization and the executing session self-flipped its own authorization flags; AC-09 marked "met retroactively, out of sequence"; Deviations section added, including the cross-agent Global-Private disclosure risk from a globally-unique `promotions.idempotency_key`), API-009-PERSISTENT-MEMORY-CONTRACT to 0.1.1+draft (§4.1 upsert no-op/`changed` field corrected; §6 vault-scope-enforcement-not-yet-implemented amendment note added), and ADR-027-IN-REPO-MSP-RUNTIME-PACKAGE-BOUNDARY to 0.1.1+draft (added required "Service health states" and "Contract version and compatibility" sections per issue #75; `status` remains `proposed`). Registered new Work Packet WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES (0.1.0+draft, draft, blocking gate before multi-agent `msp_memory_promote` use). No document status changed to approved/accepted/candidate by this row. |
 | 0.3.8+draft | 2026-08-04 | Claude (final-gate session) | Synchronized WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2 to 0.1.1+draft after independent verification and closure of its Phase 2 (eleven-tool `msp_*` contract surface) execution in `packages/msp-runtime`: AC-01 through AC-08 re-run and spot-checked directly by the final-gate session (68/68 tests reproduced), including resolving one flagged concern as a false positive (`domain/ids.mjs` NUL-byte separator, verified correct via direct source inspection). No document status changed to approved/accepted/candidate by this row. |

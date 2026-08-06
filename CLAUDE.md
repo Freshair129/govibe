@@ -205,4 +205,36 @@ This repo runs under a documented agent operating contract — the canonical fil
   claiming a feature, command, or integration exists.
 - **Impact before completion:** run reverse-dependency impact analysis for semantic, schema,
   authority-boundary, or runtime-behavior changes and update the required dependents.
+- **Readiness plan of record:** readiness work binds to a Task ID in the readiness masterplan
+  (see below). `AGENTS.md` §11 is the binding rule.
 - **Best Code Rule:** prefer skipping work, or a docs/config/process/one-line fix, over new code.
+
+## Readiness plan of record
+
+`docs/roadmap/MASTERPLAN-govibe-production-readiness.md` is the live plan of record for
+production-readiness work. It stores its own status — there is no separate tracker.
+
+Read it before proposing or starting readiness work, and bind the work to an existing Task ID. If
+nothing fits, add a row to `## Backlog Items` with a complete Task Container rather than working
+off-plan.
+
+**Current posture (baseline recorded 2026-08-06, commit `87c313d`):** all automated gates pass —
+typecheck, 417 unit tests, 50 security tests, build, `docs:validate`, `roadmap:validate`,
+`mcp:smoke`. The build is a working **local developer preview**, not production. Four of the six
+Readiness Gates in §4 of that plan are unmet: the full suite is not gated in CI, the MissionSnapshot
+contract has drifted between `src/mission/domain.ts` and the runtime, active docs still carry
+abolished `H5`/`H6` semantics, and a clean checkout has no quickstart. Nine of seventeen views
+render honest empty states because their snapshot slice has no producer in
+`scripts/mcp/runtime/snapshot-store.mjs`.
+
+Rules when touching that plan:
+
+- Update status in the `Status` cells of the Phases / Sprints / Backlog Items tables. The roadmap
+  parser reads those cells, so the edit is what Mission Control renders.
+- Use only parser-recognised tokens: `planned`, `in-progress`, `blocked`, `ready`, `assigned`,
+  `review`, `done`. Anything else silently degrades to `planned` — note `in_progress` with an
+  underscore is **wrong**.
+- Never tick a Definition-of-Done criterion, or call a Readiness Gate met, without the evidence
+  that criterion names. Command output, not assertion.
+- The plan is `draft`. Ratifying it to `approved` is the owner's decision — never self-applied.
+- Run `npm run docs:validate` and `npm run roadmap:validate` after editing it.

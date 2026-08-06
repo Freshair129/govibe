@@ -11,6 +11,7 @@ import { DatabaseErdView } from "../features/erd/DatabaseErdView";
 import { GraphStudioView } from "../features/graph/GraphStudioView";
 import { GraphView } from "../features/graph/GraphView";
 import { DataIngestView } from "../features/ingest/DataIngestView";
+import { ReadinessControlView } from "../features/readiness/ReadinessControlView";
 import { RoadmapBoard } from "../features/roadmap/RoadmapBoard";
 import { BusinessSpecificationsView } from "../features/specs/BusinessSpecificationsView";
 import { SymbolExplorerView } from "../features/symbols/SymbolExplorerView";
@@ -35,6 +36,7 @@ export function RenderView({
   if (activeView === "A3") return <CapabilityPlugins snapshot={snapshot} />;
   if (activeView === "A4") return <ContextOperationsView snapshot={snapshot} />;
   if (activeView === "A5") return <AgentManagement snapshot={snapshot} send={send} />;
+  if (activeView === "A6") return <ReadinessControlView snapshot={snapshot} send={send} />;
   if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;
   if (activeView === "B2") return <BusinessSpecificationsView snapshot={snapshot} />;
   if (activeView === "B3") return <GraphStudioView snapshot={snapshot} />;

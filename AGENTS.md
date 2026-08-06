@@ -2,8 +2,8 @@
 title: "GoVibe Universal Agent Operating Contract"
 summary: "สัญญาการทำงานสากลและการควบคุมจริยธรรมของ AI Agents ในโครงการ GoVibe"
 doc_id: "AGENTS-CORE-001"
-version: "1.9.0"
-updated: "2026-08-02"
+version: "1.11.0"
+updated: "2026-08-06"
 owner: "THESEUS"
 type: "agents"
 block_manifest:
@@ -28,6 +28,8 @@ block_manifest:
 ### 1.1 Authority resolution
 
 - `docs/STD-Execution-Governance.md` ใน GoVibe คือ canonical SOT ของ Execution Governance
+- `docs/STD-SLM-Tiered-Routing.md` ใน GoVibe คือ canonical SOT ของ SLM tier routing
+  (T0..T3 ladder, cheap-eligibility, verify gate); สำเนา tiered-swarm ใน RWANG-PROMAX เป็น mirror
 - สำเนาใน RWANG-PROMAX เป็น distribution mirror และห้าม override canonical
 - ถ้า version, payload hash หรือ authority metadata ไม่ตรง ให้ถือ mirror เป็น `drifted`
 - mirror ที่ `drifted` หรือ `unknown` ใช้อนุมัติ implementation, policy enforcement หรือ audit conclusion ไม่ได้
@@ -224,12 +226,33 @@ insight / observation
 - Impact Before Completion: semantic/schema/authority/runtime change ต้องผ่าน backlink impact analysis
 - Canonical Over Mirror: เมื่อ canonical กับ mirror ขัดกัน ให้ canonical ชนะและ fail closed จนกว่า drift จะถูกแก้
 - Escalate, Do Not Widen: context หรือ permission ไม่พอให้ escalate ไม่ใช่ขยายเอง
+- Readiness Plan of Record: งาน readiness ทุกชิ้นต้องผูกกับ Task ID ใน readiness masterplan ตาม §11
 - Best Code Rule: ใช้การแก้ที่เล็กที่สุดซึ่งรักษา contract และ evidence ได้
+
+## 11. Readiness plan of record
+
+`docs/roadmap/MASTERPLAN-govibe-production-readiness.md` คือ live plan of record สำหรับงาน
+production readiness ทั้งหมด เอกสารนี้เก็บสถานะไว้ในตัวเอง ไม่มี tracker แยก
+
+- ก่อนเสนอหรือลงมืองาน readiness ให้อ่านแผนนี้ก่อน แล้วผูกงานกับ Task ID ที่มีอยู่
+- ถ้างานไม่ตรงกับ Task ใด ให้เพิ่มแถวใน `## Backlog Items` พร้อม Task Container ที่สมบูรณ์
+  ไม่ใช่ทำงานนอกแผน
+- อัปเดตสถานะที่เซลล์ `Status` ในตาราง Phases/Sprints/Backlog Items โดยตรง roadmap parser
+  อ่านเซลล์เหล่านี้เป็น state ของบอร์ด
+- ใช้ token ที่ parser รู้จักเท่านั้น: `planned`, `in-progress`, `blocked`, `ready`, `assigned`,
+  `review`, `done` token อื่นจะถูกลดเป็น `planned` เงียบ ๆ
+- ห้ามติ๊ก Definition-of-Done criterion โดยไม่มี evidence ที่ criterion นั้นระบุไว้
+- ห้ามประกาศ Readiness Gate ว่า met โดยไม่มี output ของคำสั่งที่พิสูจน์
+- แผนนี้เป็น `draft` การ ratify เป็น `approved` เป็นสิทธิ์ของ owner ห้าม agent เปลี่ยนเอง
+- ขอบเขตแผนนี้คือ readiness เท่านั้น ไม่ทับ `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md`
+- หลังแก้ไฟล์นี้ทุกครั้งให้รัน `npm run docs:validate` และ `npm run roadmap:validate`
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 1.11.0 | 2026-08-06 | THESEUS / Boss | Declared `docs/STD-SLM-Tiered-Routing.md` as the canonical SOT for SLM tier routing (upstreamed from RWANG-PROMAX tiered-swarm); the RWANG reference copies are distribution mirrors under the same fail-closed drift rules as Execution Governance. |
+| 1.10.0 | 2026-08-06 | THESEUS / Boss | Added §11 readiness plan of record binding every readiness task to `docs/roadmap/MASTERPLAN-govibe-production-readiness.md`, with the parser status vocabulary, the evidence rule for Definition-of-Done and Readiness Gates, and the owner-only ratification boundary. |
 | 1.9.0 | 2026-08-02 | THESEUS / Boss | Added GKS knowledge authority versus MSP context authority, relation-first interpretation, fail-closed missing-WHY handling, MSP-scoped graph retrieval, external-skill candidate boundaries, and authority-based CoVibe/CoDev classification. |
 | 1.8.0 | 2026-08-02 | THESEUS / Boss | Declared GoVibe Execution Governance as canonical SOT, RWANG-PROMAX as mirror, and added fail-closed authority/drift resolution. |
 | 1.7.0 | 2026-08-01 | THESEUS / GPT-5.6 Thinking | Added Deep Scan candidate ownership, wikilink/crosslink/symbol-link/backlink semantics, and mandatory explainable impact analysis before completion. |
