@@ -25,7 +25,8 @@ npm run mcp:smoke      # spin up the MCP server and assert the tool catalog resp
 npm run roadmap:export # export the live roadmap snapshot to Markdown under docs/roadmap
 
 npm run docs:validate  # governance check: doc frontmatter, required templates, path refs
-npm run baseline:check # docs:validate && lint && build — the full gate before a baseline
+npm run env:validate   # validate environment structure conformance (global and workspace)
+npm run baseline:check # env:validate && docs:validate && lint && build — the full gate before a baseline
 npm run diff:check     # docs/source diff governance check (add :staged for staged-only)
 ```
 

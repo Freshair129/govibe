@@ -74,6 +74,29 @@ are GGUF Q4_K_M estimates, KV cache adds ~0.5-1 GB at 4k ctx):
 claude-haiku-4-5 ($1 in / $5 out per M) sits below Sonnet on the Claude side as a cheap
 Claude-tier judge for fuzzy verify checks; it is not part of the local ladder.
 
+### 3.1 Local Model 2-Dimension Classification
+
+To prevent developer confusion and align with industry standards, the GoVibe router maps local models using a 2-Dimensional taxonomy rather than arbitrary naming schemes:
+
+1.  **Parameter Class (ขนาดพารามิเตอร์)**:
+    *   `1B - 3B` / `3B - 4B` (Micro / SLM: e.g. Minicpm 1.6B, Translategemma 3.3GB, Vibethinker 3B)
+    *   `8B - 9B` (Standard Mid: e.g. Minicpm 8B, Llama 3 8B, Aroow 9B)
+    *   `12B - 14B` (Heavy / Large: e.g. Mellum2 12B, Qwen3.6 12B)
+2.  **Flagship Status (สถานะเรือธง)**:
+    *   `is_flagship: true | false`
+    *   `flagship_role: "reasoning" | "coding" | "general" | "none"`
+
+**Leaderboard Flagships (เรือธงประจำขนาดพารามิเตอร์):**
+*   **Reasoning Flagships**:
+    *   `3B-4B` -> `translategemma`
+    *   `12B-14B` -> `Qwen3.6 12B Thinking V2`
+*   **Coding Flagships**:
+    *   `8B-9B` -> `Aroow Rust Coder 9B`
+    *   `12B-14B` -> `Mellum2 12B Instruct`
+*   **General Flagships**:
+    *   `1B-3B` -> `Minicpm V4.6 1B`
+    *   `8B-9B` -> `Minicpm V4.5 8B`
+
 **Provenance and uncertainty:** Claude prices above derive from a cache dated 2026-06-04 and
 carry an uncertainty flag — re-verify against current published pricing before any billing logic
 ships. Local marginal cost is "off the billable axis," not free: a wrong cheap output still costs
