@@ -21,6 +21,11 @@ async function checkExists(p, isDirectory = false) {
 }
 
 async function validateEnv() {
+    if (process.env.CI) {
+        console.log('🤖 CI environment detected. Skipping local environment structure validation.');
+        process.exit(0);
+    }
+
     let failed = false;
     const errors = [];
 

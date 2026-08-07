@@ -107,7 +107,7 @@ export interface TelemetryReplayLog {
 }
 
 // @ts-ignore
-import autoScannedModels from "../../../model_configs/auto_scanned_models.json";
+import autoScannedModels from "../../../local_model/auto_scanned_models.json";
 
 // Static hard‑coded model definitions (the original 8 models)
 const STATIC_MODELS: ModelQueueItem[] = [

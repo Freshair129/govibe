@@ -39,7 +39,8 @@ engine/orchestration/brain/
 
 # GoVibe Spiritual Brain (Episodic Memory / local execution) - Keep out of GitHub
 .govibe/brain/
-local_model/
+local_model/*
+!local_model/auto_scanned_models.json
 
 # GoVibe Knowledge Base (GKS Atoms)
 .govibe/govibe-knowledge-base/atoms/
