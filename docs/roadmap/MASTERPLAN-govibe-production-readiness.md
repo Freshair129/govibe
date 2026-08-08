@@ -2,8 +2,8 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "draft"
-version: "0.1.5+draft"
-updated: "2026-08-06"
+version: "0.1.6+draft"
+updated: "2026-08-08"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
 auditor: "ATHER"
@@ -155,7 +155,7 @@ its own threshold.
 
 | Gate | Definition | Current |
 |---|---|---|
-| GATE-CI | Every pull request runs `npm run baseline:check` with no path filter | not met |
+| GATE-CI | Every pull request runs `npm run baseline:check` with no path filter | met (2026-08-08: run 31226249238 on PR #122 executed docs, roadmap, typecheck, 70 vitest files, 65 security tests, and build; baseline-check set as a required status check on main; failure path proven red on PR #123) |
 | GATE-CONTRACT | The TypeScript MissionSnapshot and the runtime snapshot agree field for field | not met |
 | GATE-HONESTY | Every view either shows live data or an empty state naming the missing feed, with no fabricated values | met |
 | GATE-SEMANTIC | No active document uses abolished `H5`/`H6` semantics | not met |
@@ -171,7 +171,7 @@ any production claim that involves a network-reachable deployment.
 | Phase | Goal | Governing SoT | Exit Criteria | Status | Progress |
 |---|---|---|---|---|---|
 | PHASE-PRD-00 | Anchor governance and register this plan | `docs/DOC-VERSION-REGISTRY.md` | This plan is registered and the agent contracts point at it | in-progress | 60 |
-| PHASE-PRD-01 | Close the CI gate so the real suite protects the branch | `docs/STD-Execution-Governance.md` | GATE-CI is met | in-progress | 30 |
+| PHASE-PRD-01 | Close the CI gate so the real suite protects the branch | `docs/STD-Execution-Governance.md` | GATE-CI is met | in-progress | 75 |
 | PHASE-PRD-02 | Realign the snapshot contract across TypeScript and runtime | `docs/PRD-GoVibe-Platform-Overview.md` | GATE-CONTRACT is met | planned | 0 |
 | PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | planned | 0 |
 | PHASE-PRD-04 | Remove abolished H-axis semantics from active documents | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | GATE-SEMANTIC is met | planned | 0 |
@@ -182,7 +182,7 @@ any production claim that involves a network-reachable deployment.
 | Sprint | Parent ID | Goal | Exit Criteria | Status | Progress |
 |---|---|---|---|---|---|
 | SPR-PRD-00 | PHASE-PRD-00 | Register the readiness plan and bind the agent contracts to it | Registry row exists and both agent contracts cite this plan | in-progress | 60 |
-| SPR-PRD-01 | PHASE-PRD-01 | Make the full baseline gate run on every pull request | A pull request touching only frontend code still runs the full suite | in-progress | 30 |
+| SPR-PRD-01 | PHASE-PRD-01 | Make the full baseline gate run on every pull request | A pull request touching only frontend code still runs the full suite | in-progress | 50 |
 | SPR-PRD-02 | PHASE-PRD-02 | Reconcile every MissionSnapshot field across both implementations | A contract test fails when either side adds an unmatched field | planned | 0 |
 | SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | planned | 0 |
 | SPR-PRD-04 | PHASE-PRD-04 | Correct the H-axis vocabulary in architecture documents | A repository scan finds no active `H5`/`H6` access semantics | planned | 0 |
@@ -194,7 +194,7 @@ any production claim that involves a network-reachable deployment.
 |---|---|---|---|---|---|---|---|---|
 | TASK-PRD-001 | SPR-PRD-00 | task | Register this masterplan in the document version registry | P0 | ATHER | in-progress | - | Section 3.1 GAP-00 |
 | TASK-PRD-002 | SPR-PRD-00 | task | Bind AGENTS.md and CLAUDE.md to this readiness plan | P0 | THESEUS | in-progress | TASK-PRD-001 | Section 3.1 GAP-00 |
-| TASK-PRD-003 | SPR-PRD-01 | task | Add an unfiltered baseline check workflow for every pull request | P0 | ATHER | in-progress | TASK-PRD-002 | Section 3.1 GAP-01 |
+| TASK-PRD-003 | SPR-PRD-01 | task | Add an unfiltered baseline check workflow for every pull request | P0 | ATHER | done | TASK-PRD-002 | Section 3.1 GAP-01 |
 | TASK-PRD-004 | SPR-PRD-01 | task | Point end-to-end coverage at the running application | P1 | VIBE | planned | TASK-PRD-003 | Section 3.1 GAP-02 |
 | TASK-PRD-005 | SPR-PRD-02 | task | Add the orchestration slice to the MissionSnapshot contract | P0 | ARCHON | planned | TASK-PRD-003 | Section 3.1 GAP-04 |
 | TASK-PRD-006 | SPR-PRD-02 | task | Resolve the heatmap and master plan preview contract orphans | P1 | ARCHON | planned | TASK-PRD-005 | Section 3.1 GAP-05 |
@@ -225,7 +225,7 @@ any production claim that involves a network-reachable deployment.
 | Task ID | From ID | To ID | Required Artifact | Note | Created At | State |
 |---|---|---|---|---|---|---|
 | TASK-PRD-001 | ATHER | Boss | Registry row plus ratification decision | Draft to approved transition is an owner decision | 2026-08-06T00:00:00Z | pending |
-| TASK-PRD-003 | ATHER | Boss | Green pull-request run of the full baseline gate | Confirms GATE-CI before further phases start | 2026-08-06T00:00:00Z | pending |
+| TASK-PRD-003 | ATHER | Boss | Green pull-request run of the full baseline gate | Confirms GATE-CI before further phases start | 2026-08-06T00:00:00Z | completed |
 | TASK-PRD-006 | ARCHON | Boss | Contract decision on the two orphan fields | Produce or retire is a product decision, not an implementation choice | 2026-08-06T00:00:00Z | pending |
 | TASK-PRD-007 | VIBE | ATHER | Impact analysis over the changed snapshot contract | Required before the wiring change closes | 2026-08-06T00:00:00Z | pending |
 
@@ -235,7 +235,7 @@ any production claim that involves a network-reachable deployment.
 |---|---|---|---|---|
 | TASK-PRD-001 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-002 | pending | pending | n/a | 2026-08-06T00:00:00Z |
-| TASK-PRD-003 | pending | pending | n/a | 2026-08-06T00:00:00Z |
+| TASK-PRD-003 | passed | passed | n/a | 2026-08-08T00:00:00Z |
 | TASK-PRD-004 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-005 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-006 | pending | pending | n/a | 2026-08-06T00:00:00Z |
@@ -346,7 +346,7 @@ title: Add an unfiltered baseline check workflow for every pull request
 requirement_type: NFR
 complexity: C-2
 access_scope: H2
-status: in-progress
+status: done
 version: 0.1.0+draft
 pic: ATHER
 executor: VIBE
@@ -359,14 +359,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a pull request that changes only files under src, when continuous integration runs, then the unit suite, doc validation, and roadmap validation all execute
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given a deliberately failing unit test on a branch, when the pull request is opened, then the required check reports failure
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the workflow is merged, when a maintainer inspects branch protection, then the baseline check is a required status check
-      checked: false
-changelog: Continuous integration gap recorded from the 2026-08-06 evidence sweep.
+      checked: true
+changelog: Closed 2026-08-08. Evidence - green run 31226249238 (PR #122, full suite on a mixed-content PR), red run on PR #123 (deliberately failing test blocked by the required check), and baseline-check required in main branch protection.
 created_at: 2026-08-06T00:00:00Z,THESEUS,pending
 token_telemetry:
   model_name: claude-opus-5
@@ -813,6 +813,7 @@ errors. Ratification is an owner decision and must not be self-applied by an exe
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.1.6+draft | 2026-08-08 | draft | Closed TASK-PRD-003 and marked GATE-CI met on command evidence: green baseline-check run 31226249238 on PR #122 (70 vitest files, 65 security tests, docs/roadmap/typecheck/build), red baseline-check on the deliberately-failing PR #123 proving the gate blocks a broken suite, and baseline-check set as a required status check on main. Recorded per the WP-16/17 precedent as owner-directed closure of single-session-verified evidence, not an independent audit reproduction. | pending | Claude Fable 5 |
 | 0.1.5+draft | 2026-08-06 | draft | Started TASK-PRD-003: added the unfiltered Baseline Check workflow (.github/workflows/baseline-check.yml) running docs, roadmap, typecheck, unit, security, and build gates on every pull request with no path filter. PHASE-PRD-01 and SPR-PRD-01 moved to in-progress. Marking GATE-CI met still requires the check to be made required in branch protection (owner action). | pending | Claude Fable 5 |
 | 0.1.4+draft | 2026-08-06 | draft | Corrected GAP-05 against live evidence gathered while verifying TASK-PRD-011: masterPlanPreview does have an on-demand producer (the masterplan.preview command); only heatmap remains producerless. Recorded that the board rejects draft sources by promotion contract, surfaced in the readiness view. | pending | Claude Fable 5 |
 | 0.1.3+draft | 2026-08-06 | draft | Added TASK-PRD-011 (Mission Control readiness tracking and command view, SPR-PRD-00) with a complete Task Container, following the §11.2 order: this row and container precede the implementation. | pending | Claude Fable 5 |
