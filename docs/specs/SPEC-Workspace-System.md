@@ -2,8 +2,8 @@
 title: "SPEC: Workspace System Specification"
 doc_id: "SPEC-WORKSPACE-SYSTEM"
 status: "draft"
-version: "0.2.0+draft"
-updated: "2026-08-08"
+version: "0.2.4+draft"
+updated: "2026-08-09"
 owner: "Boss (CEO)"
 source_of_truth: true
 related_docs:
@@ -94,10 +94,17 @@ The bindings document (`govibe-workspace-vault-bindings/v1`) carries
 
 ### 3.3 Personnel identity (`employee_id` / `staff_id`)
 
-> **Status: specified, not yet implemented.** No runtime code currently models
-> personnel; this section is the binding contract for any implementation that does.
-> Today the only human-attribution surface is the free-form `actor` string required by
-> every tool call (§5.1).
+> **Status: identity model implemented, tool-surface attribution pending.** The identity
+> model in this section is implemented by `packages/govibe-core/src/personnel.mjs`
+> (registry, single-active-identity enforcement, conversion via `supersedes`, allow-only
+> append audit) with the agent-namespace guard in `packages/govibe-core/src/vaults.mjs`,
+> pinned by `packages/govibe-core/src/personnel.test.mjs`. On an RBAC-enabled workspace the
+> tool surface attributes and audits calls under the `employee_`/`staff_` actor value
+> (TASK-PRD-016), and when the workspace materializes `.govibe/personnel.json`
+> (`govibe-personnel-registry/v1`) the enforcement boundary verifies the presented ID is the
+> person's *active* identity — unknown and retired IDs deny with distinct audited reasons
+> (TASK-PRD-017). Workspaces without RBAC state still accept the free-form `actor`
+> string (§5.1).
 
 Human actors are modeled as **one** `personnel` entity with an `employment_type`
 discriminator. The employment type determines which ID namespace identifies the person:
@@ -249,9 +256,15 @@ versions/hashes, `parent_context_id` chaining for M-ctx) are owned by
 
 ## 6. Role-Based Access Control (RBAC)
 
-> **Status: specified, not yet implemented.** Same footing as §3.3: this is the binding
-> contract for any implementation. Until then, tool access is governed only by the H
-> ceiling, repository policy, and human gates.
+> **Status: implemented and enforced per workspace.** The decision core is
+> `packages/govibe-core/src/rbac.mjs` (deny-by-default scoped assignments, the §6.2 matrix,
+> §6.3 employment-type constraints and separation of duties, H-ceiling intersection,
+> allow/deny audit), and `scripts/mcp/runtime/rbac-enforcement.mjs` runs it as a decision
+> point in `handleToolCall` before any handler body. Enforcement activates when a workspace
+> materializes `.govibe/rbac.json` (`govibe-rbac-state/v1`; unknown schemas hard-fail per
+> §10); decisions append to `.govibe/rbac-audit.jsonl`. A workspace without that state file
+> keeps the pre-RBAC posture — H ceiling, repository policy, and human gates — so adopting
+> RBAC is an explicit per-workspace decision, not a silent flag-day.
 
 ### 6.1 Model
 
@@ -377,6 +390,15 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
 
 ## 12. Verification
 
+- `npx vitest run packages/govibe-core/src/workspace-spec-conformance.test.mjs` — AC-01..AC-06
+  conformance suite (TASK-PRD-013).
+- `npx vitest run packages/govibe-core/src/personnel.test.mjs` — §3.3 personnel identity and
+  AC-07 coverage (TASK-PRD-014).
+- `npx vitest run packages/govibe-core/src/rbac.test.mjs` — §6 RBAC core and AC-08 coverage
+  at registry level (TASK-PRD-015).
+- `npx vitest run scripts/mcp/rbac-enforcement.test.mjs` — §6 tool-surface enforcement:
+  decision point before handler bodies, per-workspace activation, audit trail
+  (TASK-PRD-016).
 - `npx vitest run scripts/mcp/runtime-core.test.mjs` — runtime initialize coverage.
 - `npx vitest run packages/govibe-core/src/capability-runtime.test.mjs` — capability
   surface including workspace initialization.
@@ -388,5 +410,9 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.4+draft | 2026-08-09 | Boss (CEO) | §3.3 open item closed (TASK-PRD-017): the RBAC enforcement boundary now validates `employee_`/`staff_` actors against the workspace personnel registry snapshot (`.govibe/personnel.json`, `govibe-personnel-registry/v1`) — unknown IDs deny as `unknown_personnel_identity`, retired IDs from employment-type conversion deny as `retired_personnel_identity`, both audited; agent actors and snapshot-less workspaces keep their prior posture; unknown snapshot schemas hard-fail per §10. |
+| 0.2.3+draft | 2026-08-09 | Boss (CEO) | §6 status updated to implemented-and-enforced-per-workspace: `scripts/mcp/runtime/rbac-enforcement.mjs` wires the RBAC core into `handleToolCall` as a pre-handler decision point over the §6.2 tool operations (scan split by `deep`), activated by `.govibe/rbac.json` (`govibe-rbac-state/v1`) with allow/deny audit in `.govibe/rbac-audit.jsonl`; workspaces without RBAC state keep the pre-RBAC posture. §3.3 note updated: actor attribution is honored at the RBAC boundary; active-identity validation against a personnel registry remains open. §12 lists the enforcement suite. |
+| 0.2.2+draft | 2026-08-09 | Boss (CEO) | §6 status updated from specified-not-implemented to core-implemented: `packages/govibe-core/src/rbac.mjs` lands the deny-by-default decision core (scoped assignments over the §6.2 matrix, §6.3 staff ceiling with recorded owner approval and separation of duties, §6.1 H-ceiling intersection sourced from the §7 table, §6.4 allow/deny audit with snapshot round-trip). §12 lists the RBAC suite. Tool-surface enforcement remains pending under TASK-PRD-016. |
+| 0.2.1+draft | 2026-08-09 | Boss (CEO) | §3.3 status updated from specified-not-implemented to identity-model-implemented: `packages/govibe-core/src/personnel.mjs` lands the personnel registry (single active identity, conversion via `supersedes`, append-only audit) and `vaults.mjs` gains the rule-4 guard rejecting `employee_`/`staff_` values as agent identifiers. §12 verification now lists the AC-01..AC-06 conformance suite and the §3.3/AC-07 personnel suite. Tool-surface actor attribution remains pending under TASK-PRD-016; §6 RBAC remains specified-not-implemented. |
 | 0.2.0+draft | 2026-08-08 | Boss (CEO) | Added §3.3 personnel identity (`employee_id` for permanent employees, `staff_id` for contract staff; single-active-identity, conversion via `supersedes`, actor attribution, separation from `agent_id`) and §6 RBAC (deny-by-default scoped role model, owner/maintainer/operator/viewer permission matrix over the tool surface, contract-staff ceiling below `owner`, separation of duties, allow/deny audit). Both marked specified-not-implemented; renumbered §7–§12 and added AC-07/AC-08. |
 | 0.1.0+draft | 2026-08-08 | Boss (CEO) | Initial workspace-system specification: identity derivation, materialization layout, state schemas, lifecycle/tool contracts, MSP boundary, governance-axis conformance, failure semantics, and acceptance criteria — grounded in `packages/govibe-core/src/workspace.mjs`, `packages/govibe-core/src/vaults.mjs`, and `scripts/mcp/registry.mjs`. |

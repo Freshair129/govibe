@@ -19,6 +19,11 @@ export function normalizeAgentId(value) {
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(agentId) || agentId.includes("..")) {
     throw new Error("Agent ID must be a safe stable identifier.");
   }
+  // SPEC-Workspace-System §3.3 rule 4: employee_/staff_ identify humans and MUST NOT appear in
+  // vault binding records; agent_id is the software-agent namespace.
+  if (/^(employee|staff)_/i.test(agentId)) {
+    throw new Error("Personnel IDs (employee_/staff_) cannot be used as agent identifiers.");
+  }
   return agentId;
 }
 
