@@ -91,7 +91,7 @@ function getActionableDepth(parsed) {
   };
 }
 
-function scoreApprovedSources(inventory, envPreferredPath) {
+export function scoreApprovedSources(inventory, envPreferredPath) {
   const approvedItems = inventory.filter((item) => item.approvalStatus?.toLowerCase() === "approved");
   if (approvedItems.length === 0) {
     return inventory.map((item) => ({ ...item, score: undefined, scoreBreakdown: [] }));

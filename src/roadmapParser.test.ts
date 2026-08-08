@@ -168,4 +168,23 @@ describe("parseRoadmapSource — BACKLOG-parser-fixture.md", () => {
     expect(sprint?.type).toBe("sprint");
     expect(sprint?.parentId).toBe("PHA-FIX-01");
   });
+
+  // ─── updatedAt authoring (TASK-PRD-012 / GAP-10) ────────────────────────────
+
+  it("reports the authored `updated` frontmatter value as updatedAt", async () => {
+    if (!snapshot) snapshot = await parseRoadmapSource(fixturePath);
+    expect(snapshot.updatedAt).toBe("2026-06-20");
+  });
+});
+
+describe("parseRoadmapSource — BACKLOG-parser-fixture-no-updated.md", () => {
+  const noUpdatedFixturePath = "src/__fixtures__/BACKLOG-parser-fixture-no-updated.md";
+
+  it("leaves updatedAt undefined instead of falling back to parse time", async () => {
+    const snapshot = await parseRoadmapSource(noUpdatedFixturePath);
+    // Must NOT be a parse-time stand-in (e.g. "just now") — an unauthored source
+    // has no freshness signal at all, so downstream scoring must not treat it
+    // as recent (GAP-10 / TASK-PRD-012).
+    expect(snapshot.updatedAt).toBeUndefined();
+  });
 });

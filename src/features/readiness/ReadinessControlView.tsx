@@ -25,7 +25,7 @@ export function ReadinessControlView({ snapshot, send }: { snapshot: MissionSnap
             <li>Approval: {source.approvalStatus ?? "unknown"}</li>
             <li>Active board source: {source.active ? "yes" : "no"}</li>
             <li>Score: {source.score ?? "not scored (draft sources are unscored)"}</li>
-            <li>Updated: {source.updatedAt}</li>
+            <li>Updated: {source.updatedAt ?? "unknown (no authored update date)"}</li>
           </ul>
         ) : (
           <EmptyState

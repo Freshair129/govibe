@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.2.0"
+version: "0.2.1"
 updated: "2026-08-09"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -172,10 +172,10 @@ any production claim that involves a network-reachable deployment.
 
 | Phase | Goal | Governing SoT | Exit Criteria | Status | Progress |
 |---|---|---|---|---|---|
-| PHASE-PRD-00 | Anchor governance and register this plan | `docs/DOC-VERSION-REGISTRY.md` | This plan is registered and the agent contracts point at it | in-progress | 80 |
+| PHASE-PRD-00 | Anchor governance and register this plan | `docs/DOC-VERSION-REGISTRY.md` | This plan is registered and the agent contracts point at it | done | 100 |
 | PHASE-PRD-01 | Close the CI gate so the real suite protects the branch | `docs/STD-Execution-Governance.md` | GATE-CI is met | in-progress | 75 |
 | PHASE-PRD-02 | Realign the snapshot contract across TypeScript and runtime | `docs/PRD-GoVibe-Platform-Overview.md` | GATE-CONTRACT is met | planned | 0 |
-| PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | in-progress | 10 |
+| PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | in-progress | 20 |
 | PHASE-PRD-04 | Remove abolished H-axis semantics from active documents | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | GATE-SEMANTIC is met | planned | 0 |
 | PHASE-PRD-05 | Package a repeatable clean-checkout developer trial | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` | GATE-BOOTSTRAP is met | planned | 0 |
 | PHASE-PRD-06 | Bring the runtime into verified conformance with the Workspace System spec | `docs/specs/SPEC-Workspace-System.md` | Spec acceptance criteria AC-01 through AC-08 hold with recorded command evidence | done | 100 |
@@ -184,10 +184,10 @@ any production claim that involves a network-reachable deployment.
 
 | Sprint | Parent ID | Goal | Exit Criteria | Status | Progress |
 |---|---|---|---|---|---|
-| SPR-PRD-00 | PHASE-PRD-00 | Register the readiness plan and bind the agent contracts to it | Registry row exists and both agent contracts cite this plan | in-progress | 80 |
+| SPR-PRD-00 | PHASE-PRD-00 | Register the readiness plan and bind the agent contracts to it | Registry row exists and both agent contracts cite this plan | done | 100 |
 | SPR-PRD-01 | PHASE-PRD-01 | Make the full baseline gate run on every pull request | A pull request touching only frontend code still runs the full suite | in-progress | 50 |
 | SPR-PRD-02 | PHASE-PRD-02 | Reconcile every MissionSnapshot field across both implementations | A contract test fails when either side adds an unmatched field | planned | 0 |
-| SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | in-progress | 10 |
+| SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | in-progress | 20 |
 | SPR-PRD-04 | PHASE-PRD-04 | Correct the H-axis vocabulary in architecture documents | A repository scan finds no active `H5`/`H6` access semantics | planned | 0 |
 | SPR-PRD-05 | PHASE-PRD-05 | Author and verify the clean-checkout quickstart | A reviewer reaches a running Mission Control from the document alone | planned | 0 |
 | SPR-PRD-06 | PHASE-PRD-06 | Pin workspace-spec conformance and land the personnel identity and RBAC contracts | AC-01 through AC-06 are pinned by automated tests; the personnel and RBAC suites demonstrate AC-07 and AC-08 | done | 100 |
@@ -197,7 +197,7 @@ any production claim that involves a network-reachable deployment.
 | ID | Parent ID | Type | Title | Priority | Owner | Status | Dependencies | Source Section |
 |---|---|---|---|---|---|---|---|---|
 | TASK-PRD-001 | SPR-PRD-00 | task | Register this masterplan in the document version registry | P0 | ATHER | done | - | Section 3.1 GAP-00 |
-| TASK-PRD-002 | SPR-PRD-00 | task | Bind AGENTS.md and CLAUDE.md to this readiness plan | P0 | THESEUS | in-progress | TASK-PRD-001 | Section 3.1 GAP-00 |
+| TASK-PRD-002 | SPR-PRD-00 | task | Bind AGENTS.md and CLAUDE.md to this readiness plan | P0 | THESEUS | done | TASK-PRD-001 | Section 3.1 GAP-00 |
 | TASK-PRD-003 | SPR-PRD-01 | task | Add an unfiltered baseline check workflow for every pull request | P0 | ATHER | done | TASK-PRD-002 | Section 3.1 GAP-01 |
 | TASK-PRD-004 | SPR-PRD-01 | task | Point end-to-end coverage at the running application | P1 | VIBE | planned | TASK-PRD-003 | Section 3.1 GAP-02 |
 | TASK-PRD-005 | SPR-PRD-02 | task | Add the orchestration slice to the MissionSnapshot contract | P0 | ARCHON | planned | TASK-PRD-003 | Section 3.1 GAP-04 |
@@ -206,8 +206,8 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-008 | SPR-PRD-03 | task | Reconcile sidebar labels with rendered view titles | P2 | VIBE | planned | - | Section 3.1 GAP-07 |
 | TASK-PRD-009 | SPR-PRD-04 | task | Correct abolished H-axis semantics in architecture documents | P1 | ATHER | planned | - | Section 3.1 GAP-08 |
 | TASK-PRD-010 | SPR-PRD-05 | task | Author the clean-checkout developer quickstart | P0 | THESEUS | planned | TASK-PRD-003 | Section 3.1 GAP-09 |
-| TASK-PRD-011 | SPR-PRD-00 | task | Provide a Mission Control readiness tracking and command view | P1 | VIBE | in-progress | TASK-PRD-001 | Section 11 |
-| TASK-PRD-012 | SPR-PRD-03 | task | Roadmap source hygiene and honest recency scoring | P1 | LYRA | in-progress | - | Section 3.1 GAP-10 |
+| TASK-PRD-011 | SPR-PRD-00 | task | Provide a Mission Control readiness tracking and command view | P1 | VIBE | done | TASK-PRD-001 | Section 11 |
+| TASK-PRD-012 | SPR-PRD-03 | task | Roadmap source hygiene and honest recency scoring | P1 | LYRA | done | - | Section 3.1 GAP-10 |
 | TASK-PRD-013 | SPR-PRD-06 | task | Pin workspace-spec acceptance criteria AC-01 through AC-06 with conformance tests | P1 | ATHER | done | - | SPEC-Workspace-System §11 |
 | TASK-PRD-014 | SPR-PRD-06 | task | Implement the personnel identity model (employee_id / staff_id) | P1 | VIBE | done | - | SPEC-Workspace-System §3.3 |
 | TASK-PRD-015 | SPR-PRD-06 | task | Implement RBAC core: scoped roles, deny-by-default decisions, allow/deny audit | P1 | VIBE | done | TASK-PRD-014 | SPEC-Workspace-System §6 |
@@ -250,7 +250,7 @@ any production claim that involves a network-reachable deployment.
 | Task ID | QA Status | Audit Status | Deployment Status | Updated At |
 |---|---|---|---|---|
 | TASK-PRD-001 | passed | passed | n/a | 2026-08-09T20:15:00Z |
-| TASK-PRD-002 | pending | pending | n/a | 2026-08-06T00:00:00Z |
+| TASK-PRD-002 | passed | passed | n/a | 2026-08-09T21:00:00Z |
 | TASK-PRD-003 | passed | passed | n/a | 2026-08-08T00:00:00Z |
 | TASK-PRD-004 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-005 | pending | pending | n/a | 2026-08-06T00:00:00Z |
@@ -259,8 +259,8 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-008 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-009 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-010 | pending | pending | n/a | 2026-08-06T00:00:00Z |
-| TASK-PRD-011 | pending | pending | n/a | 2026-08-06T00:00:00Z |
-| TASK-PRD-012 | pending | pending | n/a | 2026-08-08T00:00:00Z |
+| TASK-PRD-011 | passed | passed | n/a | 2026-08-09T21:00:00Z |
+| TASK-PRD-012 | passed | passed | n/a | 2026-08-09T21:00:00Z |
 | TASK-PRD-013 | passed | passed | n/a | 2026-08-09T19:45:00Z |
 | TASK-PRD-014 | passed | passed | n/a | 2026-08-09T19:45:00Z |
 | TASK-PRD-015 | passed | passed | n/a | 2026-08-09T19:45:00Z |
@@ -324,8 +324,8 @@ title: Bind AGENTS.md and CLAUDE.md to this readiness plan
 requirement_type: NFR
 complexity: C-2
 access_scope: H2
-status: in-progress
-version: 0.1.0+draft
+status: done
+version: 0.2.0
 pic: THESEUS
 executor: THESEUS
 approver: Boss
@@ -337,14 +337,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given an agent starts a session, when it reads the operating contract, then it is told to consult this readiness plan before proposing readiness work
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given both contract files, when either is read alone, then the readiness plan path and its live-status rule are discoverable without another lookup
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given docs:validate runs, when it resolves referenced paths in both contract files, then every referenced path exists
-      checked: false
-changelog: Agent operating contracts bound to the readiness plan.
+      checked: true
+changelog: Verified 2026-08-09 that both AGENTS.md §11 (readiness plan of record, binds every readiness task to a Task ID) and CLAUDE.md ("Readiness plan of record" section) already cite this masterplan by path and state its live-status rule, satisfying all three criteria against the live file contents (no code change needed for the binding itself). Evidence: `npm run docs:validate` PASS with zero warnings referencing AGENTS.md, CLAUDE.md, or this masterplan's path. Closed to done as owner-directed evidence review (Boss present in session), per the WP-16/17 precedent — not an independent ATHER audit reproduction.
 created_at: 2026-08-06T00:00:00Z,THESEUS,pending
 token_telemetry:
   model_name: claude-opus-5
@@ -720,8 +720,8 @@ title: Provide a Mission Control readiness tracking and command view
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: in-progress
-version: 0.1.0+draft
+status: done
+version: 0.1.1
 pic: VIBE
 executor: VIBE
 approver: Boss
@@ -740,7 +740,7 @@ definition_of_done:
   exit_criteria:
     - criterion: Given the plan is absent from the feed or not yet loaded, when the view renders, then it shows an empty state naming the missing feed, and npm run lint plus the readiness helper vitest file pass with recorded output
       checked: true
-changelog: Readiness tracking and command surface bound to existing roadmap.select and masterplan.preview commands; no backend change.
+changelog: Readiness tracking and command surface bound to existing roadmap.select and masterplan.preview commands; no backend change. Re-verified 2026-08-09 with fresh evidence — `npm run lint` clean, `npx vitest run src/features/readiness/readinessPlan.test.ts` 5/5 passed, full suite 74 files/618 passed/1 skipped plus 65 security tests green. Also picked up ReadinessControlView.tsx's honest-empty-state fallback for a missing updatedAt landed under TASK-PRD-012 (`Updated: unknown (no authored update date)` instead of a blank field). Closed to done as owner-directed evidence review (Boss present in session), per the WP-16/17 precedent.
 created_at: 2026-08-06T00:00:00Z,VIBE,pending
 token_telemetry:
   model_name: claude-fable-5
@@ -764,8 +764,8 @@ title: Roadmap source hygiene and honest recency scoring
 requirement_type: NFR
 complexity: C-2
 access_scope: H2
-status: in-progress
-version: 0.1.0+draft
+status: done
+version: 0.2.0
 pic: LYRA
 executor: VIBE
 approver: Boss
@@ -777,14 +777,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a roadmap source with no authored updated timestamp, when sources are scored, then it receives no recency bonus and a test pins that behaviour
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the HTML validation fixture is demoted to draft with its real updated date, when the runtime selects the active source without an environment override, then an approved real plan wins the board
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the roadmap sources list renders, when a reviewer inspects updatedAt values, then no source reports parse time as its updated date
-      checked: false
-changelog: Opened 2026-08-08 after the live A2 audit found the validation fixture holding the board through the parse-time freshness fallback. Fixture demotion and its authored data-updated date land with this row; the scorer change and its test remain open.
+      checked: true
+changelog: Opened 2026-08-08 after the live A2 audit found the validation fixture holding the board through the parse-time freshness fallback. Fixture demotion and its authored data-updated date landed with the opening row; this change lands the scorer fix and its tests. Root cause: `scripts/mcp/roadmap-parser.mjs` set `updatedAt: data.updated ?? parsedAt` (markdown) and `updatedAt: contractRoot.getAttribute("data-updated") ?? parsedAt` (HTML), so an unauthored source's updatedAt silently became parse time (now) — the newest possible timestamp — instead of staying absent. Fix: both paths now use `|| undefined`, so an unauthored source carries no updatedAt at all; `scripts/mcp/runtime/roadmap-service.mjs`'s `scoreApprovedSources` already guards recency scoring with `Number.isFinite(Date.parse(...))`, so an undefined updatedAt now correctly yields zero recency bonus with no scorer change needed there beyond exporting the function for direct testing. `ReadinessControlView.tsx` updated to render "unknown (no authored update date)" instead of a blank field when updatedAt is absent, so no view reports a fake date either (exit criterion). Evidence: two new regression tests in `scripts/mcp/runtime/roadmap-service.test.mjs` pin that an undated source never gets the "recent" score tag and never outranks a dated one; two new tests in `src/roadmapParser.test.ts` (plus fixture `src/__fixtures__/BACKLOG-parser-fixture-no-updated.md`) pin that an unauthored source's parsed updatedAt is `undefined`, not a timestamp. The HTML validation fixture (`docs/roadmap/ROADMAP-govibe-mcp-runtime.html`) stays draft with its authored `data-updated="2026-08-03"`, and draft sources are excluded from board selection regardless of score (`roadmap-service.test.mjs`'s existing `reloadRoadmap()` assertion continues to resolve `approvalStatus: "approved"`), satisfying the success criterion independently of the scorer fix. Full suite green: 74 files / 618 passed / 1 skipped plus 65 security tests; `npm run lint` clean. Closed to done as owner-directed evidence review (Boss present in session), per the WP-16/17 precedent — not an independent ATHER audit reproduction.
 created_at: 2026-08-08T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1101,6 +1101,7 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.2.1 | 2026-08-09 | approved | Closed the three remaining SPR-PRD-00/03 tasks to done in one owner-directed session (Boss instruction, following the WP-16/17 precedent — recorded as such, not as an independent ATHER audit reproduction). TASK-PRD-002: verified AGENTS.md §11 and CLAUDE.md already bind readiness work to this plan by path with a live-status rule, confirmed by a clean `docs:validate` run; no code change needed. TASK-PRD-011: re-verified the readiness view's DoD with fresh evidence (`npm run lint` clean, `readinessPlan.test.ts` 5/5) and picked up TASK-PRD-012's honest-empty-state fix. TASK-PRD-012 (GAP-10): fixed the recency scorer bug in `scripts/mcp/roadmap-parser.mjs` — an unauthored source's `updatedAt` fell back to parse time (now) instead of staying absent, letting it masquerade as the newest source; both the markdown and HTML parse paths now use `|| undefined`, and `scoreApprovedSources` (exported from `scripts/mcp/runtime/roadmap-service.mjs` for testability) already zeroes the recency bonus for a non-finite date. `ReadinessControlView.tsx` now renders "unknown (no authored update date)" instead of a blank field. Added regression tests in `scripts/mcp/runtime/roadmap-service.test.mjs` and `src/roadmapParser.test.ts` (new fixture `BACKLOG-parser-fixture-no-updated.md`) pinning the fix. SPR-PRD-00 and PHASE-PRD-00 closed to done (all constituent tasks complete); SPR-PRD-03/PHASE-PRD-03 progress moved 10 → 20 (TASK-PRD-007/008 remain open). Evidence: full suite 74 files / 618 passed / 1 skipped plus 65 security tests, `npm run lint` clean, `npm run docs:validate` PASS. | pending | Claude Sonnet 5 |
 | 0.2.0 | 2026-08-09 | approved | Ratified draft → approved by owner decision (Boss). All Task Containers were authored to complete-container standard before ratification, so the roadmap Definition-of-Ready gate reports zero errors for this source with hard enforcement now active. Closes TASK-PRD-001 (its exit criterion is exactly this change: status flip and registry synchronization together) and completes its Boss handoff. Registry updated to the same version/status in this change. | pending | Claude Fable 5 |
 | 0.1.15+draft | 2026-08-09 | draft | Closed SPR-PRD-06 and PHASE-PRD-06 to done on an owner-directed audit pass (Boss instruction on PR #128, following the WP-16/17 owner-directed-closure precedent — recorded as such, not as an independent ARCHON/ATHER reproduction). Audit evidence: every baseline gate re-run green in the closing session (env:validate, docs:validate, roadmap:validate, tsc, vitest 74 files / 614 passed / 1 skipped, security 65, vite build), plus PR #128 CI green on the authoritative baseline-check run 31274759680 with E2E and verify passing; the single local baseline:check failure reproduced only as the known MSP stdio spawn-timeout flake and passed on re-run. Verification table set to passed/passed for TASK-PRD-013..017. | pending | Claude Fable 5 |
 | 0.1.14+draft | 2026-08-09 | draft | Executed TASK-PRD-017 to review: the RBAC enforcement boundary validates employee_/staff_ actors as active personnel identities when .govibe/personnel.json is materialized — unknown_personnel_identity and retired_personnel_identity deny with audit before the handler body. TASK-PRD-014's exit criterion ticked and the spec §3.3 open item removed in the same change (spec 0.2.4+draft). Enforcement suite 16 green; full suite and mcp:smoke pass. All SPR-PRD-06 tasks now at review with every DoD criterion ticked, pending QA/audit and owner approval. | pending | Claude Fable 5 |
