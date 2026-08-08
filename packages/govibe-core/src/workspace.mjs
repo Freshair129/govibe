@@ -34,7 +34,47 @@ export async function initializeWorkspace({ workspacePath, builtInSkill, mspClie
   const govibeDir = path.join(root, ".govibe");
   const sharedBrainDir = path.join(root, vaultBindings.primary_shared_vault.materialization_path);
   const privateBrainDir = path.join(root, vaultBindings.workspace_private_vaults[0].materialization_path);
-  await Promise.all([mkdirSafe(root, govibeDir), mkdirSafe(root, sharedBrainDir), mkdirSafe(root, privateBrainDir)]);
+  
+  // New standardized GoVibe directories
+  const brainDir = path.join(govibeDir, "brain");
+  const skillsDir = path.join(brainDir, "skills");
+  const rcaDir = path.join(brainDir, "rca");
+  const sessionsDir = path.join(brainDir, "sessions");
+  const localModelDir = path.join(root, "local_model");
+  const kBlockDir = path.join(root, ".govibe-knowledge-block");
+  const kBlockSubdirs = ["adr", "api", "architecture", "data-model", "domain", "feature", "report", "spec", "templates"];
+
+  await Promise.all([
+    mkdirSafe(root, govibeDir),
+    mkdirSafe(root, sharedBrainDir),
+    mkdirSafe(root, privateBrainDir),
+    mkdirSafe(govibeDir, brainDir),
+    mkdirSafe(brainDir, skillsDir),
+    mkdirSafe(brainDir, rcaDir),
+    mkdirSafe(brainDir, sessionsDir),
+    mkdirSafe(root, localModelDir),
+    mkdirSafe(root, kBlockDir),
+    ...kBlockSubdirs.map(sub => mkdirSafe(kBlockDir, path.join(kBlockDir, sub)))
+  ]);
+
+  // Create default MEMORY.md if missing
+  const memoryPath = path.join(brainDir, "MEMORY.md");
+  await writeJsonIfMissing(path.join(localModelDir, "auto_scanned_models.json"), []);
+  try {
+    await writeFile(memoryPath, `# MEMORY.md\n\n> **Type:** Agent Durable Core Memory  \n> **Status:** Active  \n> **Updated:** ${new Date().toISOString().split('T')[0]}  \n\n## 1. User-Defined Custom Rules\n* **RTX 3060 VRAM Limit:** Limit coder context to 8,192 and reasoning to 16,384.\n`, { flag: "wx" });
+  } catch (err) {
+    if (err?.code !== "EEXIST") throw err;
+  }
+
+  // Create default SCHEMA.md if missing
+  const schemaPath = path.join(kBlockDir, "SCHEMA.md");
+  try {
+    await writeFile(schemaPath, `# Knowledge Block Schema\n\nDefine your atoms in folders like adr, architecture, spec, etc.\nUse YAML frontmatter with id and relations:\n\n\`\`\`yaml\n---\nid: "[[ATOM_ID]]"\ntype: "architecture"\nstatus: "approved"\ntitle: "Title"\nowner: "Name"\nrelations: []\n---\n\`\`\`\n`, { flag: "wx" });
+  } catch (err) {
+    if (err?.code !== "EEXIST") throw err;
+  }
+
+
 
   const installed = await installSkillDefinition(builtInSkill, path.join(govibeDir, "skills"));
   const sourceRef = await detectSourceRef(root);

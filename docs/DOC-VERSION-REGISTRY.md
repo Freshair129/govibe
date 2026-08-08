@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.27+draft"
+version: "0.3.28+draft"
 updated: "2026-08-06"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -31,8 +31,9 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
+| Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.27+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.28+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -83,6 +84,8 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.1.5+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
 | Roadmap | `ROADMAP-PROVIDER-ENTITLEMENT-RUNTIME` | `0.1.6+draft` | draft | LYRA | `docs/roadmap/ROADMAP-provider-entitlement-runtime.md` |
@@ -219,6 +222,13 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.28+draft | 2026-08-06 | Claude (merge: main -> feat/readiness-masterplan-mission-control) | Merged main (PRs #119/#120/#121, WP-15/16/17) into the readiness branch to rebuild PR #122's merge ref: a CONFLICTING pull request runs no pull_request workflows at all, so the new Baseline Check never started. Changelog below is the union of both sides; this branch's six rows (0.3.11-0.3.16, readiness registrations) collided with main's independently-numbered WP-14..17 rows and are kept at their original labels with a (readiness) distinguisher rather than dropped, per the precedent set by the WP merge rows. No document content besides version bookkeeping was authored by this row. |
+| 0.3.16+draft (readiness) | 2026-08-06 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.5+draft: TASK-PRD-003 in-progress with the unfiltered Baseline Check CI workflow. No document status changed to approved/accepted/candidate by this row. |
+| 0.3.15+draft (readiness) | 2026-08-06 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.3+draft: registered TASK-PRD-011, the Mission Control readiness tracking and command view, doc-first per its own §11.2 execution order. No document status changed to approved/accepted/candidate by this row. |
+| 0.3.14+draft (readiness) | 2026-08-06 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.2+draft: codified the per-task document-driven execution order (doc first, symbol links before code, code with gate evidence, impact before completion) and dependency-ordered phase execution. No document status changed to approved/accepted/candidate by this row. |
+| 0.3.13+draft (readiness) | 2026-08-06 | Claude Fable 5 | Registered STD-SLM-TIERED-ROUTING (0.1.0+draft, draft, owner GoVibe, distribution_role canonical): upstreamed the RWANG-PROMAX tiered-swarm SLM routing guide (two-axis taxonomy, T0-T3 ladder, cheap-eligibility keystone, three-stage verify gate, GoVibe bindings). The two RWANG tiered-swarm reference files became distribution mirrors with source_of_truth false headers under canonical-wins sync. No document status changed to approved/accepted/candidate by this row. |
+| 0.3.12+draft (readiness) | 2026-08-06 | Claude Fable 5 | Registered BACKLOG-PRODUCTION-READINESS-EXECUTION (0.1.0+draft, draft): local-packet pilot decomposing TASK-PRD-005 and TASK-PRD-008 into seven micro/atomic packets under the canonical L0/L1/L2 tiered review gate (FEAT-TIERED-REVIEW) and the approved quota-aware packet policy, with T-ctx worker context per AGENTS.md §5. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.1+draft (§11.1 execution-decomposition binding; GAP-08 evidence extended with legacy Context-Scaling-Tier wording in FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION §3). No document status changed to approved/accepted/candidate by this row. |
+| 0.3.11+draft (readiness) | 2026-08-06 | Claude Opus 5 | Registered MASTERPLAN-GOVIBE-PRODUCTION-READINESS (0.1.0+draft, draft) as the live plan of record for production-readiness work. The plan derives from a direct evidence sweep on commit 87c313d and records nine verified gaps, six readiness gates, and ten complete Task Containers. It is scoped to readiness only and does not supersede MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL. No document status changed to approved/accepted/candidate by this row; ratification of the readiness plan remains an owner decision. |
 | 0.3.27+draft | 2026-08-06 | Claude (merge #2: main -> feat/wp-17) | Merged `main` a second time into `feat/wp-17-msp-runtime-phase-5-stage-a`, after PR #119 (WP-15) and PR #120 (WP-16) were squash-merged, to re-resolve PR #121's conflicts. Squash-merging a stacked chain rewrites `main` on each merge, so each downstream PR re-conflicts once per upstream merge; this is the third and final such resolution for this branch. All code conflicts were pure migration-count/superset differences resolved in favour of this branch (which is strictly newer); the changelog below is the **union** of both sides' rows, with the two rows `main` contributed that this branch lacked (the `feat/wp-15` and `feat/wp-16` merge rows) carried forward under distinguishing owner labels rather than dropped. No document content besides version bookkeeping was authored by this row. |
 | 0.3.26+draft | 2026-08-06 | Claude (merge: main -> feat/wp-17) | Merged `main` (PR #118, WP-14 squash-merged, including its post-closure CI fix) into `feat/wp-17-msp-runtime-phase-5-stage-a` to resolve PR #121's merge conflicts. Registry version renumbered to avoid a `0.3.16+draft` collision between this branch's own WP-15/WP-16/WP-17 history and `main`'s independently-numbered WP-14 CI-fix row (carried forward unchanged immediately below, at its original content). WP-14's registry row taken from `main` (`0.1.3+draft`, includes the CI fix); WP-15/WP-16/WP-17 rows kept at this branch's own newer values. No document content besides version bookkeeping was authored by this row. |
 | 0.3.25+draft | 2026-08-06 | Claude (CI-fix session) | Synchronized WP-17-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-5-STAGE-A to `0.2.5+draft` (second post-closure CI fix, owner-directed: `--test-concurrency=1` added to root and `packages/msp-runtime`'s `test:security` scripts, fixing PR #118's 15-minute `verify` hang -- a broader real-child-process contention class of failure, distinct from the migration-race fix in the prior row). `execution_complete` was already `true` and is unaffected. No document status changed to `approved`/`accepted`/`candidate` by this row. |

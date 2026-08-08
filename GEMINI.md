@@ -46,6 +46,7 @@ npm run dev
 npm run lint
 npm run build
 npm run preview
+npm run env:validate   # Validate directory structure conformance
 ```
 
 `npm run lint` currently runs `tsc --noEmit`.
@@ -59,8 +60,9 @@ Read these documents before changing architecture, product behavior, UI contract
 3. `docs/SDD-System-Design.md`
 4. `docs/STD-Execution-Governance.md`
 5. `docs/DOCS-Human-First-Atom-Extraction.md`
-6. `docs/srs/SRD-Genesis-Block.md` (Genesis Block Requirements Definition)
-7. `docs/srs/SRS-Genesis-Block.md` (Genesis Block Core SRS)
+6. `docs/STD-Directory-Governance.md` (Directory Structure Governance Standard)
+7. `docs/srs/SRD-Genesis-Block.md` (Genesis Block Requirements Definition)
+8. `docs/srs/SRS-Genesis-Block.md` (Genesis Block Core SRS)
 8. `docs/architecture/SDD-Genesis-Block.md` (Genesis Block Core SDD)
 9. `docs/specs/SPEC-Genesis-Block.md` (Genesis Block Technical Spec)
 10. `docs/features/README.md`

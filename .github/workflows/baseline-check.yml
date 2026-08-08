@@ -1,0 +1,27 @@
+# TASK-PRD-003 (MASTERPLAN-govibe-production-readiness): the full baseline gate must run on
+# every pull request with NO path filter, so a change to any file — frontend included — cannot
+# merge without the doc, roadmap, typecheck, unit, security, and build gates executing.
+name: Baseline Check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    name: baseline-check
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm ci --prefix packages/msp-runtime
+      - run: npm run baseline:check
