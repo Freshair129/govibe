@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "draft"
-version: "0.1.6+draft"
+version: "0.1.7+draft"
 updated: "2026-08-08"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -123,6 +123,7 @@ not a claim read from a document.
 | GAP-07 | Four sidebar labels disagree with the on-screen view title | `src/mission/navigation.ts` versus each view header | PHASE-PRD-03 |
 | GAP-08 | Active documents still use abolished `H5`/`H6` or legacy Context-Scaling-Tier semantics | `docs/architecture/C4-GoVibe-Platform.md`, `docs/architecture/SDD-Genesis-Block.md`, `docs/architecture/BLUEPRINT-Translator-Core-Slice.md`; also `docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md` §3 (approved doc citing "Context Scaling Tier" `H0..H6`) | PHASE-PRD-04 |
 | GAP-09 | A clean checkout cannot start; the sidecar requires a token with no quickstart to create one | `.env.example` exists, no `.env` bootstrap or quickstart document | PHASE-PRD-05 |
+| GAP-10 | The active board source was a June HTML validation fixture: sources without an authored updated timestamp inherit parse-time freshness, so the fixture won a permanent +20 recency bonus (score 82) and its tasks name assignees absent from the agent registry | `scripts/mcp/roadmap-parser.mjs` line 590 fallback; `docs/roadmap/ROADMAP-govibe-mcp-runtime.html` had no data-updated attribute; verified live 2026-08-08 | PHASE-PRD-03 |
 
 ### 3.2 View Wiring Baseline
 
@@ -173,7 +174,7 @@ any production claim that involves a network-reachable deployment.
 | PHASE-PRD-00 | Anchor governance and register this plan | `docs/DOC-VERSION-REGISTRY.md` | This plan is registered and the agent contracts point at it | in-progress | 60 |
 | PHASE-PRD-01 | Close the CI gate so the real suite protects the branch | `docs/STD-Execution-Governance.md` | GATE-CI is met | in-progress | 75 |
 | PHASE-PRD-02 | Realign the snapshot contract across TypeScript and runtime | `docs/PRD-GoVibe-Platform-Overview.md` | GATE-CONTRACT is met | planned | 0 |
-| PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | planned | 0 |
+| PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | in-progress | 10 |
 | PHASE-PRD-04 | Remove abolished H-axis semantics from active documents | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | GATE-SEMANTIC is met | planned | 0 |
 | PHASE-PRD-05 | Package a repeatable clean-checkout developer trial | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` | GATE-BOOTSTRAP is met | planned | 0 |
 
@@ -184,7 +185,7 @@ any production claim that involves a network-reachable deployment.
 | SPR-PRD-00 | PHASE-PRD-00 | Register the readiness plan and bind the agent contracts to it | Registry row exists and both agent contracts cite this plan | in-progress | 60 |
 | SPR-PRD-01 | PHASE-PRD-01 | Make the full baseline gate run on every pull request | A pull request touching only frontend code still runs the full suite | in-progress | 50 |
 | SPR-PRD-02 | PHASE-PRD-02 | Reconcile every MissionSnapshot field across both implementations | A contract test fails when either side adds an unmatched field | planned | 0 |
-| SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | planned | 0 |
+| SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | in-progress | 10 |
 | SPR-PRD-04 | PHASE-PRD-04 | Correct the H-axis vocabulary in architecture documents | A repository scan finds no active `H5`/`H6` access semantics | planned | 0 |
 | SPR-PRD-05 | PHASE-PRD-05 | Author and verify the clean-checkout quickstart | A reviewer reaches a running Mission Control from the document alone | planned | 0 |
 
@@ -203,6 +204,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-009 | SPR-PRD-04 | task | Correct abolished H-axis semantics in architecture documents | P1 | ATHER | planned | - | Section 3.1 GAP-08 |
 | TASK-PRD-010 | SPR-PRD-05 | task | Author the clean-checkout developer quickstart | P0 | THESEUS | planned | TASK-PRD-003 | Section 3.1 GAP-09 |
 | TASK-PRD-011 | SPR-PRD-00 | task | Provide a Mission Control readiness tracking and command view | P1 | VIBE | in-progress | TASK-PRD-001 | Section 11 |
+| TASK-PRD-012 | SPR-PRD-03 | task | Roadmap source hygiene and honest recency scoring | P1 | LYRA | in-progress | - | Section 3.1 GAP-10 |
 
 ## Assignments
 
@@ -219,6 +221,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-009 | ATHER | agent | ABAC | 2026-08-06T00:00:00Z | Boss |
 | TASK-PRD-010 | THESEUS | agent | ABAC | 2026-08-06T00:00:00Z | Boss |
 | TASK-PRD-011 | VIBE | agent | ABAC | 2026-08-06T00:00:00Z | Boss |
+| TASK-PRD-012 | LYRA | agent | ABAC | 2026-08-08T00:00:00Z | Boss |
 
 ## Handoffs
 
@@ -244,6 +247,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-009 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-010 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-011 | pending | pending | n/a | 2026-08-06T00:00:00Z |
+| TASK-PRD-012 | pending | pending | n/a | 2026-08-08T00:00:00Z |
 
 ## Task Containers
 
@@ -731,6 +735,50 @@ ui_state:
   disabled_reason: ""
 ```
 
+### TC-TASK-PRD-012
+
+```yaml
+task_container_id: TC-TASK-PRD-012
+task_id: TASK-PRD-012
+parent_phase_id: PHASE-PRD-03
+parent_sprint_id: SPR-PRD-03
+title: Roadmap source hygiene and honest recency scoring
+requirement_type: NFR
+complexity: C-2
+access_scope: H2
+status: in-progress
+version: 0.1.0+draft
+pic: LYRA
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: scripts/mcp/roadmap-parser.mjs
+  doc: docs/roadmap/MASTERPLAN-govibe-production-readiness.md
+  test: src/roadmapParser.test.ts
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given a roadmap source with no authored updated timestamp, when sources are scored, then it receives no recency bonus and a test pins that behaviour
+      checked: false
+  success_criteria:
+    - criterion: Given the HTML validation fixture is demoted to draft with its real updated date, when the runtime selects the active source without an environment override, then an approved real plan wins the board
+      checked: false
+  exit_criteria:
+    - criterion: Given the roadmap sources list renders, when a reviewer inspects updatedAt values, then no source reports parse time as its updated date
+      checked: false
+changelog: Opened 2026-08-08 after the live A2 audit found the validation fixture holding the board through the parse-time freshness fallback. Fixture demotion and its authored data-updated date land with this row; the scorer change and its test remain open.
+created_at: 2026-08-08T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 6000
+  total_token_usage: 6000
+ui_state:
+  dropdown_default: expanded
+  expanded: true
+  disabled_reason: ""
+```
+
 ## 11. Live Status Protocol
 
 This document is the status store. There is no second tracker to reconcile.
@@ -813,6 +861,7 @@ errors. Ratification is an owner decision and must not be self-applied by an exe
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.1.7+draft | 2026-08-08 | draft | Recorded GAP-10 (validation fixture held the active board via the parse-time freshness fallback) and opened TASK-PRD-012 for source hygiene and honest recency scoring. The fixture demotion to draft with an authored data-updated date lands in the same change; the scorer fix stays open under the task. | pending | Claude Fable 5 |
 | 0.1.6+draft | 2026-08-08 | draft | Closed TASK-PRD-003 and marked GATE-CI met on command evidence: green baseline-check run 31226249238 on PR #122 (70 vitest files, 65 security tests, docs/roadmap/typecheck/build), red baseline-check on the deliberately-failing PR #123 proving the gate blocks a broken suite, and baseline-check set as a required status check on main. Recorded per the WP-16/17 precedent as owner-directed closure of single-session-verified evidence, not an independent audit reproduction. | pending | Claude Fable 5 |
 | 0.1.5+draft | 2026-08-06 | draft | Started TASK-PRD-003: added the unfiltered Baseline Check workflow (.github/workflows/baseline-check.yml) running docs, roadmap, typecheck, unit, security, and build gates on every pull request with no path filter. PHASE-PRD-01 and SPR-PRD-01 moved to in-progress. Marking GATE-CI met still requires the check to be made required in branch protection (owner action). | pending | Claude Fable 5 |
 | 0.1.4+draft | 2026-08-06 | draft | Corrected GAP-05 against live evidence gathered while verifying TASK-PRD-011: masterPlanPreview does have an on-demand producer (the masterplan.preview command); only heatmap remains producerless. Recorded that the board rejects draft sources by promotion contract, surfaced in the readiness view. | pending | Claude Fable 5 |
