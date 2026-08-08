@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "draft"
-version: "0.1.12+draft"
+version: "0.1.13+draft"
 updated: "2026-08-09"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -212,6 +212,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-014 | SPR-PRD-06 | task | Implement the personnel identity model (employee_id / staff_id) | P1 | VIBE | review | - | SPEC-Workspace-System §3.3 |
 | TASK-PRD-015 | SPR-PRD-06 | task | Implement RBAC core: scoped roles, deny-by-default decisions, allow/deny audit | P1 | VIBE | review | TASK-PRD-014 | SPEC-Workspace-System §6 |
 | TASK-PRD-016 | SPR-PRD-06 | task | Enforce RBAC across the govibe.workspace.* tool surface | P2 | ARCHON | review | TASK-PRD-015 | SPEC-Workspace-System §6.2 |
+| TASK-PRD-017 | SPR-PRD-06 | task | Validate active personnel identity at the RBAC enforcement boundary | P2 | VIBE | planned | TASK-PRD-016 | SPEC-Workspace-System §3.3 |
 
 ## Assignments
 
@@ -233,6 +234,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-014 | VIBE | agent | ABAC | 2026-08-09T00:00:00Z | Boss |
 | TASK-PRD-015 | VIBE | agent | ABAC | 2026-08-09T00:00:00Z | Boss |
 | TASK-PRD-016 | ARCHON | agent | ABAC | 2026-08-09T00:00:00Z | Boss |
+| TASK-PRD-017 | VIBE | agent | ABAC | 2026-08-09T00:00:00Z | Boss |
 
 ## Handoffs
 
@@ -263,6 +265,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-014 | pending | pending | n/a | 2026-08-09T00:00:00Z |
 | TASK-PRD-015 | pending | pending | n/a | 2026-08-09T00:00:00Z |
 | TASK-PRD-016 | pending | pending | n/a | 2026-08-09T00:00:00Z |
+| TASK-PRD-017 | pending | pending | n/a | 2026-08-09T00:00:00Z |
 
 ## Task Containers
 
@@ -957,13 +960,57 @@ definition_of_done:
   exit_criteria:
     - criterion: Given default role assignments, when mcp:smoke and the runtime test suite run with enforcement active, then existing governed flows still pass and the AC-08 evidence is attached to this container
       checked: true
-changelog: Opened 2026-08-09 to wire the TASK-PRD-015 RBAC core into tool dispatch per SPEC-Workspace-System §6.2 and §6.3. Landed 2026-08-09 as scripts/mcp/runtime/rbac-enforcement.mjs called from handleToolCall before the dispatch switch — per-workspace activation via .govibe/rbac.json (govibe-rbac-state/v1, unknown schemas hard-fail), scan split into deep/l1 operations, subject namespace routing, H-ceiling from workspace state, allow/deny audit appended to .govibe/rbac-audit.jsonl, and denials thrown as RbacDenialError before any handler side effect. Evidence: enforcement suite 11 passed, including dispatch-level proof that a deny surfaces before the handler body and an allow falls through to it, and the separation-of-duties denial recorded in the audit log (AC-08); mcp:smoke PASS (15 tools); full suite with enforcement active 74 files / 609 passed / 1 skipped; security 65 passed. Impact reviewed: govibe-mcp-server.mjs already wraps denials as JSON-RPC errors; LLD-GoVibe-MCP-Tools line 151 called for this enforcement. Active-identity validation against a personnel registry noted open in the spec §3.3 note. Awaiting ATHER audit and Boss approval.
+changelog: Opened 2026-08-09 to wire the TASK-PRD-015 RBAC core into tool dispatch per SPEC-Workspace-System §6.2 and §6.3. Landed 2026-08-09 as scripts/mcp/runtime/rbac-enforcement.mjs called from handleToolCall before the dispatch switch — per-workspace activation via .govibe/rbac.json (govibe-rbac-state/v1, unknown schemas hard-fail), scan split into deep/l1 operations, subject namespace routing, H-ceiling from workspace state, allow/deny audit appended to .govibe/rbac-audit.jsonl, and denials thrown as RbacDenialError before any handler side effect. Evidence: enforcement suite 11 passed, including dispatch-level proof that a deny surfaces before the handler body and an allow falls through to it, and the separation-of-duties denial recorded in the audit log (AC-08); mcp:smoke PASS (15 tools); full suite with enforcement active 74 files / 609 passed / 1 skipped; security 65 passed. Impact reviewed: govibe-mcp-server.mjs already wraps denials as JSON-RPC errors; LLD-GoVibe-MCP-Tools line 151 called for this enforcement. Active-identity validation against a personnel registry noted open in the spec §3.3 note and tracked as TASK-PRD-017. Awaiting ATHER audit and Boss approval.
 created_at: 2026-08-09T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
   context_length: 200k
   predicted_token_usage: 10000
   total_token_usage: 10000
+ui_state:
+  dropdown_default: expanded
+  expanded: true
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-017
+
+```yaml
+task_container_id: TC-TASK-PRD-017
+task_id: TASK-PRD-017
+parent_phase_id: PHASE-PRD-06
+parent_sprint_id: SPR-PRD-06
+title: Validate active personnel identity at the RBAC enforcement boundary
+requirement_type: FR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: scripts/mcp/runtime/rbac-enforcement.mjs
+  doc: docs/specs/SPEC-Workspace-System.md
+  test: scripts/mcp/rbac-enforcement.test.mjs
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given an RBAC-enabled workspace with a materialized personnel registry snapshot, when a tool call presents an unknown or retired employee_/staff_ actor, then the call is denied before the handler body and the denial is audited with a distinct reason separating unknown from retired identities
+      checked: false
+  success_criteria:
+    - criterion: Given a person converted from contract to permanent, when the retired staff_id is presented as the actor, then it is denied while the active employee_id passes attribution and is evaluated against its own role assignments
+      checked: false
+  exit_criteria:
+    - criterion: Given this validation lands with test evidence, when TASK-PRD-014's exit criterion is re-evaluated, then it is ticked in the same change that removes the open-item sentence from the spec §3.3 status note
+      checked: false
+changelog: Opened 2026-08-09 from the TASK-PRD-016 review finding recorded in the spec §3.3 note (0.2.3+draft) — RBAC enforcement attributes calls under employee_/staff_ actor values but does not yet verify the presented ID is the person's active identity. Scope is the enforcement-boundary wiring of the TASK-PRD-014 personnel registry snapshot; agent actors are unaffected. Also closes TASK-PRD-014's open exit criterion on completion.
+created_at: 2026-08-09T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 8000
+  total_token_usage: 8000
 ui_state:
   dropdown_default: expanded
   expanded: true
@@ -1052,6 +1099,7 @@ errors. Ratification is an owner decision and must not be self-applied by an exe
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.1.13+draft | 2026-08-09 | draft | Opened TASK-PRD-017 (validate active personnel identity at the RBAC enforcement boundary, SPR-PRD-06, depends on TASK-PRD-016) from the review finding recorded in the spec §3.3 note: enforcement attributes calls under employee_/staff_ actors but does not yet verify the ID is the person's active identity. Complete Task Container authored doc-first per §11.2; closing it also closes TASK-PRD-014's open exit criterion. | pending | Claude Fable 5 |
 | 0.1.12+draft | 2026-08-09 | draft | Executed TASK-PRD-016 to review: scripts/mcp/runtime/rbac-enforcement.mjs runs the RBAC decision point in handleToolCall before any handler body, activated per workspace by .govibe/rbac.json with allow/deny audit in .govibe/rbac-audit.jsonl; workspaces without RBAC state keep the pre-RBAC posture. Enforcement suite 11 tests green; mcp:smoke and the full suite pass with enforcement active; spec bumped to 0.2.3+draft. All three DoD criteria ticked. SPR-PRD-06 execution complete pending QA/audit on all four tasks. | pending | Claude Fable 5 |
 | 0.1.11+draft | 2026-08-09 | draft | Executed TASK-PRD-015 to review: packages/govibe-core/src/rbac.mjs implements the §6 RBAC core (deny-by-default scoped assignments, §6.2 matrix, §6.3 staff ceiling with recorded owner approval plus separation of duties, §6.1 H-ceiling intersection, §6.4 allow/deny audit). 16-test suite green including the full matrix sweep; spec bumped to 0.2.2+draft. All three DoD criteria ticked at registry level; live enforcement on tool dispatch remains TASK-PRD-016. QA and ATHER audit pending. | pending | Claude Fable 5 |
 | 0.1.10+draft | 2026-08-09 | draft | Executed TASK-PRD-014 to review: packages/govibe-core/src/personnel.mjs implements the §3.3 personnel identity model (single active identity, never-reuse, cross-type conversion via supersedes, append-only audit, snapshot round-trip) and vaults.mjs now rejects employee_/staff_ values as agent identifiers (rule 4). 15-test suite green; spec bumped to 0.2.1+draft recording implemented status. Acceptance and success criteria ticked; the exit criterion stays open until tool dispatch consumes personnel attribution (TASK-PRD-016). QA and ATHER audit pending. | pending | Claude Fable 5 |
