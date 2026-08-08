@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.34+draft"
+version: "0.3.35+draft"
 updated: "2026-08-09"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.34+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.35+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -84,7 +84,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.1.9+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.1.10+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -139,7 +139,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Architecture | `BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE` | `3.1.0` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md` |
 | Architecture | `BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT` | `0.1.1` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-Mission-Gateway-Runtime-Responsibility-Split.md` |
 | Architecture | `ARCH-VAULT-CONTEXT-MODEL` | `1.0.1` | approved | Boss / ATHER | `docs/architecture/ARCH-Vault-and-Context-Model.md` |
-| Spec | `SPEC-WORKSPACE-SYSTEM` | `0.2.0+draft` | draft | Boss (CEO) | `docs/specs/SPEC-Workspace-System.md` |
+| Spec | `SPEC-WORKSPACE-SYSTEM` | `0.2.1+draft` | draft | Boss (CEO) | `docs/specs/SPEC-Workspace-System.md` |
 | Architecture | `TDD-POC-CANONICAL-LOOP` | `1.0.0` | approved | Boss / ATHER | `docs/architecture/TDD-POC-Canonical-Loop.md` |
 | Architecture / Conformance | `C4-KNOWLEDGE-CONTEXT-AUTHORITY-OVERLAY` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/C4-Knowledge-Context-Authority-Overlay.md` |
 | Architecture / Conformance | `C4-PROVIDER-ENTITLEMENT-EXECUTION-ROUTING-OVERLAY` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/C4-Provider-Entitlement-Execution-Routing-Overlay.md` |
@@ -223,6 +223,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.35+draft | 2026-08-09 | Claude Fable 5 | Synchronized SPEC-WORKSPACE-SYSTEM to 0.2.1+draft (§3.3 personnel identity model implemented by packages/govibe-core/src/personnel.mjs with the vaults.mjs agent-namespace guard; §6 RBAC still specified-not-implemented) and MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.10+draft (TASK-PRD-014 executed to review with the 15-test personnel suite). No document status changed to approved/accepted/candidate by this row. |
 | 0.3.34+draft | 2026-08-09 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.9+draft: TASK-PRD-013 executed to review with the SPEC-Workspace-System AC-01..AC-06 conformance suite (packages/govibe-core/src/workspace-spec-conformance.test.mjs) and full-suite evidence recorded. No document status changed to approved/accepted/candidate by this row. |
 | 0.3.33+draft | 2026-08-09 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.8+draft: opened PHASE-PRD-06 / SPR-PRD-06 binding SPEC-WORKSPACE-SYSTEM to the readiness plan with four new tasks (TASK-PRD-013 spec conformance tests, TASK-PRD-014 personnel identity, TASK-PRD-015 RBAC core, TASK-PRD-016 RBAC tool-surface enforcement). No document status changed to approved/accepted/candidate by this row. |
 | 0.3.32+draft | 2026-08-08 | Claude (doc-authoring session) | Synchronized SPEC-WORKSPACE-SYSTEM to 0.2.0+draft: added §3.3 personnel identity (`employee_id` permanent / `staff_id` contract, single-entity model with `employment_type` discriminator, conversion via `supersedes`, actor attribution) and §6 deny-by-default scoped RBAC (owner/maintainer/operator/viewer matrix over the tool surface, contract-staff ceiling below owner, separation of duties, allow/deny audit); both sections are specified-not-implemented. No document status changed to approved/accepted/candidate by this row. |

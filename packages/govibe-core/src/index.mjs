@@ -10,6 +10,7 @@ export { createMspClientFromEnvironment, createUnavailableMspClient, inspectMspC
 export { createMspStdioCaller } from "./msp-stdio-transport.mjs";
 export { definitionHash, installSkillDefinition, loadGlobalTrustPolicy, loadSkillLock, readSkillDefinition, resolveSkill } from "./skill-registry.mjs";
 export { createWorkspaceVaultBindings, normalizeAgentId, slugifyProjectName, VAULT_LEVELS, VAULT_TYPES } from "./vaults.mjs";
+export { createPersonnelRegistry, EMPLOYMENT_TYPES, PERSONNEL_ID_NAMESPACE, validatePersonnelId } from "./personnel.mjs";
 export { buildLinkGraph, calculateWorkspaceImpact } from "./impact/impact-engine.mjs";
 export { scanWorkspace, inventoryWorkspace } from "./scan/scan.mjs";
 export { createDefaultStageAdapters } from "./scan/stage-adapters.mjs";

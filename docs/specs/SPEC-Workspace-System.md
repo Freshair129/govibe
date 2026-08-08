@@ -2,8 +2,8 @@
 title: "SPEC: Workspace System Specification"
 doc_id: "SPEC-WORKSPACE-SYSTEM"
 status: "draft"
-version: "0.2.0+draft"
-updated: "2026-08-08"
+version: "0.2.1+draft"
+updated: "2026-08-09"
 owner: "Boss (CEO)"
 source_of_truth: true
 related_docs:
@@ -94,10 +94,13 @@ The bindings document (`govibe-workspace-vault-bindings/v1`) carries
 
 ### 3.3 Personnel identity (`employee_id` / `staff_id`)
 
-> **Status: specified, not yet implemented.** No runtime code currently models
-> personnel; this section is the binding contract for any implementation that does.
-> Today the only human-attribution surface is the free-form `actor` string required by
-> every tool call (§5.1).
+> **Status: identity model implemented, tool-surface attribution pending.** The identity
+> model in this section is implemented by `packages/govibe-core/src/personnel.mjs`
+> (registry, single-active-identity enforcement, conversion via `supersedes`, allow-only
+> append audit) with the agent-namespace guard in `packages/govibe-core/src/vaults.mjs`,
+> pinned by `packages/govibe-core/src/personnel.test.mjs`. Wiring personnel attribution
+> into the `govibe.*` tool surface lands with RBAC enforcement (TASK-PRD-016); until
+> then the tool-call surface still accepts the free-form `actor` string (§5.1).
 
 Human actors are modeled as **one** `personnel` entity with an `employment_type`
 discriminator. The employment type determines which ID namespace identifies the person:
@@ -377,6 +380,10 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
 
 ## 12. Verification
 
+- `npx vitest run packages/govibe-core/src/workspace-spec-conformance.test.mjs` — AC-01..AC-06
+  conformance suite (TASK-PRD-013).
+- `npx vitest run packages/govibe-core/src/personnel.test.mjs` — §3.3 personnel identity and
+  AC-07 coverage (TASK-PRD-014).
 - `npx vitest run scripts/mcp/runtime-core.test.mjs` — runtime initialize coverage.
 - `npx vitest run packages/govibe-core/src/capability-runtime.test.mjs` — capability
   surface including workspace initialization.
@@ -388,5 +395,6 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.1+draft | 2026-08-09 | Boss (CEO) | §3.3 status updated from specified-not-implemented to identity-model-implemented: `packages/govibe-core/src/personnel.mjs` lands the personnel registry (single active identity, conversion via `supersedes`, append-only audit) and `vaults.mjs` gains the rule-4 guard rejecting `employee_`/`staff_` values as agent identifiers. §12 verification now lists the AC-01..AC-06 conformance suite and the §3.3/AC-07 personnel suite. Tool-surface actor attribution remains pending under TASK-PRD-016; §6 RBAC remains specified-not-implemented. |
 | 0.2.0+draft | 2026-08-08 | Boss (CEO) | Added §3.3 personnel identity (`employee_id` for permanent employees, `staff_id` for contract staff; single-active-identity, conversion via `supersedes`, actor attribution, separation from `agent_id`) and §6 RBAC (deny-by-default scoped role model, owner/maintainer/operator/viewer permission matrix over the tool surface, contract-staff ceiling below `owner`, separation of duties, allow/deny audit). Both marked specified-not-implemented; renumbered §7–§12 and added AC-07/AC-08. |
 | 0.1.0+draft | 2026-08-08 | Boss (CEO) | Initial workspace-system specification: identity derivation, materialization layout, state schemas, lifecycle/tool contracts, MSP boundary, governance-axis conformance, failure semantics, and acceptance criteria — grounded in `packages/govibe-core/src/workspace.mjs`, `packages/govibe-core/src/vaults.mjs`, and `scripts/mcp/registry.mjs`. |
