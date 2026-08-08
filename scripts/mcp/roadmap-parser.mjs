@@ -471,7 +471,10 @@ function buildMarkdownSnapshot(text, sourcePath) {
     title,
     sourceVersion: data.version ?? "0.1.0",
     approvalStatus: data.status ?? "draft",
-    updatedAt: data.updated ?? parsedAt,
+    // No fallback to parsedAt here: an unauthored source must not masquerade as
+    // just-updated (GAP-10 / TASK-PRD-012). Downstream scoring and display treat
+    // a missing updatedAt as "no recency signal", not "updated now".
+    updatedAt: data.updated || undefined,
     nodes,
     assignments,
     handoffs,
@@ -587,7 +590,9 @@ function buildHtmlSnapshot(text, sourcePath) {
     title,
     sourceVersion: contractRoot.getAttribute("data-version") ?? "0.1.0",
     approvalStatus: contractRoot.getAttribute("data-status") ?? "draft",
-    updatedAt: contractRoot.getAttribute("data-updated") ?? parsedAt,
+    // Same rule as the markdown path: no authored data-updated means no updatedAt,
+    // not a parse-time stand-in (GAP-10 / TASK-PRD-012).
+    updatedAt: contractRoot.getAttribute("data-updated") || undefined,
     nodes,
     assignments,
     handoffs,
