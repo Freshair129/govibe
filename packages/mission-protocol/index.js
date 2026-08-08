@@ -133,6 +133,7 @@ export function isMissionEvent(value) {
     case "memory.selection": return hasOnlyKeys(value, ["type", "entityId"]) && (value.entityId === null || isBoundedString(value.entityId, MISSION_PROTOCOL_LIMITS.idChars));
     case "memory.forgotten": return hasOnlyKeys(value, ["type", "entityId", "vaultId"]) && isBoundedString(value.entityId, MISSION_PROTOCOL_LIMITS.idChars) && (value.vaultId === null || isBoundedString(value.vaultId, MISSION_PROTOCOL_LIMITS.idChars));
     case "memory.decay.result": return hasOnlyKeys(value, ["type", "result"]) && isBoundedRecord(value.result) && isBoundedString(value.result.vaultId, MISSION_PROTOCOL_LIMITS.idChars);
+    case "usage.update": return hasOnlyKeys(value, ["type", "usage"]) && isBoundedRecord(value.usage);
     case "command.ack": return hasOnlyKeys(value, ["type", "commandId", "ok", "message", "snapshot"])
       && isBoundedString(value.commandId, MISSION_PROTOCOL_LIMITS.idChars)
       && typeof value.ok === "boolean"

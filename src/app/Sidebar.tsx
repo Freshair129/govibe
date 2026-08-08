@@ -53,6 +53,24 @@ function SidebarIcon({ kind }: { kind: string }) {
       </svg>
     );
   }
+  if (kind === "gauge") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 4a8 8 0 0 0-8 8h2a6 6 0 0 1 12 0h2a8 8 0 0 0-8-8z" fill="currentColor" opacity=".55" />
+        <path d="M12 12l-3-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (kind === "token") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" strokeWidth="1.5" />
+        <path d="M12 7v10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M9 9.5h6M9 14.5h6" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    );
+  }
   if (kind === "robot") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">

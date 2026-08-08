@@ -1,6 +1,6 @@
 export type DomainId = "A" | "B" | "C" | "D";
 export type ViewId =
-  | "A1" | "A2" | "A3" | "A4" | "A5" | "A6"
+  | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7"
   | "B1" | "B2" | "B3" | "B4"
   | "C1" | "C2" | "C3" | "C4" | "C5"
   | "D1" | "D2" | "D3";
@@ -253,6 +253,38 @@ export type MissionWorkflowRun = {
   graphValidation?: { passed: boolean; errors?: string[] };
 };
 
+export type UsageModelBreakdown = {
+  percent: number;
+  input_tokens: number;
+  output_tokens: number;
+};
+
+export type UsageDailyReading = {
+  date: string;
+  input_tokens: number;
+  output_tokens: number;
+  sessions: number;
+  cache_creation_tokens?: number;
+  cache_read_tokens?: number;
+  total_tokens?: number;
+  messages?: number;
+};
+
+export type UsageSnapshot = {
+  source: string;
+  last_sync: string;
+  account_id?: string;
+  overview: Record<string, unknown>;
+  overview_7d?: Record<string, unknown>;
+  models?: Record<string, UsageModelBreakdown>;
+  models_7d?: Record<string, UsageModelBreakdown>;
+  code_usage?: {
+    updated_at?: string;
+    daily?: UsageDailyReading[];
+    by_project?: Array<{ project: string; total_tokens: number; date?: string }>;
+  };
+};
+
 export type MissionSnapshot = {
   connectionState: ConnectionState;
   updatedAt?: string;
@@ -273,6 +305,7 @@ export type MissionSnapshot = {
   workflowRuns?: MissionWorkflowRun[];
   providers?: Array<{ id: string; available: boolean; capabilities: string[] }>;
   memory?: MissionMemorySnapshot;
+  usage?: UsageSnapshot;
 };
 
 export type MissionEvent =
@@ -292,7 +325,8 @@ export type MissionEvent =
   | { type: "memory.search.result"; result: MissionMemorySearchResult }
   | { type: "memory.selection"; entityId: string | null }
   | { type: "memory.forgotten"; entityId: string; vaultId: string | null }
-  | { type: "memory.decay.result"; result: MissionMemoryDecayResult };
+  | { type: "memory.decay.result"; result: MissionMemoryDecayResult }
+  | { type: "usage.update"; usage: UsageSnapshot };
 
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
