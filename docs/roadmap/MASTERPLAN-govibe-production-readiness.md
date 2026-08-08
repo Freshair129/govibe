@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "draft"
-version: "0.1.13+draft"
+version: "0.1.14+draft"
 updated: "2026-08-09"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -178,7 +178,7 @@ any production claim that involves a network-reachable deployment.
 | PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | in-progress | 10 |
 | PHASE-PRD-04 | Remove abolished H-axis semantics from active documents | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | GATE-SEMANTIC is met | planned | 0 |
 | PHASE-PRD-05 | Package a repeatable clean-checkout developer trial | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` | GATE-BOOTSTRAP is met | planned | 0 |
-| PHASE-PRD-06 | Bring the runtime into verified conformance with the Workspace System spec | `docs/specs/SPEC-Workspace-System.md` | Spec acceptance criteria AC-01 through AC-08 hold with recorded command evidence | in-progress | 75 |
+| PHASE-PRD-06 | Bring the runtime into verified conformance with the Workspace System spec | `docs/specs/SPEC-Workspace-System.md` | Spec acceptance criteria AC-01 through AC-08 hold with recorded command evidence | in-progress | 85 |
 
 ## Sprints
 
@@ -190,7 +190,7 @@ any production claim that involves a network-reachable deployment.
 | SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | in-progress | 10 |
 | SPR-PRD-04 | PHASE-PRD-04 | Correct the H-axis vocabulary in architecture documents | A repository scan finds no active `H5`/`H6` access semantics | planned | 0 |
 | SPR-PRD-05 | PHASE-PRD-05 | Author and verify the clean-checkout quickstart | A reviewer reaches a running Mission Control from the document alone | planned | 0 |
-| SPR-PRD-06 | PHASE-PRD-06 | Pin workspace-spec conformance and land the personnel identity and RBAC contracts | AC-01 through AC-06 are pinned by automated tests; the personnel and RBAC suites demonstrate AC-07 and AC-08 | in-progress | 80 |
+| SPR-PRD-06 | PHASE-PRD-06 | Pin workspace-spec conformance and land the personnel identity and RBAC contracts | AC-01 through AC-06 are pinned by automated tests; the personnel and RBAC suites demonstrate AC-07 and AC-08 | in-progress | 90 |
 
 ## Backlog Items
 
@@ -212,7 +212,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-014 | SPR-PRD-06 | task | Implement the personnel identity model (employee_id / staff_id) | P1 | VIBE | review | - | SPEC-Workspace-System §3.3 |
 | TASK-PRD-015 | SPR-PRD-06 | task | Implement RBAC core: scoped roles, deny-by-default decisions, allow/deny audit | P1 | VIBE | review | TASK-PRD-014 | SPEC-Workspace-System §6 |
 | TASK-PRD-016 | SPR-PRD-06 | task | Enforce RBAC across the govibe.workspace.* tool surface | P2 | ARCHON | review | TASK-PRD-015 | SPEC-Workspace-System §6.2 |
-| TASK-PRD-017 | SPR-PRD-06 | task | Validate active personnel identity at the RBAC enforcement boundary | P2 | VIBE | planned | TASK-PRD-016 | SPEC-Workspace-System §3.3 |
+| TASK-PRD-017 | SPR-PRD-06 | task | Validate active personnel identity at the RBAC enforcement boundary | P2 | VIBE | review | TASK-PRD-016 | SPEC-Workspace-System §3.3 |
 
 ## Assignments
 
@@ -871,8 +871,8 @@ definition_of_done:
       checked: true
   exit_criteria:
     - criterion: Given personnel identity is available, when a govibe.* tool call is attributed, then the actor value is the active employee_id or staff_id, and no personnel ID appears in any vault binding record
-      checked: false
-changelog: Opened 2026-08-09 to implement SPEC-Workspace-System §3.3. Landed 2026-08-09 as packages/govibe-core/src/personnel.mjs (registry with single-active-identity and never-reuse enforcement, cross-type conversion via supersedes, append-only audit, export/import round-trip) plus the vaults.mjs rule-4 guard rejecting employee_/staff_ agent identifiers. Evidence `npx vitest run packages/govibe-core/src/personnel.test.mjs` 15 passed. The registry-level attribution half of the exit criterion (resolveActor returns the active ID; personnel IDs cannot enter vault bindings) is pinned; the criterion stays unticked until govibe.* tool dispatch consumes personnel attribution under TASK-PRD-016. Impact run (runtime_behavior_change over vaults/personnel/index) reviewed: bin/init.mjs unaffected (default agent id), spec §3.3 status note updated to 0.2.1+draft in the same change.
+      checked: true
+changelog: Opened 2026-08-09 to implement SPEC-Workspace-System §3.3. Exit criterion closed 2026-08-09 by TASK-PRD-017 -- the enforcement boundary validates employee_/staff_ actors as active identities against .govibe/personnel.json, pinned by the retired-vs-active conversion tests in scripts/mcp/rbac-enforcement.test.mjs; the vault-binding half was already pinned by personnel.test.mjs. Landed 2026-08-09 as packages/govibe-core/src/personnel.mjs (registry with single-active-identity and never-reuse enforcement, cross-type conversion via supersedes, append-only audit, export/import round-trip) plus the vaults.mjs rule-4 guard rejecting employee_/staff_ agent identifiers. Evidence `npx vitest run packages/govibe-core/src/personnel.test.mjs` 15 passed. The registry-level attribution half of the exit criterion (resolveActor returns the active ID; personnel IDs cannot enter vault bindings) is pinned; the criterion stays unticked until govibe.* tool dispatch consumes personnel attribution under TASK-PRD-016. Impact run (runtime_behavior_change over vaults/personnel/index) reviewed: bin/init.mjs unaffected (default agent id), spec §3.3 status note updated to 0.2.1+draft in the same change.
 created_at: 2026-08-09T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -984,8 +984,8 @@ title: Validate active personnel identity at the RBAC enforcement boundary
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
 approver: Boss
@@ -997,14 +997,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given an RBAC-enabled workspace with a materialized personnel registry snapshot, when a tool call presents an unknown or retired employee_/staff_ actor, then the call is denied before the handler body and the denial is audited with a distinct reason separating unknown from retired identities
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given a person converted from contract to permanent, when the retired staff_id is presented as the actor, then it is denied while the active employee_id passes attribution and is evaluated against its own role assignments
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given this validation lands with test evidence, when TASK-PRD-014's exit criterion is re-evaluated, then it is ticked in the same change that removes the open-item sentence from the spec §3.3 status note
-      checked: false
-changelog: Opened 2026-08-09 from the TASK-PRD-016 review finding recorded in the spec §3.3 note (0.2.3+draft) — RBAC enforcement attributes calls under employee_/staff_ actor values but does not yet verify the presented ID is the person's active identity. Scope is the enforcement-boundary wiring of the TASK-PRD-014 personnel registry snapshot; agent actors are unaffected. Also closes TASK-PRD-014's open exit criterion on completion.
+      checked: true
+changelog: Opened 2026-08-09 from the TASK-PRD-016 review finding recorded in the spec §3.3 note (0.2.3+draft) — RBAC enforcement attributes calls under employee_/staff_ actor values but does not yet verify the presented ID is the person's active identity. Scope is the enforcement-boundary wiring of the TASK-PRD-014 personnel registry snapshot; agent actors are unaffected. Also closes TASK-PRD-014's open exit criterion on completion. Landed 2026-08-09 in scripts/mcp/runtime/rbac-enforcement.mjs — when .govibe/personnel.json (govibe-personnel-registry/v1) exists, employee_/staff_ actors resolve through the real personnel registry: unknown IDs deny as unknown_personnel_identity, retired IDs as retired_personnel_identity, both audited before the handler body; unknown snapshot schemas hard-fail; agent actors and snapshot-less workspaces keep prior posture. Evidence: enforcement suite 16 passed (5 new, including the conversion case built from the live personnel registry export); mcp:smoke PASS; full suite 74 files / 614 passed / 1 skipped; security 65 passed. TASK-PRD-014's exit criterion ticked and the spec §3.3 open-item sentence removed in this same change (spec 0.2.4+draft). Awaiting ATHER audit and Boss approval.
 created_at: 2026-08-09T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1099,6 +1099,7 @@ errors. Ratification is an owner decision and must not be self-applied by an exe
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.1.14+draft | 2026-08-09 | draft | Executed TASK-PRD-017 to review: the RBAC enforcement boundary validates employee_/staff_ actors as active personnel identities when .govibe/personnel.json is materialized — unknown_personnel_identity and retired_personnel_identity deny with audit before the handler body. TASK-PRD-014's exit criterion ticked and the spec §3.3 open item removed in the same change (spec 0.2.4+draft). Enforcement suite 16 green; full suite and mcp:smoke pass. All SPR-PRD-06 tasks now at review with every DoD criterion ticked, pending QA/audit and owner approval. | pending | Claude Fable 5 |
 | 0.1.13+draft | 2026-08-09 | draft | Opened TASK-PRD-017 (validate active personnel identity at the RBAC enforcement boundary, SPR-PRD-06, depends on TASK-PRD-016) from the review finding recorded in the spec §3.3 note: enforcement attributes calls under employee_/staff_ actors but does not yet verify the ID is the person's active identity. Complete Task Container authored doc-first per §11.2; closing it also closes TASK-PRD-014's open exit criterion. | pending | Claude Fable 5 |
 | 0.1.12+draft | 2026-08-09 | draft | Executed TASK-PRD-016 to review: scripts/mcp/runtime/rbac-enforcement.mjs runs the RBAC decision point in handleToolCall before any handler body, activated per workspace by .govibe/rbac.json with allow/deny audit in .govibe/rbac-audit.jsonl; workspaces without RBAC state keep the pre-RBAC posture. Enforcement suite 11 tests green; mcp:smoke and the full suite pass with enforcement active; spec bumped to 0.2.3+draft. All three DoD criteria ticked. SPR-PRD-06 execution complete pending QA/audit on all four tasks. | pending | Claude Fable 5 |
 | 0.1.11+draft | 2026-08-09 | draft | Executed TASK-PRD-015 to review: packages/govibe-core/src/rbac.mjs implements the §6 RBAC core (deny-by-default scoped assignments, §6.2 matrix, §6.3 staff ceiling with recorded owner approval plus separation of duties, §6.1 H-ceiling intersection, §6.4 allow/deny audit). 16-test suite green including the full matrix sweep; spec bumped to 0.2.2+draft. All three DoD criteria ticked at registry level; live enforcement on tool dispatch remains TASK-PRD-016. QA and ATHER audit pending. | pending | Claude Fable 5 |

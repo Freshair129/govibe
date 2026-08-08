@@ -5,8 +5,10 @@ import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { createPersonnelRegistry, EMPLOYMENT_TYPES } from "../../packages/govibe-core/src/index.mjs";
+
 import { handleToolCall } from "./handlers.mjs";
-import { authorizeOperation, classifySubjectType, enforceToolRbac, RBAC_STATE_SCHEMA, RbacDenialError, resolveRbacOperation } from "./runtime/rbac-enforcement.mjs";
+import { authorizeOperation, classifySubjectType, enforceToolRbac, PERSONNEL_STATE_SCHEMA, RBAC_STATE_SCHEMA, RbacDenialError, resolveRbacOperation } from "./runtime/rbac-enforcement.mjs";
 
 const roots = [];
 afterEach(async () => {
@@ -123,6 +125,65 @@ describe("RBAC enforcement — deny by default on the tool surface (AC-08)", () 
   it("denies when rbac.json exists but the workspace was never initialized", async () => {
     const root = await workspaceFixture({ rbac: { schema: RBAC_STATE_SCHEMA, assignments: [ownerAssignment()] }, initialized: false });
     await expect(enforceToolRbac("govibe.workspace.impact", { actor: "employee_boss-01", workspacePath: root })).rejects.toThrow(/workspace_not_initialized/);
+  });
+});
+
+describe("RBAC enforcement — active personnel identity (§3.3, TASK-PRD-017)", () => {
+  // Built with the real personnel registry so the snapshot cannot drift from the actual
+  // exportRecords shape: staff_bob-2026 is converted to employee_bob-01 and thereby retired.
+  function convertedPersonnelSnapshot() {
+    const registry = createPersonnelRegistry();
+    registry.registerPersonnel({ personRef: "hr:bob", employmentType: EMPLOYMENT_TYPES.CONTRACT, id: "staff_bob-2026", actor: "Boss" });
+    registry.convertEmployment({ personRef: "hr:bob", employmentType: EMPLOYMENT_TYPES.PERMANENT, id: "employee_bob-01", actor: "Boss" });
+    return registry.exportRecords();
+  }
+
+  async function personnelFixture({ assignments, personnel }) {
+    const root = await workspaceFixture({ rbac: { schema: RBAC_STATE_SCHEMA, assignments } });
+    await writeFile(path.join(root, ".govibe", "personnel.json"), JSON.stringify(personnel));
+    return root;
+  }
+
+  it("denies an unknown employee_ actor before the handler body with its own reason", async () => {
+    const root = await personnelFixture({ assignments: [ownerAssignment("employee_ghost-01")], personnel: convertedPersonnelSnapshot() });
+    await expect(handleToolCall("govibe.workspace.impact", { actor: "employee_ghost-01", workspacePath: root, paths: ["README.md"] })).rejects.toThrow(/unknown_personnel_identity/);
+    const lines = await readAuditLines(root);
+    expect(lines[0]).toMatchObject({ subject_id: "employee_ghost-01", decision: "deny", reason: "unknown_personnel_identity" });
+  });
+
+  it("denies a retired staff_ ID while the active employee_ ID passes attribution (conversion case)", async () => {
+    const root = await personnelFixture({ assignments: [ownerAssignment("employee_bob-01")], personnel: convertedPersonnelSnapshot() });
+
+    await expect(handleToolCall("govibe.workspace.impact", { actor: "staff_bob-2026", workspacePath: root, paths: ["README.md"] })).rejects.toThrow(/retired_personnel_identity/);
+
+    const active = await authorizeOperation({ workspacePath: root, operation: "govibe.workspace.impact", actor: "employee_bob-01" });
+    expect(active).toMatchObject({ enforced: true, decision: "allow", role: "owner" });
+
+    const lines = await readAuditLines(root);
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toMatchObject({ subject_id: "staff_bob-2026", subject_type: "staff", decision: "deny", reason: "retired_personnel_identity" });
+    expect(lines[1]).toMatchObject({ subject_id: "employee_bob-01", subject_type: "employee", decision: "allow", reason: "role_permits" });
+  });
+
+  it("still evaluates the active ID against its own assignments, not the retired ID's history", async () => {
+    // employee_bob-01 is active personnel but holds only viewer — impact must deny on role.
+    const root = await personnelFixture({ assignments: [ownerAssignment("employee_bob-01", "viewer")], personnel: convertedPersonnelSnapshot() });
+    await expect(authorizeOperation({ workspacePath: root, operation: "govibe.workspace.impact", actor: "employee_bob-01" })).rejects.toThrow(/role_not_permitted/);
+  });
+
+  it("leaves agent actors and snapshot-less workspaces unaffected", async () => {
+    const root = await personnelFixture({ assignments: [ownerAssignment("agent-runner")], personnel: convertedPersonnelSnapshot() });
+    expect(await authorizeOperation({ workspacePath: root, operation: "govibe.workspace.impact", actor: "agent-runner" })).toMatchObject({ enforced: true, decision: "allow" });
+
+    // No personnel.json: an employee_ actor is evaluated by assignments alone (pre-017 posture).
+    const bare = await workspaceFixture({ rbac: { schema: RBAC_STATE_SCHEMA, assignments: [ownerAssignment("employee_boss-01")] } });
+    expect(await authorizeOperation({ workspacePath: bare, operation: "govibe.workspace.impact", actor: "employee_boss-01" })).toMatchObject({ enforced: true, decision: "allow" });
+  });
+
+  it("hard-fails on a personnel snapshot with an unknown schema (§10)", async () => {
+    const root = await personnelFixture({ assignments: [ownerAssignment()], personnel: { schema: "govibe-personnel-registry/v0", records: [] } });
+    await expect(authorizeOperation({ workspacePath: root, operation: "govibe.workspace.impact", actor: "employee_boss-01" })).rejects.toThrow(/Incompatible existing state/);
+    expect(PERSONNEL_STATE_SCHEMA).toBe("govibe-personnel-registry/v1");
   });
 });
 

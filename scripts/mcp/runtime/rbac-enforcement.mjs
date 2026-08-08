@@ -8,9 +8,10 @@
 import { appendFile, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { createRbacRegistry } from "../../../packages/govibe-core/src/index.mjs";
+import { createPersonnelRegistry, createRbacRegistry } from "../../../packages/govibe-core/src/index.mjs";
 
 export const RBAC_STATE_SCHEMA = "govibe-rbac-state/v1";
+export const PERSONNEL_STATE_SCHEMA = "govibe-personnel-registry/v1";
 
 export class RbacDenialError extends Error {
   constructor(operation, subjectId, reason) {
@@ -87,6 +88,32 @@ export async function authorizeOperation({ workspacePath, operation, actor, cont
     throw new RbacDenialError(operation, subjectId, "workspace_not_initialized");
   }
   const scope = { workspace_id: config.workspaceId, project_id: config.projectId ?? null };
+
+  // §3.3 rule 3 (TASK-PRD-017): when the workspace materializes a personnel registry
+  // snapshot, an employee_/staff_ actor must be that person's ACTIVE identity — a retired
+  // ID from an employment-type conversion, or an ID the registry never issued, fails
+  // closed with its own audited reason. Agent actors and workspaces without the snapshot
+  // are unaffected.
+  if (subjectType === "employee" || subjectType === "staff") {
+    const personnelPath = path.join(govibeDir, "personnel.json");
+    const personnel = await readJsonIfExists(personnelPath);
+    if (personnel) {
+      if (personnel.schema !== PERSONNEL_STATE_SCHEMA) {
+        throw new Error(`Incompatible existing state: ${personnelPath}`);
+      }
+      let identity;
+      try {
+        identity = createPersonnelRegistry({ records: personnel.records ?? [] }).getIdentity(subjectId);
+      } catch (error) {
+        throw new Error(`Incompatible existing state: ${personnelPath} (${error.message})`);
+      }
+      const identityReason = !identity ? "unknown_personnel_identity" : identity.status !== "active" ? "retired_personnel_identity" : null;
+      if (identityReason) {
+        await appendAuditLine(auditPath, { at: now(), subject_id: subjectId, subject_type: subjectType, operation, scope, decision: "deny", reason: identityReason });
+        throw new RbacDenialError(operation, subjectId, identityReason);
+      }
+    }
+  }
 
   let result;
   try {
