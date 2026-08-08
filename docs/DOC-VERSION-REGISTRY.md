@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.30+draft"
+version: "0.3.32+draft"
 updated: "2026-08-08"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.30+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.32+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -139,6 +139,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Architecture | `BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE` | `3.1.0` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md` |
 | Architecture | `BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT` | `0.1.1` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-Mission-Gateway-Runtime-Responsibility-Split.md` |
 | Architecture | `ARCH-VAULT-CONTEXT-MODEL` | `1.0.1` | approved | Boss / ATHER | `docs/architecture/ARCH-Vault-and-Context-Model.md` |
+| Spec | `SPEC-WORKSPACE-SYSTEM` | `0.2.0+draft` | draft | Boss (CEO) | `docs/specs/SPEC-Workspace-System.md` |
 | Architecture | `TDD-POC-CANONICAL-LOOP` | `1.0.0` | approved | Boss / ATHER | `docs/architecture/TDD-POC-Canonical-Loop.md` |
 | Architecture / Conformance | `C4-KNOWLEDGE-CONTEXT-AUTHORITY-OVERLAY` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/C4-Knowledge-Context-Authority-Overlay.md` |
 | Architecture / Conformance | `C4-PROVIDER-ENTITLEMENT-EXECUTION-ROUTING-OVERLAY` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/C4-Provider-Entitlement-Execution-Routing-Overlay.md` |
@@ -222,6 +223,8 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.32+draft | 2026-08-08 | Claude (doc-authoring session) | Synchronized SPEC-WORKSPACE-SYSTEM to 0.2.0+draft: added §3.3 personnel identity (`employee_id` permanent / `staff_id` contract, single-entity model with `employment_type` discriminator, conversion via `supersedes`, actor attribution) and §6 deny-by-default scoped RBAC (owner/maintainer/operator/viewer matrix over the tool surface, contract-staff ceiling below owner, separation of duties, allow/deny audit); both sections are specified-not-implemented. No document status changed to approved/accepted/candidate by this row. |
+| 0.3.31+draft | 2026-08-08 | Claude (doc-authoring session, renumbered from 0.3.11 on pull) | Registered SPEC-WORKSPACE-SYSTEM 0.1.0+draft (docs/specs/SPEC-Workspace-System.md): production workspace-system contract covering identity derivation, .govibe/.brain materialization, state schemas, govibe.workspace.* lifecycle, MSP registration boundary, governance-axis conformance, and failure semantics. Row re-applied on top of main after git pull; the doc-authoring session had numbered it 0.3.11 against a stale checkout. No document status changed to approved/accepted/candidate by this row. |
 | 0.3.30+draft | 2026-08-08 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.7+draft: GAP-10 recorded and TASK-PRD-012 (roadmap source hygiene and honest recency scoring) opened; the HTML validation fixture demoted to draft in the same change. No document status changed to approved/accepted/candidate by this row. |
 | 0.3.29+draft | 2026-08-08 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.6+draft: TASK-PRD-003 closed and GATE-CI recorded met (green run 31226249238 on PR #122, red failure-proof on PR #123, baseline-check required in main branch protection). No document status changed to approved/accepted/candidate by this row. |
 | 0.3.28+draft | 2026-08-06 | Claude (merge: main -> feat/readiness-masterplan-mission-control) | Merged main (PRs #119/#120/#121, WP-15/16/17) into the readiness branch to rebuild PR #122's merge ref: a CONFLICTING pull request runs no pull_request workflows at all, so the new Baseline Check never started. Changelog below is the union of both sides; this branch's six rows (0.3.11-0.3.16, readiness registrations) collided with main's independently-numbered WP-14..17 rows and are kept at their original labels with a (readiness) distinguisher rather than dropped, per the precedent set by the WP merge rows. No document content besides version bookkeeping was authored by this row. |
