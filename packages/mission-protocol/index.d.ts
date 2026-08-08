@@ -47,6 +47,7 @@ export type MissionSnapshot = {
   workflowRuns?: unknown[];
   providers?: unknown[];
   memory?: Record<string, unknown>;
+  usage?: Record<string, unknown>;
   [forwardCompatibleField: string]: unknown;
 };
 
@@ -68,6 +69,7 @@ export type MissionEvent =
   | { type: "memory.selection"; entityId: string | null }
   | { type: "memory.forgotten"; entityId: string; vaultId: string | null }
   | { type: "memory.decay.result"; result: Record<string, unknown> & { vaultId: string } }
+  | { type: "usage.update"; usage: Record<string, unknown> }
   | { type: "command.ack"; commandId: string; ok: boolean; message?: string; snapshot?: Partial<MissionSnapshot> };
 
 export type CommandResponse = {

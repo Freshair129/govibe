@@ -162,6 +162,28 @@ export function startSidecarServer(runtime, options = {}) {
         return;
       }
 
+      if (request.method === "POST" && url.pathname === "/usage/ingest") {
+        const body = await readJsonBody(request, maxBodyBytes);
+        try {
+          const result = runtime.ingestUsageData(body);
+          sendJson(response, 200, result, origin, allowedOrigins);
+        } catch (error) {
+          sendJson(response, 400, { error: boundedProtocolMessage(error) }, origin, allowedOrigins);
+        }
+        return;
+      }
+
+      if (request.method === "GET" && url.pathname === "/usage/snapshot") {
+        sendJson(response, 200, runtime.getUsageSnapshot(), origin, allowedOrigins);
+        return;
+      }
+
+      if (request.method === "GET" && url.pathname === "/usage/history") {
+        const days = Number(url.searchParams.get("days") ?? 7);
+        sendJson(response, 200, runtime.getUsageHistory(days), origin, allowedOrigins);
+        return;
+      }
+
       if (request.method === "POST" && url.pathname === "/mission/commands") {
         const body = await readJsonBody(request, maxBodyBytes);
         const commandId = commandIdFrom(body);

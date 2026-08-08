@@ -15,6 +15,7 @@ import { ReadinessControlView } from "../features/readiness/ReadinessControlView
 import { RoadmapBoard } from "../features/roadmap/RoadmapBoard";
 import { BusinessSpecificationsView } from "../features/specs/BusinessSpecificationsView";
 import { SymbolExplorerView } from "../features/symbols/SymbolExplorerView";
+import { TokenMonitorView } from "../features/token-monitor/TokenMonitorView";
 import { HnswVectorView } from "../features/vector/HnswVectorView";
 import { IntelligenceZoo } from "../features/zoo/IntelligenceZoo";
 
@@ -37,6 +38,7 @@ export function RenderView({
   if (activeView === "A4") return <ContextOperationsView snapshot={snapshot} />;
   if (activeView === "A5") return <AgentManagement snapshot={snapshot} send={send} />;
   if (activeView === "A6") return <ReadinessControlView snapshot={snapshot} send={send} />;
+  if (activeView === "A7") return <TokenMonitorView snapshot={snapshot} />;
   if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;
   if (activeView === "B2") return <BusinessSpecificationsView snapshot={snapshot} />;
   if (activeView === "B3") return <GraphStudioView snapshot={snapshot} />;

@@ -1782,3 +1782,21 @@ footer span {
     transition-duration: 1ms !important;
   }
 }
+
+/* ── Token Monitor ─────────────────────────────────────── */
+.tm-sync-bar { display: flex; gap: 1.5rem; font-size: 0.82rem; opacity: 0.75; flex-wrap: wrap; }
+.tm-model-list { display: flex; flex-direction: column; gap: 0.75rem; }
+.tm-model-row { display: flex; flex-direction: column; gap: 0.25rem; }
+.tm-model-header { display: flex; justify-content: space-between; align-items: baseline; }
+.tm-model-pct { font-variant-numeric: tabular-nums; opacity: 0.7; font-size: 0.85rem; }
+.tm-bar-track { height: 6px; border-radius: 3px; background: var(--surface-2, #e5e5e5); overflow: hidden; }
+.tm-bar-fill { height: 100%; border-radius: 3px; background: var(--accent, #10b981); transition: width 0.4s ease; }
+.tm-token-detail { display: flex; gap: 1rem; font-size: 0.78rem; opacity: 0.6; }
+.tm-week-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+.tm-week-stat { text-align: center; }
+.tm-week-stat span { display: block; font-size: 0.78rem; opacity: 0.6; }
+.tm-week-stat strong { font-size: 1.15rem; }
+.tm-daily-chart { display: flex; align-items: flex-end; gap: 4px; height: 120px; padding-top: 0.5rem; }
+.tm-daily-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+.tm-daily-bar { width: 100%; min-width: 8px; border-radius: 3px 3px 0 0; background: var(--accent, #10b981); transition: height 0.3s ease; }
+.tm-daily-bar-col span { font-size: 0.65rem; opacity: 0.5; white-space: nowrap; }

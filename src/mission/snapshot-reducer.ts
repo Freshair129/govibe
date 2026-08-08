@@ -16,6 +16,7 @@ export function mergeMissionSnapshot(current: MissionSnapshot, patch: Partial<Mi
     roadmap: patch.roadmap ?? current.roadmap, roadmapSources: patch.roadmapSources ?? current.roadmapSources,
     workflowRuns: patch.workflowRuns ?? current.workflowRuns, providers: patch.providers ?? current.providers,
     memory: patch.memory ?? current.memory,
+    usage: patch.usage ?? current.usage,
     updatedAt: patch.updatedAt ?? new Date().toISOString(),
   };
 }
@@ -51,5 +52,6 @@ export function reduceMissionEvent(current: MissionSnapshot, event: MissionEvent
     case "memory.selection": return mergeMissionSnapshot(current, { memory: { ...memory(current.memory), selectedEntityId: event.entityId } });
     case "memory.forgotten": { const value = memory(current.memory); return mergeMissionSnapshot(current, { memory: { ...value, results: value.results.filter((hit) => hit.entity.entityId !== event.entityId) } }); }
     case "memory.decay.result": return mergeMissionSnapshot(current, { memory: { ...memory(current.memory), lastDecayResult: event.result } });
+    case "usage.update": return mergeMissionSnapshot(current, { usage: event.usage });
   }
 }

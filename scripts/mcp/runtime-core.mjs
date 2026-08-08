@@ -251,6 +251,38 @@ export class GovibeRuntime {
   async handleMissionCommand(command) {
     return this.commandRouter.route(command);
   }
+
+  // ── Usage data (token-monitor bridge) ───────────────────────────
+  ingestUsageData(payload) {
+    const q = payload.quota ?? payload;
+    const usage = {
+      overview: q.overview ?? {},
+      overview_7d: q.overview_7d ?? {},
+      models: q.models ?? {},
+      models_7d: q.models_7d ?? {},
+      code_usage: payload.code_usage ?? {},
+      account_id: payload.account_id ?? "unknown",
+      last_sync: new Date().toISOString(),
+      source: payload.source ?? "unknown",
+    };
+    this._usageData = usage;
+    this._usageHistory ??= [];
+    this._usageHistory.push({ ...usage, ingested_at: new Date().toISOString() });
+    if (this._usageHistory.length > 2016) this._usageHistory = this._usageHistory.slice(-2016);
+    this.snapshotStore.patch({ usage });
+    this.emit({ type: "usage.update", usage });
+    return { ok: true, stored: true, history_length: this._usageHistory.length };
+  }
+
+  getUsageSnapshot() {
+    if (this._usageData) return this._usageData;
+    return { overview: {}, overview_7d: {}, models: {}, models_7d: {}, code_usage: {}, account_id: "none", last_sync: null, source: "none" };
+  }
+
+  getUsageHistory(days = 7) {
+    const cutoff = new Date(Date.now() - days * 86_400_000).toISOString();
+    return (this._usageHistory ?? []).filter((h) => h.ingested_at >= cutoff);
+  }
 }
 
 export const govibeRuntime = new GovibeRuntime();
