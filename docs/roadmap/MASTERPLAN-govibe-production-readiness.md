@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "draft"
-version: "0.1.14+draft"
+version: "0.1.15+draft"
 updated: "2026-08-09"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -178,7 +178,7 @@ any production claim that involves a network-reachable deployment.
 | PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | in-progress | 10 |
 | PHASE-PRD-04 | Remove abolished H-axis semantics from active documents | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | GATE-SEMANTIC is met | planned | 0 |
 | PHASE-PRD-05 | Package a repeatable clean-checkout developer trial | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` | GATE-BOOTSTRAP is met | planned | 0 |
-| PHASE-PRD-06 | Bring the runtime into verified conformance with the Workspace System spec | `docs/specs/SPEC-Workspace-System.md` | Spec acceptance criteria AC-01 through AC-08 hold with recorded command evidence | in-progress | 85 |
+| PHASE-PRD-06 | Bring the runtime into verified conformance with the Workspace System spec | `docs/specs/SPEC-Workspace-System.md` | Spec acceptance criteria AC-01 through AC-08 hold with recorded command evidence | done | 100 |
 
 ## Sprints
 
@@ -190,7 +190,7 @@ any production claim that involves a network-reachable deployment.
 | SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | in-progress | 10 |
 | SPR-PRD-04 | PHASE-PRD-04 | Correct the H-axis vocabulary in architecture documents | A repository scan finds no active `H5`/`H6` access semantics | planned | 0 |
 | SPR-PRD-05 | PHASE-PRD-05 | Author and verify the clean-checkout quickstart | A reviewer reaches a running Mission Control from the document alone | planned | 0 |
-| SPR-PRD-06 | PHASE-PRD-06 | Pin workspace-spec conformance and land the personnel identity and RBAC contracts | AC-01 through AC-06 are pinned by automated tests; the personnel and RBAC suites demonstrate AC-07 and AC-08 | in-progress | 90 |
+| SPR-PRD-06 | PHASE-PRD-06 | Pin workspace-spec conformance and land the personnel identity and RBAC contracts | AC-01 through AC-06 are pinned by automated tests; the personnel and RBAC suites demonstrate AC-07 and AC-08 | done | 100 |
 
 ## Backlog Items
 
@@ -208,11 +208,11 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-010 | SPR-PRD-05 | task | Author the clean-checkout developer quickstart | P0 | THESEUS | planned | TASK-PRD-003 | Section 3.1 GAP-09 |
 | TASK-PRD-011 | SPR-PRD-00 | task | Provide a Mission Control readiness tracking and command view | P1 | VIBE | in-progress | TASK-PRD-001 | Section 11 |
 | TASK-PRD-012 | SPR-PRD-03 | task | Roadmap source hygiene and honest recency scoring | P1 | LYRA | in-progress | - | Section 3.1 GAP-10 |
-| TASK-PRD-013 | SPR-PRD-06 | task | Pin workspace-spec acceptance criteria AC-01 through AC-06 with conformance tests | P1 | ATHER | review | - | SPEC-Workspace-System §11 |
-| TASK-PRD-014 | SPR-PRD-06 | task | Implement the personnel identity model (employee_id / staff_id) | P1 | VIBE | review | - | SPEC-Workspace-System §3.3 |
-| TASK-PRD-015 | SPR-PRD-06 | task | Implement RBAC core: scoped roles, deny-by-default decisions, allow/deny audit | P1 | VIBE | review | TASK-PRD-014 | SPEC-Workspace-System §6 |
-| TASK-PRD-016 | SPR-PRD-06 | task | Enforce RBAC across the govibe.workspace.* tool surface | P2 | ARCHON | review | TASK-PRD-015 | SPEC-Workspace-System §6.2 |
-| TASK-PRD-017 | SPR-PRD-06 | task | Validate active personnel identity at the RBAC enforcement boundary | P2 | VIBE | review | TASK-PRD-016 | SPEC-Workspace-System §3.3 |
+| TASK-PRD-013 | SPR-PRD-06 | task | Pin workspace-spec acceptance criteria AC-01 through AC-06 with conformance tests | P1 | ATHER | done | - | SPEC-Workspace-System §11 |
+| TASK-PRD-014 | SPR-PRD-06 | task | Implement the personnel identity model (employee_id / staff_id) | P1 | VIBE | done | - | SPEC-Workspace-System §3.3 |
+| TASK-PRD-015 | SPR-PRD-06 | task | Implement RBAC core: scoped roles, deny-by-default decisions, allow/deny audit | P1 | VIBE | done | TASK-PRD-014 | SPEC-Workspace-System §6 |
+| TASK-PRD-016 | SPR-PRD-06 | task | Enforce RBAC across the govibe.workspace.* tool surface | P2 | ARCHON | done | TASK-PRD-015 | SPEC-Workspace-System §6.2 |
+| TASK-PRD-017 | SPR-PRD-06 | task | Validate active personnel identity at the RBAC enforcement boundary | P2 | VIBE | done | TASK-PRD-016 | SPEC-Workspace-System §3.3 |
 
 ## Assignments
 
@@ -261,11 +261,11 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-010 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-011 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-012 | pending | pending | n/a | 2026-08-08T00:00:00Z |
-| TASK-PRD-013 | pending | pending | n/a | 2026-08-09T00:00:00Z |
-| TASK-PRD-014 | pending | pending | n/a | 2026-08-09T00:00:00Z |
-| TASK-PRD-015 | pending | pending | n/a | 2026-08-09T00:00:00Z |
-| TASK-PRD-016 | pending | pending | n/a | 2026-08-09T00:00:00Z |
-| TASK-PRD-017 | pending | pending | n/a | 2026-08-09T00:00:00Z |
+| TASK-PRD-013 | passed | passed | n/a | 2026-08-09T19:45:00Z |
+| TASK-PRD-014 | passed | passed | n/a | 2026-08-09T19:45:00Z |
+| TASK-PRD-015 | passed | passed | n/a | 2026-08-09T19:45:00Z |
+| TASK-PRD-016 | passed | passed | n/a | 2026-08-09T19:45:00Z |
+| TASK-PRD-017 | passed | passed | n/a | 2026-08-09T19:45:00Z |
 
 ## Task Containers
 
@@ -808,7 +808,7 @@ title: Pin workspace-spec acceptance criteria AC-01 through AC-06 with conforman
 requirement_type: NFR
 complexity: C-2
 access_scope: H2
-status: review
+status: done
 version: 0.2.0+draft
 pic: ATHER
 executor: VIBE
@@ -852,7 +852,7 @@ title: Implement the personnel identity model (employee_id / staff_id)
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: review
+status: done
 version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
@@ -896,7 +896,7 @@ title: Implement RBAC core with scoped roles, deny-by-default decisions, and all
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: review
+status: done
 version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
@@ -940,7 +940,7 @@ title: Enforce RBAC across the govibe.workspace.* tool surface
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: review
+status: done
 version: 0.2.0+draft
 pic: ARCHON
 executor: VIBE
@@ -984,7 +984,7 @@ title: Validate active personnel identity at the RBAC enforcement boundary
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: review
+status: done
 version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
@@ -1099,6 +1099,7 @@ errors. Ratification is an owner decision and must not be self-applied by an exe
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.1.15+draft | 2026-08-09 | draft | Closed SPR-PRD-06 and PHASE-PRD-06 to done on an owner-directed audit pass (Boss instruction on PR #128, following the WP-16/17 owner-directed-closure precedent — recorded as such, not as an independent ARCHON/ATHER reproduction). Audit evidence: every baseline gate re-run green in the closing session (env:validate, docs:validate, roadmap:validate, tsc, vitest 74 files / 614 passed / 1 skipped, security 65, vite build), plus PR #128 CI green on the authoritative baseline-check run 31274759680 with E2E and verify passing; the single local baseline:check failure reproduced only as the known MSP stdio spawn-timeout flake and passed on re-run. Verification table set to passed/passed for TASK-PRD-013..017. | pending | Claude Fable 5 |
 | 0.1.14+draft | 2026-08-09 | draft | Executed TASK-PRD-017 to review: the RBAC enforcement boundary validates employee_/staff_ actors as active personnel identities when .govibe/personnel.json is materialized — unknown_personnel_identity and retired_personnel_identity deny with audit before the handler body. TASK-PRD-014's exit criterion ticked and the spec §3.3 open item removed in the same change (spec 0.2.4+draft). Enforcement suite 16 green; full suite and mcp:smoke pass. All SPR-PRD-06 tasks now at review with every DoD criterion ticked, pending QA/audit and owner approval. | pending | Claude Fable 5 |
 | 0.1.13+draft | 2026-08-09 | draft | Opened TASK-PRD-017 (validate active personnel identity at the RBAC enforcement boundary, SPR-PRD-06, depends on TASK-PRD-016) from the review finding recorded in the spec §3.3 note: enforcement attributes calls under employee_/staff_ actors but does not yet verify the ID is the person's active identity. Complete Task Container authored doc-first per §11.2; closing it also closes TASK-PRD-014's open exit criterion. | pending | Claude Fable 5 |
 | 0.1.12+draft | 2026-08-09 | draft | Executed TASK-PRD-016 to review: scripts/mcp/runtime/rbac-enforcement.mjs runs the RBAC decision point in handleToolCall before any handler body, activated per workspace by .govibe/rbac.json with allow/deny audit in .govibe/rbac-audit.jsonl; workspaces without RBAC state keep the pre-RBAC posture. Enforcement suite 11 tests green; mcp:smoke and the full suite pass with enforcement active; spec bumped to 0.2.3+draft. All three DoD criteria ticked. SPR-PRD-06 execution complete pending QA/audit on all four tasks. | pending | Claude Fable 5 |
