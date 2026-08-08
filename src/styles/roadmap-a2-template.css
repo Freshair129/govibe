@@ -259,6 +259,14 @@
   align-items: start;
 }
 
+/* Three sections share a two-column grid: both side panels (Master Plan review and
+   the agent roster carry .a2-roster-panel) stack in the narrow column while the
+   execution board owns the wide column for both rows. Without these placements,
+   auto-flow pushes the roster into the main column and wraps the board under the
+   sidebar. */
+.a2-roadmap-layout > .a2-roster-panel { grid-column: 1; }
+.a2-roadmap-layout > .a2-roadmap-panel { grid-column: 2; grid-row: 1 / span 2; }
+
 .a2-roadmap-tab-strip {
   margin-top: 14px;
   overflow-x: auto;
@@ -858,6 +866,14 @@
   .a2-task-row,
   .a2-task-footer {
     grid-template-columns: 1fr;
+  }
+
+  /* Single-column collapse: release the explicit placements or grid-column: 2 would
+     mint an implicit off-screen column on narrow viewports. */
+  .a2-roadmap-layout > .a2-roster-panel,
+  .a2-roadmap-layout > .a2-roadmap-panel {
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .a2-task-side {
