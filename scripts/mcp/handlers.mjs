@@ -8,6 +8,7 @@ const execAsync = promisify(exec);
 
 import { govibeRuntime } from "./runtime-core.mjs";
 import { getResourceByUri, resolveToolName } from "./registry.mjs";
+import { enforceToolRbac } from "./runtime/rbac-enforcement.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -34,6 +35,9 @@ export async function handleToolCall(name, args = {}) {
       structuredContent: { ...result.structuredContent, legacyAlias: name, canonicalName, deprecated: true },
     };
   }
+  // SPEC-Workspace-System §6: the RBAC decision point runs before any handler body. Denials
+  // throw here, so an unauthorized call produces no tool side effects (TASK-PRD-016).
+  await enforceToolRbac(name, args);
   switch (name) {
     case "govibe.agent.run": {
       // Map agent_id to the agent field expected by the runtime
