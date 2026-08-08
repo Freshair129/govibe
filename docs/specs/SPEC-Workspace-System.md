@@ -2,7 +2,7 @@
 title: "SPEC: Workspace System Specification"
 doc_id: "SPEC-WORKSPACE-SYSTEM"
 status: "draft"
-version: "0.2.1+draft"
+version: "0.2.2+draft"
 updated: "2026-08-09"
 owner: "Boss (CEO)"
 source_of_truth: true
@@ -252,9 +252,13 @@ versions/hashes, `parent_context_id` chaining for M-ctx) are owned by
 
 ## 6. Role-Based Access Control (RBAC)
 
-> **Status: specified, not yet implemented.** Same footing as §3.3: this is the binding
-> contract for any implementation. Until then, tool access is governed only by the H
-> ceiling, repository policy, and human gates.
+> **Status: core implemented, tool-surface enforcement pending.** The decision core in this
+> section is implemented by `packages/govibe-core/src/rbac.mjs` (deny-by-default scoped
+> assignments, the §6.2 matrix, §6.3 employment-type constraints and separation of duties,
+> H-ceiling intersection, allow/deny audit), pinned by
+> `packages/govibe-core/src/rbac.test.mjs`. The `govibe.*` tool dispatch does not yet call
+> it — enforcement wiring lands with TASK-PRD-016; until then live tool access is still
+> governed only by the H ceiling, repository policy, and human gates.
 
 ### 6.1 Model
 
@@ -384,6 +388,8 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
   conformance suite (TASK-PRD-013).
 - `npx vitest run packages/govibe-core/src/personnel.test.mjs` — §3.3 personnel identity and
   AC-07 coverage (TASK-PRD-014).
+- `npx vitest run packages/govibe-core/src/rbac.test.mjs` — §6 RBAC core and AC-08 coverage
+  at registry level (TASK-PRD-015).
 - `npx vitest run scripts/mcp/runtime-core.test.mjs` — runtime initialize coverage.
 - `npx vitest run packages/govibe-core/src/capability-runtime.test.mjs` — capability
   surface including workspace initialization.
@@ -395,6 +401,7 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.2+draft | 2026-08-09 | Boss (CEO) | §6 status updated from specified-not-implemented to core-implemented: `packages/govibe-core/src/rbac.mjs` lands the deny-by-default decision core (scoped assignments over the §6.2 matrix, §6.3 staff ceiling with recorded owner approval and separation of duties, §6.1 H-ceiling intersection sourced from the §7 table, §6.4 allow/deny audit with snapshot round-trip). §12 lists the RBAC suite. Tool-surface enforcement remains pending under TASK-PRD-016. |
 | 0.2.1+draft | 2026-08-09 | Boss (CEO) | §3.3 status updated from specified-not-implemented to identity-model-implemented: `packages/govibe-core/src/personnel.mjs` lands the personnel registry (single active identity, conversion via `supersedes`, append-only audit) and `vaults.mjs` gains the rule-4 guard rejecting `employee_`/`staff_` values as agent identifiers. §12 verification now lists the AC-01..AC-06 conformance suite and the §3.3/AC-07 personnel suite. Tool-surface actor attribution remains pending under TASK-PRD-016; §6 RBAC remains specified-not-implemented. |
 | 0.2.0+draft | 2026-08-08 | Boss (CEO) | Added §3.3 personnel identity (`employee_id` for permanent employees, `staff_id` for contract staff; single-active-identity, conversion via `supersedes`, actor attribution, separation from `agent_id`) and §6 RBAC (deny-by-default scoped role model, owner/maintainer/operator/viewer permission matrix over the tool surface, contract-staff ceiling below `owner`, separation of duties, allow/deny audit). Both marked specified-not-implemented; renumbered §7–§12 and added AC-07/AC-08. |
 | 0.1.0+draft | 2026-08-08 | Boss (CEO) | Initial workspace-system specification: identity derivation, materialization layout, state schemas, lifecycle/tool contracts, MSP boundary, governance-axis conformance, failure semantics, and acceptance criteria — grounded in `packages/govibe-core/src/workspace.mjs`, `packages/govibe-core/src/vaults.mjs`, and `scripts/mcp/registry.mjs`. |
