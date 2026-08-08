@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.29+draft"
+version: "0.3.30+draft"
 updated: "2026-08-08"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.29+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.30+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -84,7 +84,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.1.6+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.1.7+draft` | draft | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -222,6 +222,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.30+draft | 2026-08-08 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.7+draft: GAP-10 recorded and TASK-PRD-012 (roadmap source hygiene and honest recency scoring) opened; the HTML validation fixture demoted to draft in the same change. No document status changed to approved/accepted/candidate by this row. |
 | 0.3.29+draft | 2026-08-08 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.6+draft: TASK-PRD-003 closed and GATE-CI recorded met (green run 31226249238 on PR #122, red failure-proof on PR #123, baseline-check required in main branch protection). No document status changed to approved/accepted/candidate by this row. |
 | 0.3.28+draft | 2026-08-06 | Claude (merge: main -> feat/readiness-masterplan-mission-control) | Merged main (PRs #119/#120/#121, WP-15/16/17) into the readiness branch to rebuild PR #122's merge ref: a CONFLICTING pull request runs no pull_request workflows at all, so the new Baseline Check never started. Changelog below is the union of both sides; this branch's six rows (0.3.11-0.3.16, readiness registrations) collided with main's independently-numbered WP-14..17 rows and are kept at their original labels with a (readiness) distinguisher rather than dropped, per the precedent set by the WP merge rows. No document content besides version bookkeeping was authored by this row. |
 | 0.3.16+draft (readiness) | 2026-08-06 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.5+draft: TASK-PRD-003 in-progress with the unfiltered Baseline Check CI workflow. No document status changed to approved/accepted/candidate by this row. |
