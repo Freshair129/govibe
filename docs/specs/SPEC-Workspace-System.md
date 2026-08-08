@@ -1,8 +1,8 @@
 ---
 title: "SPEC: Workspace System Specification"
 doc_id: "SPEC-WORKSPACE-SYSTEM"
-status: "draft"
-version: "0.2.4+draft"
+status: "approved"
+version: "0.3.0"
 updated: "2026-08-09"
 owner: "Boss (CEO)"
 source_of_truth: true
@@ -410,6 +410,7 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0 | 2026-08-09 | Boss (CEO) | Ratified draft → approved by owner decision. Content unchanged from 0.2.4+draft; all acceptance criteria AC-01..AC-08 carry executable evidence via the §12 verification suites, merged to main in PR #128 (merge commit c75e636) with the full baseline gate and CI green. |
 | 0.2.4+draft | 2026-08-09 | Boss (CEO) | §3.3 open item closed (TASK-PRD-017): the RBAC enforcement boundary now validates `employee_`/`staff_` actors against the workspace personnel registry snapshot (`.govibe/personnel.json`, `govibe-personnel-registry/v1`) — unknown IDs deny as `unknown_personnel_identity`, retired IDs from employment-type conversion deny as `retired_personnel_identity`, both audited; agent actors and snapshot-less workspaces keep their prior posture; unknown snapshot schemas hard-fail per §10. |
 | 0.2.3+draft | 2026-08-09 | Boss (CEO) | §6 status updated to implemented-and-enforced-per-workspace: `scripts/mcp/runtime/rbac-enforcement.mjs` wires the RBAC core into `handleToolCall` as a pre-handler decision point over the §6.2 tool operations (scan split by `deep`), activated by `.govibe/rbac.json` (`govibe-rbac-state/v1`) with allow/deny audit in `.govibe/rbac-audit.jsonl`; workspaces without RBAC state keep the pre-RBAC posture. §3.3 note updated: actor attribution is honored at the RBAC boundary; active-identity validation against a personnel registry remains open. §12 lists the enforcement suite. |
 | 0.2.2+draft | 2026-08-09 | Boss (CEO) | §6 status updated from specified-not-implemented to core-implemented: `packages/govibe-core/src/rbac.mjs` lands the deny-by-default decision core (scoped assignments over the §6.2 matrix, §6.3 staff ceiling with recorded owner approval and separation of duties, §6.1 H-ceiling intersection sourced from the §7 table, §6.4 allow/deny audit with snapshot round-trip). §12 lists the RBAC suite. Tool-surface enforcement remains pending under TASK-PRD-016. |

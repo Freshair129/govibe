@@ -1,8 +1,8 @@
 ---
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
-status: "draft"
-version: "0.1.15+draft"
+status: "approved"
+version: "0.2.0"
 updated: "2026-08-09"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -172,7 +172,7 @@ any production claim that involves a network-reachable deployment.
 
 | Phase | Goal | Governing SoT | Exit Criteria | Status | Progress |
 |---|---|---|---|---|---|
-| PHASE-PRD-00 | Anchor governance and register this plan | `docs/DOC-VERSION-REGISTRY.md` | This plan is registered and the agent contracts point at it | in-progress | 60 |
+| PHASE-PRD-00 | Anchor governance and register this plan | `docs/DOC-VERSION-REGISTRY.md` | This plan is registered and the agent contracts point at it | in-progress | 80 |
 | PHASE-PRD-01 | Close the CI gate so the real suite protects the branch | `docs/STD-Execution-Governance.md` | GATE-CI is met | in-progress | 75 |
 | PHASE-PRD-02 | Realign the snapshot contract across TypeScript and runtime | `docs/PRD-GoVibe-Platform-Overview.md` | GATE-CONTRACT is met | planned | 0 |
 | PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | in-progress | 10 |
@@ -184,7 +184,7 @@ any production claim that involves a network-reachable deployment.
 
 | Sprint | Parent ID | Goal | Exit Criteria | Status | Progress |
 |---|---|---|---|---|---|
-| SPR-PRD-00 | PHASE-PRD-00 | Register the readiness plan and bind the agent contracts to it | Registry row exists and both agent contracts cite this plan | in-progress | 60 |
+| SPR-PRD-00 | PHASE-PRD-00 | Register the readiness plan and bind the agent contracts to it | Registry row exists and both agent contracts cite this plan | in-progress | 80 |
 | SPR-PRD-01 | PHASE-PRD-01 | Make the full baseline gate run on every pull request | A pull request touching only frontend code still runs the full suite | in-progress | 50 |
 | SPR-PRD-02 | PHASE-PRD-02 | Reconcile every MissionSnapshot field across both implementations | A contract test fails when either side adds an unmatched field | planned | 0 |
 | SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | in-progress | 10 |
@@ -196,7 +196,7 @@ any production claim that involves a network-reachable deployment.
 
 | ID | Parent ID | Type | Title | Priority | Owner | Status | Dependencies | Source Section |
 |---|---|---|---|---|---|---|---|---|
-| TASK-PRD-001 | SPR-PRD-00 | task | Register this masterplan in the document version registry | P0 | ATHER | in-progress | - | Section 3.1 GAP-00 |
+| TASK-PRD-001 | SPR-PRD-00 | task | Register this masterplan in the document version registry | P0 | ATHER | done | - | Section 3.1 GAP-00 |
 | TASK-PRD-002 | SPR-PRD-00 | task | Bind AGENTS.md and CLAUDE.md to this readiness plan | P0 | THESEUS | in-progress | TASK-PRD-001 | Section 3.1 GAP-00 |
 | TASK-PRD-003 | SPR-PRD-01 | task | Add an unfiltered baseline check workflow for every pull request | P0 | ATHER | done | TASK-PRD-002 | Section 3.1 GAP-01 |
 | TASK-PRD-004 | SPR-PRD-01 | task | Point end-to-end coverage at the running application | P1 | VIBE | planned | TASK-PRD-003 | Section 3.1 GAP-02 |
@@ -240,7 +240,7 @@ any production claim that involves a network-reachable deployment.
 
 | Task ID | From ID | To ID | Required Artifact | Note | Created At | State |
 |---|---|---|---|---|---|---|
-| TASK-PRD-001 | ATHER | Boss | Registry row plus ratification decision | Draft to approved transition is an owner decision | 2026-08-06T00:00:00Z | pending |
+| TASK-PRD-001 | ATHER | Boss | Registry row plus ratification decision | Ratified to approved 2026-08-09 by owner decision (Boss); registry synchronized in the same change | 2026-08-06T00:00:00Z | completed |
 | TASK-PRD-003 | ATHER | Boss | Green pull-request run of the full baseline gate | Confirms GATE-CI before further phases start | 2026-08-06T00:00:00Z | completed |
 | TASK-PRD-006 | ARCHON | Boss | Contract decision on the two orphan fields | Produce or retire is a product decision, not an implementation choice | 2026-08-06T00:00:00Z | pending |
 | TASK-PRD-007 | VIBE | ATHER | Impact analysis over the changed snapshot contract | Required before the wiring change closes | 2026-08-06T00:00:00Z | pending |
@@ -249,7 +249,7 @@ any production claim that involves a network-reachable deployment.
 
 | Task ID | QA Status | Audit Status | Deployment Status | Updated At |
 |---|---|---|---|---|
-| TASK-PRD-001 | pending | pending | n/a | 2026-08-06T00:00:00Z |
+| TASK-PRD-001 | passed | passed | n/a | 2026-08-09T20:15:00Z |
 | TASK-PRD-002 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-003 | passed | passed | n/a | 2026-08-08T00:00:00Z |
 | TASK-PRD-004 | pending | pending | n/a | 2026-08-06T00:00:00Z |
@@ -280,7 +280,7 @@ title: Register this masterplan in the document version registry
 requirement_type: NFR
 complexity: C-2
 access_scope: H2
-status: in-progress
+status: done
 version: 0.1.0+draft
 pic: ATHER
 executor: THESEUS
@@ -293,14 +293,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given the registry contains a row for this plan, when docs:validate runs, then no doc_id, version, or status mismatch error is reported
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given a reader opens the registry, when they look for the readiness plan, then they find one row pointing at the active file path
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the owner ratifies the plan, when status changes from draft to approved, then the registry version and status are updated in the same change
-      checked: false
-changelog: Registry row authored alongside the initial readiness plan.
+      checked: true
+changelog: Registry row authored alongside the initial readiness plan. Closed 2026-08-09 with the owner ratification of this plan to approved (0.2.0) — the registry row's version and status were updated in the same change and docs:validate reports no mismatch.
 created_at: 2026-08-06T00:00:00Z,THESEUS,pending
 token_telemetry:
   model_name: claude-opus-5
@@ -1080,10 +1080,12 @@ code lands.
 
 ### 11.3 Promotion Rule
 
-This plan is `draft`. The roadmap container gate enforces completeness only for `approved` sources,
-so its findings currently surface as warnings. Every Task Container in this document is already
-authored to complete-container standard, so ratification to `approved` should produce zero new
-errors. Ratification is an owner decision and must not be self-applied by an executing agent.
+This plan was ratified to `approved` on 2026-08-09 by owner decision (Boss). The roadmap container
+gate therefore enforces completeness as hard errors for this source: any future task added here
+must land with a complete Task Container in the same change or the build fails. The zero-error
+gate run confirming ratification is recorded in the 0.2.0 changelog row. Status changes between
+`draft` and `approved` remain an owner decision and must not be self-applied by an executing
+agent.
 
 ## 12. Risks
 
@@ -1099,6 +1101,7 @@ errors. Ratification is an owner decision and must not be self-applied by an exe
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.2.0 | 2026-08-09 | approved | Ratified draft → approved by owner decision (Boss). All Task Containers were authored to complete-container standard before ratification, so the roadmap Definition-of-Ready gate reports zero errors for this source with hard enforcement now active. Closes TASK-PRD-001 (its exit criterion is exactly this change: status flip and registry synchronization together) and completes its Boss handoff. Registry updated to the same version/status in this change. | pending | Claude Fable 5 |
 | 0.1.15+draft | 2026-08-09 | draft | Closed SPR-PRD-06 and PHASE-PRD-06 to done on an owner-directed audit pass (Boss instruction on PR #128, following the WP-16/17 owner-directed-closure precedent — recorded as such, not as an independent ARCHON/ATHER reproduction). Audit evidence: every baseline gate re-run green in the closing session (env:validate, docs:validate, roadmap:validate, tsc, vitest 74 files / 614 passed / 1 skipped, security 65, vite build), plus PR #128 CI green on the authoritative baseline-check run 31274759680 with E2E and verify passing; the single local baseline:check failure reproduced only as the known MSP stdio spawn-timeout flake and passed on re-run. Verification table set to passed/passed for TASK-PRD-013..017. | pending | Claude Fable 5 |
 | 0.1.14+draft | 2026-08-09 | draft | Executed TASK-PRD-017 to review: the RBAC enforcement boundary validates employee_/staff_ actors as active personnel identities when .govibe/personnel.json is materialized — unknown_personnel_identity and retired_personnel_identity deny with audit before the handler body. TASK-PRD-014's exit criterion ticked and the spec §3.3 open item removed in the same change (spec 0.2.4+draft). Enforcement suite 16 green; full suite and mcp:smoke pass. All SPR-PRD-06 tasks now at review with every DoD criterion ticked, pending QA/audit and owner approval. | pending | Claude Fable 5 |
 | 0.1.13+draft | 2026-08-09 | draft | Opened TASK-PRD-017 (validate active personnel identity at the RBAC enforcement boundary, SPR-PRD-06, depends on TASK-PRD-016) from the review finding recorded in the spec §3.3 note: enforcement attributes calls under employee_/staff_ actors but does not yet verify the ID is the person's active identity. Complete Task Container authored doc-first per §11.2; closing it also closes TASK-PRD-014's open exit criterion. | pending | Claude Fable 5 |
