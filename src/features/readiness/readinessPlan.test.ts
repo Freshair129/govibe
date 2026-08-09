@@ -22,8 +22,9 @@ function makeSnapshot(partial: Partial<MissionSnapshot>): MissionSnapshot {
   return {
     connectionState: "connected", metrics: [], chart: { labels: [], series: [] }, reactor: [], agents: [],
     capabilities: [], terminal: [], graph: { nodes: [], edges: [] }, specs: [], symbols: [], campaignLogs: [],
+    orchestration: { waves: [], updatedAt: "2026-08-10T00:00:00.000Z" },
     ...partial,
-  } as MissionSnapshot;
+  };
 }
 
 describe("readiness plan helpers", () => {

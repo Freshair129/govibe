@@ -22,6 +22,23 @@ describe("mission snapshot ownership", () => {
   });
 });
 
+describe("orchestration snapshot slice (TASK-PRD-005)", () => {
+  const orchestration = {
+    waves: [{ id: "wave-0", index: 0, level: 0, status: "pending" as const, taskIds: ["TASK-PRD-005"], tasks: [{ taskId: "TASK-PRD-005", status: "queued" as const, attempts: 0 }], concurrency: 1 }],
+    updatedAt: "2026-08-10T00:00:00.000Z",
+  };
+
+  it("has a required empty orchestration slice from first render", () => {
+    expect(emptyMissionSnapshot.orchestration).toEqual({ waves: [], updatedAt: expect.any(String) });
+  });
+
+  it("reduces orchestration.update and preserves it through unrelated patches", () => {
+    const updated = reduceMissionEvent(emptyMissionSnapshot, { type: "orchestration.update", orchestration });
+    expect(updated.orchestration).toEqual(orchestration);
+    expect(mergeMissionSnapshot(updated, { connectionState: "connected" }).orchestration).toEqual(orchestration);
+  });
+});
+
 // WP-17 AC-06: covers the new memory.* event reduction AND the merge
 // fallback -- specifically, a patch that omits the memory slice must not
 // drop it. This is the assertion that proves Stage B (WP-18) will have data

@@ -2,8 +2,8 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.2.1"
-updated: "2026-08-09"
+version: "0.2.5"
+updated: "2026-08-10"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
 auditor: "ATHER"
@@ -200,7 +200,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-002 | SPR-PRD-00 | task | Bind AGENTS.md and CLAUDE.md to this readiness plan | P0 | THESEUS | done | TASK-PRD-001 | Section 3.1 GAP-00 |
 | TASK-PRD-003 | SPR-PRD-01 | task | Add an unfiltered baseline check workflow for every pull request | P0 | ATHER | done | TASK-PRD-002 | Section 3.1 GAP-01 |
 | TASK-PRD-004 | SPR-PRD-01 | task | Point end-to-end coverage at the running application | P1 | VIBE | planned | TASK-PRD-003 | Section 3.1 GAP-02 |
-| TASK-PRD-005 | SPR-PRD-02 | task | Add the orchestration slice to the MissionSnapshot contract | P0 | ARCHON | planned | TASK-PRD-003 | Section 3.1 GAP-04 |
+| TASK-PRD-005 | SPR-PRD-02 | task | Add the orchestration slice to the MissionSnapshot contract | P0 | ARCHON | review | TASK-PRD-003 | Section 3.1 GAP-04 |
 | TASK-PRD-006 | SPR-PRD-02 | task | Resolve the heatmap and master plan preview contract orphans | P1 | ARCHON | planned | TASK-PRD-005 | Section 3.1 GAP-05 |
 | TASK-PRD-007 | SPR-PRD-03 | task | Publish graph and symbol producers from the workspace scan | P0 | VIBE | planned | TASK-PRD-005 | Section 3.2 |
 | TASK-PRD-008 | SPR-PRD-03 | task | Reconcile sidebar labels with rendered view titles | P2 | VIBE | planned | - | Section 3.1 GAP-07 |
@@ -253,7 +253,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-002 | passed | passed | n/a | 2026-08-09T21:00:00Z |
 | TASK-PRD-003 | passed | passed | n/a | 2026-08-08T00:00:00Z |
 | TASK-PRD-004 | pending | pending | n/a | 2026-08-06T00:00:00Z |
-| TASK-PRD-005 | pending | pending | n/a | 2026-08-06T00:00:00Z |
+| TASK-PRD-005 | passed | pending | n/a | 2026-08-10T00:00:00Z |
 | TASK-PRD-006 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-007 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-008 | pending | pending | n/a | 2026-08-06T00:00:00Z |
@@ -456,27 +456,27 @@ title: Add the orchestration slice to the MissionSnapshot contract
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: ARCHON
 executor: VIBE
 approver: Boss
 auditor: ATHER
 symbol_links:
   code: src/mission/domain.ts
-  doc: docs/PRD-GoVibe-Platform-Overview.md
-  test: src/mission/snapshot-reducer.test.ts
+  doc: docs/change-control/change-requests/CR-2026-08-10-MissionSnapshot-Orchestration-Contract.md
+  test: scripts/mcp/runtime/roadmap-service.test.mjs
 definition_of_done:
   acceptance_criteria:
     - criterion: Given the runtime emits an orchestration slice, when the TypeScript contract is typechecked, then the slice is a declared field with an explicit shape
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given a consumer reads the orchestration waves, when it does so through the snapshot type, then no cast or optional-chaining escape hatch is required
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given a contract test comparing both implementations, when either side declares a field the other lacks, then the test fails
-      checked: false
-changelog: Contract drift recorded from the 2026-08-06 live snapshot comparison.
+      checked: true
+changelog: Owner-approved CR-2026-08-10-MISSIONSNAPSHOT-ORCHESTRATION-CONTRACT implemented. Runtime output now conforms to explicit TypeScript and protocol-v2 snapshot/event contracts; targeted contract/runtime tests passed (23), lint and production build passed. QA passed; ATHER audit remains pending.
 created_at: 2026-08-06T00:00:00Z,THESEUS,pending
 token_telemetry:
   model_name: claude-opus-5
@@ -1101,6 +1101,7 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.2.5 | 2026-08-10 | approved | TASK-PRD-005 moved to review after the owner-approved orchestration contract landed: `MissionSnapshot.orchestration` is required with typed waves/tasks, runtime event validation is fail-closed, the reducer materializes updates, and protocol moves to 2.0.0 / compatibility 2. QA evidence is local targeted tests (23), lint, and production build; ATHER audit remains pending. | pending | ATHER |
 | 0.2.1 | 2026-08-09 | approved | Closed the three remaining SPR-PRD-00/03 tasks to done in one owner-directed session (Boss instruction, following the WP-16/17 precedent — recorded as such, not as an independent ATHER audit reproduction). TASK-PRD-002: verified AGENTS.md §11 and CLAUDE.md already bind readiness work to this plan by path with a live-status rule, confirmed by a clean `docs:validate` run; no code change needed. TASK-PRD-011: re-verified the readiness view's DoD with fresh evidence (`npm run lint` clean, `readinessPlan.test.ts` 5/5) and picked up TASK-PRD-012's honest-empty-state fix. TASK-PRD-012 (GAP-10): fixed the recency scorer bug in `scripts/mcp/roadmap-parser.mjs` — an unauthored source's `updatedAt` fell back to parse time (now) instead of staying absent, letting it masquerade as the newest source; both the markdown and HTML parse paths now use `|| undefined`, and `scoreApprovedSources` (exported from `scripts/mcp/runtime/roadmap-service.mjs` for testability) already zeroes the recency bonus for a non-finite date. `ReadinessControlView.tsx` now renders "unknown (no authored update date)" instead of a blank field. Added regression tests in `scripts/mcp/runtime/roadmap-service.test.mjs` and `src/roadmapParser.test.ts` (new fixture `BACKLOG-parser-fixture-no-updated.md`) pinning the fix. SPR-PRD-00 and PHASE-PRD-00 closed to done (all constituent tasks complete); SPR-PRD-03/PHASE-PRD-03 progress moved 10 → 20 (TASK-PRD-007/008 remain open). Evidence: full suite 74 files / 618 passed / 1 skipped plus 65 security tests, `npm run lint` clean, `npm run docs:validate` PASS. | pending | Claude Sonnet 5 |
 | 0.2.0 | 2026-08-09 | approved | Ratified draft → approved by owner decision (Boss). All Task Containers were authored to complete-container standard before ratification, so the roadmap Definition-of-Ready gate reports zero errors for this source with hard enforcement now active. Closes TASK-PRD-001 (its exit criterion is exactly this change: status flip and registry synchronization together) and completes its Boss handoff. Registry updated to the same version/status in this change. | pending | Claude Fable 5 |
 | 0.1.15+draft | 2026-08-09 | draft | Closed SPR-PRD-06 and PHASE-PRD-06 to done on an owner-directed audit pass (Boss instruction on PR #128, following the WP-16/17 owner-directed-closure precedent — recorded as such, not as an independent ARCHON/ATHER reproduction). Audit evidence: every baseline gate re-run green in the closing session (env:validate, docs:validate, roadmap:validate, tsc, vitest 74 files / 614 passed / 1 skipped, security 65, vite build), plus PR #128 CI green on the authoritative baseline-check run 31274759680 with E2E and verify passing; the single local baseline:check failure reproduced only as the known MSP stdio spawn-timeout flake and passed on re-run. Verification table set to passed/passed for TASK-PRD-013..017. | pending | Claude Fable 5 |

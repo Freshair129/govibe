@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.41+draft"
-updated: "2026-08-09"
+version: "0.3.50+draft"
+updated: "2026-08-10"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.41+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.50+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -53,6 +53,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Change Request | `CR-2026-08-02-MULTI-PROVIDER-ENTITLEMENT-ROUTING` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md` |
 | Change Request | `CR-2026-08-04-DOC-GOVERNANCE-REFINEMENT` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Doc-Governance-Refinement.md` |
 | Change Request | `CR-2026-08-04-PERSISTENT-MEMORY-MSP-RUNTIME` | `0.2.1+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md` |
+| Change Request | `CR-2026-08-10-MISSIONSNAPSHOT-ORCHESTRATION-CONTRACT` | `1.0.0` | approved | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-10-MissionSnapshot-Orchestration-Contract.md` |
 | Work Packet | `WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-12-Persistent-Memory-MSP-Runtime-Phase-0-1.md` |
 | Work Packet | `WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-13-Persistent-Memory-MSP-Runtime-Phase-2.md` |
 | Work Packet | `WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES` | `0.1.3+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-14-Vault-Scoping-Msp-Runtime-Entities.md` |
@@ -84,7 +85,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.2.1` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.2.5` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -223,6 +224,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.50+draft | 2026-08-10 | ATHER | Registered the owner-approved MissionSnapshot orchestration contract and synchronized the production-readiness masterplan to 0.2.5 after TASK-PRD-005 entered review with local QA evidence; ATHER audit remains pending. |
 | 0.3.41+draft | 2026-08-09 | Claude Fable 5 | Ratification row, by explicit owner (Boss, ratification authority) instruction: SPEC-WORKSPACE-SYSTEM 0.2.4+draft → 0.3.0 approved and MASTERPLAN-GOVIBE-PRODUCTION-READINESS 0.1.15+draft → 0.2.0 approved. Evidence basis: PR #128 (merge c75e636) with the full baseline gate and CI green; spec AC-01..AC-08 pinned by the §12 suites. This row DOES change these two documents to approved, on owner authority. TASK-PRD-001 closes with this change per its exit criterion. |
 | 0.3.40+draft | 2026-08-09 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.15+draft: SPR-PRD-06 / PHASE-PRD-06 closed to done on an owner-directed audit pass with recorded gate evidence and green PR #128 CI; Verification set to passed for TASK-PRD-013..017. No document status changed to approved/accepted/candidate by this row. |
 | 0.3.39+draft | 2026-08-09 | Claude Fable 5 | Synchronized SPEC-WORKSPACE-SYSTEM to 0.2.4+draft (§3.3 open item closed: active personnel identity validated at the RBAC enforcement boundary via .govibe/personnel.json) and MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.14+draft (TASK-PRD-017 executed to review; TASK-PRD-014 exit criterion ticked; all SPR-PRD-06 tasks at review). No document status changed to approved/accepted/candidate by this row. |

@@ -181,6 +181,7 @@ describe("ReliableMissionGateway WebSocket resilience", () => {
       connectionState: "connected",
       metrics: [], chart: { labels: [], series: [] }, reactor: [], agents: [], capabilities: [],
       terminal: [], graph: { nodes: [], edges: [] }, specs: [], symbols: [], campaignLogs: [],
+      orchestration: { waves: [], updatedAt: "2026-08-10T00:00:00.000Z" },
     }), { status: 200, headers: { "Content-Type": "application/json" } }));
     const gateway = new ReliableMissionGateway({ httpBaseUrl: "http://localhost:4310", wsUrl: "", fetchImpl });
 
