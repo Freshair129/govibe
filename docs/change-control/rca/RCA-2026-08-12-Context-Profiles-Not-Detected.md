@@ -2,7 +2,7 @@
 title: "RCA: Mode 2 Did Not Detect Its Own Missing Context-Packet Capability"
 doc_id: "RCA-2026-08-12-CONTEXT-PROFILES-NOT-DETECTED"
 status: "draft"
-version: "0.3.0"
+version: "0.4.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -147,10 +147,32 @@ Two copies of a governed enum can drift. This is the same duplication class reco
 | CA-03 | Add a `context` semantic dimension with its producer mapping | RC-2 | proposed |
 | CA-04 | Add an `unconsumed_capability` gap class | RC-3 | proposed |
 | CA-05 | Add acceptance criteria for prompt §1 responsibility 7 and audit the other eight for coverage | RC-4 | **done** |
-| CA-06 | Make `vault-context-surface.mjs` import `CONTEXT_PROFILES` instead of re-declaring it | related finding | proposed |
+| CA-07 | Deduplicate `REPORTED_TOKEN_FIELDS`, or annotate it as a deliberate copy | CA-06 follow-on | proposed |
+| CA-06 | Make `vault-context-surface.mjs` import `CONTEXT_PROFILES` instead of re-declaring it | related finding | **done** |
 
-CA-03, CA-04, and CA-06 remain **proposed, not done**. Each changes detector behaviour or a governed
-surface and should be scoped and approved rather than folded into this RCA.
+CA-03 and CA-04 remain **proposed, not done**. Both change detector behaviour and should be
+scoped and approved rather than folded into this RCA.
+
+### 6.2 CA-06 result, and what CA-02 found while doing it
+
+`scripts/mcp/vault-context-surface.mjs` now imports `CONTEXT_PROFILES` from its canonical owner.
+The change is behaviour-identical — both lists were `["T-ctx", "V-ctx", "W-ctx", "M-ctx"]`, and a
+frozen array serialises into a JSON-schema `enum` exactly as the literal did.
+
+Applying CA-02 first turned out to matter. Running the now-const-aware Stage 3 over this
+repository and grouping `const-list` / `const-record` symbols by name across files surfaced
+**two same-shaped duplications nobody was looking for**:
+
+| Constant | Locations | Verdict |
+|---|---|---|
+| `REPORTED_TOKEN_FIELDS` | `entitlement-usage-ledger.mjs:11`, `provider-adapter-host.mjs:10` | **New finding.** Same package, byte-identical, no comment explaining the copy. Recorded as CA-07 |
+| `KNOWLEDGE_FIELDS` | `msp-client.mjs:20`, `msp-runtime/.../lifecycle-handlers.mjs:11` | **Not a defect.** Byte-identical, but the copy carries an explicit comment declaring it a deliberate cross-package mirror. An annotated boundary duplication is a decoupling choice, not drift |
+
+The remaining name collisions were per-file test locals (`roots`, `cleanups`, `tempDirs`,
+`openCallers`), which are not duplication at all.
+
+This is the first finding in this session produced **by the scanner rather than by a human**,
+which is the outcome the RCA's prevention section was aiming at.
 
 ### 6.1 CA-02 result
 
@@ -204,6 +226,7 @@ and a checkable criterion:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.4.0 | 2026-08-12 | Boss (CEO) | CA-06 applied: `vault-context-surface.mjs` imports the canonical `CONTEXT_PROFILES`. Applying CA-02 first surfaced two further same-shaped duplications, of which one is a genuine new finding (CA-07) and one is an annotated cross-package mirror and not a defect. First finding this session produced by the scanner rather than by a human. | Claude Code |
 | 0.3.0 | 2026-08-12 | Boss (CEO) | CA-05 applied: responsibility traceability matrix added at IMPLEMENTATION-ROADMAP §5.0, with AC-C1..C4 for responsibility 7 and AC-H1/AC-Q1/AC-X5 for the partials. The audit corrects RC-4's own "eight of nine" estimate to five covered, three partial, one absent. | Claude Code |
 | 0.2.0 | 2026-08-12 | Boss (CEO) | CA-02 applied: Stage 3 extracts exported variable declarations, extractor 1.1.0. The fix independently surfaces the duplicate CONTEXT_PROFILES declaration that §5 had found by hand. CA-03..CA-06 remain proposed. | Claude Code |
 | 0.1.0 | 2026-08-12 | Boss (CEO) | Record why five tranches of Mode 2 never detected that its own context-packet capability was missing: Stage 3 is blind to exported constants, no context dimension exists, no gap class covers an unconsumed capability, and — the root cause — the acceptance criteria inherited from prompt §29 never covered §1 responsibility 7. |
