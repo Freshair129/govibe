@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 9: Phase 1 Implementation Roadmap"
 doc_id: "MODE2-IMPLEMENTATION-ROADMAP"
 status: "draft"
-version: "0.8.0"
+version: "0.9.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -44,7 +44,7 @@ ontology types in one pass. Work proceeds in five tranches.
 | T3 Semantics | 8–9 | Candidate IR, F1–F4, coverage engine, intent pass | done |
 | T4 Projection | 10–11 | 5 views, WHAT-IS vs WHAT-SHOULD-BE | done |
 | T5 Compilation | 12–16 | Roadmap compiler, POC matrix, measurement | done |
-| T6 Context | — | Bounded context packet for executors (prompt §1 responsibility 7) | planned |
+| T6 Context | — | Bounded context packet for executors (prompt §1 responsibility 7) + RCA corrective actions | in-progress |
 
 ## 3. Backlog Items
 
@@ -71,7 +71,10 @@ ontology types in one pass. Work proceeds in five tranches.
 | TASK-M2-018 | T5 | task | Extend `govibe.workspace.impact` for Mode 2 rather than duplicating it | C-2 | H2 | done |
 | TASK-M2-019 | T5 | task | Run the five-class POC repository matrix | C-2 | H2 | done |
 | TASK-M2-020 | T5 | task | Measure coverage, false relations, unresolved meaning, scan and rebuild time | C-2 | H2 | done |
-| TASK-M2-022 | T6 | task | Emit a bounded context packet from the Mode 2 model so an executor can consume it | C-3 | H3 | planned |
+| TASK-M2-022 | T6 | task | Emit a bounded context packet from the Mode 2 model so an executor can consume it | C-3 | H3 | done |
+| TASK-M2-023 | T6 | task | RCA CA-02: extend Stage 3 to extract exported `VariableDeclaration` symbols | C-2 | H2 | planned |
+| TASK-M2-024 | T6 | task | RCA CA-03/CA-04: add a `context` semantic dimension and an `unconsumed_capability` gap class | C-2 | H2 | planned |
+| TASK-M2-025 | T6 | task | RCA CA-05: add acceptance criteria for prompt §1 responsibility 7 and audit the other eight | C-2 | H2 | planned |
 
 ### 3.1 Withdrawn: the `govibe.workspace.inspect` MCP Surface
 
@@ -123,10 +126,31 @@ ADR is `proposed`. The task cannot close until the owner accepts D1 or the extra
 removed. It is isolated in `extractAnnotations` precisely so that either outcome is a small,
 clean change.
 
+### 3.1.6 RCA: why the scan never reported this gap itself
+
+`docs/change-control/rca/RCA-2026-08-12-Context-Profiles-Not-Detected.md` records why five
+tranches of Mode 2 scanned a repository containing `CONTEXT_PROFILES` and never reported the
+missing capability. Four causes had to hold at once:
+
+- Stage 3 handles six declaration kinds and **not** `VariableDeclaration`, so every exported
+  constant in the codebase is invisible to it — the widest of the four causes;
+- no `context` semantic dimension exists, so coverage had no slot to report the gap in;
+- no gap class covers *implemented, exported, consumed by nobody*;
+- **root cause:** the acceptance criteria inherited from prompt §29 cover eight of §1's nine
+  responsibilities. Responsibility 7 has none, so no tranche was obliged to deliver it and no
+  gate could fail for its absence.
+
+Corrective actions CA-02 through CA-05 are bound to `TASK-M2-023`..`TASK-M2-025`.
+
 ### 3.1.5 Not implemented: context profiles and the context packet
 
-Mode 2 contains **no reference** to `T-ctx`, `V-ctx`, `W-ctx`, `M-ctx`, `contextId`, or
-`buildContextPacket`. Verified by grep over `packages/govibe-core/src/mode2/`.
+**Resolved by `TASK-M2-022`.** `packages/govibe-core/src/mode2/context-bridge.mjs` now selects a
+budget-bounded slice of the Mode 2 model and hands it to the existing `buildContextPacket`,
+which retains ownership of lineage, profile invariants, and hashing. The section below records
+the reasoning that led there and the constraints the bridge enforces.
+
+Before that task, Mode 2 contained **no reference** to `T-ctx`, `V-ctx`, `W-ctx`, `M-ctx`,
+`contextId`, or `buildContextPacket`.
 
 This is an unimplemented capability, not a violation. The profiles govern *agent memory context
 for a dispatched turn*, and a Mode 2 scan dispatches nothing — so `CLAUDE.md`'s rule that "every
@@ -233,6 +257,7 @@ governance system. GoVibe must understand it without replacing it.
 | 0.1.0 | 2026-08-11 | Initial Phase 1 implementation roadmap. | Claude Code |
 | 0.2.0 | 2026-08-12 | Bind ADR-028 decisions to TASK-M2-010/013/016/017; add TASK-M2-021 (RBAC ratification) and §3.1/§3.2. | Claude Code |
 | 0.2.1 | 2026-08-12 | Bind Mode 2 F1–F4 finalization to TASK-M2-012 per AMENDMENT-2026-08-12. | Claude Code |
+| 0.9.0 | 2026-08-12 | Tranche 6: context bridge shipped (TASK-M2-022 done). RCA-2026-08-12 recorded and its corrective actions bound to TASK-M2-023..025. | Claude Code |
 | 0.8.0 | 2026-08-12 | Record that context profiles and the context packet are unimplemented (§3.1.5) and add TASK-M2-022 / tranche T6. | Claude Code |
 | 0.7.0 | 2026-08-12 | Tranche 5 closed: TASK-M2-019/020 done, POC-TEST-MATRIX authored. All 20 implementation tasks are done or in review; only the four ADR-028-dependent tasks and the two RBAC-blocked tasks remain open. | Claude Code |
 | 0.6.0 | 2026-08-12 | Tranches 4 and 5: TASK-M2-015/018 done; TASK-M2-016/017 `review` pending ADR-028 D2/D3/D5. AC-V1..V3, AC-G1/G2, AC-R1..R3 met. T3 and T4 closed. Recorded that task dependencies are not inferred. | Claude Code |

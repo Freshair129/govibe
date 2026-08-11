@@ -28,6 +28,7 @@ export { analyzeGaps, GAP_CLASSES, rankContradiction } from "./mode2/gap-analysi
 export { generateViews, VIEW_CATALOG } from "./mode2/view-router.mjs";
 export { analyzeSchedule, compileRoadmap, estimateEffort } from "./mode2/roadmap-compiler.mjs";
 export { analyzeMode2Impact, toLinkGraph } from "./mode2/impact-bridge.mjs";
+export { buildMode2ContextPacket, BUDGET_UNITS, DEFAULT_CONTEXT_BUDGET, DEFAULT_CONTEXT_PROFILE, selectContextSlice } from "./mode2/context-bridge.mjs";
 export { measureWorkspace } from "./mode2/measurement.mjs";
 export { buildPocFixture, POC_CLASSES } from "./mode2/poc-fixtures.mjs";
 export { BLOCK_PROFILES, DIMENSION_PRODUCERS, SEMANTIC_DIMENSIONS, selectBlockProfile, TOP_DOWN_ONLY_DIMENSIONS } from "./mode2/semantic-dimensions.mjs";
