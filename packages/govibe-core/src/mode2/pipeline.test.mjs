@@ -121,13 +121,15 @@ describe("Stage 1-4 extraction", () => {
     expect(structural.confidence).toBeLessThan(1);
   });
 
-  it("reports the one remaining unimplemented stage honestly rather than as complete", async () => {
+  it("has no unimplemented stage left, and still reports incomplete honestly", async () => {
     const result = await runMode2Scan({ adapter: adapterFor(), runId: "run-f" });
-    const notImplemented = result.stageRuns.filter((record) => /^stage_not_implemented_before_tranche_/.test(record.error ?? ""));
-    // T2 implemented 5-11; only Stage 12 (Candidate Semantic IR) remains, bound to T3.
-    expect(notImplemented.map((record) => record.stage)).toEqual([12]);
-    expect(notImplemented[0].status).toBe("incomplete");
+    // T3 implemented Stage 12; all twelve now have real extractors.
+    expect(result.stageRuns.filter((record) => /^stage_not_implemented_before_tranche_/.test(record.error ?? ""))).toEqual([]);
+    // The run is still `incomplete` — stages 7, 8, and 10 report real coverage limits rather
+    // than claiming a model they cannot derive. "All implemented" is not "all complete".
     expect(result.status).toBe("incomplete");
+    const limited = result.stageRuns.filter((record) => record.status === "incomplete").map((record) => record.stage);
+    expect(limited).toEqual(expect.arrayContaining([7, 8]));
   });
 });
 

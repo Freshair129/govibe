@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 4: Twelve-Stage Semantic Deep Scan Specification"
 doc_id: "MODE2-DEEP-SCAN-12-STAGE-SPEC"
 status: "draft"
-version: "0.3.0"
+version: "0.4.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -257,6 +257,10 @@ LLM must not invent missing WHY; absent meaning becomes `UNRESOLVED`.
 | DS-08 | Stage 11 never reports absence by omission | `mode2/stages-t2.test.mjs` |
 | DS-13 | Stages 7-9 never assert a model they cannot derive deterministically | `mode2/stages-t2.test.mjs` |
 | DS-14 | An annotation never mints the requirement or section it names | `mode2/stages-t2.test.mjs` |
+| DS-15 | Stage 12 emits no canonical identity and every atom carries a provenance envelope | `mode2/t3-semantics.test.mjs` |
+| DS-16 | F1–F4 run in strict order and F4 refuses an unvalidated or unmediated promotion | `mode2/t3-semantics.test.mjs` |
+| DS-17 | Coverage counts relation-bearing and attribute-satisfied dimensions, not atoms alone | `mode2/t3-semantics.test.mjs` |
+| DS-18 | The intent scan never invents an unstated WHY | `mode2/t3-semantics.test.mjs` |
 | DS-09 | No stage writes outside `.govibe/mode2/` | `mode2/workspace-adapter.test.mjs` |
 | DS-10 | Two independent workspaces holding identical content produce identical output hashes | `mode2/pipeline.test.mjs` |
 | DS-11 | A record whose artifact is missing is re-executed, never reused | `mode2/pipeline.test.mjs` |
@@ -294,10 +298,57 @@ contributes one additive `annotations` block, so rejecting D1 is a deletion rath
 unpick. An annotation is precedence tier 1 (deterministic parse of an explicit human
 assertion) and is evidence, not authority: `@req FR-001` does not create `FR-001`.
 
+## 7.2 Tranche 3: Stage 12, F1–F4, Coverage, and the Intent Pass
+
+Stage 12 **composes**; it never extracts. Anything that discovers new meaning belongs in the
+stage that owns that dimension — the same rule that keeps F1–F4 off the stage axis.
+
+Every atom carries `identity` (pipeline-local), `type`, `dimension`, `source`, `source_span`,
+`provenance`, `confidence`, `scope`, `inferred`, `explicit`, and `canonical: false`.
+
+### F1–F4 and the API-005 question
+
+`AMENDMENT-2026-08-12-F1-F4` §6 leaves an open Option A/B/C question, because `API-005` line 83
+(approved) states that *producing stages* submit to MSP, which the **L2** pipeline implements.
+
+Mode 2 is a separate additively-versioned contract, so it adopts `F1 → F2 → F3 → F4` natively
+and the L2 pipeline's per-stage submission is untouched. **This implementation does not decide
+the amendment's question** — that remains the owner's, and it applies to L2.
+
+F2 reports `acyclicity` and `backlinkSymmetry` as `not_applicable` with stated reasons rather
+than as passing: no Mode 2 relation type is declared acyclic-required (import cycles are legal),
+and Mode 2 materialises no backlinks. F4 refuses to submit when F2 failed, and reports `blocked`
+rather than success when no MSP boundary is configured — an unpromoted graph must not look
+promoted.
+
+### Coverage is dimension coverage, not document volume
+
+Seven dimensions — intent, requirement, rationale, domain, deployment, authority, change — have
+**no bottom-up producer at all**. A coverage report therefore shows honest gaps for an
+undocumented repository instead of scoring it complete because its code parsed. Each gap states
+its cause: `no-bottom-up-producer-requires-top-down-artefacts` versus
+`producer-ran-and-found-nothing`.
+
+Two dimensions are not atom-bearing and are counted accordingly: `dependency` is satisfied by
+relations (Stage 4 produces edges, not nodes) and `provenance` by the atom attribute every atom
+carries.
+
+The section-coverage second axis and the `R3` default traversal radius are ADR-028 D4 and D6,
+both **proposed**. Both are isolated so rejection is a deletion.
+
+### The intent pass closes the annotation loop
+
+`runIntentScan` supplies the seven top-down dimensions and indexes requirement and decision
+identifiers, which `resolveAnnotationTargets` then uses to resolve the `@req` / `@spec` targets
+Stage 10 parks as `UNRESOLVED`. A target absent from the index stays unresolved rather than being
+minted. The pass **must not invent a missing WHY**: a document class entitled to supply rationale
+that states none yields a `rationale-not-stated` finding, not a summary.
+
 ## 8. Changelog
 
 | Version | Date | Change | Author |
 |---|---|---|---|
 | 0.1.0 | 2026-08-11 | Initial twelve-stage semantic scan specification. | Claude Code |
+| 0.4.0 | 2026-08-12 | Tranche 3: Stage 12 Candidate Semantic IR, F1–F4 finalization, semantic coverage engine, and the top-down intent pass. Added §7.2 and DS-15..DS-18. Records that Mode 2 adopts the strict F1→F4 ordering natively without deciding the amendment's L2 question. | Claude Code |
 | 0.3.0 | 2026-08-12 | Tranche 2: stages 5-11 implemented. Added §7.1 recording exactly what each delivers and what it deliberately does not, DS-08 bound to a real test, and DS-13/DS-14 added. | Claude Code |
 | 0.2.0 | 2026-08-12 | Adversarial review corrections: reuse fingerprint documented as a heuristic with a `verifyContent` escape hatch; DS-05/DS-06 scoped to the fast path; DS-10 restated as cross-workspace and made true by excluding environment-derived fields from the hash; DS-04 restated as a genuine interruption; two `Verified by` cells corrected to files that exist; DS-11 and DS-12 added. | Claude Code |

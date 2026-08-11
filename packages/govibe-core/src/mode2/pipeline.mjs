@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 
 import { createMetadataStore, sha256, sha256Json } from "./metadata-store.mjs";
+import { runFinalization } from "./finalization.mjs";
 import { createMode2Stages } from "./stages.mjs";
 import { MODE2_STAGE_RUN_SCHEMA, MODE2_STAGES, validateMode2StageRun } from "./stage-contract.mjs";
 
@@ -131,6 +132,9 @@ export async function runMode2Scan({
   stages = createMode2Stages(),
   reuseFromRunId,
   verifyContent = false,
+  mspClient = null,
+  actor = "unknown",
+  finalize = true,
   now = () => new Date().toISOString(),
 } = {}) {
   if (!adapter?.identify) throw new Error("A Mode 2 scan requires a WorkspaceAdapter.");
@@ -201,6 +205,7 @@ export async function runMode2Scan({
         exclusions,
         unreadable,
         artifacts,
+        stageRecords: stageRuns,
         read: (filePath) => adapter.read(filePath),
       });
     } catch (error) {
@@ -216,6 +221,13 @@ export async function runMode2Scan({
     stageRuns.push(record);
   }
 
+  // F1-F4 run after stage 12, in strict order. See finalization.mjs for why Mode 2 adopts the
+  // strict ordering natively while the L2 pipeline's per-stage submission stays untouched.
+  const finalization = finalize
+    ? await runFinalization({ runId, stageRecords: stageRuns, artifacts, mspClient, actor, now })
+    : null;
+  if (finalization) await store.writeJson(`scan/runs/${runId}/finalization.json`, finalization);
+
   const status = stageRuns.every((record) => record.status === "complete" || record.status === "not_applicable") ? "complete" : "incomplete";
   const result = {
     schema: RESULT_SCHEMA,
@@ -230,6 +242,9 @@ export async function runMode2Scan({
     incremental: { reusedStages, executedStages: MODE2_STAGES.length - reusedStages, rehashedFiles: rehashed, reusedFileHashes: reusedHashes, baselineRunId, verifyContent },
     unreadablePaths: unreadable,
     unresolvedCount: stageRuns.reduce((total, record) => total + (record.unresolved?.length ?? 0), 0),
+    finalization: finalization
+      ? { F1: finalization.F1, F2: finalization.F2, F3: finalization.F3, F4: finalization.F4, canonical: finalization.canonical }
+      : null,
     completedAt: now(),
   };
 

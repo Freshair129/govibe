@@ -5,6 +5,7 @@ import { MODE2_STAGES } from "./stage-contract.mjs";
 import { agenticStages } from "./stages-agentic.mjs";
 import { behaviourStages } from "./stages-behaviour.mjs";
 import { interfaceStages } from "./stages-interface.mjs";
+import { semanticStages } from "./stages-semantic.mjs";
 import { verificationStages } from "./stages-verification.mjs";
 import {
   byCodepoint,
@@ -449,7 +450,7 @@ export function createMode2Stages() {
     ...behaviourStages,
     ...verificationStages,
     ...agenticStages,
-    pendingStage(12, 3),
+    ...semanticStages,
   ]
     .sort((left, right) => left.stage - right.stage)
     .map((stage) => ({ ...stage, name: MODE2_STAGES[stage.stage - 1] }));
