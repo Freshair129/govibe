@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 9: Phase 1 Implementation Roadmap"
 doc_id: "MODE2-IMPLEMENTATION-ROADMAP"
 status: "draft"
-version: "0.6.0"
+version: "0.8.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -43,7 +43,8 @@ ontology types in one pass. Work proceeds in five tranches.
 | T2 Extraction | 7 | Stages 5–11 | done |
 | T3 Semantics | 8–9 | Candidate IR, F1–F4, coverage engine, intent pass | done |
 | T4 Projection | 10–11 | 5 views, WHAT-IS vs WHAT-SHOULD-BE | done |
-| T5 Compilation | 12–16 | Roadmap compiler, POC matrix, measurement | in-progress |
+| T5 Compilation | 12–16 | Roadmap compiler, POC matrix, measurement | done |
+| T6 Context | — | Bounded context packet for executors (prompt §1 responsibility 7) | planned |
 
 ## 3. Backlog Items
 
@@ -68,8 +69,9 @@ ontology types in one pass. Work proceeds in five tranches.
 | TASK-M2-016 | T4 | task | Implement WHAT-IS vs WHAT-SHOULD-BE gap analysis, incl. two-axis contradiction ranking and finding severity per ADR-028 D2/D3 | C-3 | H3 | review |
 | TASK-M2-017 | T5 | task | Implement the roadmap compiler, incl. effort points and critical-path analysis per ADR-028 D5 (effort score must never write `C` or `H`) | C-3 | H3 | review |
 | TASK-M2-018 | T5 | task | Extend `govibe.workspace.impact` for Mode 2 rather than duplicating it | C-2 | H2 | done |
-| TASK-M2-019 | T5 | task | Run the five-class POC repository matrix | C-2 | H2 | planned |
-| TASK-M2-020 | T5 | task | Measure coverage, false relations, unresolved meaning, scan and rebuild time | C-2 | H2 | planned |
+| TASK-M2-019 | T5 | task | Run the five-class POC repository matrix | C-2 | H2 | done |
+| TASK-M2-020 | T5 | task | Measure coverage, false relations, unresolved meaning, scan and rebuild time | C-2 | H2 | done |
+| TASK-M2-022 | T6 | task | Emit a bounded context packet from the Mode 2 model so an executor can consume it | C-3 | H3 | planned |
 
 ### 3.1 Withdrawn: the `govibe.workspace.inspect` MCP Surface
 
@@ -121,6 +123,29 @@ ADR is `proposed`. The task cannot close until the owner accepts D1 or the extra
 removed. It is isolated in `extractAnnotations` precisely so that either outcome is a small,
 clean change.
 
+### 3.1.5 Not implemented: context profiles and the context packet
+
+Mode 2 contains **no reference** to `T-ctx`, `V-ctx`, `W-ctx`, `M-ctx`, `contextId`, or
+`buildContextPacket`. Verified by grep over `packages/govibe-core/src/mode2/`.
+
+This is an unimplemented capability, not a violation. The profiles govern *agent memory context
+for a dispatched turn*, and a Mode 2 scan dispatches nothing — so `CLAUDE.md`'s rule that "every
+dispatched turn must retain `contextId`, `cacheId`, ... and injection metadata" does not bind the
+scan itself. Mode 2 would **feed** a profile, never select one.
+
+What is genuinely missing is implementation-prompt §1 responsibility 7, *prepare bounded context
+for humans and agents*. Mode 2 now produces the IR, coverage, gaps, views, and a roadmap, but
+nothing turns them into a bounded, budget-aware packet an executor can consume. That is the
+missing link between "GoVibe understands the workspace" and §32's "the executor is smarter
+because it receives better structured meaning".
+
+The machinery already exists in `packages/govibe-core/src/context-lineage.mjs`
+(`CONTEXT_PROFILES`, `validateContextProfile`, `createContextLineage`) and
+`context-packet.mjs` (`buildContextPacket`). `TASK-M2-022` binds the work of feeding them from
+the Mode 2 model. Two constraints will apply when it is built: the packet carries
+`context_budget` as its own axis — not `H`, not `R` — and Mode 2 output enters as a *candidate*
+source, so a packet must not present unpromoted candidates as canonical knowledge.
+
 ### 3.2 Bound Decisions
 
 `docs/adr/ADR-028-RWANG-Skill-Absorption-into-Mode-2-Deep-Scan.md` (accepted 2026-08-12)
@@ -152,7 +177,7 @@ contradicts.
 | 7 | `AGENTIC-CAPABILITY-MANIFEST.md` | `docs/mode2/` | T2 |
 | 8 | `ROADMAP-COMPILER-SPEC.md` | `docs/mode2/` | T5 |
 | 9 | `IMPLEMENTATION-ROADMAP.md` | this document | done |
-| 10 | `POC-TEST-MATRIX.md` | `docs/mode2/` | T5 |
+| 10 | `POC-TEST-MATRIX.md` | `docs/mode2/POC-TEST-MATRIX.md` | done |
 
 ## 5. Phase 1 Acceptance Criteria
 
@@ -208,6 +233,8 @@ governance system. GoVibe must understand it without replacing it.
 | 0.1.0 | 2026-08-11 | Initial Phase 1 implementation roadmap. | Claude Code |
 | 0.2.0 | 2026-08-12 | Bind ADR-028 decisions to TASK-M2-010/013/016/017; add TASK-M2-021 (RBAC ratification) and §3.1/§3.2. | Claude Code |
 | 0.2.1 | 2026-08-12 | Bind Mode 2 F1–F4 finalization to TASK-M2-012 per AMENDMENT-2026-08-12. | Claude Code |
+| 0.8.0 | 2026-08-12 | Record that context profiles and the context packet are unimplemented (§3.1.5) and add TASK-M2-022 / tranche T6. | Claude Code |
+| 0.7.0 | 2026-08-12 | Tranche 5 closed: TASK-M2-019/020 done, POC-TEST-MATRIX authored. All 20 implementation tasks are done or in review; only the four ADR-028-dependent tasks and the two RBAC-blocked tasks remain open. | Claude Code |
 | 0.6.0 | 2026-08-12 | Tranches 4 and 5: TASK-M2-015/018 done; TASK-M2-016/017 `review` pending ADR-028 D2/D3/D5. AC-V1..V3, AC-G1/G2, AC-R1..R3 met. T3 and T4 closed. Recorded that task dependencies are not inferred. | Claude Code |
 | 0.5.0 | 2026-08-12 | Tranche 3: TASK-M2-012/014 done, TASK-M2-013 `review` pending ADR-028 D4/D6. AC-M1..M4 met; AC-G1 partial. T2 closed. | Claude Code |
 | 0.4.0 | 2026-08-12 | Tranche 2: TASK-M2-008/009/011 done, TASK-M2-010 `review` pending ADR-028 D1 acceptance. AC-A1/A2/A3 met. T1 closed. | Claude Code |
