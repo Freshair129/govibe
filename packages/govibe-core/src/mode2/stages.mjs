@@ -114,6 +114,28 @@ function classifyArtifact(file) {
   return "unknown";
 }
 
+/**
+ * Distinguishes what an exported `const` actually is. `export const X = () => {}` is a function
+ * in every sense that matters to a reader, and `export const NAMES = [...]` is an enum in
+ * practice — recording both as a bare "variable" would lose the distinction that makes an
+ * exported constant a recognisable capability surface.
+ */
+function variableKind(declaration) {
+  const initializer = declaration.initializer;
+  if (!initializer) return "variable";
+  if (ts.isArrowFunction(initializer) || ts.isFunctionExpression(initializer)) return "function";
+  if (ts.isClassExpression(initializer)) return "class";
+  if (ts.isArrayLiteralExpression(initializer)) return "const-list";
+  if (ts.isObjectLiteralExpression(initializer)) return "const-record";
+  // `Object.freeze([...])` / `Object.freeze({...})` is the governed-enum idiom in this codebase.
+  if (ts.isCallExpression(initializer) && /(^|\.)freeze$/.test(initializer.expression.getText?.() ?? "")) {
+    const inner = initializer.arguments?.[0];
+    if (inner && ts.isArrayLiteralExpression(inner)) return "const-list";
+    if (inner && ts.isObjectLiteralExpression(inner)) return "const-record";
+  }
+  return "variable";
+}
+
 function pendingStage(stage, tranche) {
   return {
     stage,
@@ -238,7 +260,10 @@ const stage02 = {
 /** Stage 3 — Structural scan. Parsers only; unparsed languages are named, never guessed at. */
 const stage03 = {
   stage: 3,
-  extractorVersion: "1.0.0",
+  // 1.1.0 — RCA-2026-08-12 CA-02: exported variable declarations are now extracted. The bump
+  // matters operationally: the pipeline keys stage reuse on extractorVersion, so every cached
+  // stage-3 record is correctly invalidated rather than silently retained.
+  extractorVersion: "1.1.0",
   method: "typescript-ast-structural-extraction",
   usesTreeShape: false,
   inputs: (files) => files.filter((file) => TS_EXTENSIONS.has(file.extension)).map((file) => file.path),
@@ -270,6 +295,32 @@ const stage03 = {
       }
       const exports = [];
       walk(source, (node) => {
+        // Variable declarations carry their `export` modifier on the enclosing
+        // VariableStatement, not on the declaration, so they need their own branch. Without it
+        // every exported constant in a codebase is invisible — const-as-enum, schema tables,
+        // policy maps, and arrow-function exports alike (RCA-2026-08-12 RC-1).
+        if (ts.isVariableStatement(node)) {
+          const exportedStatement = Boolean(node.modifiers?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword));
+          // Module scope only. A local const inside a function body is an implementation
+          // detail, and admitting them would bury the API surface in noise.
+          const moduleScope = node.parent === source || ts.isModuleBlock(node.parent ?? {});
+          if (!exportedStatement && !moduleScope) return;
+          for (const declaration of node.declarationList.declarations) {
+            if (!declaration.name || !ts.isIdentifier(declaration.name)) continue;
+            const start = declaration.getStart(source);
+            const position = source.getLineAndCharacterOfPosition(start);
+            symbols.push({
+              id: `mode2-symbol:${file.path}:${start}`,
+              name: declaration.name.text,
+              kind: variableKind(declaration),
+              exported: exportedStatement,
+              path: file.path,
+              source_span: { start, line: position.line + 1, character: position.character + 1 },
+            });
+            if (exportedStatement) exports.push(declaration.name.text);
+          }
+          return;
+        }
         const name = node.name && ts.isIdentifier(node.name) ? node.name.text : undefined;
         if (!name) return;
         let kind;

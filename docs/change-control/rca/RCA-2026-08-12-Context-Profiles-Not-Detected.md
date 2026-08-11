@@ -2,7 +2,7 @@
 title: "RCA: Mode 2 Did Not Detect Its Own Missing Context-Packet Capability"
 doc_id: "RCA-2026-08-12-CONTEXT-PROFILES-NOT-DETECTED"
 status: "draft"
-version: "0.1.0"
+version: "0.2.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -136,14 +136,37 @@ Two copies of a governed enum can drift. This is the same duplication class reco
 | ID | Action | Addresses | Status |
 |---|---|---|---|
 | CA-01 | Build the Mode 2 context bridge and bind it to `TASK-M2-022` | the missing capability | done |
-| CA-02 | Extend Stage 3 to extract exported `VariableDeclaration` symbols | RC-1 | proposed |
+| CA-02 | Extend Stage 3 to extract exported `VariableDeclaration` symbols | RC-1 | **done** |
 | CA-03 | Add a `context` semantic dimension with its producer mapping | RC-2 | proposed |
 | CA-04 | Add an `unconsumed_capability` gap class | RC-3 | proposed |
 | CA-05 | Add acceptance criteria for prompt §1 responsibility 7 and audit the other eight for coverage | RC-4 | proposed |
 | CA-06 | Make `vault-context-surface.mjs` import `CONTEXT_PROFILES` instead of re-declaring it | related finding | proposed |
 
-CA-02 through CA-06 are **proposed, not done**. Each changes detector behaviour or a governed
+CA-03 through CA-06 remain **proposed, not done**. Each changes detector behaviour or a governed
 surface and should be scoped and approved rather than folded into this RCA.
+
+### 6.1 CA-02 result
+
+`extractorVersion` moved `1.0.0` → `1.1.0`, which correctly invalidates every cached stage-3
+record rather than silently retaining it. Exported variable declarations are now classified by
+what they actually are — `const-list`, `const-record`, `function` for an arrow assigned to a
+const — because recording them all as "variable" would lose the distinction that makes an
+exported constant a recognisable capability surface. Module-private constants are recorded with
+`exported: false`; locals inside a function body stay out.
+
+Measured on this repository: symbols rose from 1557 to 2218 (+42%), of which 199 are
+`const-list` or `const-record`.
+
+**The fix reproduces the RCA's own related finding without human help.** Stage 3 now reports:
+
+```text
+CONTEXT_PROFILES  packages/govibe-core/src/context-lineage.mjs:3   const-list  exported=true
+CONTEXT_PROFILES  scripts/mcp/vault-context-surface.mjs:5          const-list  exported=false
+```
+
+Two declarations of one governed enum, which §5 recorded after finding it by reading. The
+scanner can now prove it. CA-06 remains open — this makes the duplication *detectable*, not
+*fixed*.
 
 ## 7. Prevention
 
@@ -174,4 +197,5 @@ and a checkable criterion:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-08-12 | Boss (CEO) | CA-02 applied: Stage 3 extracts exported variable declarations, extractor 1.1.0. The fix independently surfaces the duplicate CONTEXT_PROFILES declaration that §5 had found by hand. CA-03..CA-06 remain proposed. | Claude Code |
 | 0.1.0 | 2026-08-12 | Boss (CEO) | Record why five tranches of Mode 2 never detected that its own context-packet capability was missing: Stage 3 is blind to exported constants, no context dimension exists, no gap class covers an unconsumed capability, and — the root cause — the acceptance criteria inherited from prompt §29 never covered §1 responsibility 7. |

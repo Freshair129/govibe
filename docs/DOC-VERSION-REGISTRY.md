@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.46+draft"
+version: "0.3.47+draft"
 updated: "2026-08-12"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.46+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.47+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -56,7 +56,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Change Request | `CR-2026-08-12-THESEUS-CANONICAL-HOME-CORRECTION` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-12-THESEUS-Canonical-Home-Correction.md` |
 | Change Request | `CR-2026-08-12-DOCUMENT-SOT-CONSOLIDATION-DIRECTION` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-12-Document-SoT-Consolidation-Direction.md` |
 | Amendment | `AMENDMENT-2026-08-12-F1-F4-FINALIZATION-DEFINITION` | `0.2.0` | candidate | Boss (CEO) | `docs/change-control/change-requests/amendments/AMENDMENT-2026-08-12-F1-F4-Finalization-Definition.md` |
-| RCA | `RCA-2026-08-12-CONTEXT-PROFILES-NOT-DETECTED` | `0.1.0` | draft | Boss (CEO) | `docs/change-control/rca/RCA-2026-08-12-Context-Profiles-Not-Detected.md` |
+| RCA | `RCA-2026-08-12-CONTEXT-PROFILES-NOT-DETECTED` | `0.2.0` | draft | Boss (CEO) | `docs/change-control/rca/RCA-2026-08-12-Context-Profiles-Not-Detected.md` |
 | Work Packet | `WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-12-Persistent-Memory-MSP-Runtime-Phase-0-1.md` |
 | Work Packet | `WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-13-Persistent-Memory-MSP-Runtime-Phase-2.md` |
 | Work Packet | `WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES` | `0.1.3+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-14-Vault-Scoping-Msp-Runtime-Entities.md` |
@@ -228,6 +228,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.47+draft | 2026-08-12 | Boss (CEO) | Synchronized RCA-2026-08-12-CONTEXT-PROFILES-NOT-DETECTED to `0.2.0` after CA-02 was applied. Stage 3 now extracts exported variable declarations (extractor 1.1.0); symbols on this repository rose 1557 to 2218, and the fix independently surfaces the duplicate `CONTEXT_PROFILES` declaration in `scripts/mcp/vault-context-surface.mjs` that the RCA had found by reading. CA-03..CA-06 remain proposed. No document status changed by this row. |
 | 0.3.46+draft | 2026-08-12 | Boss (CEO) | Registered RCA-2026-08-12-CONTEXT-PROFILES-NOT-DETECTED at `0.1.0`/`draft`. Records why five tranches of Mode 2 never reported its own missing context-packet capability: Stage 3 is blind to exported constants, no `context` semantic dimension exists, no gap class covers an unconsumed capability, and the root cause — the acceptance criteria inherited from implementation-prompt §29 cover eight of §1's nine responsibilities, omitting responsibility 7. Corrective actions CA-02..CA-05 are proposed, not applied. |
 | 0.3.45+draft | 2026-08-12 | Boss (CEO) | Registered CR-2026-08-12-DOCUMENT-SOT-CONSOLIDATION-DIRECTION at `0.1.0+draft`/`draft`. Raised because adversarial review found the session's most far-reaching decision — what the document source of truth is — had no artifact while two narrower decisions had an ADR and an amendment. Records the unified-store proposal, the authored-in-place counter-proposal, and seven unresolved conflicts, notably that the counter-proposal would collapse the two-record `approved`-status control at validate-docs.mjs:544-546 and contradicts `.claude/skills/doc-architect/SKILL.md` §6.2. Authorizes nothing. |
 | 0.3.44+draft | 2026-08-12 | Boss (CEO) | **Adversarial-review correction row.** ADR-028 de-ratified: `1.0.0`/`accepted` -> `0.1.0`/`proposed`. The prior row recorded acceptance on owner direction alone, but the document's Decision 2 rewrites RWANG's trust hierarchy and its Rejected table excludes mechanisms — neither was owner-reviewed, and ratification is non-delegable. Three comparison rows corrected where they understated RWANG, and unrecorded benchmark figures removed. AMENDMENT-2026-08-12-F1-F4 synchronized to `0.2.0`: its §6 previously framed `stage-runner.mjs` as deviating from the contract; the runtime in fact conforms to API-005 line 83, so the F1->F4 ordering is a proposed breaking change to that approved sentence, not a defect. **This row de-ratifies one document and ratifies none.** |

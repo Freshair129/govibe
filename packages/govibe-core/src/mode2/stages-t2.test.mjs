@@ -99,6 +99,46 @@ afterEach(async () => {
   await rm(root, { recursive: true, force: true });
 });
 
+describe("Stage 3 — exported constants (RCA-2026-08-12 CA-02)", () => {
+  it("extracts the exact declaration the RCA found invisible", async () => {
+    await write("src/profiles.ts", [
+      "export const CONTEXT_PROFILES = Object.freeze(['T-ctx', 'V-ctx', 'W-ctx', 'M-ctx']);",
+      "export const DEFAULTS = { retries: 3 };",
+      "export const handler = () => 1;",
+      "const MODULE_PRIVATE = 7;",
+      "export function classic() { const local = 1; return local; }",
+    ].join("\n"));
+    await runMode2Scan({ adapter: adapterFor(), runId: "ca02" });
+    const structure = await artifact("ca02", 3);
+    const byName = new Map(structure.symbols.filter((s2) => s2.path === "src/profiles.ts").map((s2) => [s2.name, s2]));
+
+    // The RCA case: a governed enum expressed as an exported frozen array.
+    expect(byName.get("CONTEXT_PROFILES")).toMatchObject({ kind: "const-list", exported: true });
+    expect(byName.get("DEFAULTS")).toMatchObject({ kind: "const-record", exported: true });
+    // An arrow function assigned to a const is a function, not a bare variable.
+    expect(byName.get("handler")).toMatchObject({ kind: "function", exported: true });
+    // Module-private constants are recorded but marked unexported.
+    expect(byName.get("MODULE_PRIVATE")).toMatchObject({ exported: false });
+    // A local inside a function body is an implementation detail and stays out.
+    expect(byName.has("local")).toBe(false);
+  });
+
+  it("lists exported constants in the module export surface", async () => {
+    await write("src/surface.ts", "export const ALPHA = 1;\nconst beta = 2;\nexport function gamma() { return beta; }\n");
+    await runMode2Scan({ adapter: adapterFor(), runId: "ca02b" });
+    const structure = await artifact("ca02b", 3);
+    const surface = structure.modules.find((module) => module.path === "src/surface.ts");
+    expect(surface.exports).toContain("ALPHA");
+    expect(surface.exports).toContain("gamma");
+    expect(surface.exports).not.toContain("beta");
+  });
+
+  it("bumps the extractor version so cached stage-3 records are invalidated", async () => {
+    const result = await runMode2Scan({ adapter: adapterFor(), runId: "ca02c" });
+    expect(result.stageRuns[2].extractorVersion).toBe("1.1.0");
+  });
+});
+
 describe("Stage 5 — Interface & Integration", () => {
   it("extracts routes only when a path-shaped literal accompanies the verb", async () => {
     await runMode2Scan({ adapter: adapterFor(), runId: "s5" });

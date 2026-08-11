@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 9: Phase 1 Implementation Roadmap"
 doc_id: "MODE2-IMPLEMENTATION-ROADMAP"
 status: "draft"
-version: "0.9.0"
+version: "0.10.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -72,7 +72,7 @@ ontology types in one pass. Work proceeds in five tranches.
 | TASK-M2-019 | T5 | task | Run the five-class POC repository matrix | C-2 | H2 | done |
 | TASK-M2-020 | T5 | task | Measure coverage, false relations, unresolved meaning, scan and rebuild time | C-2 | H2 | done |
 | TASK-M2-022 | T6 | task | Emit a bounded context packet from the Mode 2 model so an executor can consume it | C-3 | H3 | done |
-| TASK-M2-023 | T6 | task | RCA CA-02: extend Stage 3 to extract exported `VariableDeclaration` symbols | C-2 | H2 | planned |
+| TASK-M2-023 | T6 | task | RCA CA-02: extend Stage 3 to extract exported `VariableDeclaration` symbols | C-2 | H2 | done |
 | TASK-M2-024 | T6 | task | RCA CA-03/CA-04: add a `context` semantic dimension and an `unconsumed_capability` gap class | C-2 | H2 | planned |
 | TASK-M2-025 | T6 | task | RCA CA-05: add acceptance criteria for prompt §1 responsibility 7 and audit the other eight | C-2 | H2 | planned |
 
@@ -257,6 +257,7 @@ governance system. GoVibe must understand it without replacing it.
 | 0.1.0 | 2026-08-11 | Initial Phase 1 implementation roadmap. | Claude Code |
 | 0.2.0 | 2026-08-12 | Bind ADR-028 decisions to TASK-M2-010/013/016/017; add TASK-M2-021 (RBAC ratification) and §3.1/§3.2. | Claude Code |
 | 0.2.1 | 2026-08-12 | Bind Mode 2 F1–F4 finalization to TASK-M2-012 per AMENDMENT-2026-08-12. | Claude Code |
+| 0.10.0 | 2026-08-12 | RCA CA-02 applied (TASK-M2-023 done): Stage 3 now extracts exported variable declarations; symbols on this repository rose 1557 -> 2218 and the duplicate CONTEXT_PROFILES declaration is now machine-detectable. | Claude Code |
 | 0.9.0 | 2026-08-12 | Tranche 6: context bridge shipped (TASK-M2-022 done). RCA-2026-08-12 recorded and its corrective actions bound to TASK-M2-023..025. | Claude Code |
 | 0.8.0 | 2026-08-12 | Record that context profiles and the context packet are unimplemented (§3.1.5) and add TASK-M2-022 / tranche T6. | Claude Code |
 | 0.7.0 | 2026-08-12 | Tranche 5 closed: TASK-M2-019/020 done, POC-TEST-MATRIX authored. All 20 implementation tasks are done or in review; only the four ADR-028-dependent tasks and the two RBAC-blocked tasks remain open. | Claude Code |
