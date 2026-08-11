@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.41+draft"
-updated: "2026-08-09"
+version: "0.3.45+draft"
+updated: "2026-08-12"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.41+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.45+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -53,6 +53,9 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Change Request | `CR-2026-08-02-MULTI-PROVIDER-ENTITLEMENT-ROUTING` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md` |
 | Change Request | `CR-2026-08-04-DOC-GOVERNANCE-REFINEMENT` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Doc-Governance-Refinement.md` |
 | Change Request | `CR-2026-08-04-PERSISTENT-MEMORY-MSP-RUNTIME` | `0.2.1+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md` |
+| Change Request | `CR-2026-08-12-THESEUS-CANONICAL-HOME-CORRECTION` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-12-THESEUS-Canonical-Home-Correction.md` |
+| Change Request | `CR-2026-08-12-DOCUMENT-SOT-CONSOLIDATION-DIRECTION` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-12-Document-SoT-Consolidation-Direction.md` |
+| Amendment | `AMENDMENT-2026-08-12-F1-F4-FINALIZATION-DEFINITION` | `0.2.0` | candidate | Boss (CEO) | `docs/change-control/change-requests/amendments/AMENDMENT-2026-08-12-F1-F4-Finalization-Definition.md` |
 | Work Packet | `WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-12-Persistent-Memory-MSP-Runtime-Phase-0-1.md` |
 | Work Packet | `WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-13-Persistent-Memory-MSP-Runtime-Phase-2.md` |
 | Work Packet | `WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES` | `0.1.3+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-14-Vault-Scoping-Msp-Runtime-Entities.md` |
@@ -133,6 +136,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | ADR | `ADR-022-VAULT-OWNERSHIP-CONTEXT-LINEAGE` | `1.0.0` | approved | Boss / ATHER | `docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md` |
 | ADR | `ADR-023-KNOWLEDGE-AUTHORITY-CONTEXT-AUTHORITY-BOUNDARY` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-023-Knowledge-Authority-Context-Authority-Boundary.md` |
 | ADR | `ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY` | `0.1.1+draft` | draft | Boss (CEO) | `docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md` |
+| ADR | `ADR-028-RWANG-SKILL-ABSORPTION-MODE-2-DEEP-SCAN` | `0.1.0` | proposed | Boss (CEO) | `docs/adr/ADR-028-RWANG-Skill-Absorption-into-Mode-2-Deep-Scan.md` |
 | ADR | `ADR-025-STORAGE-BACKEND-INDEPENDENCE` | `0.1.0+draft` | proposed | Boss / ARCHON / ATHER | `docs/adr/ADR-025-Storage-Backend-Independence-and-GenesisBlockDB-Adapter-Boundary.md` |
 | ADR | `ADR-026-MSP-EXTERNAL-RUNTIME-DEPLOYMENT` | `0.1.2+draft` | proposed | Boss (CEO) | `docs/adr/ADR-026-MSP-External-Runtime-Deployment.md` |
 | Architecture | `BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.1` | approved | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md` |
@@ -223,6 +227,10 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.45+draft | 2026-08-12 | Boss (CEO) | Registered CR-2026-08-12-DOCUMENT-SOT-CONSOLIDATION-DIRECTION at `0.1.0+draft`/`draft`. Raised because adversarial review found the session's most far-reaching decision — what the document source of truth is — had no artifact while two narrower decisions had an ADR and an amendment. Records the unified-store proposal, the authored-in-place counter-proposal, and seven unresolved conflicts, notably that the counter-proposal would collapse the two-record `approved`-status control at validate-docs.mjs:544-546 and contradicts `.claude/skills/doc-architect/SKILL.md` §6.2. Authorizes nothing. |
+| 0.3.44+draft | 2026-08-12 | Boss (CEO) | **Adversarial-review correction row.** ADR-028 de-ratified: `1.0.0`/`accepted` -> `0.1.0`/`proposed`. The prior row recorded acceptance on owner direction alone, but the document's Decision 2 rewrites RWANG's trust hierarchy and its Rejected table excludes mechanisms — neither was owner-reviewed, and ratification is non-delegable. Three comparison rows corrected where they understated RWANG, and unrecorded benchmark figures removed. AMENDMENT-2026-08-12-F1-F4 synchronized to `0.2.0`: its §6 previously framed `stage-runner.mjs` as deviating from the contract; the runtime in fact conforms to API-005 line 83, so the F1->F4 ordering is a proposed breaking change to that approved sentence, not a defect. **This row de-ratifies one document and ratifies none.** |
+| 0.3.43+draft | 2026-08-12 | Boss (CEO) | Registered AMENDMENT-2026-08-12-F1-F4-FINALIZATION-DEFINITION at `0.1.0`/`candidate`: defines the four Deep Scan finalization operations individually (F1 consolidate, F2 validate, F3 package evidence, F4 submit through MSP), fixes the `F1 -> F2 -> F3 -> F4` ordering invariant, places the normative text in API-005 because ALIGNMENT-04 declares itself a non-SoT mapping, and records that `stage-runner.mjs` currently submits knowledge candidates per stage before `validateDeepScan` runs. Closes the undefined-term gap behind AUDIT-2026-08-01 §7.4. No document status changed to approved/accepted by this row. |
+| 0.3.42+draft | 2026-08-12 | Boss (CEO) | **ADR-028 accepted.** Registered ADR-028-RWANG-SKILL-ABSORPTION-MODE-2-DEEP-SCAN at `1.0.0`/`accepted` (owner direction, 2026-08-12): absorbs five RWANG document-intelligence mechanisms into the Mode 2 deep scan, corrects RWANG's flat Code>SDD>PRD trust hierarchy into a two-axis ranking so governed semantics stay owned by STD/ADR, and bars the imported effort score from the `C` and `H` axes. Registered CR-2026-08-12-THESEUS-CANONICAL-HOME-CORRECTION at `0.1.0+draft`/`draft` (three stale canonical-home rows in THESEUS.md, verified against the tree at commit 53e9269; decision not yet authorized). No other document status changed by this row. |
 | 0.3.41+draft | 2026-08-09 | Claude Fable 5 | Ratification row, by explicit owner (Boss, ratification authority) instruction: SPEC-WORKSPACE-SYSTEM 0.2.4+draft → 0.3.0 approved and MASTERPLAN-GOVIBE-PRODUCTION-READINESS 0.1.15+draft → 0.2.0 approved. Evidence basis: PR #128 (merge c75e636) with the full baseline gate and CI green; spec AC-01..AC-08 pinned by the §12 suites. This row DOES change these two documents to approved, on owner authority. TASK-PRD-001 closes with this change per its exit criterion. |
 | 0.3.40+draft | 2026-08-09 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.15+draft: SPR-PRD-06 / PHASE-PRD-06 closed to done on an owner-directed audit pass with recorded gate evidence and green PR #128 CI; Verification set to passed for TASK-PRD-013..017. No document status changed to approved/accepted/candidate by this row. |
 | 0.3.39+draft | 2026-08-09 | Claude Fable 5 | Synchronized SPEC-WORKSPACE-SYSTEM to 0.2.4+draft (§3.3 open item closed: active personnel identity validated at the RBAC enforcement boundary via .govibe/personnel.json) and MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.1.14+draft (TASK-PRD-017 executed to review; TASK-PRD-014 exit criterion ticked; all SPR-PRD-06 tasks at review). No document status changed to approved/accepted/candidate by this row. |
