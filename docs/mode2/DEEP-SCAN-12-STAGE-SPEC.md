@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 4: Twelve-Stage Semantic Deep Scan Specification"
 doc_id: "MODE2-DEEP-SCAN-12-STAGE-SPEC"
 status: "draft"
-version: "0.2.0"
+version: "0.3.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -254,7 +254,9 @@ LLM must not invent missing WHY; absent meaning becomes `UNRESOLVED`.
 | DS-05 | An unchanged tree re-scans with zero stage re-executions (fast path) | `mode2/pipeline.test.mjs` |
 | DS-06 | A single changed file re-runs only impacted stages (fast path) | `mode2/pipeline.test.mjs` |
 | DS-07 | Deterministic extraction precedes any inference | `mode2/pipeline.test.mjs` |
-| DS-08 | Stage 11 never reports absence by omission | contract enforced; extractor in T2 |
+| DS-08 | Stage 11 never reports absence by omission | `mode2/stages-t2.test.mjs` |
+| DS-13 | Stages 7-9 never assert a model they cannot derive deterministically | `mode2/stages-t2.test.mjs` |
+| DS-14 | An annotation never mints the requirement or section it names | `mode2/stages-t2.test.mjs` |
 | DS-09 | No stage writes outside `.govibe/mode2/` | `mode2/workspace-adapter.test.mjs` |
 | DS-10 | Two independent workspaces holding identical content produce identical output hashes | `mode2/pipeline.test.mjs` |
 | DS-11 | A record whose artifact is missing is re-executed, never reused | `mode2/pipeline.test.mjs` |
@@ -265,9 +267,37 @@ DS-10 excludes environment-derived fields from the hashed view of an artifact: t
 they differ between two byte-identical checkouts. Without that exclusion the claim would hold
 within one machine and fail across two.
 
+## 7.1 Tranche 2 Coverage and Its Honest Limits
+
+Stages 5–11 ship in tranche 2. Three of them are specified "parser + inference" and this
+tranche ships **only the parser half** — no inference tier is wired. Each therefore reports
+what is observable and names what it cannot establish:
+
+| Stage | Delivered | Named as not delivered |
+|---|---|---|
+| 5 Interface | REST routes (verb + path-shaped literal), events, external hosts, CLI from manifest | GraphQL and protobuf contracts recorded present-but-unparsed |
+| 6 Data | Prisma models/keys/relations, SQL DDL tables and foreign keys | Code-defined ORM models named as an unparsed family, never regex-guessed into entities |
+| 7 Behaviour | Entrypoints from manifest, module-level reachability over Stage 4 `IMPORTS` | Symbol-level request/command/event flow — needs a call graph Stage 3 does not emit |
+| 8 State | Enum and string-union state shapes, discriminant switches, branch inventory | **Business decisions: always empty.** Deterministic extraction cannot establish business intent; the spec forbids promoting a branch without evidence |
+| 9 Concerns | Concern presence with citable evidence | Concern *architecture*. An absent signal means no known signal matched, never that the concern is unimplemented |
+| 10 Verification | Test inventory, CI invocations, declared gates, `@tested` links, inferred coverage links | CI job graph/conditions; `@req`/`@spec`/`@designs` targets stay `UNRESOLVED` until the top-down intent scan |
+| 11 Agentic | Instruction files, config roots, skills, subagents, commands, MCP, policy, memory, capability classification | Six §16 axes are runtime behaviour, not file layout, and are recorded unresolved so `PLATFORM` is not read as an external gap |
+
+Stage 8's empty `business_decisions` array is the correct deterministic result, not a coverage
+failure. Stage 9's `absent` list is the absence of *this scanner's* signals.
+
+### Stage 10 and the annotation extractor
+
+The `@req` / `@spec` / `@designs` / `@tested` extractor implements ADR-028 Decision 1, and
+**ADR-028 is `proposed`, not accepted.** The extractor is isolated in `extractAnnotations` and
+contributes one additive `annotations` block, so rejecting D1 is a deletion rather than an
+unpick. An annotation is precedence tier 1 (deterministic parse of an explicit human
+assertion) and is evidence, not authority: `@req FR-001` does not create `FR-001`.
+
 ## 8. Changelog
 
 | Version | Date | Change | Author |
 |---|---|---|---|
 | 0.1.0 | 2026-08-11 | Initial twelve-stage semantic scan specification. | Claude Code |
+| 0.3.0 | 2026-08-12 | Tranche 2: stages 5-11 implemented. Added §7.1 recording exactly what each delivers and what it deliberately does not, DS-08 bound to a real test, and DS-13/DS-14 added. | Claude Code |
 | 0.2.0 | 2026-08-12 | Adversarial review corrections: reuse fingerprint documented as a heuristic with a `verifyContent` escape hatch; DS-05/DS-06 scoped to the fast path; DS-10 restated as cross-workspace and made true by excluding environment-derived fields from the hash; DS-04 restated as a genuine interruption; two `Verified by` cells corrected to files that exist; DS-11 and DS-12 added. | Claude Code |

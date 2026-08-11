@@ -2,7 +2,18 @@ import path from "node:path";
 import ts from "typescript";
 
 import { MODE2_STAGES } from "./stage-contract.mjs";
-import { byCodepoint } from "./workspace-adapter.mjs";
+import { agenticStages } from "./stages-agentic.mjs";
+import { behaviourStages } from "./stages-behaviour.mjs";
+import { interfaceStages } from "./stages-interface.mjs";
+import { verificationStages } from "./stages-verification.mjs";
+import {
+  byCodepoint,
+  isTestPath,
+  parseSource,
+  TS_EXTENSIONS,
+  UNSUPPORTED_SOURCE_EXTENSIONS,
+  walk,
+} from "./stage-shared.mjs";
 
 /**
  * Stage definitions for the Mode 2 semantic deep scan.
@@ -18,9 +29,6 @@ import { byCodepoint } from "./workspace-adapter.mjs";
  * inference; meaning that cannot be extracted deterministically is reported as unresolved,
  * never invented.
  */
-
-const TS_EXTENSIONS = new Set([".js", ".mjs", ".cjs", ".jsx", ".ts", ".tsx", ".mts", ".cts"]);
-const UNSUPPORTED_SOURCE_EXTENSIONS = new Set([".py", ".java", ".go", ".rs", ".rb", ".php", ".cs", ".kt", ".swift", ".scala", ".cbl", ".cob"]);
 
 const PACKAGE_MANAGERS = [
   { file: "package-lock.json", name: "npm" },
@@ -84,10 +92,6 @@ function languageHistogram(files) {
   return Object.fromEntries(Object.entries(histogram).sort(([left], [right]) => byCodepoint(left, right)));
 }
 
-function isTestPath(filePath) {
-  return /(^|\/)(tests?|__tests__|spec|e2e)(\/|$)/i.test(filePath) || /\.(test|spec)\.[a-z]+$/i.test(filePath);
-}
-
 function classifyArtifact(file) {
   const filePath = file.path;
   if (GENERATED_PATH_SIGNALS.some((pattern) => pattern.test(filePath))) {
@@ -107,16 +111,6 @@ function classifyArtifact(file) {
   if (/\.(png|jpe?g|gif|svg|ico|webp|woff2?|ttf|mp4|mp3|pdf)$/i.test(filePath)) return "asset";
   if (TS_EXTENSIONS.has(file.extension) || UNSUPPORTED_SOURCE_EXTENSIONS.has(file.extension) || /\.(c|h|cpp|hpp|sql|sh|ps1)$/i.test(filePath)) return "source";
   return "unknown";
-}
-
-function parseSource(filePath, text) {
-  const kind = filePath.endsWith(".tsx") || filePath.endsWith(".jsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS;
-  return ts.createSourceFile(filePath, text, ts.ScriptTarget.Latest, true, kind);
-}
-
-function walk(node, visit) {
-  visit(node);
-  ts.forEachChild(node, (child) => walk(child, visit));
 }
 
 function pendingStage(stage, tranche) {
@@ -451,13 +445,12 @@ export function createMode2Stages() {
     stage02,
     stage03,
     stage04,
-    pendingStage(5, 2),
-    pendingStage(6, 2),
-    pendingStage(7, 2),
-    pendingStage(8, 2),
-    pendingStage(9, 2),
-    pendingStage(10, 2),
-    pendingStage(11, 2),
+    ...interfaceStages,
+    ...behaviourStages,
+    ...verificationStages,
+    ...agenticStages,
     pendingStage(12, 3),
-  ].map((stage) => ({ ...stage, name: MODE2_STAGES[stage.stage - 1] }));
+  ]
+    .sort((left, right) => left.stage - right.stage)
+    .map((stage) => ({ ...stage, name: MODE2_STAGES[stage.stage - 1] }));
 }

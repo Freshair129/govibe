@@ -121,12 +121,12 @@ describe("Stage 1-4 extraction", () => {
     expect(structural.confidence).toBeLessThan(1);
   });
 
-  it("reports unimplemented stages honestly rather than as complete", async () => {
+  it("reports the one remaining unimplemented stage honestly rather than as complete", async () => {
     const result = await runMode2Scan({ adapter: adapterFor(), runId: "run-f" });
-    for (const record of result.stageRuns.slice(4)) {
-      expect(record.status).toBe("incomplete");
-      expect(record.error).toMatch(/^stage_not_implemented_before_tranche_/);
-    }
+    const notImplemented = result.stageRuns.filter((record) => /^stage_not_implemented_before_tranche_/.test(record.error ?? ""));
+    // T2 implemented 5-11; only Stage 12 (Candidate Semantic IR) remains, bound to T3.
+    expect(notImplemented.map((record) => record.stage)).toEqual([12]);
+    expect(notImplemented[0].status).toBe("incomplete");
     expect(result.status).toBe("incomplete");
   });
 });
@@ -140,14 +140,25 @@ describe("DS-04/DS-05/DS-06 resume and incremental rescan", () => {
     expect(second.incremental.rehashedFiles).toBe(0);
   });
 
-  it("DS-06 re-runs only the stages a changed source file impacts", async () => {
+  // The invariant is that a stage re-runs iff the changed file is in its declared inputs —
+  // not that some fixed set re-runs. Asserting a hardcoded list would break every time a new
+  // stage legitimately declares a dependency, which is exactly what happened when T2 landed.
+  it("DS-06 re-runs exactly the stages whose declared inputs contain the changed file", async () => {
     await runMode2Scan({ adapter: adapterFor(), runId: "base2" });
     await write("src/helper.ts", "export function helper() { return 2; }\n");
     const second = await runMode2Scan({ adapter: adapterFor(), runId: "second2", reuseFromRunId: "base2" });
+
+    const { files } = await adapterFor().discoverProjectFiles();
+    const expected = createMode2Stages()
+      .filter((stage) => stage.inputs(files).includes("src/helper.ts"))
+      .map((stage) => stage.stage);
     const executed = second.stageRuns.filter((record) => !record.reusedFrom).map((record) => record.stage);
-    expect(executed).toEqual([3, 4]);
-    expect(second.stageRuns[0].reusedFrom).toBe("base2");
-    expect(second.stageRuns[1].reusedFrom).toBe("base2");
+
+    expect(expected.length).toBeGreaterThan(0);
+    expect(executed).toEqual(expected);
+    expect(executed.length).toBeLessThan(12);
+    // Stages that read no TypeScript content must not be disturbed by a .ts edit.
+    for (const stage of [1, 2, 7, 11]) expect(second.stageRuns[stage - 1].reusedFrom).toBe("base2");
   });
 
   it("re-runs a stage when its extractor version changes", async () => {

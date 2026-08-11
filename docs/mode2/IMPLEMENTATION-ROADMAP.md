@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 9: Phase 1 Implementation Roadmap"
 doc_id: "MODE2-IMPLEMENTATION-ROADMAP"
 status: "draft"
-version: "0.3.0"
+version: "0.4.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -39,8 +39,8 @@ ontology types in one pass. Work proceeds in five tranches.
 
 | Tranche | Prompt steps | Outcome | Status |
 |---|---|---|---|
-| T1 Foundation | 1–6 | Adapters, external binding, Stages 1–4 (library only, no MCP surface) | in-progress |
-| T2 Extraction | 7 | Stages 5–11 | planned |
+| T1 Foundation | 1–6 | Adapters, external binding, Stages 1–4 (library only, no MCP surface) | done |
+| T2 Extraction | 7 | Stages 5–11 | in-progress |
 | T3 Semantics | 8–9 | Candidate IR, coverage engine | planned |
 | T4 Projection | 10–11 | 5 views, WHAT-IS vs WHAT-SHOULD-BE | planned |
 | T5 Compilation | 12–16 | Roadmap compiler, POC matrix, measurement | planned |
@@ -57,10 +57,10 @@ ontology types in one pass. Work proceeds in five tranches.
 | TASK-M2-006 | T1 | task | Implement Stages 1–4 | C-2 | H2 | done |
 | TASK-M2-007 | T2 | task | Expose `govibe.workspace.inspect` on the MCP catalog — **withdrawn 2026-08-12**, blocked on TASK-M2-021 | C-2 | H2 | blocked |
 | TASK-M2-021 | T2 | task | Ratify `govibe.workspace.inspect` into the SPEC-Workspace-System §6.2 RBAC matrix | C-2 | H2 | blocked |
-| TASK-M2-008 | T2 | task | Implement Stages 5–6 (interface, data) | C-2 | H2 | planned |
-| TASK-M2-009 | T2 | task | Implement Stages 7–9 (behaviour, state, cross-cutting) | C-3 | H3 | planned |
-| TASK-M2-010 | T2 | task | Implement Stage 10 (verification evidence) incl. `@req`/`@spec`/`@designs`/`@tested` annotation extractor per ADR-028 D1 | C-2 | H2 | planned |
-| TASK-M2-011 | T2 | task | Implement Stage 11 agentic scan and capability manifest | C-3 | H3 | planned |
+| TASK-M2-008 | T2 | task | Implement Stages 5–6 (interface, data) | C-2 | H2 | done |
+| TASK-M2-009 | T2 | task | Implement Stages 7–9 (behaviour, state, cross-cutting) — parser half only; inference tier deferred | C-3 | H3 | done |
+| TASK-M2-010 | T2 | task | Implement Stage 10 (verification evidence) incl. `@req`/`@spec`/`@designs`/`@tested` annotation extractor per ADR-028 D1 | C-2 | H2 | review |
+| TASK-M2-011 | T2 | task | Implement Stage 11 agentic scan and capability manifest | C-3 | H3 | done |
 | TASK-M2-012 | T3 | task | Implement Stage 12 Candidate Semantic IR and the Mode 2 F1–F4 finalization operations per AMENDMENT-2026-08-12 | C-3 | H3 | planned |
 | TASK-M2-013 | T3 | task | Implement the semantic coverage engine and Block Profiles, incl. the section-coverage second axis and `R3` default traversal radius per ADR-028 D4/D6 | C-3 | H3 | planned |
 | TASK-M2-014 | T3 | task | Implement the top-down intent scan | C-3 | H3 | planned |
@@ -93,6 +93,13 @@ and the `workspace-service` method are all gone; `scripts/mcp/` is byte-identica
 exported from the package index, and covered by tests. What T1 delivered is a library
 capability, not a client-invocable tool. TASK-M2-021 must ratify §6.2 before the MCP surface
 returns.
+
+### 3.1.1 TASK-M2-010 is `review`, not `done`
+
+Stage 10 ships complete, but its annotation extractor implements ADR-028 Decision 1 and that
+ADR is `proposed`. The task cannot close until the owner accepts D1 or the extractor is
+removed. It is isolated in `extractAnnotations` precisely so that either outcome is a small,
+clean change.
 
 ### 3.2 Bound Decisions
 
@@ -150,9 +157,9 @@ exists — never by assertion.
 | AC-V3 | View regeneration creates no new canonical identity | T4 | unmet |
 | AC-G1 | WHAT-IS and WHAT-SHOULD-BE can be compared | T4 | unmet |
 | AC-G2 | Missing/stale/drift candidates are reported with evidence | T4 | unmet |
-| AC-A1 | External agent capabilities and governor can be analysed | T2 | unmet |
-| AC-A2 | GoVibe does not replace the external governor | T2 | unmet |
-| AC-A3 | `NATIVE`/`PLATFORM`/`MISSING` classification works | T2 | unmet |
+| AC-A1 | External agent capabilities and governor can be analysed | T2 | met |
+| AC-A2 | GoVibe does not replace the external governor | T2 | met |
+| AC-A3 | `NATIVE`/`PLATFORM`/`MISSING` classification works | T2 | met |
 | AC-R1 | The roadmap derives from observed gaps | T5 | unmet |
 | AC-R2 | Phases/epics/features/tasks preserve source traceability | T5 | unmet |
 | AC-R3 | Every major roadmap item has acceptance and verification criteria | T5 | unmet |
@@ -181,4 +188,5 @@ governance system. GoVibe must understand it without replacing it.
 | 0.1.0 | 2026-08-11 | Initial Phase 1 implementation roadmap. | Claude Code |
 | 0.2.0 | 2026-08-12 | Bind ADR-028 decisions to TASK-M2-010/013/016/017; add TASK-M2-021 (RBAC ratification) and §3.1/§3.2. | Claude Code |
 | 0.2.1 | 2026-08-12 | Bind Mode 2 F1–F4 finalization to TASK-M2-012 per AMENDMENT-2026-08-12. | Claude Code |
+| 0.4.0 | 2026-08-12 | Tranche 2: TASK-M2-008/009/011 done, TASK-M2-010 `review` pending ADR-028 D1 acceptance. AC-A1/A2/A3 met. T1 closed. | Claude Code |
 | 0.3.0 | 2026-08-12 | Withdraw the `govibe.workspace.inspect` MCP surface on owner direction after adversarial review rated exposure-before-ratification high. TASK-M2-007 moved to T2/`blocked`; AC-W1 and AC-W2 corrected from `met` to `unmet` because no client can invoke Mode 2 without a tool. The library capability is retained and tested. | Claude Code |
