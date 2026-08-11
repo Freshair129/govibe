@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 9: Phase 1 Implementation Roadmap"
 doc_id: "MODE2-IMPLEMENTATION-ROADMAP"
 status: "draft"
-version: "0.10.0"
+version: "0.11.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -74,7 +74,8 @@ ontology types in one pass. Work proceeds in five tranches.
 | TASK-M2-022 | T6 | task | Emit a bounded context packet from the Mode 2 model so an executor can consume it | C-3 | H3 | done |
 | TASK-M2-023 | T6 | task | RCA CA-02: extend Stage 3 to extract exported `VariableDeclaration` symbols | C-2 | H2 | done |
 | TASK-M2-024 | T6 | task | RCA CA-03/CA-04: add a `context` semantic dimension and an `unconsumed_capability` gap class | C-2 | H2 | planned |
-| TASK-M2-025 | T6 | task | RCA CA-05: add acceptance criteria for prompt §1 responsibility 7 and audit the other eight | C-2 | H2 | planned |
+| TASK-M2-025 | T6 | task | RCA CA-05: add acceptance criteria for prompt §1 responsibility 7 and audit the other eight | C-2 | H2 | done |
+| TASK-M2-026 | T6 | task | Add a non-JavaScript POC class so AC-H1 can be met | C-2 | H2 | planned |
 
 ### 3.1 Withdrawn: the `govibe.workspace.inspect` MCP Surface
 
@@ -205,8 +206,47 @@ contradicts.
 
 ## 5. Phase 1 Acceptance Criteria
 
-Traced from implementation prompt §29. A criterion is met only when the named evidence
-exists — never by assertion.
+### 5.0 Responsibility traceability (RCA-2026-08-12 CA-05)
+
+The criteria below were traced from implementation prompt §29. `RCA-2026-08-12` RC-4 found that
+§29 is **not a complete decomposition of §1's nine responsibilities** — responsibility 7 had no
+criterion at all, so no tranche was obliged to deliver it and no gate could fail for its absence.
+
+This matrix is the corrective. **Every responsibility must map to at least one criterion, and a
+partial mapping must name what is missing rather than be rounded up to covered.**
+
+| # | §1 responsibility | Criteria | Verdict |
+|---|---|---|---|
+| 1 | understand heterogeneous projects | AC-W3, AC-S1..S3, **AC-H1** | **partial** — every criterion and every POC class is JavaScript or TypeScript |
+| 2 | reconstruct software meaning from existing artifacts | AC-M1..M4, **AC-Q1** | covered once AC-Q1 is stated |
+| 3 | normalize into Candidate Semantic IR | AC-M1, AC-M2 | covered |
+| 4 | detect missing semantics and contradictions | AC-G1, AC-G2 | covered |
+| 5 | generate multiple governed views | AC-V1..V3 | covered |
+| 6 | preserve traceability | AC-M1/M2 (IR→source), AC-R2 (roadmap→gap) | covered |
+| 7 | **prepare bounded context for humans and agents** | **AC-C1..C4** | covered by T6; had **no criterion at all** before this audit |
+| 8 | build implementation and change roadmaps | AC-R1..R3 | covered |
+| 9 | coordinate external execution systems through a provider-neutral interface | AC-X1, AC-X2, **AC-X5** | **partial** — neutrality is tested; coordination is not, because no invocable interface exists |
+
+**The audit corrects the RCA's own estimate.** RC-4 stated that eight of nine responsibilities
+had criteria. Checking each criterion against what it actually tests rather than what it sounds
+adjacent to, three of those eight were only partial:
+
+- **R1** — `AC-S*` tests scan *mechanics* (resumability, precedence, incrementality), not
+  heterogeneity, and `AC-W3` tests one adapter rather than multiple language stacks.
+  `POC-TEST-MATRIX` §8 already disclaims non-JavaScript behaviour. `AC-H1` names it.
+- **R2** — `AC-M*` tests the *shape* of the reconstruction (provenance, marking, unresolved), not
+  whether anything was reconstructed correctly. Accuracy was already measured by the POC fixtures
+  but was never stated as a criterion; `AC-Q1` promotes the measurement to an obligation.
+- **R9** — `AC-X1`/`AC-X2` test that the design is provider-neutral. Nothing tests coordination,
+  because the MCP surface was withdrawn (§3.1) and Mode 2 currently has no invocable interface at
+  all. `AC-X5` states this plainly instead of letting neutrality stand in for it.
+
+Being adjacent to a responsibility is not the same as testing it. That substitution is what let
+responsibility 7 go unbuilt for five tranches.
+
+### 5.1 Criteria
+
+A criterion is met only when the named evidence exists — never by assertion.
 
 | ID | Criterion | Tranche | Status |
 |---|---|---|---|
@@ -236,6 +276,13 @@ exists — never by assertion.
 | AC-X2 | External clients are adapters | T1 | met |
 | AC-X3 | Workspace ownership remains external | T1 | met |
 | AC-X4 | Canonical knowledge authority is not bypassed | T1 | met |
+| AC-X5 | An external client can coordinate with Mode 2 through a governed interface | T2 | **unmet** — the MCP surface was withdrawn; blocked on TASK-M2-021 |
+| AC-H1 | A repository whose primary language has no parser is represented in the POC matrix and produces an honest `incomplete` record | T6 | **unmet** — all five POC classes are JavaScript or TypeScript; bound to TASK-M2-026 |
+| AC-Q1 | Extraction accuracy is measured against declared ground truth for every POC fixture class | T5 | met — `mode2/poc-matrix.test.mjs` asserts precision and recall for classes A, B, and E |
+| AC-C1 | A bounded context packet can be produced from the Mode 2 model | T6 | met — `mode2/context-bridge.test.mjs` |
+| AC-C2 | `context_budget` is enforced and never widens access scope | T6 | met — a 30× budget increase leaves `contextProfile` identical and adds no access field |
+| AC-C3 | Mode 2 output enters a packet as a candidate, never as canonical knowledge | T6 | met — findings enter as `taskEventRefs`; `knowledgeRefs` is asserted empty |
+| AC-C4 | A truncated packet declares its truncation in-band | T6 | met — `projection_state: PARTIAL` plus an executor-facing constraint |
 
 ## 6. POC Repository Matrix
 
@@ -257,6 +304,7 @@ governance system. GoVibe must understand it without replacing it.
 | 0.1.0 | 2026-08-11 | Initial Phase 1 implementation roadmap. | Claude Code |
 | 0.2.0 | 2026-08-12 | Bind ADR-028 decisions to TASK-M2-010/013/016/017; add TASK-M2-021 (RBAC ratification) and §3.1/§3.2. | Claude Code |
 | 0.2.1 | 2026-08-12 | Bind Mode 2 F1–F4 finalization to TASK-M2-012 per AMENDMENT-2026-08-12. | Claude Code |
+| 0.11.0 | 2026-08-12 | RCA CA-05 applied (TASK-M2-025 done): §5.0 responsibility traceability matrix added. The audit corrects the RCA's own estimate — three of the eight responsibilities it counted as covered were only partial. AC-C1..C4 added for responsibility 7; AC-H1, AC-Q1, AC-X5 added for the partials, two of them honestly unmet. TASK-M2-026 raised. | Claude Code |
 | 0.10.0 | 2026-08-12 | RCA CA-02 applied (TASK-M2-023 done): Stage 3 now extracts exported variable declarations; symbols on this repository rose 1557 -> 2218 and the duplicate CONTEXT_PROFILES declaration is now machine-detectable. | Claude Code |
 | 0.9.0 | 2026-08-12 | Tranche 6: context bridge shipped (TASK-M2-022 done). RCA-2026-08-12 recorded and its corrective actions bound to TASK-M2-023..025. | Claude Code |
 | 0.8.0 | 2026-08-12 | Record that context profiles and the context packet are unimplemented (§3.1.5) and add TASK-M2-022 / tranche T6. | Claude Code |

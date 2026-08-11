@@ -2,7 +2,7 @@
 title: "RCA: Mode 2 Did Not Detect Its Own Missing Context-Packet Capability"
 doc_id: "RCA-2026-08-12-CONTEXT-PROFILES-NOT-DETECTED"
 status: "draft"
-version: "0.2.0"
+version: "0.3.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -104,6 +104,13 @@ Eight of nine responsibilities have criteria. Responsibility 7 has none, so no t
 obliged to deliver it and no gate could ever fail for its absence. RC-1 through RC-3 explain why
 the *scanner* missed it; RC-4 explains why the *plan* did.
 
+> **Corrected by the CA-05 audit.** "Eight of nine have criteria" was too generous. Checking each
+> criterion against what it actually *tests* rather than what it sounds adjacent to, three of
+> those eight were only partial: R1 (`AC-S*` tests scan mechanics, not heterogeneity), R2
+> (`AC-M*` tests the shape of the reconstruction, not its correctness), and R9 (`AC-X*` tests
+> neutrality, not coordination). So the real starting position was five covered, three partial,
+> one absent. See `IMPLEMENTATION-ROADMAP` §5.0.
+
 ## 5. Why It Escaped
 
 The same reason `F1-F4` escaped, generalised: **every validator in this repository checks that
@@ -139,10 +146,10 @@ Two copies of a governed enum can drift. This is the same duplication class reco
 | CA-02 | Extend Stage 3 to extract exported `VariableDeclaration` symbols | RC-1 | **done** |
 | CA-03 | Add a `context` semantic dimension with its producer mapping | RC-2 | proposed |
 | CA-04 | Add an `unconsumed_capability` gap class | RC-3 | proposed |
-| CA-05 | Add acceptance criteria for prompt §1 responsibility 7 and audit the other eight for coverage | RC-4 | proposed |
+| CA-05 | Add acceptance criteria for prompt §1 responsibility 7 and audit the other eight for coverage | RC-4 | **done** |
 | CA-06 | Make `vault-context-surface.mjs` import `CONTEXT_PROFILES` instead of re-declaring it | related finding | proposed |
 
-CA-03 through CA-06 remain **proposed, not done**. Each changes detector behaviour or a governed
+CA-03, CA-04, and CA-06 remain **proposed, not done**. Each changes detector behaviour or a governed
 surface and should be scoped and approved rather than folded into this RCA.
 
 ### 6.1 CA-02 result
@@ -197,5 +204,6 @@ and a checkable criterion:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0 | 2026-08-12 | Boss (CEO) | CA-05 applied: responsibility traceability matrix added at IMPLEMENTATION-ROADMAP §5.0, with AC-C1..C4 for responsibility 7 and AC-H1/AC-Q1/AC-X5 for the partials. The audit corrects RC-4's own "eight of nine" estimate to five covered, three partial, one absent. | Claude Code |
 | 0.2.0 | 2026-08-12 | Boss (CEO) | CA-02 applied: Stage 3 extracts exported variable declarations, extractor 1.1.0. The fix independently surfaces the duplicate CONTEXT_PROFILES declaration that §5 had found by hand. CA-03..CA-06 remain proposed. | Claude Code |
 | 0.1.0 | 2026-08-12 | Boss (CEO) | Record why five tranches of Mode 2 never detected that its own context-packet capability was missing: Stage 3 is blind to exported constants, no context dimension exists, no gap class covers an unconsumed capability, and — the root cause — the acceptance criteria inherited from prompt §29 never covered §1 responsibility 7. |

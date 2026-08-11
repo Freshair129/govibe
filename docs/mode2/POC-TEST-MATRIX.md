@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 10: POC Test Matrix and Measurement"
 doc_id: "MODE2-POC-TEST-MATRIX"
 status: "draft"
-version: "0.1.0"
+version: "0.2.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -143,10 +143,14 @@ result stays correct as stages are added.
   proven stable across two workspaces on one machine (DS-10).
 - **Behaviour on non-JavaScript repositories.** Every class in this matrix is JavaScript or
   TypeScript. A Python, Go, or Java repository would exercise the `unsupported-language` path,
-  which is tested in isolation but not as a matrix class.
+  which is tested in isolation but not as a matrix class. This limitation is now bound to
+  `AC-H1` and `TASK-M2-026` rather than only being disclaimed here — the CA-05 audit found that
+  implementation-prompt §1 responsibility 1, *understand heterogeneous projects*, had no
+  criterion testing heterogeneity at all.
 
 ## 9. Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-08-12 | Boss (CEO) | Bind the non-JavaScript limitation to AC-H1 and TASK-M2-026 following the CA-05 responsibility audit. | Claude Code |
 | 0.1.0 | 2026-08-12 | Boss (CEO) | Record the five-class POC matrix, fixture accuracy with measured precision and recall, real-repository coverage and volume, the RWANG boundary result, and the four things the matrix does not establish. |
