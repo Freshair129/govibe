@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 4: Twelve-Stage Semantic Deep Scan Specification"
 doc_id: "MODE2-DEEP-SCAN-12-STAGE-SPEC"
 status: "draft"
-version: "0.6.0"
+version: "0.7.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -224,6 +224,13 @@ hard error, never a silent overwrite.
 The pipeline maintains, per file: content hash, artifact hash, dependency impact set, stage
 version, extractor version, timestamp.
 
+**Upstream artifacts are part of a stage's input.** A stage that reads another stage's artifact
+declares `dependsOnStages`, and those stages' output hashes are folded into its input hash.
+Without it, Stage 12 — whose only input *is* the upstream artifacts — had a constant input hash
+and was never invalidated, and Stage 7 kept stale reachability whenever a source edit moved the
+dependency graph. Invalidation is content-addressed on the artifact rather than on the file, so a
+body-only edit that leaves an artifact identical correctly does not cascade.
+
 **The reuse fingerprint is a heuristic, not a proof.** Content hashes are recomputed only when
 a file's cheap fingerprint (size + mtime) changed. A same-length edit that preserves mtime —
 coarse-granularity filesystems, `cp -p`, `touch -r`, archive extraction, or two edits inside
@@ -279,6 +286,7 @@ LLM must not invent missing WHY; absent meaning becomes `UNRESOLVED`.
 | DS-23 | The effort score is never written to `complexity` or `access_scope` | `mode2/t4-t5-projection.test.mjs` |
 | DS-24 | Mode 2 impact reuses the existing engine and never implements traversal | `mode2/t4-t5-projection.test.mjs` |
 | DS-25 | Stage 3 extracts exported variable declarations and classifies them by initializer | `mode2/stages-t2.test.mjs` |
+| DS-26 | A stage that consumes an upstream artifact re-runs when that artifact changes, and not when it does not | `mode2/pipeline.test.mjs` |
 | DS-09 | No stage writes outside `.govibe/mode2/` | `mode2/workspace-adapter.test.mjs` |
 | DS-10 | Two independent workspaces holding identical content produce identical output hashes | `mode2/pipeline.test.mjs` |
 | DS-11 | A record whose artifact is missing is re-executed, never reused | `mode2/pipeline.test.mjs` |
@@ -418,6 +426,7 @@ depth is expressed on the `R` axis, defaulting to `R3`.
 | Version | Date | Change | Author |
 |---|---|---|---|
 | 0.1.0 | 2026-08-11 | Initial twelve-stage semantic scan specification. | Claude Code |
+| 0.7.0 | 2026-08-12 | RCA CA-03/CA-04: `context` dimension produced by Stage 9, `unconsumed_capability` gap class. Fixed a latent invalidation defect — stages consuming upstream artifacts now declare `dependsOnStages`. DS-26 added. | Claude Code |
 | 0.6.0 | 2026-08-12 | RCA-2026-08-12 CA-02: Stage 3 extracts exported variable declarations, extractor version 1.1.0, DS-25 added. | Claude Code |
 | 0.5.0 | 2026-08-12 | Tranches 4 and 5: view router with five projections, WHAT-IS vs WHAT-SHOULD-BE gap analysis, roadmap compiler, and the impact bridge. Added 7.3 and DS-19..DS-24. Records the two detector calibration corrections found by running against this repository. | Claude Code |
 | 0.4.0 | 2026-08-12 | Tranche 3: Stage 12 Candidate Semantic IR, F1–F4 finalization, semantic coverage engine, and the top-down intent pass. Added §7.2 and DS-15..DS-18. Records that Mode 2 adopts the strict F1→F4 ordering natively without deciding the amendment's L2 question. | Claude Code |

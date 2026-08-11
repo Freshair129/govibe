@@ -5,7 +5,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { calculateWorkspaceImpact } from "../impact/impact-engine.mjs";
 import { evaluateCoverage } from "./coverage.mjs";
-import { analyzeGaps, GAP_CLASSES, rankContradiction } from "./gap-analysis.mjs";
+import { DIMENSION_PRODUCERS, SEMANTIC_DIMENSIONS } from "./semantic-dimensions.mjs";
+import { analyzeGaps, GAP_CLASSES, rankContradiction, UNCONSUMED_CAPABILITY_SCOPE } from "./gap-analysis.mjs";
 import { analyzeMode2Impact, toLinkGraph } from "./impact-bridge.mjs";
 import { runIntentScan } from "./intent-scan.mjs";
 import { runMode2Scan } from "./pipeline.mjs";
@@ -47,8 +48,10 @@ beforeEach(async () => {
   const agentManifest = await artifact(runId, 11);
   const coverage = evaluateCoverage({ ir, agentManifest, intendedModel });
   const verificationModel = await artifact(runId, 10);
-  const gapAnalysis = analyzeGaps({ ir, intendedModel, coverage, verificationModel, agentManifest, files });
-  context = { result, files, ir, intendedModel, agentManifest, coverage, verificationModel, gapAnalysis, dataModel: await artifact(runId, 6), stateModel: await artifact(runId, 8) };
+  const behaviourModel = await artifact(runId, 7);
+  const structureModel = await artifact(runId, 3);
+  const gapAnalysis = analyzeGaps({ ir, intendedModel, coverage, verificationModel, agentManifest, behaviourModel, structureModel, files });
+  context = { result, files, ir, intendedModel, agentManifest, coverage, verificationModel, gapAnalysis, behaviourModel, structureModel, dataModel: await artifact(runId, 6), stateModel: await artifact(runId, 8), concernModel: await artifact(runId, 9) };
 });
 
 afterEach(async () => {
@@ -176,11 +179,73 @@ describe("T4 — WHAT-IS vs WHAT-SHOULD-BE", () => {
   it("states its own detection limits rather than implying completeness", () => {
     const detectable = Object.values(GAP_CLASSES).filter((meta) => meta.detectable).length;
     const undetectable = Object.keys(GAP_CLASSES).length - detectable;
-    expect(Object.keys(GAP_CLASSES)).toHaveLength(14);
+    // Fourteen from architecture §10, plus `unconsumed_capability` added by RCA CA-04 and
+    // marked `architecture_class: false` so the provenance of each class stays legible.
+    expect(Object.values(GAP_CLASSES).filter((meta) => meta.architecture_class !== false)).toHaveLength(14);
+    expect(Object.keys(GAP_CLASSES)).toHaveLength(15);
     expect(context.gapAnalysis.undetectable_classes).toHaveLength(undetectable);
     // The claim is derived from the table, so it cannot drift away from what is implemented.
-    expect(context.gapAnalysis.completeness).toBe(`${detectable} of 14 gap classes are deterministically detectable in this tranche`);
+    expect(context.gapAnalysis.completeness).toBe(`${detectable} of 15 gap classes are deterministically detectable in this tranche`);
     expect(detectable).toBeLessThan(14);
+  });
+});
+
+describe("RCA CA-03 — the context semantic dimension", () => {
+  it("exists as a dimension with Stage 9 as its producer", () => {
+    expect(SEMANTIC_DIMENSIONS).toContain("context");
+    expect(DIMENSION_PRODUCERS.context).toEqual([9]);
+  });
+
+  it("Stage 9 observes context management as a cross-cutting concern", async () => {
+    await write("src/ctx.ts", "export function make() { const contextProfile = 'T-ctx'; return buildContextPacket({ contextProfile }); }\n");
+    await runMode2Scan({ adapter: adapterFor(), runId: "ca03" });
+    const concerns = await artifact("ca03", 9);
+    expect(concerns.present).toContain("context_management");
+    expect(concerns.observations.some((item) => item.concern === "context_management" && item.path === "src/ctx.ts")).toBe(true);
+  });
+
+  it("routes context observations to the context dimension, not to operations", async () => {
+    await write("src/ctx.ts", "export const CONTEXT_PROFILES = ['T-ctx'];\n");
+    await runMode2Scan({ adapter: adapterFor(), runId: "ca03b" });
+    const ir = await artifact("ca03b", 12);
+    const contextAtoms = ir.atoms.filter((atom) => atom.dimension === "context");
+    expect(contextAtoms.length).toBeGreaterThan(0);
+    expect(contextAtoms.every((atom) => atom.type === "context-concern")).toBe(true);
+    expect(ir.atoms.some((atom) => atom.dimension === "operations" && atom.properties?.concern === "context_management")).toBe(false);
+  });
+});
+
+describe("RCA CA-04 — the unconsumed_capability gap class", () => {
+  it("flags an exporting module that no reachable module imports", () => {
+    const finding = context.gapAnalysis.findings.find((item) => item.gap_class === "unconsumed_capability");
+    // src/lonely.ts exports lonely() and nothing imports it.
+    expect(finding).toBeTruthy();
+    expect(finding.evidence).toContain("mode2-module:src/lonely.ts");
+    expect(finding.severity).toBe("info");
+  });
+
+  it("does not flag a module that is reached from an entrypoint", () => {
+    const finding = context.gapAnalysis.findings.find((item) => item.gap_class === "unconsumed_capability");
+    expect(finding.evidence).not.toContain("mode2-module:src/svc.ts");
+    expect(finding.evidence).not.toContain("mode2-module:src/app.ts");
+  });
+
+  it("is marked as a GoVibe addition rather than an architecture class", () => {
+    expect(GAP_CLASSES.unconsumed_capability.architecture_class).toBe(false);
+    expect(Object.values(GAP_CLASSES).filter((meta) => meta.architecture_class !== false)).toHaveLength(14);
+  });
+
+  // The honest half. This class was created by the RCA about the context packet, and it would
+  // NOT have caught that case: context-packet.mjs was imported by continue.mjs, which is
+  // reachable, so the capability was consumed — just not by the subsystem that should have.
+  it("states plainly that it would not have caught the case that created it", () => {
+    expect(UNCONSUMED_CAPABILITY_SCOPE.does_not_detect).toMatch(/consumed by one subsystem but skipped by another/);
+    expect(UNCONSUMED_CAPABILITY_SCOPE.reason).toMatch(/declared expectation, not an observation/);
+  });
+
+  it("emits nothing when the behaviour or structure model is absent", () => {
+    const withoutModels = analyzeGaps({ ...context, behaviourModel: undefined, structureModel: undefined });
+    expect(withoutModels.findings.some((item) => item.gap_class === "unconsumed_capability")).toBe(false);
   });
 });
 

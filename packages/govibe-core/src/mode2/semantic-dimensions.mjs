@@ -18,6 +18,7 @@ export const SEMANTIC_DIMENSIONS = [
   "behavior",
   "state",
   "decision",
+  "context",
   "interface",
   "dependency",
   "security",
@@ -44,6 +45,10 @@ export const DIMENSION_PRODUCERS = Object.freeze({
   behavior: [7],
   state: [8],
   decision: [8],
+  // Context management is a cross-cutting concern, observed by Stage 9 alongside logging and
+  // caching. Added by RCA-2026-08-12 CA-03: without a dimension there was no slot in which a
+  // missing context capability could ever be reported.
+  context: [9],
   interface: [5],
   dependency: [4],
   security: [9],
@@ -86,6 +91,8 @@ export const BLOCK_PROFILES = Object.freeze({
     required: [
       "intent", "requirement", "structure", "behavior", "interface", "dependency",
       "verification", "agent_capability", "agent_governance", "authority", "provenance",
+      // An agent system that cannot bound the context it hands an executor has a real gap.
+      "context",
     ],
   },
   "platform-governed": {

@@ -81,18 +81,26 @@ async function buildFileIndex({ adapter, store, files, verifyContent }) {
   return { index, rehashed, reused };
 }
 
-function stageInputHash({ stage, files, index, treeHash }) {
+function stageInputHash({ stage, files, index, treeHash, stageRuns }) {
   const inputs = stage
     .inputs(files)
     .slice()
     .sort()
     .map((filePath) => [filePath, index.entries[filePath]?.sha256 ?? null]);
+  // A stage that consumes an upstream artifact must invalidate when that artifact changes, not
+  // only when its own declared files do. Without this, Stage 7 kept stale reachability whenever
+  // a source file moved the Stage 4 graph, and Stage 12 — whose only input IS the upstream
+  // artifacts — was never invalidated at all.
+  const upstream = (stage.dependsOnStages ?? [])
+    .map((dependency) => [dependency, stageRuns.find((record) => record.stage === dependency)?.outputHash ?? null])
+    .sort(([left], [right]) => left - right);
   return sha256Json({
     stage: stage.stage,
     name: stage.name,
     extractorVersion: stage.extractorVersion,
     treeHash: stage.usesTreeShape ? treeHash : null,
     inputs,
+    upstream,
   });
 }
 
@@ -164,7 +172,7 @@ export async function runMode2Scan({
   let reusedStages = 0;
 
   for (const stage of stages) {
-    const inputHash = stageInputHash({ stage, files, index, treeHash });
+    const inputHash = stageInputHash({ stage, files, index, treeHash, stageRuns });
     const recordPath = stagePath(runId, stage.stage);
 
     // Resume: a terminal record already written for this run with a matching input hash.

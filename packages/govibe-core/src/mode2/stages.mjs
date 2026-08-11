@@ -266,6 +266,7 @@ const stage03 = {
   extractorVersion: "1.1.0",
   method: "typescript-ast-structural-extraction",
   usesTreeShape: false,
+  dependsOnStages: [2],
   inputs: (files) => files.filter((file) => TS_EXTENSIONS.has(file.extension)).map((file) => file.path),
   async run({ files, read, artifacts }) {
     const inventory = artifacts.get(2);
@@ -374,6 +375,7 @@ const stage04 = {
   extractorVersion: "1.0.0",
   method: "import-resolution-and-manifest-dependencies",
   usesTreeShape: false,
+  dependsOnStages: [2, 3],
   inputs: (files) => [
     ...files.filter((file) => TS_EXTENSIONS.has(file.extension)).map((file) => file.path),
     ...files.filter((file) => path.posix.basename(file.path) === "package.json").map((file) => file.path),

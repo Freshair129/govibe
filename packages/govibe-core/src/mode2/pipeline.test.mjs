@@ -163,6 +163,30 @@ describe("DS-04/DS-05/DS-06 resume and incremental rescan", () => {
     for (const stage of [1, 2, 7, 11]) expect(second.stageRuns[stage - 1].reusedFrom).toBe("base2");
   });
 
+  // Regression. A stage that consumes an upstream artifact must invalidate when that artifact
+  // changes, not only when its own declared files do. Stage 7 declares only package.json as an
+  // input but reads the Stage 3 and 4 artifacts, and Stage 12 declares no files at all — so
+  // before `dependsOnStages` existed, Stage 7 kept stale reachability and Stage 12's input hash
+  // was constant and it was never invalidated at all.
+  it("cascades invalidation to stages that consume a changed upstream artifact", async () => {
+    await runMode2Scan({ adapter: adapterFor(), runId: "casc-base" });
+
+    // A body-only edit does not change what Stage 3 extracts, so the cascade must NOT fire —
+    // invalidation is content-addressed on the artifact, not on the file.
+    await write("src/helper.ts", "export function helper() { return 99; }\n");
+    const bodyOnly = await runMode2Scan({ adapter: adapterFor(), runId: "casc-body", reuseFromRunId: "casc-base" });
+    const afterBody = bodyOnly.stageRuns.filter((record) => !record.reusedFrom).map((record) => record.stage);
+    expect(afterBody).not.toContain(7);
+    expect(afterBody).not.toContain(12);
+
+    // Adding an export does change the Stage 3 artifact, so every consumer of it must re-run.
+    await write("src/helper.ts", "export function helper() { return 99; }\nexport function brandNew() { return 3; }\n");
+    const structural = await runMode2Scan({ adapter: adapterFor(), runId: "casc-struct", reuseFromRunId: "casc-body" });
+    const afterStructural = structural.stageRuns.filter((record) => !record.reusedFrom).map((record) => record.stage);
+    expect(afterStructural).toContain(7);
+    expect(afterStructural).toContain(12);
+  });
+
   it("re-runs a stage when its extractor version changes", async () => {
     await runMode2Scan({ adapter: adapterFor(), runId: "base3" });
     const stages = createMode2Stages().map((stage) => (stage.stage === 2 ? { ...stage, extractorVersion: "2.0.0" } : stage));

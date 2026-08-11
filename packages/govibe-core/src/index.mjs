@@ -24,7 +24,7 @@ export { getMode2ScanStatus, runMode2Scan } from "./mode2/pipeline.mjs";
 export { consolidate, FINALIZATION_OPERATIONS, packageEvidence, runFinalization, submitPromotion, validateGraph } from "./mode2/finalization.mjs";
 export { DEFAULT_RETRIEVAL_RADIUS, evaluateCoverage, evaluateSectionCoverage } from "./mode2/coverage.mjs";
 export { resolveAnnotationTargets, runIntentScan } from "./mode2/intent-scan.mjs";
-export { analyzeGaps, GAP_CLASSES, rankContradiction } from "./mode2/gap-analysis.mjs";
+export { analyzeGaps, GAP_CLASSES, rankContradiction, UNCONSUMED_CAPABILITY_SCOPE } from "./mode2/gap-analysis.mjs";
 export { generateViews, VIEW_CATALOG } from "./mode2/view-router.mjs";
 export { analyzeSchedule, compileRoadmap, estimateEffort } from "./mode2/roadmap-compiler.mjs";
 export { analyzeMode2Impact, toLinkGraph } from "./mode2/impact-bridge.mjs";

@@ -2,7 +2,7 @@
 title: "RCA: Mode 2 Did Not Detect Its Own Missing Context-Packet Capability"
 doc_id: "RCA-2026-08-12-CONTEXT-PROFILES-NOT-DETECTED"
 status: "draft"
-version: "0.4.0"
+version: "0.5.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -144,14 +144,13 @@ Two copies of a governed enum can drift. This is the same duplication class reco
 |---|---|---|---|
 | CA-01 | Build the Mode 2 context bridge and bind it to `TASK-M2-022` | the missing capability | done |
 | CA-02 | Extend Stage 3 to extract exported `VariableDeclaration` symbols | RC-1 | **done** |
-| CA-03 | Add a `context` semantic dimension with its producer mapping | RC-2 | proposed |
-| CA-04 | Add an `unconsumed_capability` gap class | RC-3 | proposed |
+| CA-03 | Add a `context` semantic dimension with its producer mapping | RC-2 | **done** |
+| CA-04 | Add an `unconsumed_capability` gap class | RC-3 | **done** |
 | CA-05 | Add acceptance criteria for prompt §1 responsibility 7 and audit the other eight for coverage | RC-4 | **done** |
 | CA-07 | Deduplicate `REPORTED_TOKEN_FIELDS`, or annotate it as a deliberate copy | CA-06 follow-on | proposed |
 | CA-06 | Make `vault-context-surface.mjs` import `CONTEXT_PROFILES` instead of re-declaring it | related finding | **done** |
 
-CA-03 and CA-04 remain **proposed, not done**. Both change detector behaviour and should be
-scoped and approved rather than folded into this RCA.
+Every corrective action except CA-07 is now applied.
 
 ### 6.2 CA-06 result, and what CA-02 found while doing it
 
@@ -197,6 +196,40 @@ Two declarations of one governed enum, which §5 recorded after finding it by re
 scanner can now prove it. CA-06 remains open — this makes the duplication *detectable*, not
 *fixed*.
 
+### 6.3 CA-03 and CA-04 result, and a defect they exposed
+
+`context` is now the twenty-third semantic dimension, produced by Stage 9 as a cross-cutting
+concern in the same sense logging and caching are, and required by the `agentic-system` block
+profile. `unconsumed_capability` is a fifteenth gap class, marked `architecture_class: false`
+because the architecture names fourteen and this one is a GoVibe addition.
+
+**Neither would have caught the case that created them, and that is worth stating plainly.**
+`context-packet.mjs` was imported by `continue.mjs`, which is reachable, so the capability was
+consumed — just not by the new subsystem that should have consumed it. Detecting "A consumes
+it, B does not, and B should have" needs a *declared expectation* about B, which is a planning
+artefact rather than an observation. The class carries that limit in code as
+`UNCONSUMED_CAPABILITY_SCOPE` so a reader cannot mistake its reach.
+
+This confirms RC-4 as the true root cause: only CA-05's acceptance criteria close that case.
+CA-03 and CA-04 are worth having on their own merits, not because they close this RCA.
+
+### 6.4 Defect found while implementing CA-03
+
+Wiring the context dimension exposed a real invalidation bug in the incremental pipeline. Stage
+12 declared `inputs: () => []` because it reads no files — its whole input is the artifacts of
+stages 1-11. Its input hash was therefore **constant**, so it was reused even when every upstream
+artifact had changed. Stage 7 had a narrower form of the same bug: it declares only
+`package.json` as an input but reads the Stage 3 and 4 artifacts, so it kept stale reachability
+whenever a source edit moved the dependency graph.
+
+Both are fixed by a `dependsOnStages` declaration folded into the stage input hash. The
+invalidation stays content-addressed on the *artifact*, not on the file, which keeps it precise:
+a body-only edit that leaves the Stage 3 artifact identical correctly does **not** cascade, while
+adding an export does. Both directions are pinned by a regression test.
+
+The bug was only visible because a new test asserted an outcome that depended on Stage 12 seeing
+fresh upstream data. It had been latent since T3.
+
 ## 7. Prevention
 
 The durable fix is not another detector. It is closing the loop between a stated responsibility
@@ -226,6 +259,7 @@ and a checkable criterion:
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.5.0 | 2026-08-12 | Boss (CEO) | CA-03 and CA-04 applied, closing every corrective action except CA-07. Recorded that neither would have caught the case that created them, which confirms RC-4 as the true root cause. Implementing CA-03 exposed a latent incremental-invalidation defect in stages 7 and 12, now fixed and regression-tested. | Claude Code |
 | 0.4.0 | 2026-08-12 | Boss (CEO) | CA-06 applied: `vault-context-surface.mjs` imports the canonical `CONTEXT_PROFILES`. Applying CA-02 first surfaced two further same-shaped duplications, of which one is a genuine new finding (CA-07) and one is an annotated cross-package mirror and not a defect. First finding this session produced by the scanner rather than by a human. | Claude Code |
 | 0.3.0 | 2026-08-12 | Boss (CEO) | CA-05 applied: responsibility traceability matrix added at IMPLEMENTATION-ROADMAP §5.0, with AC-C1..C4 for responsibility 7 and AC-H1/AC-Q1/AC-X5 for the partials. The audit corrects RC-4's own "eight of nine" estimate to five covered, three partial, one absent. | Claude Code |
 | 0.2.0 | 2026-08-12 | Boss (CEO) | CA-02 applied: Stage 3 extracts exported variable declarations, extractor 1.1.0. The fix independently surfaces the duplicate CONTEXT_PROFILES declaration that §5 had found by hand. CA-03..CA-06 remain proposed. | Claude Code |

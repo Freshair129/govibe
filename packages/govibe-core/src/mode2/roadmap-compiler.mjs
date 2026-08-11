@@ -25,6 +25,7 @@ const WORKSTREAMS = {
   agent_governor_drift: "Agentic Infrastructure",
   undocumented_implementation: "Documentation",
   unknown_semantic_gap: "Semantic Knowledge",
+  unconsumed_capability: "Technical Debt",
 };
 
 /**
@@ -46,6 +47,7 @@ const COMPLEXITY_BY_GAP = {
   agent_governor_drift: "C-3",
   undocumented_implementation: "C-1",
   unknown_semantic_gap: "C-2",
+  unconsumed_capability: "C-1",
 };
 
 const ACCESS_DEFAULT = { "C-0": "H0", "C-1": "H1", "C-2": "H2", "C-3": "H3" };

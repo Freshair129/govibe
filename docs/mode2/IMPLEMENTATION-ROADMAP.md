@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 9: Phase 1 Implementation Roadmap"
 doc_id: "MODE2-IMPLEMENTATION-ROADMAP"
 status: "draft"
-version: "0.12.0"
+version: "0.13.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -73,7 +73,7 @@ ontology types in one pass. Work proceeds in five tranches.
 | TASK-M2-020 | T5 | task | Measure coverage, false relations, unresolved meaning, scan and rebuild time | C-2 | H2 | done |
 | TASK-M2-022 | T6 | task | Emit a bounded context packet from the Mode 2 model so an executor can consume it | C-3 | H3 | done |
 | TASK-M2-023 | T6 | task | RCA CA-02: extend Stage 3 to extract exported `VariableDeclaration` symbols | C-2 | H2 | done |
-| TASK-M2-024 | T6 | task | RCA CA-03/CA-04: add a `context` semantic dimension and an `unconsumed_capability` gap class | C-2 | H2 | planned |
+| TASK-M2-024 | T6 | task | RCA CA-03/CA-04: add a `context` semantic dimension and an `unconsumed_capability` gap class | C-2 | H2 | done |
 | TASK-M2-025 | T6 | task | RCA CA-05: add acceptance criteria for prompt §1 responsibility 7 and audit the other eight | C-2 | H2 | done |
 | TASK-M2-026 | T6 | task | Add a non-JavaScript POC class so AC-H1 can be met | C-2 | H2 | planned |
 | TASK-M2-027 | T6 | task | RCA CA-06 done; CA-07 raised: deduplicate or annotate `REPORTED_TOKEN_FIELDS` | C-0 | H0 | planned |
@@ -305,6 +305,7 @@ governance system. GoVibe must understand it without replacing it.
 | 0.1.0 | 2026-08-11 | Initial Phase 1 implementation roadmap. | Claude Code |
 | 0.2.0 | 2026-08-12 | Bind ADR-028 decisions to TASK-M2-010/013/016/017; add TASK-M2-021 (RBAC ratification) and §3.1/§3.2. | Claude Code |
 | 0.2.1 | 2026-08-12 | Bind Mode 2 F1–F4 finalization to TASK-M2-012 per AMENDMENT-2026-08-12. | Claude Code |
+| 0.13.0 | 2026-08-12 | RCA CA-03/CA-04 applied (TASK-M2-024 done). Every corrective action except CA-07 is closed. Implementing CA-03 exposed and fixed a latent incremental-invalidation defect in stages 7 and 12. | Claude Code |
 | 0.12.0 | 2026-08-12 | RCA CA-06 applied: the duplicate `CONTEXT_PROFILES` declaration is gone. CA-02 surfaced two more duplications while doing it — CA-07 raised as TASK-M2-027; the second is an annotated cross-package mirror and not a defect. | Claude Code |
 | 0.11.0 | 2026-08-12 | RCA CA-05 applied (TASK-M2-025 done): §5.0 responsibility traceability matrix added. The audit corrects the RCA's own estimate — three of the eight responsibilities it counted as covered were only partial. AC-C1..C4 added for responsibility 7; AC-H1, AC-Q1, AC-X5 added for the partials, two of them honestly unmet. TASK-M2-026 raised. | Claude Code |
 | 0.10.0 | 2026-08-12 | RCA CA-02 applied (TASK-M2-023 done): Stage 3 now extracts exported variable declarations; symbols on this repository rose 1557 -> 2218 and the duplicate CONTEXT_PROFILES declaration is now machine-detectable. | Claude Code |

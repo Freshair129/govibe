@@ -86,6 +86,7 @@ const stage10 = {
   extractorVersion: "1.0.0",
   method: "test-inventory-import-inference-and-annotation-parse",
   usesTreeShape: true,
+  dependsOnStages: [2, 4],
   inputs: (files) => [
     ...files.filter((file) => /\.(ts|tsx|js|jsx|mjs|cjs|mts|cts)$/i.test(file.path)).map((file) => file.path),
     ...files.filter((file) => path.posix.basename(file.path) === "package.json").map((file) => file.path),

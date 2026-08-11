@@ -23,6 +23,7 @@ const stage07 = {
   extractorVersion: "1.0.0",
   method: "entrypoint-metadata-and-module-reachability",
   usesTreeShape: true,
+  dependsOnStages: [3, 4],
   inputs: (files) => files.filter((file) => path.posix.basename(file.path) === "package.json").map((file) => file.path),
   async run({ files, artifacts, read }) {
     const scope = semanticScope({ artifacts, files });
@@ -119,6 +120,7 @@ const stage08 = {
   extractorVersion: "1.0.0",
   method: "typescript-ast-state-and-branch-inventory",
   usesTreeShape: false,
+  dependsOnStages: [2],
   inputs: (files) => files.filter((file) => /\.(ts|tsx|js|jsx|mjs|cjs|mts|cts)$/i.test(file.path)).map((file) => file.path),
   async run({ files, artifacts, read }) {
     const candidates = parsableSources({ files, artifacts, includeTests: false });
@@ -241,14 +243,19 @@ const CONCERN_SIGNALS = {
   // `throw` counts: a module that raises is handling error paths even with no try/catch.
   error_handling: /(\btry\s*\{|\bcatch\s*\(|\.catch\(|\bthrow\s+new\b)/,
   resilience: /\b(circuit[-_]?breaker|opossum|bulkhead|fallback)\b/i,
+  // RCA-2026-08-12 CA-03. Context assembly and lineage is a cross-cutting concern in the same
+  // sense that logging and caching are, and it had no signal at all before this.
+  context_management: /(\bcontextProfile\b|\bbuildContextPacket\b|\bcontextId\b|\bcontextBudget\b|\bCONTEXT_PROFILES\b|\bcontext[_-]?packet\b|[TVWM]-ctx)/i,
 };
 
 /** Stage 9 — presence detection with evidence. Not an architecture recovery. */
 const stage09 = {
   stage: 9,
-  extractorVersion: "1.0.0",
+  // 1.1.0 — RCA-2026-08-12 CA-03 added the context_management signal.
+  extractorVersion: "1.1.0",
   method: "cross-cutting-signal-presence-detection",
   usesTreeShape: false,
+  dependsOnStages: [2],
   inputs: (files) => files.filter((file) => /\.(ts|tsx|js|jsx|mjs|cjs|mts|cts|json)$/i.test(file.path)).map((file) => file.path),
   async run({ files, artifacts, read }) {
     const scope = semanticScope({ artifacts, files });

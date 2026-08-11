@@ -144,11 +144,25 @@ const ATOM_SOURCES = [
   },
   {
     stage: 9,
+    dimension: "context",
+    type: "concern",
+    select: (artifact) => (artifact?.observations ?? []).filter((item) => item.concern === "context_management").map((item) => ({ key: item.id, value: item })),
+    toAtom: ({ value }) => ({
+      identity: `mode2-atom:${value.id}`,
+      type: "context-concern",
+      source: value.path,
+      explicit: true,
+      confidence: 0.5,
+      properties: { concern: value.concern, evidence: value.evidence },
+    }),
+  },
+  {
+    stage: 9,
     dimension: "operations",
     type: "concern",
     select: (artifact) =>
       (artifact?.observations ?? [])
-        .filter((item) => !["authentication", "authorization", "audit", "rate_limiting"].includes(item.concern))
+        .filter((item) => !["authentication", "authorization", "audit", "rate_limiting", "context_management"].includes(item.concern))
         .map((item) => ({ key: item.id, value: item })),
     toAtom: ({ value }) => ({
       identity: `mode2-atom:${value.id}`,
@@ -224,8 +238,10 @@ const stage12 = {
   extractorVersion: "1.0.0",
   method: "candidate-semantic-ir-composition",
   usesTreeShape: false,
-  // Stage 12 reads no files. Its inputs are the artifacts of stages 1-11, so a change that
-  // does not alter any upstream artifact must not re-run it.
+  // Stage 12 reads no files; its entire input is the artifacts of stages 1-11. Declaring that
+  // dependency is load-bearing: with an empty `inputs()` and no `dependsOnStages`, its input
+  // hash was constant, so it was reused even when every upstream artifact had changed.
+  dependsOnStages: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
   inputs: () => [],
   async run({ artifacts, stageRecords = [] }) {
     const atoms = [];

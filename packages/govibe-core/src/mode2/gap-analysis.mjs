@@ -1,4 +1,4 @@
-import { byCodepoint, sortById } from "./stage-shared.mjs";
+import { byCodepoint, isTestPath, sortById } from "./stage-shared.mjs";
 
 /**
  * WHAT-IS versus WHAT-SHOULD-BE (architecture §9).
@@ -32,6 +32,33 @@ export const GAP_CLASSES = Object.freeze({
   roadmap_drift: { detectable: false, axis: "governed", description: "needs roadmap task state bound to observable completion evidence" },
   missing_implementation: { detectable: false, axis: "behaviour", description: "indistinguishable from unimplemented_requirement without a component-level target model" },
   unknown_semantic_gap: { detectable: true, axis: "governed", description: "a dimension the block profile requires that nothing supplies" },
+  // A fifteenth class, added by RCA-2026-08-12 CA-04. The architecture §10 names fourteen; this
+  // one is a GoVibe addition, because none of the fourteen covered "implemented, exported, and
+  // imported by nobody".
+  unconsumed_capability: {
+    detectable: true,
+    axis: "behaviour",
+    architecture_class: false,
+    description: "an exporting module that no reachable module imports",
+  },
+});
+
+/**
+ * What `unconsumed_capability` does and does not cover.
+ *
+ * It detects a module that exports something and sits outside the reachable set computed by
+ * Stage 7. That is genuine dead capability and worth reporting.
+ *
+ * It does **not** detect the case the RCA that created it was about. `context-packet.mjs` was
+ * imported by `continue.mjs`, which is reachable, so the capability was consumed — just not by
+ * the new subsystem that should have consumed it. Detecting "A consumes it, B does not, and B
+ * should have" requires a *declared expectation* about B, which is a planning artefact rather
+ * than an observation. `AC-C1..C4` (RCA CA-05) is what covers that; this class does not.
+ */
+export const UNCONSUMED_CAPABILITY_SCOPE = Object.freeze({
+  detects: "an exporting module no reachable module imports",
+  does_not_detect: "a capability consumed by one subsystem but skipped by another that should consume it",
+  reason: "that needs a declared expectation, not an observation; see RCA-2026-08-12 CA-05",
 });
 
 /**
@@ -62,6 +89,7 @@ function severityFor(gapClass) {
   if (gapClass === "unimplemented_requirement" || gapClass === "missing_requirement") return "warning";
   if (gapClass === "stale_documentation" || gapClass === "missing_tests") return "warning";
   if (gapClass === "unknown_semantic_gap" || gapClass === "agent_governor_drift") return "warning";
+  if (gapClass === "unconsumed_capability") return "info";
   return "info";
 }
 
@@ -84,9 +112,31 @@ function finding({ gapClass, subject, evidence, detail }) {
   };
 }
 
-export function analyzeGaps({ ir, intendedModel, coverage, verificationModel, agentManifest, files = [] }) {
+export function analyzeGaps({ ir, intendedModel, coverage, verificationModel, agentManifest, behaviourModel, structureModel, files = [] }) {
   const findings = [];
   const knownPaths = new Set(files.map((file) => file.path));
+
+  // --- unconsumed capability: an exporting module nothing reachable imports ------------------
+  if (behaviourModel && structureModel) {
+    const exportingModules = new Set((structureModel.modules ?? []).filter((module) => (module.exports ?? []).length > 0).map((module) => `mode2-module:${module.path}`));
+    const entrypointTargets = new Set((behaviourModel.entrypoints ?? []).map((entry) => `mode2-module:${entry.target}`));
+    const unconsumed = (behaviourModel.unreachable_modules ?? [])
+      .filter((moduleId) => exportingModules.has(moduleId))
+      .filter((moduleId) => !entrypointTargets.has(moduleId))
+      // A test exports nothing anyone should import; excluding it keeps the finding actionable.
+      .filter((moduleId) => !isTestPath(moduleId.replace("mode2-module:", "")))
+      .sort(byCodepoint);
+    if (unconsumed.length) {
+      findings.push(
+        finding({
+          gapClass: "unconsumed_capability",
+          subject: "modules",
+          evidence: unconsumed.slice(0, 25),
+          detail: `${unconsumed.length} module(s) export something that no reachable module imports`,
+        }),
+      );
+    }
+  }
 
   // --- unimplemented requirement: declared in intent, never claimed by code ------------------
   const claimed = new Set(
