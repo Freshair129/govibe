@@ -63,6 +63,36 @@ function headings(text) {
 }
 
 /**
+ * Workspace paths a document names, in backticks or as a relative Markdown link. These are what
+ * the gap comparator checks for staleness — a document pointing at a file that no longer exists
+ * is drift the repository can prove, rather than drift it has to be told about.
+ */
+function pathReferences(text, documentPath) {
+  const raw = new Set();
+  for (const match of text.matchAll(/`([^`\s]+\.(?:md|mjs|cjs|ts|tsx|js|jsx|json|ya?ml|sql|prisma))`/g)) raw.add(match[1]);
+  for (const match of text.matchAll(/\]\((?!https?:|mailto:|#)([^)\s]+\.[a-z]{2,5})\)/gi)) raw.add(match[1].split("#")[0]);
+
+  const directory = path.posix.dirname(documentPath);
+  const resolved = new Set();
+  for (const candidate of raw) {
+    // A glob is a pattern, not a path. `docs/**/SDD-*.md` names a family of documents and can
+    // never be checked for existence.
+    if (/[*?]/.test(candidate)) continue;
+    // A placeholder is a template slot, not a path: `<scope>/AGENTS.md`, `{name}.md`.
+    if (/[<>{}]/.test(candidate)) continue;
+    if (candidate.startsWith("/")) continue;
+    // Relative references resolve against the document's own directory. Treating them as
+    // repository-root-relative was the single largest false-positive source.
+    const target = candidate.startsWith(".")
+      ? path.posix.normalize(path.posix.join(directory, candidate))
+      : candidate;
+    if (target.startsWith("..")) continue;
+    resolved.add(target);
+  }
+  return [...resolved].sort(byCodepoint);
+}
+
+/**
  * @param options.documentationRoots roots to scan; defaults to conventional documentation homes
  */
 export async function runIntentScan({ adapter, files, documentationRoots = ["docs", "doc", "documentation"], now = () => new Date().toISOString() }) {
@@ -98,6 +128,7 @@ export async function runIntentScan({ adapter, files, documentationRoots = ["doc
       version: frontmatter?.version ?? null,
       governed: Boolean(frontmatter?.doc_id),
       sections,
+      path_references: pathReferences(text, file.path),
     });
 
     if (!classification) {

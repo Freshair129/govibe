@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 9: Phase 1 Implementation Roadmap"
 doc_id: "MODE2-IMPLEMENTATION-ROADMAP"
 status: "draft"
-version: "0.5.0"
+version: "0.6.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -41,9 +41,9 @@ ontology types in one pass. Work proceeds in five tranches.
 |---|---|---|---|
 | T1 Foundation | 1–6 | Adapters, external binding, Stages 1–4 (library only, no MCP surface) | done |
 | T2 Extraction | 7 | Stages 5–11 | done |
-| T3 Semantics | 8–9 | Candidate IR, F1–F4, coverage engine, intent pass | in-progress |
-| T4 Projection | 10–11 | 5 views, WHAT-IS vs WHAT-SHOULD-BE | planned |
-| T5 Compilation | 12–16 | Roadmap compiler, POC matrix, measurement | planned |
+| T3 Semantics | 8–9 | Candidate IR, F1–F4, coverage engine, intent pass | done |
+| T4 Projection | 10–11 | 5 views, WHAT-IS vs WHAT-SHOULD-BE | done |
+| T5 Compilation | 12–16 | Roadmap compiler, POC matrix, measurement | in-progress |
 
 ## 3. Backlog Items
 
@@ -64,10 +64,10 @@ ontology types in one pass. Work proceeds in five tranches.
 | TASK-M2-012 | T3 | task | Implement Stage 12 Candidate Semantic IR and the Mode 2 F1–F4 finalization operations per AMENDMENT-2026-08-12 | C-3 | H3 | done |
 | TASK-M2-013 | T3 | task | Implement the semantic coverage engine and Block Profiles, incl. the section-coverage second axis and `R3` default traversal radius per ADR-028 D4/D6 | C-3 | H3 | review |
 | TASK-M2-014 | T3 | task | Implement the top-down intent scan | C-3 | H3 | done |
-| TASK-M2-015 | T4 | task | Implement the view router and five projections | C-3 | H3 | planned |
-| TASK-M2-016 | T4 | task | Implement WHAT-IS vs WHAT-SHOULD-BE gap analysis, incl. two-axis contradiction ranking and finding severity per ADR-028 D2/D3 | C-3 | H3 | planned |
-| TASK-M2-017 | T5 | task | Implement the roadmap compiler, incl. effort points and critical-path analysis per ADR-028 D5 (effort score must never write `C` or `H`) | C-3 | H3 | planned |
-| TASK-M2-018 | T5 | task | Extend `govibe.workspace.impact` for Mode 2 rather than duplicating it | C-2 | H2 | planned |
+| TASK-M2-015 | T4 | task | Implement the view router and five projections | C-3 | H3 | done |
+| TASK-M2-016 | T4 | task | Implement WHAT-IS vs WHAT-SHOULD-BE gap analysis, incl. two-axis contradiction ranking and finding severity per ADR-028 D2/D3 | C-3 | H3 | review |
+| TASK-M2-017 | T5 | task | Implement the roadmap compiler, incl. effort points and critical-path analysis per ADR-028 D5 (effort score must never write `C` or `H`) | C-3 | H3 | review |
+| TASK-M2-018 | T5 | task | Extend `govibe.workspace.impact` for Mode 2 rather than duplicating it | C-2 | H2 | done |
 | TASK-M2-019 | T5 | task | Run the five-class POC repository matrix | C-2 | H2 | planned |
 | TASK-M2-020 | T5 | task | Measure coverage, false relations, unresolved meaning, scan and rebuild time | C-2 | H2 | planned |
 
@@ -93,6 +93,20 @@ and the `workspace-service` method are all gone; `scripts/mcp/` is byte-identica
 exported from the package index, and covered by tests. What T1 delivered is a library
 capability, not a client-invocable tool. TASK-M2-021 must ratify §6.2 before the MCP surface
 returns.
+
+### 3.1.3 Three tasks are `review` pending ADR-028
+
+`TASK-M2-016` and `TASK-M2-017` join `TASK-M2-010` and `TASK-M2-013` in `review`. Each ships
+working code whose governing decision is still `proposed`: D2/D3 (contradiction ranking and
+severity) for the gap analysis, and D5 (effort and critical path) for the compiler. Every one is
+an isolated attribute or export, so acceptance or rejection is a small change either way.
+
+### 3.1.4 Known limitation: task dependencies are not inferred
+
+The compiler emits `dependencies: []` for every task, so `analyzeSchedule` reports a critical
+path of length 1 on real input. The scheduling maths is implemented and tested against
+hand-built graphs, but nothing yet derives inter-task dependencies from the gap set. Recorded
+so the result is not mistaken for a computed schedule.
 
 ### 3.1.2 TASK-M2-013 is `review`, not `done`
 
@@ -158,17 +172,17 @@ exists — never by assertion.
 | AC-M2 | Candidate relations preserve provenance | T3 | met |
 | AC-M3 | Inferred semantics are marked | T3 | met |
 | AC-M4 | Unresolved meaning is explicit | T3 | met |
-| AC-V1 | The view router selects relevant diagrams | T4 | unmet |
-| AC-V2 | Multiple views derive from one semantic model | T4 | unmet |
-| AC-V3 | View regeneration creates no new canonical identity | T4 | unmet |
-| AC-G1 | WHAT-IS and WHAT-SHOULD-BE can be compared | T4 | partial — both models now exist; the comparator is T4 |
-| AC-G2 | Missing/stale/drift candidates are reported with evidence | T4 | unmet |
+| AC-V1 | The view router selects relevant diagrams | T4 | met |
+| AC-V2 | Multiple views derive from one semantic model | T4 | met |
+| AC-V3 | View regeneration creates no new canonical identity | T4 | met |
+| AC-G1 | WHAT-IS and WHAT-SHOULD-BE can be compared | T4 | met |
+| AC-G2 | Missing/stale/drift candidates are reported with evidence | T4 | met |
 | AC-A1 | External agent capabilities and governor can be analysed | T2 | met |
 | AC-A2 | GoVibe does not replace the external governor | T2 | met |
 | AC-A3 | `NATIVE`/`PLATFORM`/`MISSING` classification works | T2 | met |
-| AC-R1 | The roadmap derives from observed gaps | T5 | unmet |
-| AC-R2 | Phases/epics/features/tasks preserve source traceability | T5 | unmet |
-| AC-R3 | Every major roadmap item has acceptance and verification criteria | T5 | unmet |
+| AC-R1 | The roadmap derives from observed gaps | T5 | met |
+| AC-R2 | Phases/epics/features/tasks preserve source traceability | T5 | met |
+| AC-R3 | Every major roadmap item has acceptance and verification criteria | T5 | met |
 | AC-X1 | GoVibe remains provider-neutral | T1 | met |
 | AC-X2 | External clients are adapters | T1 | met |
 | AC-X3 | Workspace ownership remains external | T1 | met |
@@ -194,6 +208,7 @@ governance system. GoVibe must understand it without replacing it.
 | 0.1.0 | 2026-08-11 | Initial Phase 1 implementation roadmap. | Claude Code |
 | 0.2.0 | 2026-08-12 | Bind ADR-028 decisions to TASK-M2-010/013/016/017; add TASK-M2-021 (RBAC ratification) and §3.1/§3.2. | Claude Code |
 | 0.2.1 | 2026-08-12 | Bind Mode 2 F1–F4 finalization to TASK-M2-012 per AMENDMENT-2026-08-12. | Claude Code |
+| 0.6.0 | 2026-08-12 | Tranches 4 and 5: TASK-M2-015/018 done; TASK-M2-016/017 `review` pending ADR-028 D2/D3/D5. AC-V1..V3, AC-G1/G2, AC-R1..R3 met. T3 and T4 closed. Recorded that task dependencies are not inferred. | Claude Code |
 | 0.5.0 | 2026-08-12 | Tranche 3: TASK-M2-012/014 done, TASK-M2-013 `review` pending ADR-028 D4/D6. AC-M1..M4 met; AC-G1 partial. T2 closed. | Claude Code |
 | 0.4.0 | 2026-08-12 | Tranche 2: TASK-M2-008/009/011 done, TASK-M2-010 `review` pending ADR-028 D1 acceptance. AC-A1/A2/A3 met. T1 closed. | Claude Code |
 | 0.3.0 | 2026-08-12 | Withdraw the `govibe.workspace.inspect` MCP surface on owner direction after adversarial review rated exposure-before-ratification high. TASK-M2-007 moved to T2/`blocked`; AC-W1 and AC-W2 corrected from `met` to `unmet` because no client can invoke Mode 2 without a tool. The library capability is retained and tested. | Claude Code |

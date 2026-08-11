@@ -235,8 +235,15 @@ export async function calculateWorkspaceImpact({
   changeType = "semantic_change",
   maxDistance = 3,
   minimumScore = 0.2,
+  graph: suppliedGraph = null,
 } = {}) {
-  const graph = await buildLinkGraph(workspacePath);
+  // A caller may supply a pre-built link graph instead of a workspace path. This is what lets
+  // Mode 2 run impact over its own candidate relations without forking the traversal: the
+  // weights, distance decay, scoring, action thresholds, and chain explanations all stay here.
+  if (!suppliedGraph && !workspacePath) {
+    throw new Error("calculateWorkspaceImpact requires either a workspacePath or a pre-built graph.");
+  }
+  const graph = suppliedGraph ?? (await buildLinkGraph(workspacePath));
   const { seeds, unresolvedSeeds } = normalizeSeeds(paths, graph);
   const changeWeight = CHANGE_WEIGHTS[changeType] ?? CHANGE_WEIGHTS.semantic_change;
   const affected = new Map();

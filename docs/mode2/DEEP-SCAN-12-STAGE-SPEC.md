@@ -2,7 +2,7 @@
 title: "Mode 2 Deliverable 4: Twelve-Stage Semantic Deep Scan Specification"
 doc_id: "MODE2-DEEP-SCAN-12-STAGE-SPEC"
 status: "draft"
-version: "0.4.0"
+version: "0.5.0"
 updated: "2026-08-12"
 owner: "Boss (CEO)"
 source_of_truth: false
@@ -261,6 +261,12 @@ LLM must not invent missing WHY; absent meaning becomes `UNRESOLVED`.
 | DS-16 | F1–F4 run in strict order and F4 refuses an unvalidated or unmediated promotion | `mode2/t3-semantics.test.mjs` |
 | DS-17 | Coverage counts relation-bearing and attribute-satisfied dimensions, not atoms alone | `mode2/t3-semantics.test.mjs` |
 | DS-18 | The intent scan never invents an unstated WHY | `mode2/t3-semantics.test.mjs` |
+| DS-19 | A view declares an honest projection state and never claims EXACT for an approximation | `mode2/t4-t5-projection.test.mjs` |
+| DS-20 | View regeneration reuses `view_id` and mints no canonical identity | `mode2/t4-t5-projection.test.mjs` |
+| DS-21 | Gap analysis never auto-resolves a contradiction | `mode2/t4-t5-projection.test.mjs` |
+| DS-22 | The roadmap derives every item from an observed gap and preserves traceability | `mode2/t4-t5-projection.test.mjs` |
+| DS-23 | The effort score is never written to `complexity` or `access_scope` | `mode2/t4-t5-projection.test.mjs` |
+| DS-24 | Mode 2 impact reuses the existing engine and never implements traversal | `mode2/t4-t5-projection.test.mjs` |
 | DS-09 | No stage writes outside `.govibe/mode2/` | `mode2/workspace-adapter.test.mjs` |
 | DS-10 | Two independent workspaces holding identical content produce identical output hashes | `mode2/pipeline.test.mjs` |
 | DS-11 | A record whose artifact is missing is re-executed, never reused | `mode2/pipeline.test.mjs` |
@@ -344,11 +350,63 @@ Stage 10 parks as `UNRESOLVED`. A target absent from the index stays unresolved 
 minted. The pass **must not invent a missing WHY**: a document class entitled to supply rationale
 that states none yields a `rationale-not-stated` finding, not a summary.
 
+## 7.3 Tranche 4 and 5: Projection, Gap Analysis, Roadmap
+
+### Views are projections, never truth
+
+Five of the thirteen catalogued views are implemented; the other eight stay visible in the
+catalog as unimplemented rather than being quietly dropped. Routing is by semantic signal, so a
+view with no entity behind it is **not generated** — an empty diagram looks like an answer.
+
+Every view carries `derived_from` back-references and a `view_id` derived from its inputs, so
+regeneration reuses the identity and mints nothing canonical. Each declares a projection state
+and none overclaims: the sequence view is `APPROXIMATE` because module imports are not call
+ordering, and the state view is `PARTIAL` because states are recoverable while transitions are
+not — omitted rather than invented.
+
+### Gap analysis proposes, never resolves
+
+Eight of fourteen gap classes are deterministically detectable; the other six are listed with
+the reason each needs a declared baseline this tranche does not have. Every finding is a
+`candidate-for-human-review`, so the prohibition on automatically fixing contradictions is
+enforced in the output shape rather than only described.
+
+**Two calibration corrections found by running against this repository:**
+
+The first detector produced 763 findings, 761 of them `critical`. Two defects:
+
+- Stale-documentation checked each reference against the repository root, so relative links,
+  globs, placeholders, and case variants were all reported as broken. **645 stale findings fell
+  to 136 — 79% were false positives.**
+- Findings were emitted per reference and everything was `critical`. They now aggregate per
+  document, and **no deterministic finding is `critical`**: a triage axis on which everything is
+  urgent conveys nothing. `critical` is reserved for unambiguous, consequential contradictions,
+  and no detector here establishes one. An empty critical bucket is the honest result.
+
+### The roadmap derives from gaps, and the axes stay separate
+
+`Current State -> Target State -> Gap -> Risk -> Phase -> Epic -> Feature -> Work Package ->
+Task`. An item with no gap behind it is not emitted, and a workstream with no work is absent
+rather than empty.
+
+Complexity is `C-0..C-3` and access scope is `H0..H4` per ADR-021. `H4` is an upward override
+requiring owner approval and is **never assigned automatically**. The ADR-028 D5 effort score
+lands in a distinct `effort_estimate` field and must never be written to either axis.
+
+### Impact extends the engine rather than duplicating it
+
+`impact-bridge.mjs` implements **no traversal**. It converts Mode 2 relations into the
+`govibe-link-graph/v1` shape and hands them to `calculateWorkspaceImpact`, which keeps its
+relation weights, distance decay, scoring, `required_action` thresholds, and chain explanations.
+The engine gained one optional `graph` parameter; its filesystem path is unchanged. Traversal
+depth is expressed on the `R` axis, defaulting to `R3`.
+
 ## 8. Changelog
 
 | Version | Date | Change | Author |
 |---|---|---|---|
 | 0.1.0 | 2026-08-11 | Initial twelve-stage semantic scan specification. | Claude Code |
+| 0.5.0 | 2026-08-12 | Tranches 4 and 5: view router with five projections, WHAT-IS vs WHAT-SHOULD-BE gap analysis, roadmap compiler, and the impact bridge. Added 7.3 and DS-19..DS-24. Records the two detector calibration corrections found by running against this repository. | Claude Code |
 | 0.4.0 | 2026-08-12 | Tranche 3: Stage 12 Candidate Semantic IR, F1–F4 finalization, semantic coverage engine, and the top-down intent pass. Added §7.2 and DS-15..DS-18. Records that Mode 2 adopts the strict F1→F4 ordering natively without deciding the amendment's L2 question. | Claude Code |
 | 0.3.0 | 2026-08-12 | Tranche 2: stages 5-11 implemented. Added §7.1 recording exactly what each delivers and what it deliberately does not, DS-08 bound to a real test, and DS-13/DS-14 added. | Claude Code |
 | 0.2.0 | 2026-08-12 | Adversarial review corrections: reuse fingerprint documented as a heuristic with a `verifyContent` escape hatch; DS-05/DS-06 scoped to the fast path; DS-10 restated as cross-workspace and made true by excluding environment-derived fields from the hash; DS-04 restated as a genuine interruption; two `Verified by` cells corrected to files that exist; DS-11 and DS-12 added. | Claude Code |
