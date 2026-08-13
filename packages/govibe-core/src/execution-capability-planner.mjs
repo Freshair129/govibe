@@ -40,9 +40,57 @@ function buildEligibilityRequest(request, executorClass, modelId) {
   };
 }
 
-export function createExecutionCapabilityPlanner({ capabilityRegistry, entitlementRegistry, clock = () => new Date() } = {}) {
+function requestedCompatibilityScope(entitlement) {
+  if (entitlement.share_policy === 'owner_only') return 'owner_only';
+  if (entitlement.share_policy === 'named_principals') return 'named_users';
+  if (entitlement.share_policy === 'workspace_pool') return 'workspace';
+  if (entitlement.share_policy === 'organization_pool') return 'organization';
+  return null;
+}
+
+function compatibilityContext(record, entitlement, descriptor, request) {
+  const requestedScope = requestedCompatibilityScope(entitlement);
+  const crossUser = request.actor_id !== entitlement.owner.owner_id;
+  return Object.freeze({
+    record_id: record.record_id,
+    record_version: record.version,
+    provider: record.provider,
+    product: record.product,
+    plan: record.plan,
+    execution_surface: record.execution_surface,
+    entitlement_type: entitlement.entitlement_type,
+    owner_id: entitlement.owner.owner_id,
+    requested_scope: requestedScope,
+    principal_id: request.actor_id,
+    organization_id: request.organization_id,
+    workspace_id: request.workspace_id,
+    adapter_id: descriptor.adapter_id,
+    automation_requested: request.automation_requested,
+    session_reuse_requested: request.session_reuse_requested || (crossUser && entitlement.session_policy.cross_user_reuse),
+    concurrent_use_requested: request.concurrent_use_requested,
+    credential_delegation_requested: request.credential_delegation_requested || (crossUser && entitlement.credential_ref != null),
+    evidence_valid: true,
+  });
+}
+
+function resolveCompatibilityRecord(compatibilityRegistry, entitlement) {
+  const records = compatibilityRegistry.inspect()
+    .filter((record) => record.provider === entitlement.provider_id && record.entitlement_type === entitlement.entitlement_type);
+  if (records.length === 0) {
+    return Object.freeze({ record: null, reason_code: 'COMPATIBILITY_RECORD_MISSING' });
+  }
+  if (records.length > 1) {
+    return Object.freeze({ record: null, reason_code: 'PROVIDER_POLICY_UNKNOWN' });
+  }
+  return Object.freeze({ record: records[0], reason_code: null });
+}
+
+export function createExecutionCapabilityPlanner({ capabilityRegistry, entitlementRegistry, compatibilityRegistry, clock = () => new Date() } = {}) {
   if (!capabilityRegistry?.inspect || !entitlementRegistry?.inspect || !entitlementRegistry?.explainEligibility) {
     fail('INVALID_PLANNER_CONFIGURATION', 'capability and entitlement registries are required');
+  }
+  if (!compatibilityRegistry?.inspect || !compatibilityRegistry?.explainEligibility) {
+    fail('INVALID_PLANNER_CONFIGURATION', 'a provider compatibility registry is required');
   }
 
   function plan(input) {
@@ -66,6 +114,10 @@ export function createExecutionCapabilityPlanner({ capabilityRegistry, entitleme
       tool_contract_hash: requireText(input?.tool_contract_hash, 'tool_contract_hash'),
       allowed_tool_contract_hashes: requiredList(input?.allowed_tool_contract_hashes ?? [], 'allowed_tool_contract_hashes'),
       context_integrity_valid: input?.context_integrity_valid === true,
+      automation_requested: input?.automation_requested === true,
+      session_reuse_requested: input?.session_reuse_requested === true,
+      concurrent_use_requested: input?.concurrent_use_requested === true,
+      credential_delegation_requested: input?.credential_delegation_requested === true,
     });
 
     if (!request.context_integrity_valid) {
@@ -96,6 +148,44 @@ export function createExecutionCapabilityPlanner({ capabilityRegistry, entitleme
       }
       if (!descriptor.executor_classes.includes(request.executor_class)) {
         rejectedTargets.push(Object.freeze({ provider_id: descriptor.provider_id, entitlement_id: entitlement.entitlement_id, reason_code: 'EXECUTOR_CLASS_UNAVAILABLE' }));
+        continue;
+      }
+
+      const resolvedCompatibility = resolveCompatibilityRecord(compatibilityRegistry, entitlement);
+      if (!resolvedCompatibility.record) {
+        rejectedTargets.push(Object.freeze({
+          provider_id: descriptor.provider_id,
+          entitlement_id: entitlement.entitlement_id,
+          reason_code: resolvedCompatibility.reason_code,
+          reasons: Object.freeze([resolvedCompatibility.reason_code]),
+        }));
+        continue;
+      }
+
+      const compatibility = compatibilityContext(resolvedCompatibility.record, entitlement, descriptor, request);
+      if (resolvedCompatibility.record.approved_scope !== compatibility.requested_scope) {
+        rejectedTargets.push(Object.freeze({
+          provider_id: descriptor.provider_id,
+          entitlement_id: entitlement.entitlement_id,
+          reason_code: 'SHARE_SCOPE_NOT_APPROVED',
+          reasons: Object.freeze(['SHARE_SCOPE_NOT_APPROVED']),
+        }));
+        continue;
+      }
+
+      const compatibilityDecision = compatibilityRegistry.explainEligibility(
+        resolvedCompatibility.record.record_id,
+        compatibility,
+        clock(),
+      );
+      if (!compatibilityDecision.eligible) {
+        rejectedTargets.push(Object.freeze({
+          provider_id: descriptor.provider_id,
+          entitlement_id: entitlement.entitlement_id,
+          reason_code: compatibilityDecision.reason_code,
+          reasons: Object.freeze([compatibilityDecision.reason_code]),
+          compatibility_record_id: compatibilityDecision.record_id,
+        }));
         continue;
       }
 
@@ -153,9 +243,15 @@ export function createExecutionCapabilityPlanner({ capabilityRegistry, entitleme
         usage_visibility: descriptor.usage_visibility,
         session_affinity_available: descriptor.supports_session_affinity,
         prompt_cache_reference_available: descriptor.supports_prompt_cache_reference,
+        compatibility: Object.freeze({
+          authorized: true,
+          ...compatibility,
+          policy_ref: compatibilityDecision.policy_ref,
+        }),
         policy_refs: Object.freeze([
           `entitlement:${entitlement.entitlement_id}:${entitlement.version}`,
           `capability:${descriptor.provider_id}:${descriptor.adapter_version}`,
+          compatibilityDecision.policy_ref,
         ]),
         state: entitlement.state,
       }));
