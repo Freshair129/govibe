@@ -2,8 +2,8 @@
 doc_id: "ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY"
 title: "ADR-024: Provider Entitlement and Execution Authority Boundary"
 status: "draft"
-version: "0.1.1+draft"
-updated: "2026-08-03"
+version: "0.1.2+draft"
+updated: "2026-08-14"
 owner: "Boss (CEO)"
 type: adr
 related_issue: 55
@@ -93,7 +93,8 @@ Anonymous credential pooling is prohibited. An account may back an entitlement, 
 
 A Provider Adapter owns only provider-specific execution mechanics:
 
-- authentication handoff from an opaque credential reference;
+- authentication handoff from an opaque credential reference through an
+  explicit credential mode;
 - request translation;
 - process, CLI, SDK or API invocation;
 - stream normalization;
@@ -111,6 +112,12 @@ A Provider Adapter must not:
 - promote provider output;
 - reuse credentials or sessions beyond entitlement policy;
 - claim estimated usage as provider-reported usage.
+
+GoVibe does not derive provider tokens generically. If a binding selects
+`derived_token`, the bound adapter owns the derivation callback and receives
+the resulting opaque handoff only after the vault has validated the
+run-scoped grant. The adapter's `execute` path never receives the raw secret
+in this mode.
 
 ### 2.5 Two-phase routing
 
@@ -210,5 +217,6 @@ Rejected because provider history is not canonical, may expire, may be inaccessi
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-08-14 | Boss / ATHER | Clarified explicit credential modes and the adapter-owned derived-token handoff boundary; no provider authorization or production readiness claim. |
 | 0.1.1+draft | 2026-08-03 | Boss / ATHER | Normalized lifecycle status from `proposed` to `draft` as an owner-approved documentation conformance correction; no ADR acceptance or runtime authorization. |
 | 0.1.0+draft | 2026-08-02 | Boss (CEO) | Proposed execution-resource authority, entitlement ownership, two-phase routing, usage semantics, affinity and failover boundaries. |

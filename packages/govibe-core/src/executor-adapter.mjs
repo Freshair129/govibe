@@ -1,4 +1,5 @@
 import { assertExecutorDispatchAllowed } from "./authority-enforcement.mjs";
+import { normalizeCredentialMode } from "./credential-handoff.mjs";
 
 const PROVIDERS = ["codex", "claude-code", "crewai", "local"];
 
@@ -92,6 +93,7 @@ function validateBinding(provider, request) {
     context_id: requireText(binding.context_id, "executionBinding.context_id"),
     cache_id: requireText(binding.cache_id, "executionBinding.cache_id"),
     credential_grant_id: binding.credential_grant_id ?? null,
+    credential_mode: normalizeCredentialMode(binding.credential_mode, "executionBinding.credential_mode"),
     provider_session_id: binding.provider_session_id ?? null,
   };
 
@@ -135,6 +137,7 @@ function safeRequest(request) {
     entitlement_id: executionBinding.entitlement_id,
     principal_id: executionBinding.principal_id,
     run_id: executionBinding.run_id,
+    credential_mode: executionBinding.credential_mode ?? null,
     provider_session_id: executionBinding.provider_session_id ?? null,
   }) });
 }
@@ -157,8 +160,11 @@ function assertBindingIssued(bindingService, binding, request) {
       cache_id: binding.cache_id,
       provider_id: binding.provider_id,
       entitlement_id: binding.entitlement_id,
-    };
+  };
   if (request?.executionBinding?.adapter_id != null) expected.adapter_id = binding.adapter_id;
+  if (Object.prototype.hasOwnProperty.call(request?.executionBinding ?? {}, "credential_mode")) {
+    expected.credential_mode = binding.credential_mode;
+  }
 
   try {
     return bindingService.assertUsable(binding.binding_id, expected);
@@ -234,6 +240,15 @@ function assertCompatibility(compatibilityRegistry, bindingService, issuedBindin
   return decision;
 }
 
+function assertCredentialModeSupported(adapter, credentialMode) {
+  if (!credentialMode || !Array.isArray(adapter?.credential_modes)) return;
+  if (!adapter.credential_modes.includes(credentialMode)) {
+    fail("CREDENTIAL_MODE_UNSUPPORTED", "adapter does not support the bound credential mode", {
+      mode: credentialMode,
+    });
+  }
+}
+
 export function createExecutorRegistry(adapters = {}, {
   credentialVault = null,
   sessionRegistry = null,
@@ -272,9 +287,16 @@ export function createExecutorRegistry(adapters = {}, {
       const issuedBinding = assertBindingIssued(bindingService, binding, request);
       assertCompatibility(compatibilityRegistry, bindingService, issuedBinding, clock());
       assertExecutorDispatchAllowed(request);
-      const dispatchBinding = Object.freeze({ ...binding, adapter_id: issuedBinding.adapter_id });
+      const dispatchBinding = Object.freeze({
+        ...binding,
+        adapter_id: issuedBinding.adapter_id,
+        credential_mode: issuedBinding.credential_mode ?? null,
+      });
       const adapter = resolveAdapter(adapterEntries, provider, dispatchBinding);
       if (typeof adapter?.execute !== "function") throw new ProviderUnavailableError(provider, dispatchBinding.adapter_id);
+      const effectiveCredentialMode = dispatchBinding.credential_mode
+        ?? (binding.credential_grant_id ? "raw_secret" : "none");
+      assertCredentialModeSupported(adapter, effectiveCredentialMode);
 
       let providerSession = null;
       if (dispatchBinding.provider_session_id) {
@@ -288,22 +310,47 @@ export function createExecutorRegistry(adapters = {}, {
         });
       }
 
-      const invoke = (credentialBytes = null) => adapter.execute(safeRequest({ ...request, executionBinding: dispatchBinding }), Object.freeze({
+      const invoke = (credential = null) => adapter.execute(safeRequest({ ...request, executionBinding: dispatchBinding }), Object.freeze({
         executionBinding: dispatchBinding,
-        credential: credentialBytes,
+        credential,
         providerSession,
       }));
 
-      if (!binding.credential_grant_id) return invoke();
+      if (!binding.credential_grant_id) {
+        if (dispatchBinding.credential_mode && dispatchBinding.credential_mode !== "none") {
+          fail("CREDENTIAL_GRANT_REQUIRED", "credential mode requires a run-scoped credential grant");
+        }
+        return invoke();
+      }
       if (!credentialVault) fail("CREDENTIAL_VAULT_REQUIRED", "credential vault is required for credentialed dispatch");
+      if (dispatchBinding.credential_mode === "none") {
+        fail("CREDENTIAL_MODE_GRANT_MISMATCH", "credential grant cannot be used with credential mode none");
+      }
 
-      return credentialVault.withCredential(binding.credential_grant_id, {
+      const grantScope = {
         entitlement_id: dispatchBinding.entitlement_id,
         principal_id: dispatchBinding.principal_id,
         run_id: dispatchBinding.run_id,
         binding_id: dispatchBinding.binding_id,
         provider_id: dispatchBinding.provider_id,
-      }, invoke);
+        adapter_id: dispatchBinding.adapter_id,
+      };
+      if (dispatchBinding.credential_mode === "derived_token") {
+        if (typeof adapter.deriveCredential !== "function") {
+          fail("CREDENTIAL_DERIVER_REQUIRED", "bound adapter has no credential deriver");
+        }
+        if (typeof credentialVault.withDerivedCredential !== "function") {
+          fail("CREDENTIAL_DERIVER_REQUIRED", "credential vault has no derived handoff boundary");
+        }
+        return credentialVault.withDerivedCredential(
+          binding.credential_grant_id,
+          grantScope,
+          adapter.deriveCredential,
+          invoke,
+        );
+      }
+
+      return credentialVault.withCredential(binding.credential_grant_id, grantScope, invoke);
     },
     async cancel(provider, runId) {
       const adapter = adapters[provider];

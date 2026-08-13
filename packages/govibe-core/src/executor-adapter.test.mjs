@@ -211,6 +211,149 @@ describe("executor adapter governed handoff", () => {
     await expect(registry.execute("codex", request)).resolves.toEqual({ requestHasSecret: false, bindingHasGrant: false, credential: "fixture-value" });
   });
 
+  it("passes only a binding-scoped derived handoff to the adapter", async () => {
+    const bindingService = createExecutionBindingService({ idFactory: () => "derived" });
+    const binding = bindingService.createBinding({
+      ...bindingRequest(),
+      binding_request_id: "br-derived",
+      eligible_target: { ...bindingRequest().eligible_target, credential_mode: "derived_token" },
+    });
+    const vault = createCredentialVault({ idFactory: () => "derived-grant" });
+    vault.registerCredential({ credential_ref: "cred-derived", entitlement_id: "ent-1", owner_id: "user-1", provider_id: "codex", secret: "fixture-value" });
+    const grant = vault.issueGrant({
+      credential_ref: "cred-derived", entitlement_id: "ent-1", principal_id: "user-1", run_id: "run-1",
+      binding_id: binding.binding_id, provider_id: "codex", adapter_id: "adapter-codex",
+    });
+    const deriveCredential = vi.fn(async (bytes, derivationRequest) => {
+      expect(new TextDecoder().decode(bytes)).toBe("fixture-value");
+      expect(derivationRequest).toMatchObject({
+        schema: "govibe-credential-derivation-request/v1",
+        provider_id: "codex",
+        adapter_id: "adapter-codex",
+        binding_id: binding.binding_id,
+      });
+      return { token: "derived-fixture-token", token_type: "opaque" };
+    });
+    const execute = vi.fn(async (safeRequest, runtime) => {
+      expect(JSON.stringify(safeRequest)).not.toContain("fixture-value");
+      expect(JSON.stringify(safeRequest)).not.toContain("derived-fixture-token");
+      expect(runtime.credential).toMatchObject({
+        schema: "govibe-credential-handoff/v1",
+        mode: "derived_token",
+        provider_id: "codex",
+        adapter_id: "adapter-codex",
+        binding_id: binding.binding_id,
+        token: "derived-fixture-token",
+      });
+      return runtime.credential.token;
+    });
+    const registry = createExecutorRegistry({
+      codex: {
+        provider_id: "codex",
+        adapter_id: "adapter-codex",
+        credential_modes: ["derived_token"],
+        deriveCredential,
+        execute,
+      },
+    }, { bindingService, compatibilityRegistry: COMPATIBILITY_REGISTRY, credentialVault: vault });
+
+    await expect(registry.execute("codex", governedRequest({
+      executionBinding: { ...binding, credential_grant_id: grant.grant_id },
+    }))).resolves.toBe("derived-fixture-token");
+    expect(deriveCredential).toHaveBeenCalledOnce();
+    expect(execute).toHaveBeenCalledOnce();
+  });
+
+  it("fails closed when derived mode has no adapter deriver", async () => {
+    const bindingService = createExecutionBindingService({ idFactory: () => "missing-deriver" });
+    const binding = bindingService.createBinding({
+      ...bindingRequest(),
+      binding_request_id: "br-missing-deriver",
+      eligible_target: { ...bindingRequest().eligible_target, credential_mode: "derived_token" },
+    });
+    const vault = createCredentialVault({ idFactory: () => "missing-deriver-grant" });
+    vault.registerCredential({ credential_ref: "cred-derived", entitlement_id: "ent-1", owner_id: "user-1", provider_id: "codex", secret: "fixture-value" });
+    const grant = vault.issueGrant({
+      credential_ref: "cred-derived", entitlement_id: "ent-1", principal_id: "user-1", run_id: "run-1",
+      binding_id: binding.binding_id, provider_id: "codex", adapter_id: "adapter-codex",
+    });
+    const execute = vi.fn();
+    const registry = createExecutorRegistry({
+      codex: { provider_id: "codex", adapter_id: "adapter-codex", credential_modes: ["derived_token"], execute },
+    }, { bindingService, compatibilityRegistry: COMPATIBILITY_REGISTRY, credentialVault: vault });
+
+    await expect(registry.execute("codex", governedRequest({
+      executionBinding: { ...binding, credential_grant_id: grant.grant_id },
+    }))).rejects.toMatchObject({ code: "CREDENTIAL_DERIVER_REQUIRED" });
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("does not downgrade a derived-only adapter to the legacy raw-secret path", async () => {
+    const vault = createCredentialVault({ idFactory: () => "legacy-derived" });
+    vault.registerCredential({ credential_ref: "cred-derived", entitlement_id: "ent-1", owner_id: "user-1", provider_id: "codex", secret: "fixture-value" });
+    const grant = vault.issueGrant({
+      credential_ref: "cred-derived", entitlement_id: "ent-1", principal_id: "user-1", run_id: "run-1",
+      binding_id: ISSUED_BINDING.binding_id, provider_id: "codex",
+    });
+    const execute = vi.fn();
+    const registry = governedRegistry({
+      codex: {
+        provider_id: "codex", adapter_id: "adapter-codex", credential_modes: ["derived_token"],
+        deriveCredential: vi.fn(async () => ({ token: "derived" })), execute,
+      },
+    }, { credentialVault: vault });
+
+    await expect(registry.execute("codex", governedRequest({
+      executionBinding: { ...governedRequest().executionBinding, credential_grant_id: grant.grant_id },
+    }))).rejects.toMatchObject({ code: "CREDENTIAL_MODE_UNSUPPORTED" });
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("fails closed when a derived mode returns the raw secret", async () => {
+    const bindingService = createExecutionBindingService({ idFactory: () => "raw-derived" });
+    const binding = bindingService.createBinding({
+      ...bindingRequest(),
+      binding_request_id: "br-raw-derived",
+      eligible_target: { ...bindingRequest().eligible_target, credential_mode: "derived_token" },
+    });
+    const vault = createCredentialVault({ idFactory: () => "raw-derived-grant" });
+    vault.registerCredential({ credential_ref: "cred-derived", entitlement_id: "ent-1", owner_id: "user-1", provider_id: "codex", secret: "fixture-value" });
+    const grant = vault.issueGrant({
+      credential_ref: "cred-derived", entitlement_id: "ent-1", principal_id: "user-1", run_id: "run-1",
+      binding_id: binding.binding_id, provider_id: "codex", adapter_id: "adapter-codex",
+    });
+    const execute = vi.fn();
+    const registry = createExecutorRegistry({
+      codex: {
+        provider_id: "codex", adapter_id: "adapter-codex", credential_modes: ["derived_token"],
+        deriveCredential: vi.fn(async (bytes) => new TextDecoder().decode(bytes)), execute,
+      },
+    }, { bindingService, compatibilityRegistry: COMPATIBILITY_REGISTRY, credentialVault: vault });
+
+    await expect(registry.execute("codex", governedRequest({
+      executionBinding: { ...binding, credential_grant_id: grant.grant_id },
+    }))).rejects.toMatchObject({ code: "CREDENTIAL_DERIVATION_RAW_SECRET_REUSED" });
+    expect(execute).not.toHaveBeenCalled();
+  });
+
+  it("rejects a caller credential-mode substitution against the issued binding", async () => {
+    const bindingService = createExecutionBindingService({ idFactory: () => "mode-mismatch" });
+    const binding = bindingService.createBinding({
+      ...bindingRequest(),
+      binding_request_id: "br-mode-mismatch",
+      eligible_target: { ...bindingRequest().eligible_target, credential_mode: "derived_token" },
+    });
+    const execute = vi.fn();
+    const registry = createExecutorRegistry({ codex: { provider_id: "codex", adapter_id: "adapter-codex", execute } }, {
+      bindingService, compatibilityRegistry: COMPATIBILITY_REGISTRY,
+    });
+
+    await expect(registry.execute("codex", governedRequest({
+      executionBinding: { ...binding, credential_mode: "raw_secret" },
+    }))).rejects.toMatchObject({ code: "EXECUTION_BINDING_SCOPE_MISMATCH" });
+    expect(execute).not.toHaveBeenCalled();
+  });
+
   it("validates an isolated provider session before dispatch", async () => {
     const sessions = createProviderSessionRegistry({ idFactory: () => "session" });
     const session = sessions.createSession({ principal_id: "user-1", entitlement_id: "ent-1", provider_id: "codex", run_id: "run-1", binding_id: ISSUED_BINDING.binding_id, external_session_id: "external-session" });

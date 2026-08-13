@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { normalizeDerivedCredentialHandoff } from "./credential-handoff.mjs";
 
 const ACTIVE = "active";
 const REVOKED = "revoked";
@@ -152,6 +153,7 @@ export function createCredentialVault({
       run_id: runId,
       binding_id: bindingId,
       provider_id: providerId,
+      adapter_id: input?.adapter_id ?? null,
       state: ACTIVE,
       one_time: input?.one_time !== false,
       issued_at: issuedAt.toISOString(),
@@ -172,6 +174,9 @@ export function createCredentialVault({
 
     for (const field of ["entitlement_id", "principal_id", "run_id", "binding_id", "provider_id"]) {
       if (grant[field] !== expected?.[field]) fail("CREDENTIAL_GRANT_SCOPE_MISMATCH", `credential grant ${field} mismatch`, { field });
+    }
+    if (grant.adapter_id != null && grant.adapter_id !== expected?.adapter_id) {
+      fail("CREDENTIAL_GRANT_SCOPE_MISMATCH", "credential grant adapter_id mismatch", { field: "adapter_id" });
     }
 
     const credential = credentials.get(grant.credential_ref);
@@ -199,6 +204,59 @@ export function createCredentialVault({
     }
   }
 
+  async function withDerivedCredential(grantId, expected, deriveCredential, consumer) {
+    if (typeof deriveCredential !== "function") fail("CREDENTIAL_DERIVER_REQUIRED", "credential deriver is required");
+    if (typeof consumer !== "function") fail("INVALID_CREDENTIAL_REQUEST", "consumer must be a function");
+    const { grant } = validateGrant(grantId, expected);
+    const providerId = requireText(expected?.provider_id, "provider_id");
+    const adapterId = requireText(expected?.adapter_id, "adapter_id");
+    if (grant.adapter_id !== adapterId) {
+      fail("CREDENTIAL_GRANT_SCOPE_MISMATCH", "derived credential grant adapter_id mismatch", { field: "adapter_id" });
+    }
+    const secretBytes = backend.read(grant.credential_ref);
+    const rawText = new TextDecoder().decode(secretBytes);
+
+    try {
+      let derived;
+      try {
+        derived = await deriveCredential(secretBytes, Object.freeze({
+          schema: "govibe-credential-derivation-request/v1",
+          provider_id: providerId,
+          adapter_id: adapterId,
+          entitlement_id: grant.entitlement_id,
+          principal_id: grant.principal_id,
+          run_id: grant.run_id,
+          binding_id: grant.binding_id,
+        }));
+      } catch {
+        fail("CREDENTIAL_DERIVATION_FAILED", "credential derivation failed");
+      }
+
+      const handoff = normalizeDerivedCredentialHandoff({
+        provider_id: providerId,
+        adapter_id: adapterId,
+        binding_id: grant.binding_id,
+        derived,
+        raw_secret: secretBytes,
+      });
+
+      try {
+        return await consumer(handoff);
+      } catch (error) {
+        const message = String(error?.message ?? "");
+        if (message.includes(rawText) || message.includes(handoff.token)) {
+          throw new CredentialVaultError("CREDENTIAL_HANDOFF_CONSUMER_FAILED", "credential handoff consumer failed");
+        }
+        throw error;
+      }
+    } finally {
+      wipe(secretBytes);
+      if (grant.one_time) {
+        grants.set(grantId, Object.freeze({ ...grant, state: "consumed", consumed_at: nowIso(clock) }));
+      }
+    }
+  }
+
   function revokeGrant(grantId) {
     const grant = grants.get(grantId);
     if (!grant) fail("CREDENTIAL_GRANT_NOT_FOUND", "credential grant was not found", { grant_id: grantId });
@@ -216,5 +274,5 @@ export function createCredentialVault({
     });
   }
 
-  return Object.freeze({ registerCredential, revokeCredential, issueGrant, withCredential, revokeGrant, inspect });
+  return Object.freeze({ registerCredential, revokeCredential, issueGrant, withCredential, withDerivedCredential, revokeGrant, inspect });
 }

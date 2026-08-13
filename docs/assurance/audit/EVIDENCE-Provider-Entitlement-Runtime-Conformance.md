@@ -2,7 +2,7 @@
 title: "Evidence: Provider Entitlement Runtime Conformance"
 doc_id: "EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE"
 status: "draft"
-version: "0.4.0+draft"
+version: "0.5.0+draft"
 updated: "2026-08-14"
 owner: "ATHER"
 source_of_truth: false
@@ -145,10 +145,11 @@ No live provider was contacted. Quota accuracy, rate-limit semantics, session
 affinity behavior, prompt-cache behavior and adapter error taxonomy for any real
 provider are unevidenced.
 
-### 4.3 Issue #59 negative-test matrix: mostly closed, two items still open
+### 4.3 Issue #59 repository boundary: derived handoff implemented, production evidence open
 
 `packages/govibe-core/src/credential-session-boundary.security.test.mjs`
-(30 tests) closes the dispatch-boundary part of the matrix. PR #108 landed
+and the credential handoff/vault/executor suites close the repository dispatch
+boundary. PR #108 landed
 alongside the section 5.1 binding-authenticity fix: it flipped four existing
 `GAP:` characterization tests to assert rejection instead of demonstrating the
 vulnerability, and added two new tests — a binding whose claimed entitlement
@@ -168,17 +169,26 @@ the provider was **never invoked**, not merely that a promise rejected:
 - the adapter request carries no credential-shaped field and no grant id, and
   the adapter gets a handle to no other credential or session;
 - no secret or external session handle appears in any rejection message, stack,
-  error detail, or inspection surface.
+  error detail, or inspection surface;
+- explicit `derived_token` mode binds provider, adapter and binding IDs, passes
+  raw bytes only to the adapter-owned deriver, gives `execute` an opaque
+  `govibe-credential-handoff/v1`, wipes the vault bytes, and fails closed on
+  missing deriver, mode substitution, invalid handoff, or raw-secret reuse.
+
+The compatibility registry is now implemented and checked before dispatch;
+missing, expired, product/plan/surface-mismatched, or adapter-mismatched
+records fail closed. This repository slice is evidence for the corresponding
+negative paths, not production provider evidence.
 
 Still open and **not** covered:
 
-- **compatibility records do not exist as code.** Sharing policy section 14
-  requires that missing or expired compatibility records and product/plan/surface
-  mismatches fail closed. No compatibility registry is implemented, so these
-  cannot be tested. This is a missing implementation, not a missing test.
-- **derived-token handoff is not implemented.** Issue #59 scope names it; the
-  vault hands raw secret bytes to the adapter inside `withCredential`. The bytes
-  are wiped afterwards, but no token derivation exists.
+- **real-provider/backend handoff is not implemented.** No external provider or
+  durable credential backend was contacted, so provider-specific token exchange,
+  encrypted-at-rest behavior, rotation, and provider-side revocation remain
+  unevidenced.
+- **full operational threat-model evidence remains open.** The repository
+  fixture does not establish protected child-process environments, durable
+  audit/retention behavior, or human security/release review.
 
 ### 4.4 No durable storage
 
@@ -202,6 +212,7 @@ security/release review evidence is still absent.
 | The usage-event schema had no `not_applicable` telemetry classification | API-008 section 10 now defines `not_applicable_fields`; the ledger validates known, disjoint classifications and a local-compute fixture proves N/A versus unknown separation. | #110 |
 | The scheduler decision record was not distinguished from the provider contract | SDD section 9.1 explicitly governs `govibe-scheduler-decision/v1` as internal GoVibe evidence, not API-008/provider surface. | #109 |
 | Dispatch selected an adapter by `provider_id` | The executor resolves the exact binding `adapter_id`, verifies provider/compatibility alignment, and the two-adapter security test proves the selected adapter is the one bound. | #111 |
+| Credential handoff had no derived-token boundary | `credential_mode` and `govibe-credential-handoff/v1` are now explicit; targeted vault/executor/security fixtures prove raw-secret isolation and fail-closed derivation. Real-provider and durable-backend evidence remain absent. | #59 |
 
 These dispositions do not close issue #64: the gate still requires evidence beyond
 repository fixtures and local CI.
@@ -307,8 +318,21 @@ Full baseline, which includes this suite:
 npm run baseline:check
 ```
 
-Recorded run on this branch: 44 test files, 334 tests passed, 1 skipped;
-`docs:validate` PASS; build clean.
+Recorded repository verification on this branch (2026-08-14):
+
+- `npm run baseline:check`: PASS, including environment validation,
+  `docs:validate`, `roadmap:validate`, TypeScript lint, full Vitest/security
+  suites, and build;
+- full Vitest: 77 test files, 658 tests passed, 1 skipped;
+- security suite: 65 tests passed;
+- `npm run mcp:smoke`: PASS;
+- targeted derived-handoff suites: 6 files, 95 tests passed;
+- `git diff --check`: PASS.
+
+The Playwright landing-page matrix did not complete within 300 seconds. A
+single-worker Chromium run completed 28 tests and exposed one existing landing
+smooth-scroll viewport timeout in `e2e/landing-page.spec.ts`; this UI failure is
+outside issue #59 and is not represented as credential-handoff evidence.
 
 This branch has merged to `main`: commit `b8604d7`
 (full sha `b8604d701fc58d62a4de0ab72b35099bfa688c12`) is the merge commit for
@@ -322,6 +346,7 @@ branch `fix/issue-59-binding-authenticity`). CI run for that commit: workflow
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.5.0+draft | 2026-08-14 | ATHER | Recorded explicit derived-token handoff and compatibility-registry repository evidence for #59; real-provider, durable-storage, and human review gates remain open. |
 | 0.4.0+draft | 2026-08-14 | ATHER | Dispositioned the #109, #110 and #111 contract gaps and recorded bounded #76 MSP health evidence; gate remains not passed for external-provider, durable-ledger, and human review requirements. |
 | 0.3.2+draft | 2026-08-05 | Claude (final-gate session) | Recorded the owner's section 6 ruling: #58, #60, #61, #62 closed on their own acceptance criteria with scoped comments; #59/#63 stay open pending #112 and the #59 scope items; follow-up issues #109–#112 filed for the section 5 gaps. No change to review_state or gate_state. |
 | 0.3.1+draft | 2026-08-05 | Claude (adversarial gate correction) | Factual corrections from adversarial gate review: section 4.1 boundary statement (createExecutorRegistry is exported and constructed in runtime-core.mjs with null services, inspect-only usage), test count 28→30 in section 4.3, and CI reference status in section 7 (merge commit b8604d7, run id 30863047065, success). No change to review_state or gate_state. |

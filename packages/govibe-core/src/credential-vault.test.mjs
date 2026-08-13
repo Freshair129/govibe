@@ -53,6 +53,63 @@ describe("credential vault", () => {
     });
   });
 
+  it("derives an opaque handoff inside the vault boundary and wipes raw bytes", async () => {
+    const vault = fixture();
+    vault.registerCredential(baseCredential);
+    const grant = vault.issueGrant({ ...baseGrant, adapter_id: "adapter-openai" });
+    let bytesSeenByDeriver;
+    let handoffSeenByConsumer;
+
+    await expect(vault.withDerivedCredential(
+      grant.grant_id,
+      { ...baseGrant, adapter_id: "adapter-openai" },
+      async (bytes, request) => {
+        bytesSeenByDeriver = bytes;
+        expect(new TextDecoder().decode(bytes)).toBe("super-secret-token");
+        expect(request).toMatchObject({
+          schema: "govibe-credential-derivation-request/v1",
+          provider_id: "openai",
+          adapter_id: "adapter-openai",
+          binding_id: "binding-1",
+        });
+        return { token: "derived-openai-token", token_type: "opaque" };
+      },
+      async (handoff) => {
+        handoffSeenByConsumer = handoff;
+        return handoff.token;
+      },
+    )).resolves.toBe("derived-openai-token");
+
+    expect(handoffSeenByConsumer).toMatchObject({
+      schema: "govibe-credential-handoff/v1",
+      mode: "derived_token",
+      provider_id: "openai",
+      adapter_id: "adapter-openai",
+      binding_id: "binding-1",
+      token: "derived-openai-token",
+    });
+    expect(bytesSeenByDeriver).toEqual(new Uint8Array(bytesSeenByDeriver.length));
+    await expect(vault.withDerivedCredential(
+      grant.grant_id,
+      { ...baseGrant, adapter_id: "adapter-openai" },
+      async () => ({ token: "unused" }),
+      async () => true,
+    )).rejects.toMatchObject({ code: "CREDENTIAL_GRANT_CONSUMED" });
+  });
+
+  it("rejects a deriver that returns the raw secret", async () => {
+    const vault = fixture();
+    vault.registerCredential(baseCredential);
+    const grant = vault.issueGrant({ ...baseGrant, adapter_id: "adapter-openai" });
+
+    await expect(vault.withDerivedCredential(
+      grant.grant_id,
+      { ...baseGrant, adapter_id: "adapter-openai" },
+      async (bytes) => new TextDecoder().decode(bytes),
+      async () => true,
+    )).rejects.toMatchObject({ code: "CREDENTIAL_DERIVATION_RAW_SECRET_REUSED" });
+  });
+
   it.each([
     ["entitlement_id", "ent-2"],
     ["principal_id", "user-2"],

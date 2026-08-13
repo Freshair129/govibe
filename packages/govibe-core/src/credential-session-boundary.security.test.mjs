@@ -369,7 +369,7 @@ describe('#59 negative matrix: the adapter receives only its bound scope', () =>
     for (const field of ['api_key', 'access_token', 'secret', 'credential']) expect(safeRequest, field).not.toHaveProperty(field);
     expect(safeRequest.executionBinding).not.toHaveProperty('credential_grant_id');
     expect(Object.keys(safeRequest.executionBinding).sort()).toEqual([
-      'adapter_id', 'binding_id', 'entitlement_id', 'principal_id', 'provider_id', 'provider_session_id', 'run_id',
+      'adapter_id', 'binding_id', 'credential_mode', 'entitlement_id', 'principal_id', 'provider_id', 'provider_session_id', 'run_id',
     ]);
     expect(context.executionBinding.entitlement_id).toBe('ent-1');
   });
