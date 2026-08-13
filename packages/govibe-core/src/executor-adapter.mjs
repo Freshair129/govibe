@@ -217,10 +217,10 @@ export function createExecutorRegistry(adapters = {}, {
     async execute(provider, request) {
       const adapter = adapters[provider];
       if (typeof adapter?.execute !== "function") throw new ProviderUnavailableError(provider);
-      assertExecutorDispatchAllowed(request);
       const binding = validateBinding(provider, request);
       const issuedBinding = assertBindingIssued(bindingService, binding, request);
       assertCompatibility(compatibilityRegistry, bindingService, issuedBinding, clock());
+      assertExecutorDispatchAllowed(request);
 
       let providerSession = null;
       if (binding.provider_session_id) {
