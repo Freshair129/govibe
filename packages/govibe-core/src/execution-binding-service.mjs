@@ -95,6 +95,7 @@ export function createExecutionBindingService({
   defaultTtlMs = 60_000,
 } = {}) {
   const bindings = new Map();
+  const compatibilityProofs = new Map();
 
   function createBinding(input) {
     const bindingRequestId = requireText(input?.binding_request_id, "binding_request_id");
@@ -123,7 +124,6 @@ export function createExecutionBindingService({
       if (target.compatibility.workspace_id !== workspaceId) fail("ENTITLEMENT_WORKSPACE_MISMATCH", "compatibility proof belongs to another workspace");
       if (target.compatibility.organization_id !== organizationId) fail("ENTITLEMENT_ORGANIZATION_MISMATCH", "compatibility proof belongs to another organization");
       if (target.compatibility.provider !== target.providerId) fail("PROVIDER_COMPATIBILITY_DENIED", "compatibility proof provider does not match target provider");
-      if (target.compatibility.entitlement_type == null) fail("PROVIDER_COMPATIBILITY_DENIED", "compatibility proof entitlement type is required");
       if (!policyDecisionRefs.includes(target.compatibility.policy_ref)) fail("POLICY_DECISION_REQUIRED", "compatibility policy reference must be preserved on the binding");
     }
 
@@ -159,7 +159,6 @@ export function createExecutionBindingService({
       affinity_key: input?.affinity_key ?? null,
       fallback_policy_id: input?.fallback_policy_id ?? null,
       quota_snapshot_ref: input?.quota_snapshot_ref ?? null,
-      compatibility: target.compatibility,
       policy_decision_refs: Object.freeze([...policyDecisionRefs]),
       state: "active",
       authorized_at: createdAt.toISOString(),
@@ -168,6 +167,7 @@ export function createExecutionBindingService({
     });
 
     bindings.set(binding.binding_id, binding);
+    if (target.compatibility) compatibilityProofs.set(binding.binding_id, target.compatibility);
     return binding;
   }
 
@@ -199,6 +199,11 @@ export function createExecutionBindingService({
     return binding;
   }
 
+  function compatibilityProof(bindingId) {
+    if (!bindings.has(bindingId)) fail("EXECUTION_BINDING_NOT_FOUND", "execution binding was not found", { binding_id: bindingId });
+    return compatibilityProofs.get(bindingId) ?? null;
+  }
+
   function revokeBinding(bindingId) {
     const binding = bindings.get(bindingId);
     if (!binding) fail("EXECUTION_BINDING_NOT_FOUND", "execution binding was not found", { binding_id: bindingId });
@@ -211,5 +216,5 @@ export function createExecutionBindingService({
     return Object.freeze([...bindings.values()].map((binding) => Object.freeze({ ...binding })));
   }
 
-  return Object.freeze({ createBinding, assertUsable, revokeBinding, inspect });
+  return Object.freeze({ createBinding, assertUsable, compatibilityProof, revokeBinding, inspect });
 }
