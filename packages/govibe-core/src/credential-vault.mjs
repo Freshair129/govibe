@@ -1,4 +1,5 @@
-import { randomUUID } from "node:crypto";
+import { createCipheriv, createDecipheriv, randomBytes as cryptoRandomBytes, randomUUID } from "node:crypto";
+import { Buffer } from "node:buffer";
 import { normalizeDerivedCredentialHandoff } from "./credential-handoff.mjs";
 
 const ACTIVE = "active";
@@ -45,12 +46,38 @@ function assertFuture(dateValue, clock, field) {
   return new Date(timestamp).toISOString();
 }
 
+function requireBackendKey(key) {
+  if (!(key instanceof Uint8Array) || key.length !== 32) {
+    fail("CREDENTIAL_BACKEND_KEY_INVALID", "encrypted credential backend requires a 32-byte key");
+  }
+  return new Uint8Array(key);
+}
+
+function requireRandomBytes(randomBytes) {
+  if (typeof randomBytes !== "function") fail("CREDENTIAL_BACKEND_KEY_INVALID", "randomBytes must be a function");
+  return randomBytes;
+}
+
+function makeRandomBytes(randomBytes, length) {
+  const bytes = randomBytes(length);
+  if (!(bytes instanceof Uint8Array) || bytes.length !== length) {
+    fail("CREDENTIAL_BACKEND_KEY_INVALID", "randomBytes must return the requested byte length");
+  }
+  return new Uint8Array(bytes);
+}
+
 export function createInMemorySecretBackend() {
   const entries = new Map();
 
   return Object.freeze({
     put(ref, bytes) {
       if (entries.has(ref)) fail("CREDENTIAL_REF_CONFLICT", "credential reference already exists", { credential_ref: ref });
+      entries.set(ref, new Uint8Array(bytes));
+    },
+    replace(ref, bytes) {
+      if (!entries.has(ref)) fail("CREDENTIAL_NOT_FOUND", "credential reference was not found", { credential_ref: ref });
+      const previous = entries.get(ref);
+      wipe(previous);
       entries.set(ref, new Uint8Array(bytes));
     },
     read(ref) {
@@ -65,6 +92,90 @@ export function createInMemorySecretBackend() {
     },
     has(ref) {
       return entries.has(ref);
+    },
+  });
+}
+
+export function createEncryptedSecretBackend({ key, randomBytes = cryptoRandomBytes } = {}) {
+  const encryptionKey = requireBackendKey(key);
+  const random = requireRandomBytes(randomBytes);
+  const entries = new Map();
+
+  function encrypt(bytes) {
+    const iv = makeRandomBytes(random, 12);
+    try {
+      const cipher = createCipheriv("aes-256-gcm", encryptionKey, iv);
+      const ciphertext = Buffer.concat([cipher.update(bytes), cipher.final()]);
+      return {
+        version: 1,
+        algorithm: "aes-256-gcm",
+        iv: new Uint8Array(iv),
+        ciphertext: new Uint8Array(ciphertext),
+        auth_tag: new Uint8Array(cipher.getAuthTag()),
+      };
+    } finally {
+      wipe(iv);
+    }
+  }
+
+  function decrypt(entry, ref) {
+    try {
+      const decipher = createDecipheriv("aes-256-gcm", encryptionKey, entry.iv);
+      decipher.setAuthTag(entry.auth_tag);
+      const plaintext = Buffer.concat([decipher.update(entry.ciphertext), decipher.final()]);
+      const result = new Uint8Array(plaintext);
+      plaintext.fill(0);
+      return result;
+    } catch {
+      fail("CREDENTIAL_DECRYPTION_FAILED", "credential could not be decrypted", { credential_ref: ref });
+    }
+  }
+
+  function wipeEntry(entry) {
+    if (!entry) return;
+    wipe(entry.iv);
+    wipe(entry.ciphertext);
+    wipe(entry.auth_tag);
+  }
+
+  function put(ref, bytes) {
+    if (entries.has(ref)) fail("CREDENTIAL_REF_CONFLICT", "credential reference already exists", { credential_ref: ref });
+    entries.set(ref, encrypt(bytes));
+  }
+
+  function replace(ref, bytes) {
+    if (!entries.has(ref)) fail("CREDENTIAL_NOT_FOUND", "credential reference was not found", { credential_ref: ref });
+    const next = encrypt(bytes);
+    const previous = entries.get(ref);
+    wipeEntry(previous);
+    entries.set(ref, next);
+  }
+
+  return Object.freeze({
+    put,
+    replace,
+    read(ref) {
+      const entry = entries.get(ref);
+      if (!entry) fail("CREDENTIAL_NOT_FOUND", "credential reference was not found", { credential_ref: ref });
+      return decrypt(entry, ref);
+    },
+    delete(ref) {
+      const entry = entries.get(ref);
+      wipeEntry(entry);
+      entries.delete(ref);
+    },
+    has(ref) {
+      return entries.has(ref);
+    },
+    inspect() {
+      return Object.freeze([...entries.entries()].map(([credential_ref, entry]) => Object.freeze({
+        credential_ref,
+        version: entry.version,
+        algorithm: entry.algorithm,
+        iv_bytes: entry.iv.length,
+        ciphertext_bytes: entry.ciphertext.length,
+        auth_tag_bytes: entry.auth_tag.length,
+      })));
     },
   });
 }
@@ -97,6 +208,7 @@ export function createCredentialVault({
       entitlement_id: entitlementId,
       owner_id: ownerId,
       provider_id: providerId,
+      generation: 1,
       state: ACTIVE,
       valid_until: validUntil,
       created_at: nowIso(clock),
@@ -111,7 +223,7 @@ export function createCredentialVault({
     if (!current) fail("CREDENTIAL_NOT_FOUND", "credential reference was not found", { credential_ref: credentialRef });
     if (current.state === REVOKED) return current;
 
-    const revoked = Object.freeze({ ...current, state: REVOKED, revoked_at: nowIso(clock) });
+    const revoked = Object.freeze({ ...current, generation: current.generation + 1, state: REVOKED, revoked_at: nowIso(clock) });
     credentials.set(credentialRef, revoked);
     for (const [grantId, grant] of grants) {
       if (grant.credential_ref === credentialRef && grant.state === ACTIVE) {
@@ -120,6 +232,39 @@ export function createCredentialVault({
     }
     backend.delete(credentialRef);
     return revoked;
+  }
+
+  function rotateCredential(input) {
+    const credentialRef = requireText(input?.credential_ref, "credential_ref");
+    const current = credentials.get(credentialRef);
+    if (!current) fail("CREDENTIAL_NOT_FOUND", "credential reference was not found", { credential_ref: credentialRef });
+    if (current.state !== ACTIVE) fail("CREDENTIAL_REVOKED", "credential is not active", { credential_ref: credentialRef });
+    if (!backend.has(credentialRef)) fail("CREDENTIAL_REVOKED", "credential is no longer available", { credential_ref: credentialRef });
+    if (current.valid_until && Date.parse(current.valid_until) <= clock().getTime()) {
+      fail("CREDENTIAL_EXPIRED", "credential has expired", { credential_ref: credentialRef });
+    }
+    if (typeof backend.replace !== "function") {
+      fail("CREDENTIAL_BACKEND_ROTATION_UNSUPPORTED", "credential backend does not support atomic rotation");
+    }
+    const validUntil = input?.valid_until === undefined
+      ? current.valid_until
+      : input.valid_until
+        ? assertFuture(input.valid_until, clock, "valid_until")
+        : null;
+    const secretBytes = toSecretBytes(input?.secret);
+    try {
+      backend.replace(credentialRef, secretBytes);
+    } finally {
+      wipe(secretBytes);
+    }
+
+    const rotated = Object.freeze({
+      ...current,
+      generation: current.generation + 1,
+      valid_until: validUntil,
+    });
+    credentials.set(credentialRef, rotated);
+    return rotated;
   }
 
   function issueGrant(input) {
@@ -154,6 +299,7 @@ export function createCredentialVault({
       binding_id: bindingId,
       provider_id: providerId,
       adapter_id: input?.adapter_id ?? null,
+      credential_generation: credential.generation,
       state: ACTIVE,
       one_time: input?.one_time !== false,
       issued_at: issuedAt.toISOString(),
@@ -185,6 +331,9 @@ export function createCredentialVault({
     }
     if (credential.valid_until && Date.parse(credential.valid_until) <= clock().getTime()) {
       fail("CREDENTIAL_EXPIRED", "credential has expired", { credential_ref: grant.credential_ref });
+    }
+    if (grant.credential_generation !== credential.generation) {
+      fail("CREDENTIAL_GENERATION_MISMATCH", "credential grant is from an older generation", { credential_ref: grant.credential_ref });
     }
     return { grant, credential };
   }
@@ -267,12 +416,12 @@ export function createCredentialVault({
 
   function inspect() {
     return Object.freeze({
-      credentials: [...credentials.values()].map(({ credential_ref, entitlement_id, owner_id, provider_id, state, valid_until }) =>
-        Object.freeze({ credential_ref, entitlement_id, owner_id, provider_id, state, valid_until }),
+      credentials: [...credentials.values()].map(({ credential_ref, entitlement_id, owner_id, provider_id, generation, state, valid_until }) =>
+        Object.freeze({ credential_ref, entitlement_id, owner_id, provider_id, generation, state, valid_until }),
       ),
       grants: [...grants.values()].map(({ credential_ref, ...safeGrant }) => Object.freeze(safeGrant)),
     });
   }
 
-  return Object.freeze({ registerCredential, revokeCredential, issueGrant, withCredential, withDerivedCredential, revokeGrant, inspect });
+  return Object.freeze({ registerCredential, rotateCredential, revokeCredential, issueGrant, withCredential, withDerivedCredential, revokeGrant, inspect });
 }

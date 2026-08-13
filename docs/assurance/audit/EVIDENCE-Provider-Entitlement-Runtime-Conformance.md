@@ -2,7 +2,7 @@
 title: "Evidence: Provider Entitlement Runtime Conformance"
 doc_id: "EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE"
 status: "draft"
-version: "0.5.0+draft"
+version: "0.6.0+draft"
 updated: "2026-08-14"
 owner: "ATHER"
 source_of_truth: false
@@ -174,6 +174,13 @@ the provider was **never invoked**, not merely that a promise rejected:
   raw bytes only to the adapter-owned deriver, gives `execute` an opaque
   `govibe-credential-handoff/v1`, wipes the vault bytes, and fails closed on
   missing deriver, mode substitution, invalid handoff, or raw-secret reuse.
+- the provider-neutral encrypted vault backend stores AES-256-GCM ciphertext
+  with a fresh nonce and authentication tag, exposes metadata-only inspection,
+  and returns fresh plaintext bytes only for the protected vault callback;
+- credential records and grants carry a generation; rotation replaces the
+  protected record and stale grants fail closed before provider invocation;
+  revocation increments the generation, invalidates grants, and purges the
+  protected record.
 
 The compatibility registry is now implemented and checked before dispatch;
 missing, expired, product/plan/surface-mismatched, or adapter-mismatched
@@ -182,18 +189,21 @@ negative paths, not production provider evidence.
 
 Still open and **not** covered:
 
-- **real-provider/backend handoff is not implemented.** No external provider or
-  durable credential backend was contacted, so provider-specific token exchange,
-  encrypted-at-rest behavior, rotation, and provider-side revocation remain
-  unevidenced.
+- **real-provider/durable backend handoff is not implemented.** No external
+  provider or durable credential backend was contacted, so provider-specific
+  token exchange, durable key management, restart persistence, backup deletion,
+  and provider-side revocation remain unevidenced. The encrypted backend proof
+  is process-local repository evidence only.
 - **full operational threat-model evidence remains open.** The repository
   fixture does not establish protected child-process environments, durable
   audit/retention behavior, or human security/release review.
 
 ### 4.4 No durable storage
 
-The usage ledger holds records in process memory. Retention configuration,
-durable persistence, and behavior across process restart are unevidenced.
+The usage ledger and encrypted credential backend hold records in process
+memory. The encrypted backend protects the record while held by that process,
+but retention configuration, durable persistence, key recovery, backup deletion,
+and behavior across process restart are unevidenced.
 
 ### 4.5 No performance, concurrency or load evidence
 
@@ -213,6 +223,7 @@ security/release review evidence is still absent.
 | The scheduler decision record was not distinguished from the provider contract | SDD section 9.1 explicitly governs `govibe-scheduler-decision/v1` as internal GoVibe evidence, not API-008/provider surface. | #109 |
 | Dispatch selected an adapter by `provider_id` | The executor resolves the exact binding `adapter_id`, verifies provider/compatibility alignment, and the two-adapter security test proves the selected adapter is the one bound. | #111 |
 | Credential handoff had no derived-token boundary | `credential_mode` and `govibe-credential-handoff/v1` are now explicit; targeted vault/executor/security fixtures prove raw-secret isolation and fail-closed derivation. Real-provider and durable-backend evidence remain absent. | #59 |
+| Credential lifecycle had no encrypted-at-rest or generation fixture | The provider-neutral AES-256-GCM backend, metadata-only inspection, generation-capturing grants, rotation stale-grant rejection, and revocation purge are covered by targeted vault/security tests. Durable key/storage and provider-side revocation remain absent. | #59 |
 
 These dispositions do not close issue #64: the gate still requires evidence beyond
 repository fixtures and local CI.
@@ -323,10 +334,10 @@ Recorded repository verification on this branch (2026-08-14):
 - `npm run baseline:check`: PASS, including environment validation,
   `docs:validate`, `roadmap:validate`, TypeScript lint, full Vitest/security
   suites, and build;
-- full Vitest: 77 test files, 658 tests passed, 1 skipped;
+- full Vitest: 77 test files, 663 tests passed, 1 skipped;
 - security suite: 65 tests passed;
 - `npm run mcp:smoke`: PASS;
-- targeted derived-handoff suites: 6 files, 95 tests passed;
+- targeted credential-handoff/lifecycle suites: 6 files, 100 tests passed;
 - `git diff --check`: PASS.
 
 The Playwright landing-page matrix did not complete within 300 seconds. A
@@ -334,7 +345,7 @@ single-worker Chromium run completed 28 tests and exposed one existing landing
 smooth-scroll viewport timeout in `e2e/landing-page.spec.ts`; this UI failure is
 outside issue #59 and is not represented as credential-handoff evidence.
 
-This branch has merged to `main`: commit `b8604d7`
+Historical main evidence: commit `b8604d7`
 (full sha `b8604d701fc58d62a4de0ab72b35099bfa688c12`) is the merge commit for
 PR #108 ("fix(security): verify binding authenticity at dispatch (#59)",
 branch `fix/issue-59-binding-authenticity`). CI run for that commit: workflow
@@ -342,10 +353,15 @@ branch `fix/issue-59-binding-authenticity`). CI run for that commit: workflow
 <https://github.com/Freshair129/govibe/actions/runs/30863047065> (run id
 `30863047065`).
 
+The current encrypted-backend and generation/rotation slice is on Draft PR
+#135 and is not merged to `main`; its post-push CI result must be recorded
+separately before any issue-closure decision.
+
 ## 8. Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.6.0+draft | 2026-08-14 | ATHER | Recorded encrypted-at-rest fixture and credential generation/rotation repository evidence for #59; durable/provider storage and human review gates remain open. |
 | 0.5.0+draft | 2026-08-14 | ATHER | Recorded explicit derived-token handoff and compatibility-registry repository evidence for #59; real-provider, durable-storage, and human review gates remain open. |
 | 0.4.0+draft | 2026-08-14 | ATHER | Dispositioned the #109, #110 and #111 contract gaps and recorded bounded #76 MSP health evidence; gate remains not passed for external-provider, durable-ledger, and human review requirements. |
 | 0.3.2+draft | 2026-08-05 | Claude (final-gate session) | Recorded the owner's section 6 ruling: #58, #60, #61, #62 closed on their own acceptance criteria with scoped comments; #59/#63 stay open pending #112 and the #59 scope items; follow-up issues #109–#112 filed for the section 5 gaps. No change to review_state or gate_state. |

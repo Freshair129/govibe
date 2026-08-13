@@ -2,7 +2,7 @@
 doc_id: "API-008-PROVIDER-ENTITLEMENT-ROUTING-USAGE-CONTRACT"
 title: "API-008: Provider Entitlement, Routing and Usage Contract"
 status: "draft"
-version: "0.5.0+draft"
+version: "0.6.0+draft"
 updated: "2026-08-14"
 owner: "ARCHON / ATHER"
 source_of_truth: true
@@ -303,6 +303,28 @@ token: string
 The handoff is a protected in-process adapter channel. It must not enter the
 safe request, MSP context, candidate output, usage ledger, logs, or errors.
 
+### 8.2 Credential storage and lifecycle
+
+Credential backends are host-owned implementation details behind the opaque
+`credential_ref`. A backend used for provider credentials must encrypt secret
+bytes before storing them and must return a fresh, caller-wipeable byte buffer
+only inside the protected vault callback. The repository's provider-neutral
+encrypted fixture uses AES-256-GCM with a host-supplied 32-byte key, a fresh
+nonce per write, and an authentication tag. Its inspection surface exposes
+metadata only.
+
+`createInMemorySecretBackend` remains a compatibility/test fixture and is not
+production-at-rest evidence. The encrypted fixture is process-local; durable
+key management, restart persistence, backup deletion, and provider-side
+revocation remain outside this contract slice.
+
+Every credential starts at generation `1`. A run-scoped grant captures the
+credential generation at issuance. Rotation replaces the protected record and
+increments the generation; a grant from an older generation fails closed before
+adapter invocation. Revocation invalidates active grants, increments the
+generation, and purges the protected record. A new grant is required after
+rotation or revocation.
+
 ## 9. Provider run result
 
 Schema identifier: `govibe-provider-run-result/v1`
@@ -453,6 +475,9 @@ Minimum normalized failure codes:
 - `CREDENTIAL_DERIVER_REQUIRED`
 - `CREDENTIAL_HANDOFF_INVALID`
 - `CREDENTIAL_DERIVATION_RAW_SECRET_REUSED`
+- `CREDENTIAL_GENERATION_MISMATCH`
+- `CREDENTIAL_BACKEND_ROTATION_UNSUPPORTED`
+- `CREDENTIAL_BACKEND_KEY_INVALID`
 
 ## 14. Prohibited behavior
 
@@ -481,6 +506,7 @@ Where execution-resource behavior conflicts with context authority, API-007 and 
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.6.0+draft | 2026-08-14 | ATHER | Added the provider-neutral encrypted credential-backend and generation/rotation boundary; durable key management and live provider revocation remain unevidenced. |
 | 0.5.0+draft | 2026-08-14 | ATHER | Added explicit credential handoff modes and the provider-neutral `govibe-credential-handoff/v1` boundary; repository fixtures prove derived-token fail-closed behavior without claiming a real provider. |
 | 0.4.0+draft | 2026-08-14 | ATHER | Added binding adapter selection to the capability-plan contract and added explicit `not_applicable_fields` classification to usage events; both remain additive v1 contract fields. |
 | 0.3.0+draft | 2026-08-03 | ATHER | Removed the schema-absent principal-only compatibility path under authorized WP-11; all execution bindings now require complete `govibe-execution-binding/v1` before adapter dispatch. API lifecycle remains draft. |

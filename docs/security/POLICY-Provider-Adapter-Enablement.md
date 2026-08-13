@@ -1,7 +1,7 @@
 ---
 title: "Provider Adapter Enablement Policy"
 doc_id: "POLICY-PROVIDER-ADAPTER-ENABLEMENT"
-version: "0.2.0+draft"
+version: "0.3.0+draft"
 status: draft
 updated: "2026-08-14"
 owner: "Boss / ATHER"
@@ -127,6 +127,21 @@ handoffs and exact raw-secret reuse fail closed before adapter invocation. The
 current implementation and tests are provider-neutral fixtures; they do not
 prove a live provider handoff.
 
+### 5.2 Credential backend and rotation boundary
+
+Provider credential bytes must be held by an encrypted vault backend, never by
+the compatibility registry, binding, context packet, or adapter capability
+metadata. The repository fixture uses AES-256-GCM with a host-supplied key and
+exposes only backend metadata through inspection. Credential grants capture the
+credential generation; rotation increments that generation and stale grants
+fail closed, while revocation purges the protected record and invalidates active
+grants.
+
+The encrypted fixture is process-local and does not provide durable key
+management, restart persistence, backup deletion, or provider-side revocation.
+Those are required external/operational evidence before a provider record may
+move from `pending` to `approved`.
+
 ## 6. Candidate boundary
 
 Adapter output is a **candidate**, never canonical knowledge:
@@ -193,5 +208,6 @@ and the #64 evidence package.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0+draft | 2026-08-14 | ATHER | Added the encrypted backend and credential-generation/rotation repository boundary; provider records remain pending and operational/provider evidence remains open. |
 | 0.2.0+draft | 2026-08-14 | ATHER | Added explicit `none`/`raw_secret`/`derived_token` handoff rules and mapped the repository fixture evidence; provider records remain pending and no live-provider claim is made. |
 | 0.1.0+draft | 2026-08-04 | ATHER | Initial adapter enablement policy and provider records for issue #63; all provider records remain pending and no runtime conformance is claimed. |

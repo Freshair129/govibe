@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { createCredentialVault, CredentialVaultError } from "./credential-vault.mjs";
+import { createCredentialVault, createEncryptedSecretBackend, CredentialVaultError } from "./credential-vault.mjs";
 
-function fixture(clock = () => new Date("2026-08-03T00:00:00.000Z")) {
+function fixture(clock = () => new Date("2026-08-03T00:00:00.000Z"), options = {}) {
   let id = 0;
-  return createCredentialVault({ clock, idFactory: () => `id-${++id}`, defaultGrantTtlMs: 1_000 });
+  return createCredentialVault({ ...options, clock, idFactory: () => `id-${++id}`, defaultGrantTtlMs: 1_000 });
 }
 
 const baseCredential = {
@@ -35,6 +35,7 @@ describe("credential vault", () => {
       entitlement_id: "ent-1",
       owner_id: "user-1",
       provider_id: "openai",
+      generation: 1,
       state: "active",
       valid_until: null,
     });
@@ -108,6 +109,58 @@ describe("credential vault", () => {
       async (bytes) => new TextDecoder().decode(bytes),
       async () => true,
     )).rejects.toMatchObject({ code: "CREDENTIAL_DERIVATION_RAW_SECRET_REUSED" });
+  });
+
+  it("stores encrypted backend metadata without exposing plaintext", () => {
+    const backend = createEncryptedSecretBackend({
+      key: new Uint8Array(32).fill(7),
+      randomBytes: (length) => new Uint8Array(length).fill(9),
+    });
+    const secretBytes = new TextEncoder().encode("encrypted-fixture-secret");
+    backend.put("cred-encrypted", secretBytes);
+    secretBytes.fill(0);
+
+    expect(JSON.stringify(backend.inspect())).not.toContain("encrypted-fixture-secret");
+    expect(backend.inspect()[0]).toMatchObject({
+      credential_ref: "cred-encrypted",
+      version: 1,
+      algorithm: "aes-256-gcm",
+      iv_bytes: 12,
+      ciphertext_bytes: 24,
+      auth_tag_bytes: 16,
+    });
+    expect(new TextDecoder().decode(backend.read("cred-encrypted"))).toBe("encrypted-fixture-secret");
+
+    backend.delete("cred-encrypted");
+    expect(backend.has("cred-encrypted")).toBe(false);
+    expect(backend.inspect()).toEqual([]);
+  });
+
+  it("rejects an encrypted backend without a 32-byte key", () => {
+    expect(() => createEncryptedSecretBackend({ key: new Uint8Array(31) })).toThrowError(
+      expect.objectContaining({ code: "CREDENTIAL_BACKEND_KEY_INVALID" }),
+    );
+  });
+
+  it("rotates the encrypted record and rejects stale grants by generation", async () => {
+    const backend = createEncryptedSecretBackend({ key: new Uint8Array(32).fill(3) });
+    const vault = fixture(() => new Date("2026-08-03T00:00:00.000Z"), { backend });
+    vault.registerCredential(baseCredential);
+    const oldGrant = vault.issueGrant(baseGrant);
+
+    expect(vault.inspect().credentials[0].generation).toBe(1);
+    vault.rotateCredential({ credential_ref: baseCredential.credential_ref, secret: "rotated-secret" });
+    expect(vault.inspect().credentials[0].generation).toBe(2);
+    expect(JSON.stringify(backend.inspect())).not.toContain("rotated-secret");
+
+    await expect(vault.withCredential(oldGrant.grant_id, baseGrant, async () => true)).rejects.toMatchObject({
+      code: "CREDENTIAL_GENERATION_MISMATCH",
+    });
+
+    const newGrant = vault.issueGrant(baseGrant);
+    await expect(vault.withCredential(newGrant.grant_id, baseGrant, async (bytes) => new TextDecoder().decode(bytes))).resolves.toBe("rotated-secret");
+    vault.revokeCredential(baseCredential.credential_ref);
+    expect(backend.has(baseCredential.credential_ref)).toBe(false);
   });
 
   it.each([
