@@ -1,8 +1,9 @@
 import { govibeRuntime } from "./runtime-core.mjs";
 import { toolCatalog } from "./registry.mjs";
 import { validateContextAuthorityCorrelation } from "../../packages/govibe-core/src/authority-enforcement.mjs";
-
-const CONTEXT_PROFILES = ["T-ctx", "V-ctx", "W-ctx", "M-ctx"];
+// Imported, not re-declared. This list is a governed enum owned by context-lineage.mjs; a second
+// hand-written copy can drift from it silently (RCA-2026-08-12 CA-06).
+import { CONTEXT_PROFILES } from "../../packages/govibe-core/src/context-lineage.mjs";
 
 function asTextContent(text) {
   return [{ type: "text", text }];
