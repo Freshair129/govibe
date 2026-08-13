@@ -151,7 +151,64 @@ function assertBindingIssued(bindingService, binding, request) {
   }
 }
 
-export function createExecutorRegistry(adapters = {}, { credentialVault = null, sessionRegistry = null, bindingService = null } = {}) {
+function assertCompatibility(compatibilityRegistry, issuedBinding, now) {
+  if (!compatibilityRegistry || typeof compatibilityRegistry.explainEligibility !== "function") {
+    fail("COMPATIBILITY_REGISTRY_REQUIRED", "provider compatibility registry is required before dispatch");
+  }
+  const proof = issuedBinding?.compatibility;
+  if (!proof || proof.authorized !== true) {
+    fail("PROVIDER_COMPATIBILITY_DENIED", "execution binding has no authorized compatibility proof", {
+      reason_code: "COMPATIBILITY_RECORD_MISSING",
+    });
+  }
+
+  const decision = compatibilityRegistry.explainEligibility(proof.record_id, {
+    provider: issuedBinding.provider_id,
+    product: proof.product,
+    plan: proof.plan,
+    execution_surface: proof.execution_surface,
+    entitlement_type: proof.entitlement_type,
+    owner_id: proof.owner_id,
+    requested_scope: proof.requested_scope,
+    principal_id: issuedBinding.principal_id,
+    organization_id: issuedBinding.organization_id,
+    workspace_id: issuedBinding.workspace_id,
+    adapter_id: proof.adapter_id,
+    automation_requested: proof.automation_requested,
+    session_reuse_requested: proof.session_reuse_requested,
+    concurrent_use_requested: proof.concurrent_use_requested,
+    credential_delegation_requested: proof.credential_delegation_requested,
+    evidence_valid: proof.evidence_valid,
+  }, now);
+
+  if (!decision.eligible) {
+    fail("PROVIDER_COMPATIBILITY_DENIED", "provider compatibility was denied before adapter invocation", {
+      reason_code: decision.reason_code,
+      record_id: decision.record_id,
+    });
+  }
+  if (decision.record_version !== proof.record_version || decision.policy_ref !== proof.policy_ref) {
+    fail("PROVIDER_COMPATIBILITY_DENIED", "compatibility proof is stale relative to the current registry", {
+      reason_code: "EVIDENCE_STALE_OR_INVALID",
+      record_id: proof.record_id,
+    });
+  }
+  if (!issuedBinding.policy_decision_refs?.includes(decision.policy_ref)) {
+    fail("PROVIDER_COMPATIBILITY_DENIED", "binding does not preserve the compatibility policy decision", {
+      reason_code: "EVIDENCE_STALE_OR_INVALID",
+      record_id: proof.record_id,
+    });
+  }
+  return decision;
+}
+
+export function createExecutorRegistry(adapters = {}, {
+  credentialVault = null,
+  sessionRegistry = null,
+  bindingService = null,
+  compatibilityRegistry = null,
+  clock = () => new Date(),
+} = {}) {
   return {
     inspect() {
       return PROVIDERS.map((id) => ({
@@ -168,7 +225,11 @@ export function createExecutorRegistry(adapters = {}, { credentialVault = null, 
       // Structural validation proves the binding is self-consistent. It does not
       // prove the binding service ever issued it, nor that it is still live, so
       // authenticity, expiry and revocation are checked against the issuer.
-      assertBindingIssued(bindingService, binding, request);
+      const issuedBinding = assertBindingIssued(bindingService, binding, request);
+      // Compatibility is authorization, not routing preference. Re-evaluate the
+      // issuer-held proof immediately before any provider session, credential grant,
+      // or adapter invocation so revocation and evidence expiry fail closed.
+      assertCompatibility(compatibilityRegistry, issuedBinding, clock());
 
       let providerSession = null;
       if (binding.provider_session_id) {
