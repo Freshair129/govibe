@@ -77,9 +77,7 @@ function validateBinding(provider, request) {
   }
   const requestActorId = requireText(request?.actor_id, "request.actor_id");
   const requestRunId = requireText(request?.run_id, "request.run_id");
-  if (requestRunId !== normalized.run_id) {
-    scopeMismatch("run_id");
-  }
+  if (requestRunId !== normalized.run_id) scopeMismatch("run_id");
   if (requestActorId !== normalized.principal_id) {
     fail("EXECUTION_BINDING_PRINCIPAL_MISMATCH", "binding principal does not match request actor");
   }
@@ -115,9 +113,6 @@ function safeRequest(request) {
   }) });
 }
 
-// API-008 section 13 names BINDING_EXPIRED as a normalized failure code. The
-// binding service reports the more specific EXECUTION_BINDING_EXPIRED, so the
-// dispatch boundary emits the contract code and keeps the specific one in details.
 function assertBindingIssued(bindingService, binding, request) {
   if (!bindingService || typeof bindingService.assertUsable !== "function") {
     fail("EXECUTION_BINDING_SERVICE_REQUIRED", "a binding service is required to verify binding authenticity");
@@ -143,15 +138,74 @@ function assertBindingIssued(bindingService, binding, request) {
       fail("BINDING_EXPIRED", "execution binding expired", { binding_id: binding.binding_id, source_code: error.code });
     }
     if (error?.code === "EXECUTION_BINDING_NOT_FOUND") {
-      fail("EXECUTION_BINDING_NOT_ISSUED", "execution binding was not issued by the binding service", {
-        binding_id: binding.binding_id,
-      });
+      fail("EXECUTION_BINDING_NOT_ISSUED", "execution binding was not issued by the binding service", { binding_id: binding.binding_id });
     }
     throw error;
   }
 }
 
-export function createExecutorRegistry(adapters = {}, { credentialVault = null, sessionRegistry = null, bindingService = null } = {}) {
+function assertCompatibility(compatibilityRegistry, bindingService, issuedBinding, now) {
+  if (!compatibilityRegistry || typeof compatibilityRegistry.explainEligibility !== "function") {
+    fail("COMPATIBILITY_REGISTRY_REQUIRED", "provider compatibility registry is required before dispatch");
+  }
+  if (typeof bindingService?.compatibilityProof !== "function") {
+    fail("COMPATIBILITY_REGISTRY_REQUIRED", "binding service cannot resolve compatibility proof");
+  }
+
+  const proof = bindingService.compatibilityProof(issuedBinding.binding_id);
+  if (!proof || proof.authorized !== true) {
+    fail("PROVIDER_COMPATIBILITY_DENIED", "execution binding has no authorized compatibility proof", {
+      reason_code: "COMPATIBILITY_RECORD_MISSING",
+    });
+  }
+
+  const decision = compatibilityRegistry.explainEligibility(proof.record_id, {
+    provider: issuedBinding.provider_id,
+    product: proof.product,
+    plan: proof.plan,
+    execution_surface: proof.execution_surface,
+    entitlement_type: proof.entitlement_type,
+    owner_id: proof.owner_id,
+    requested_scope: proof.requested_scope,
+    principal_id: issuedBinding.principal_id,
+    organization_id: issuedBinding.organization_id,
+    workspace_id: issuedBinding.workspace_id,
+    adapter_id: proof.adapter_id,
+    automation_requested: proof.automation_requested,
+    session_reuse_requested: proof.session_reuse_requested,
+    concurrent_use_requested: proof.concurrent_use_requested,
+    credential_delegation_requested: proof.credential_delegation_requested,
+    evidence_valid: proof.evidence_valid,
+  }, now);
+
+  if (!decision.eligible) {
+    fail("PROVIDER_COMPATIBILITY_DENIED", "provider compatibility was denied before adapter invocation", {
+      reason_code: decision.reason_code,
+      record_id: decision.record_id,
+    });
+  }
+  if (decision.record_version !== proof.record_version || decision.policy_ref !== proof.policy_ref) {
+    fail("PROVIDER_COMPATIBILITY_DENIED", "compatibility proof is stale relative to the current registry", {
+      reason_code: "EVIDENCE_STALE_OR_INVALID",
+      record_id: proof.record_id,
+    });
+  }
+  if (!issuedBinding.policy_decision_refs?.includes(decision.policy_ref)) {
+    fail("PROVIDER_COMPATIBILITY_DENIED", "binding does not preserve the compatibility policy decision", {
+      reason_code: "EVIDENCE_STALE_OR_INVALID",
+      record_id: proof.record_id,
+    });
+  }
+  return decision;
+}
+
+export function createExecutorRegistry(adapters = {}, {
+  credentialVault = null,
+  sessionRegistry = null,
+  bindingService = null,
+  compatibilityRegistry = null,
+  clock = () => new Date(),
+} = {}) {
   return {
     inspect() {
       return PROVIDERS.map((id) => ({
@@ -163,12 +217,10 @@ export function createExecutorRegistry(adapters = {}, { credentialVault = null, 
     async execute(provider, request) {
       const adapter = adapters[provider];
       if (typeof adapter?.execute !== "function") throw new ProviderUnavailableError(provider);
-      assertExecutorDispatchAllowed(request);
       const binding = validateBinding(provider, request);
-      // Structural validation proves the binding is self-consistent. It does not
-      // prove the binding service ever issued it, nor that it is still live, so
-      // authenticity, expiry and revocation are checked against the issuer.
-      assertBindingIssued(bindingService, binding, request);
+      const issuedBinding = assertBindingIssued(bindingService, binding, request);
+      assertCompatibility(compatibilityRegistry, bindingService, issuedBinding, clock());
+      assertExecutorDispatchAllowed(request);
 
       let providerSession = null;
       if (binding.provider_session_id) {

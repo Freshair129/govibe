@@ -35,6 +35,38 @@ function requireContext(context) {
   return Object.freeze(normalized);
 }
 
+function normalizeCompatibilityProof(input) {
+  if (input == null) return null;
+  if (!input || typeof input !== "object" || Array.isArray(input)) {
+    fail("INVALID_EXECUTION_BINDING_REQUEST", "eligible_target.compatibility must be an object", { field: "eligible_target.compatibility" });
+  }
+  if (input.authorized !== true) {
+    fail("PROVIDER_COMPATIBILITY_DENIED", "eligible target does not carry an authorized compatibility decision");
+  }
+  return Object.freeze({
+    authorized: true,
+    record_id: requireText(input.record_id, "eligible_target.compatibility.record_id"),
+    record_version: requireText(input.record_version, "eligible_target.compatibility.record_version"),
+    provider: requireText(input.provider, "eligible_target.compatibility.provider"),
+    product: requireText(input.product, "eligible_target.compatibility.product"),
+    plan: requireText(input.plan, "eligible_target.compatibility.plan"),
+    execution_surface: requireText(input.execution_surface, "eligible_target.compatibility.execution_surface"),
+    entitlement_type: requireText(input.entitlement_type, "eligible_target.compatibility.entitlement_type"),
+    owner_id: requireText(input.owner_id, "eligible_target.compatibility.owner_id"),
+    requested_scope: requireText(input.requested_scope, "eligible_target.compatibility.requested_scope"),
+    principal_id: requireText(input.principal_id, "eligible_target.compatibility.principal_id"),
+    organization_id: requireText(input.organization_id, "eligible_target.compatibility.organization_id"),
+    workspace_id: requireText(input.workspace_id, "eligible_target.compatibility.workspace_id"),
+    adapter_id: requireText(input.adapter_id, "eligible_target.compatibility.adapter_id"),
+    automation_requested: input.automation_requested === true,
+    session_reuse_requested: input.session_reuse_requested === true,
+    concurrent_use_requested: input.concurrent_use_requested === true,
+    credential_delegation_requested: input.credential_delegation_requested === true,
+    evidence_valid: input.evidence_valid !== false,
+    policy_ref: requireText(input.policy_ref, "eligible_target.compatibility.policy_ref"),
+  });
+}
+
 function assertEligibleTarget(target, request) {
   if (!target || typeof target !== "object") fail("ELIGIBLE_TARGET_REQUIRED", "eligible target is required");
   const providerId = requireText(target.provider_id, "eligible_target.provider_id");
@@ -48,7 +80,13 @@ function assertEligibleTarget(target, request) {
   if (target.project_id && target.project_id !== request.project_id) fail("ENTITLEMENT_PROJECT_MISMATCH", "eligible target belongs to another project");
   if (target.state && target.state !== "active") fail("ENTITLEMENT_NOT_ACTIVE", "eligible target is not active", { state: target.state });
 
-  return Object.freeze({ providerId, entitlementId, executorClass, modelId });
+  return Object.freeze({
+    providerId,
+    entitlementId,
+    executorClass,
+    modelId,
+    compatibility: normalizeCompatibilityProof(target.compatibility),
+  });
 }
 
 export function createExecutionBindingService({
@@ -57,6 +95,7 @@ export function createExecutionBindingService({
   defaultTtlMs = 60_000,
 } = {}) {
   const bindings = new Map();
+  const compatibilityProofs = new Map();
 
   function createBinding(input) {
     const bindingRequestId = requireText(input?.binding_request_id, "binding_request_id");
@@ -78,6 +117,14 @@ export function createExecutionBindingService({
     const policyDecisionRefs = input?.policy_decision_refs;
     if (!Array.isArray(policyDecisionRefs) || policyDecisionRefs.length === 0 || policyDecisionRefs.some((ref) => typeof ref !== "string" || ref.trim() === "")) {
       fail("POLICY_DECISION_REQUIRED", "at least one policy decision reference is required");
+    }
+
+    if (target.compatibility) {
+      if (target.compatibility.principal_id !== actorId) fail("ENTITLEMENT_PRINCIPAL_MISMATCH", "compatibility proof belongs to another principal");
+      if (target.compatibility.workspace_id !== workspaceId) fail("ENTITLEMENT_WORKSPACE_MISMATCH", "compatibility proof belongs to another workspace");
+      if (target.compatibility.organization_id !== organizationId) fail("ENTITLEMENT_ORGANIZATION_MISMATCH", "compatibility proof belongs to another organization");
+      if (target.compatibility.provider !== target.providerId) fail("PROVIDER_COMPATIBILITY_DENIED", "compatibility proof provider does not match target provider");
+      if (!policyDecisionRefs.includes(target.compatibility.policy_ref)) fail("POLICY_DECISION_REQUIRED", "compatibility policy reference must be preserved on the binding");
     }
 
     const ttlMs = input?.ttl_ms ?? defaultTtlMs;
@@ -120,6 +167,7 @@ export function createExecutionBindingService({
     });
 
     bindings.set(binding.binding_id, binding);
+    if (target.compatibility) compatibilityProofs.set(binding.binding_id, target.compatibility);
     return binding;
   }
 
@@ -151,6 +199,11 @@ export function createExecutionBindingService({
     return binding;
   }
 
+  function compatibilityProof(bindingId) {
+    if (!bindings.has(bindingId)) fail("EXECUTION_BINDING_NOT_FOUND", "execution binding was not found", { binding_id: bindingId });
+    return compatibilityProofs.get(bindingId) ?? null;
+  }
+
   function revokeBinding(bindingId) {
     const binding = bindings.get(bindingId);
     if (!binding) fail("EXECUTION_BINDING_NOT_FOUND", "execution binding was not found", { binding_id: bindingId });
@@ -163,5 +216,5 @@ export function createExecutionBindingService({
     return Object.freeze([...bindings.values()].map((binding) => Object.freeze({ ...binding })));
   }
 
-  return Object.freeze({ createBinding, assertUsable, revokeBinding, inspect });
+  return Object.freeze({ createBinding, assertUsable, compatibilityProof, revokeBinding, inspect });
 }

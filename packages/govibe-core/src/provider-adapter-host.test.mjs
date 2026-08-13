@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { createEntitlementUsageLedger } from './entitlement-usage-ledger.mjs';
 import { createExecutionBindingService } from './execution-binding-service.mjs';
 import { createExecutorRegistry } from './executor-adapter.mjs';
 import {
@@ -12,8 +13,11 @@ import {
   normalizeProviderRunResult,
 } from './provider-adapter-host.mjs';
 import { createLocalComputeAdapter, createSubscriptionCliAdapter, ProviderInvocationError } from './provider-adapters.mjs';
+import { createProviderCompatibilityRegistry } from './provider-compatibility-registry.mjs';
 import { createProviderCapabilityRegistry } from './provider-entitlement-registry.mjs';
-import { createEntitlementUsageLedger } from './entitlement-usage-ledger.mjs';
+
+const NOW = new Date('2026-08-04T00:00:00.000Z');
+let ISSUED = {};
 
 function contextAuthority() {
   return {
@@ -26,78 +30,6 @@ function contextAuthority() {
     budget: { maxTokens: 512 },
     knowledgeRefs: ['gks:doc-1'],
     requiredReasonRefs: ['policy:reason:1'],
-  };
-}
-
-// Dispatch now verifies the binding against its issuing service, so the fixtures
-// use bindings the service actually issued. host() refreshes this per harness.
-let ISSUED = {};
-
-function issueBindings(bindingService, providerIds) {
-  const issued = {};
-  for (const providerId of providerIds) {
-    issued[providerId] = bindingService.createBinding({
-      binding_request_id: `br-${providerId}`,
-      actor_id: 'user-1',
-      organization_id: 'org-1',
-      workspace_id: 'ws-1',
-      task_id: 'task-1',
-      agent_id: 'agent-1',
-      run_id: 'run-1',
-      session_id: 'session-1',
-      turn_id: 'turn-1',
-      context: {
-        context_id: 'context-1',
-        cache_id: 'cache-1',
-        context_hash: 'hash-1',
-        source_manifest_hash: 'manifest-1',
-        context_profile: 'T-ctx',
-        tool_contract_hash: 'tools-1',
-        persisted: true,
-      },
-      eligible_target: {
-        authorized: true,
-        actor_id: 'user-1',
-        workspace_id: 'ws-1',
-        provider_id: providerId,
-        entitlement_id: 'ent-1',
-        executor_class: 'api-llm',
-        model_id: 'model-1',
-        state: 'active',
-      },
-      policy_decision_refs: ['policy:entitlement:1'],
-      ttl_ms: 3_600_000,
-    }).binding_id;
-  }
-  return issued;
-}
-
-function governedRequest(providerId, overrides = {}) {
-  return {
-    actor_id: 'user-1',
-    run_id: 'run-1',
-    contextAuthority: contextAuthority(),
-    policyDecision: 'allow',
-    contextLineage: { runId: 'run-1', sessionId: 'session-1', turnId: 'turn-1' },
-    executionBinding: {
-      schema: 'govibe-execution-binding/v1',
-      binding_id: ISSUED[providerId] ?? 'binding-unissued',
-      actor_id: 'user-1',
-      principal_id: 'user-1',
-      workspace_id: 'ws-1',
-      task_id: 'task-1',
-      agent_id: 'agent-1',
-      run_id: 'run-1',
-      session_id: 'session-1',
-      turn_id: 'turn-1',
-      context_id: 'context-1',
-      cache_id: 'cache-1',
-      provider_id: providerId,
-      entitlement_id: 'ent-1',
-      credential_grant_id: null,
-      provider_session_id: null,
-    },
-    ...overrides,
   };
 }
 
@@ -114,7 +46,7 @@ function descriptor(overrides = {}) {
     cached_token_usage_reported: false,
     remaining_quota_reported: false,
     rate_limit_detectable: false,
-    observed_at: '2026-08-04T00:00:00.000Z',
+    observed_at: NOW.toISOString(),
     ...overrides,
   };
 }
@@ -129,72 +61,120 @@ function policy(overrides = {}) {
     allowed_executor_classes: ['local-llm'],
     approval_state: 'approved',
     approved_by: 'Boss',
-    approved_at: '2026-08-04T00:00:00.000Z',
+    approved_at: NOW.toISOString(),
     policy_ref: 'docs/security/POLICY-Provider-Adapter-Enablement.md#local',
     ...overrides,
   };
 }
 
-function host({ adapters, policies = [policy(), policy({ provider_id: 'codex', adapter_id: 'adapter-codex', entitlement_types: ['personal_subscription'], allowed_executor_classes: ['external-agent'], policy_ref: 'docs/security/POLICY-Provider-Adapter-Enablement.md#codex' })], capabilities } = {}) {
+function compatSpec(providerId) {
+  if (providerId === 'codex') return { entitlementType: 'personal_subscription', adapterId: 'adapter-codex', product: 'codex-host-test', plan: 'test-plan', surface: 'cli' };
+  if (providerId === 'crewai') return { entitlementType: 'local_compute', adapterId: 'adapter-crewai', product: 'crewai-host-test', plan: 'test-plan', surface: 'local_runtime' };
+  return { entitlementType: 'local_compute', adapterId: 'adapter-local', product: 'local-host-test', plan: 'test-plan', surface: 'local_runtime' };
+}
+
+function compatibilityRecord(providerId) {
+  const spec = compatSpec(providerId);
+  return {
+    record_id: `compat-${providerId}-owner-v1`, schema_version: 'govibe-provider-entitlement-compatibility/v1', version: '1.0.0',
+    provider: providerId, product: spec.product, plan: spec.plan, execution_surface: spec.surface, entitlement_type: spec.entitlementType,
+    owner_type: 'user', permitted_user_model: 'owner', approved_scope: 'owner_only', automation_allowed: false,
+    credential_delegation_allowed: false, session_reuse_allowed: false, session_isolation_domain: null, concurrent_use_allowed: false,
+    allowed_principals: [], allowed_workspaces: [], allowed_organizations: [], allowed_adapter_ids: [spec.adapterId],
+    quota_visibility: { request_quota: 'unknown' }, cache_visibility: { provider_session: 'unknown' },
+    evidence_refs: [`internal:host-${providerId}-policy`], evidence_hashes: [`sha256:host-${providerId}-policy-v1`],
+    reviewer: 'host-test', approval_state: 'approved_owner_only', approved_date: '2026-08-01T00:00:00.000Z',
+    expiry_date: '2027-08-01T00:00:00.000Z', next_review_date: '2027-02-01T00:00:00.000Z', restrictions: [], fail_closed_reasons: [],
+  };
+}
+
+function compatibilityProof(providerId) {
+  const spec = compatSpec(providerId);
+  return {
+    authorized: true, record_id: `compat-${providerId}-owner-v1`, record_version: '1.0.0', provider: providerId,
+    product: spec.product, plan: spec.plan, execution_surface: spec.surface, entitlement_type: spec.entitlementType,
+    owner_id: 'user-1', requested_scope: 'owner_only', principal_id: 'user-1', organization_id: 'org-1', workspace_id: 'ws-1',
+    adapter_id: spec.adapterId, automation_requested: false, session_reuse_requested: false, concurrent_use_requested: false,
+    credential_delegation_requested: false, evidence_valid: true, policy_ref: `compatibility:compat-${providerId}-owner-v1:1.0.0`,
+  };
+}
+
+function issueBindings(bindingService, providerIds) {
+  const issued = {};
+  for (const providerId of providerIds) {
+    const proof = compatibilityProof(providerId);
+    issued[providerId] = bindingService.createBinding({
+      binding_request_id: `br-${providerId}`, actor_id: 'user-1', organization_id: 'org-1', workspace_id: 'ws-1',
+      task_id: 'task-1', agent_id: 'agent-1', run_id: 'run-1', session_id: 'session-1', turn_id: 'turn-1',
+      context: { context_id: 'context-1', cache_id: 'cache-1', context_hash: 'hash-1', source_manifest_hash: 'manifest-1', context_profile: 'T-ctx', tool_contract_hash: 'tools-1', persisted: true },
+      eligible_target: { authorized: true, actor_id: 'user-1', workspace_id: 'ws-1', provider_id: providerId, entitlement_id: 'ent-1', executor_class: 'api-llm', model_id: 'model-1', state: 'active', compatibility: proof },
+      policy_decision_refs: ['policy:entitlement:1', proof.policy_ref], ttl_ms: 3_600_000,
+    }).binding_id;
+  }
+  return issued;
+}
+
+function governedRequest(providerId, overrides = {}) {
+  return {
+    actor_id: 'user-1', run_id: 'run-1', contextAuthority: contextAuthority(), policyDecision: 'allow',
+    contextLineage: { runId: 'run-1', sessionId: 'session-1', turnId: 'turn-1' },
+    executionBinding: {
+      schema: 'govibe-execution-binding/v1', binding_id: ISSUED[providerId] ?? 'binding-unissued', actor_id: 'user-1', principal_id: 'user-1',
+      organization_id: 'org-1', workspace_id: 'ws-1', task_id: 'task-1', agent_id: 'agent-1', run_id: 'run-1', session_id: 'session-1', turn_id: 'turn-1',
+      context_id: 'context-1', cache_id: 'cache-1', provider_id: providerId, entitlement_id: 'ent-1', credential_grant_id: null, provider_session_id: null,
+    },
+    ...overrides,
+  };
+}
+
+function host({
+  adapters,
+  policies = [
+    policy(),
+    policy({ provider_id: 'codex', adapter_id: 'adapter-codex', entitlement_types: ['personal_subscription'], allowed_executor_classes: ['external-agent'], policy_ref: 'docs/security/POLICY-Provider-Adapter-Enablement.md#codex' }),
+  ],
+  capabilities,
+} = {}) {
   let bindingCounter = 0;
-  const bindingService = createExecutionBindingService({
-    clock: () => new Date('2026-08-04T00:00:00.000Z'),
-    idFactory: () => { bindingCounter += 1; return String(bindingCounter); },
-  });
+  const bindingService = createExecutionBindingService({ clock: () => NOW, idFactory: () => String(++bindingCounter) });
+  const compatibilityRegistry = createProviderCompatibilityRegistry(['local', 'codex', 'crewai'].map(compatibilityRecord));
   ISSUED = issueBindings(bindingService, ['local', 'codex', 'crewai']);
 
   return createProviderAdapterHost({
-    executorRegistry: createExecutorRegistry(adapters ?? {}, { bindingService }),
+    executorRegistry: createExecutorRegistry(adapters ?? {}, { bindingService, compatibilityRegistry, clock: () => NOW }),
     capabilityRegistry: createProviderCapabilityRegistry(capabilities ?? [
       descriptor(),
       descriptor({ provider_id: 'codex', adapter_id: 'adapter-codex', executor_classes: ['external-agent'], entitlement_types: ['personal_subscription'], usage_visibility: 'rate-limit-only', rate_limit_detectable: true }),
     ]),
     policyRecords: policies,
-    clock: () => new Date('2026-08-04T00:00:00.000Z'),
+    clock: () => NOW,
   });
 }
 
 describe('provider adapter policy gate', () => {
   it('refuses to dispatch a provider with no adapter policy record', async () => {
     const instance = host({ adapters: { crewai: createLocalComputeAdapter({ providerId: 'crewai', run: async () => ({}) }) } });
-    await expect(instance.execute('crewai', governedRequest('crewai'))).rejects.toThrowError(
-      expect.objectContaining({ code: 'ADAPTER_POLICY_MISSING' }),
-    );
+    await expect(instance.execute('crewai', governedRequest('crewai'))).rejects.toThrowError(expect.objectContaining({ code: 'ADAPTER_POLICY_MISSING' }));
   });
 
   it('refuses to dispatch a pending or denied adapter policy', async () => {
-    const instance = host({
-      adapters: { local: createLocalComputeAdapter({ run: async () => ({}) }) },
-      policies: [policy({ approval_state: 'pending', approved_by: null, approved_at: null })],
-    });
-    await expect(instance.execute('local', governedRequest('local'))).rejects.toThrowError(
-      expect.objectContaining({ code: 'ADAPTER_POLICY_NOT_APPROVED' }),
-    );
+    const instance = host({ adapters: { local: createLocalComputeAdapter({ run: async () => ({}) }) }, policies: [policy({ approval_state: 'pending', approved_by: null, approved_at: null })] });
+    await expect(instance.execute('local', governedRequest('local'))).rejects.toThrowError(expect.objectContaining({ code: 'ADAPTER_POLICY_NOT_APPROVED' }));
   });
 
   it('refuses to dispatch without a provider capability descriptor', async () => {
-    const instance = host({
-      adapters: { local: createLocalComputeAdapter({ run: async () => ({}) }) },
-      capabilities: [],
-    });
-    await expect(instance.execute('local', governedRequest('local'))).rejects.toThrowError(
-      expect.objectContaining({ code: 'PROVIDER_DESCRIPTOR_MISSING' }),
-    );
+    const instance = host({ adapters: { local: createLocalComputeAdapter({ run: async () => ({}) }) }, capabilities: [] });
+    await expect(instance.execute('local', governedRequest('local'))).rejects.toThrowError(expect.objectContaining({ code: 'PROVIDER_DESCRIPTOR_MISSING' }));
   });
 
   it('rejects an approved policy record with no approver and any cross-user reuse', () => {
-    expect(() => normalizeAdapterPolicyRecord(policy({ approved_by: null }))).toThrowError(
-      expect.objectContaining({ code: 'ADAPTER_POLICY_INVALID' }),
-    );
-    expect(() => normalizeAdapterPolicyRecord(policy({ cross_user_session_reuse: true }))).toThrowError(
-      expect.objectContaining({ code: 'ADAPTER_POLICY_CROSS_USER_DENIED' }),
-    );
+    expect(() => normalizeAdapterPolicyRecord(policy({ approved_by: null }))).toThrowError(expect.objectContaining({ code: 'ADAPTER_POLICY_INVALID' }));
+    expect(() => normalizeAdapterPolicyRecord(policy({ cross_user_session_reuse: true }))).toThrowError(expect.objectContaining({ code: 'ADAPTER_POLICY_CROSS_USER_DENIED' }));
   });
 
   it('reports enablement and blocking reasons without dispatching', () => {
     const rows = host({ adapters: { local: createLocalComputeAdapter({ run: async () => ({}) }) } }).inspect();
     const byId = Object.fromEntries(rows.map((row) => [row.provider_id, row]));
-
     expect(byId.local).toMatchObject({ enabled: true, blocked_reason: null, approval_state: 'approved', usage_visibility: 'partial' });
     expect(byId.codex).toMatchObject({ enabled: false, blocked_reason: 'ADAPTER_UNAVAILABLE', adapter_available: false });
     expect(byId.crewai).toMatchObject({ enabled: false, blocked_reason: 'ADAPTER_POLICY_MISSING' });
@@ -205,7 +185,6 @@ describe('run result normalization', () => {
   it('normalizes a completed local run to the v1 contract', async () => {
     const instance = host({ adapters: { local: createLocalComputeAdapter({ run: async () => ({ artifacts: ['out.txt'] }) }) } });
     const result = await instance.execute('local', governedRequest('local'));
-
     expect(result.schema).toBe('govibe-provider-run-result/v1');
     expect(result.status).toBe('completed');
     expect(result.binding_id).toBe(ISSUED.local);
@@ -222,20 +201,14 @@ describe('run result normalization', () => {
       ['request timed out', 'timed_out', 'PROVIDER_TIMED_OUT', true],
       ['provider unavailable', 'failed', 'PROVIDER_UNAVAILABLE', true],
     ];
-
     for (const [message, status, code, retryable] of cases) {
-      const instance = host({
-        adapters: {
-          codex: createSubscriptionCliAdapter({ providerId: 'codex', run: async () => { throw new Error(message); } }),
-        },
-      });
+      const instance = host({ adapters: { codex: createSubscriptionCliAdapter({ providerId: 'codex', run: async () => { throw new Error(message); } }) } });
       const result = await instance.execute('codex', governedRequest('codex'));
       expect(result.status).toBe(status);
       expect(result.normalized_errors[0].code).toBe(code);
       expect(result.retryable).toBe(retryable);
       expect(result.candidate.provider_id).toBe('codex');
     }
-
     const cancelHost = host({ adapters: { local: createLocalComputeAdapter({ run: async () => ({}) }) } });
     const cancelled = await cancelHost.cancel('local', governedRequest('local'));
     expect(cancelled.status).toBe('cancelled');
@@ -243,98 +216,54 @@ describe('run result normalization', () => {
   });
 
   it('does not guess retryability for an unclassified provider failure', async () => {
-    const instance = host({
-      adapters: { codex: createSubscriptionCliAdapter({ providerId: 'codex', run: async () => { throw new Error('malformed response'); } }) },
-    });
+    const instance = host({ adapters: { codex: createSubscriptionCliAdapter({ providerId: 'codex', run: async () => { throw new Error('malformed response'); } }) } });
     const result = await instance.execute('codex', governedRequest('codex'));
-
     expect(result.status).toBe('failed');
     expect(result.normalized_errors[0].code).toBe('PROVIDER_REJECTED');
     expect(result.retryable).toBe(false);
   });
 
   it('lets a governance rejection surface instead of becoming a provider terminal state', async () => {
-    const instance = host({
-      adapters: { local: { execute: async () => ({ status: 'completed' }), cancel: async () => {} } },
-    });
-    await expect(instance.execute('local', governedRequest('local', { policyDecision: 'deny' }))).rejects.toThrowError(
-      expect.objectContaining({ name: 'RuntimeAuthorityError', code: 'dispatch_denied' }),
-    );
+    const instance = host({ adapters: { local: { execute: async () => ({ status: 'completed' }), cancel: async () => {} } } });
+    await expect(instance.execute('local', governedRequest('local', { policyDecision: 'deny' }))).rejects.toThrowError(expect.objectContaining({ name: 'RuntimeAuthorityError', code: 'dispatch_denied' }));
   });
 
   it('lets a binding scope violation surface rather than normalizing it away', async () => {
-    const instance = host({
-      adapters: { local: { execute: async () => ({ status: 'completed' }), cancel: async () => {} } },
-    });
-    const request = governedRequest('local');
-    request.executionBinding = { ...request.executionBinding, run_id: 'run-2' };
-
-    await expect(instance.execute('local', request)).rejects.toThrowError(
-      expect.objectContaining({ code: 'EXECUTION_BINDING_SCOPE_MISMATCH' }),
-    );
+    const instance = host({ adapters: { local: { execute: async () => ({ status: 'completed' }), cancel: async () => {} } } });
+    const req = governedRequest('local');
+    req.executionBinding = { ...req.executionBinding, run_id: 'run-2' };
+    await expect(instance.execute('local', req)).rejects.toThrowError(expect.objectContaining({ code: 'EXECUTION_BINDING_SCOPE_MISMATCH' }));
   });
 
   it('rejects a run result whose error list contradicts its status', () => {
-    expect(() => normalizeProviderRunResult({
-      binding_id: 'b1',
-      run_result_id: 'r1',
-      status: 'completed',
-      started_at: '2026-08-04T00:00:00.000Z',
-      candidate: { provider_id: 'local', request_id: 'b1' },
-      normalized_errors: [{ code: 'PROVIDER_REJECTED', message: 'x' }],
-    }, { providerId: 'local' })).toThrowError(expect.objectContaining({ code: 'PROVIDER_RESULT_INVALID' }));
-
-    expect(() => normalizeProviderRunResult({
-      binding_id: 'b1',
-      run_result_id: 'r1',
-      status: 'failed',
-      started_at: '2026-08-04T00:00:00.000Z',
-      candidate: { provider_id: 'local', request_id: 'b1' },
-      normalized_errors: [],
-    }, { providerId: 'local' })).toThrowError(expect.objectContaining({ code: 'PROVIDER_RESULT_INVALID' }));
+    expect(() => normalizeProviderRunResult({ binding_id: 'b1', run_result_id: 'r1', status: 'completed', started_at: NOW.toISOString(), candidate: { provider_id: 'local', request_id: 'b1' }, normalized_errors: [{ code: 'PROVIDER_REJECTED', message: 'x' }] }, { providerId: 'local' })).toThrowError(expect.objectContaining({ code: 'PROVIDER_RESULT_INVALID' }));
+    expect(() => normalizeProviderRunResult({ binding_id: 'b1', run_result_id: 'r1', status: 'failed', started_at: NOW.toISOString(), candidate: { provider_id: 'local', request_id: 'b1' }, normalized_errors: [] }, { providerId: 'local' })).toThrowError(expect.objectContaining({ code: 'PROVIDER_RESULT_INVALID' }));
   });
 
   it('maps an unknown failure code to a non-retryable rejection', () => {
-    expect(normalizeAdapterFailure({ code: 'SOMETHING_ELSE', message: 'boom' })).toMatchObject({
-      code: 'PROVIDER_REJECTED',
-      status: 'failed',
-      retryable: false,
-    });
+    expect(normalizeAdapterFailure({ code: 'SOMETHING_ELSE', message: 'boom' })).toMatchObject({ code: 'PROVIDER_REJECTED', status: 'failed', retryable: false });
   });
 });
 
 describe('candidate boundary', () => {
   it('rejects a self-assigned canonical identity in adapter output', async () => {
-    const instance = host({
-      adapters: { local: createLocalComputeAdapter({ run: async () => ({ relation_candidates: [{ target: 'gks:doc-1', relation: 'contains' }] }) }) },
-    });
-    await expect(instance.execute('local', governedRequest('local'))).rejects.toThrowError(
-      expect.objectContaining({ code: 'PROVIDER_CANDIDATE_CANONICAL_IDENTITY' }),
-    );
+    const instance = host({ adapters: { local: createLocalComputeAdapter({ run: async () => ({ relation_candidates: [{ target: 'gks:doc-1', relation: 'contains' }] }) }) } });
+    await expect(instance.execute('local', governedRequest('local'))).rejects.toThrowError(expect.objectContaining({ code: 'PROVIDER_CANDIDATE_CANONICAL_IDENTITY' }));
   });
 
   it('rejects credential material in adapter output', async () => {
-    const instance = host({
-      adapters: { local: createLocalComputeAdapter({ run: async () => ({ requested_scope: { api_key: 'sk-1' } }) }) },
-    });
-    await expect(instance.execute('local', governedRequest('local'))).rejects.toThrowError(
-      expect.objectContaining({ code: 'PROVIDER_RESULT_CREDENTIAL_MATERIAL' }),
-    );
+    const instance = host({ adapters: { local: createLocalComputeAdapter({ run: async () => ({ requested_scope: { api_key: 'fixture-key' } }) }) } });
+    await expect(instance.execute('local', governedRequest('local'))).rejects.toThrowError(expect.objectContaining({ code: 'PROVIDER_RESULT_CREDENTIAL_MATERIAL' }));
   });
 
   it('rejects a candidate claiming a different provider or an unsupported schema', () => {
-    expect(() => normalizeProviderCandidate({ provider_id: 'other', request_id: 'r1' }, { providerId: 'local' })).toThrowError(
-      expect.objectContaining({ code: 'PROVIDER_CANDIDATE_PROVIDER_MISMATCH' }),
-    );
-    expect(() => normalizeProviderCandidate({ schema: 'govibe-provider-candidate/v2', provider_id: 'local', request_id: 'r1' }, { providerId: 'local' })).toThrowError(
-      expect.objectContaining({ code: 'PROVIDER_CANDIDATE_SCHEMA_UNSUPPORTED' }),
-    );
+    expect(() => normalizeProviderCandidate({ provider_id: 'other', request_id: 'r1' }, { providerId: 'local' })).toThrowError(expect.objectContaining({ code: 'PROVIDER_CANDIDATE_PROVIDER_MISMATCH' }));
+    expect(() => normalizeProviderCandidate({ schema: 'govibe-provider-candidate/v2', provider_id: 'local', request_id: 'r1' }, { providerId: 'local' })).toThrowError(expect.objectContaining({ code: 'PROVIDER_CANDIDATE_SCHEMA_UNSUPPORTED' }));
   });
 
   it('defaults every candidate collection to empty rather than absent', async () => {
     const instance = host({ adapters: { local: createLocalComputeAdapter({ run: async () => ({}) }) } });
     const { candidate } = await instance.execute('local', governedRequest('local'));
-
     expect(candidate.source_manifest).toEqual([]);
     expect(candidate.assumptions).toEqual([]);
     expect(candidate.relation_candidates).toEqual([]);
@@ -345,11 +274,7 @@ describe('candidate boundary', () => {
 
 describe('usage extraction stays inside declared visibility', () => {
   it('keeps unsupported token and cache fields unknown', () => {
-    const usage = extractProviderUsage(
-      { provider_usage: { unit: 'request', request_count: 1, input_tokens: 999, cached_input_tokens: 50 } },
-      descriptor({ usage_visibility: 'partial', token_usage_reported: false, cached_token_usage_reported: false }),
-    );
-
+    const usage = extractProviderUsage({ provider_usage: { unit: 'request', request_count: 1, input_tokens: 999, cached_input_tokens: 50 } }, descriptor({ usage_visibility: 'partial', token_usage_reported: false, cached_token_usage_reported: false }));
     expect(usage.visibility).toBe('partial');
     expect(usage.reported_usage.request_count).toBe(1);
     expect(usage.reported_usage.input_tokens).toBeNull();
@@ -359,11 +284,7 @@ describe('usage extraction stays inside declared visibility', () => {
   });
 
   it('reads token fields only when the descriptor declares them', () => {
-    const usage = extractProviderUsage(
-      { provider_usage: { unit: 'token', input_tokens: 120, output_tokens: 30 } },
-      descriptor({ usage_visibility: 'detailed', token_usage_reported: true }),
-    );
-
+    const usage = extractProviderUsage({ provider_usage: { unit: 'token', input_tokens: 120, output_tokens: 30 } }, descriptor({ usage_visibility: 'detailed', token_usage_reported: true }));
     expect(usage.reported_usage.input_tokens).toBe(120);
     expect(usage.reported_usage.output_tokens).toBe(30);
     expect(usage.unknown_fields).not.toContain('input_tokens');
@@ -376,37 +297,22 @@ describe('usage extraction stays inside declared visibility', () => {
   });
 
   it('hands a subscription run to the ledger without inventing token usage', async () => {
-    const instance = host({
-      adapters: { codex: createSubscriptionCliAdapter({ providerId: 'codex', run: async () => ({}) }) },
-    });
+    const instance = host({ adapters: { codex: createSubscriptionCliAdapter({ providerId: 'codex', run: async () => ({}) }) } });
     const result = await instance.execute('codex', governedRequest('codex'));
     const usage = instance.usageFor(result);
-
     expect(result.provider_usage).toMatchObject({ unit: 'request', request_count: 1 });
     expect(usage.reported_usage.input_tokens).toBeNull();
 
     const ledger = createEntitlementUsageLedger({
-      capabilityRegistry: createProviderCapabilityRegistry([
-        descriptor({ provider_id: 'codex', adapter_id: 'adapter-codex', usage_visibility: 'rate-limit-only' }),
-      ]),
-      clock: () => new Date('2026-08-04T00:00:00.000Z'),
+      capabilityRegistry: createProviderCapabilityRegistry([descriptor({ provider_id: 'codex', adapter_id: 'adapter-codex', usage_visibility: 'rate-limit-only' })]),
+      clock: () => NOW,
     });
-
     const recorded = ledger.record({
-      organization_id: 'org-1',
-      user_id: 'user-1',
-      workspace_id: 'ws-1',
-      task_id: 'task-1',
-      run_id: 'run-1',
-      binding_id: result.binding_id,
-      provider_id: 'codex',
-      entitlement_id: 'ent-1',
-      entitlement_type: 'personal_subscription',
-      model_id: 'model-1',
+      organization_id: 'org-1', user_id: 'user-1', workspace_id: 'ws-1', task_id: 'task-1', run_id: 'run-1', binding_id: result.binding_id,
+      provider_id: 'codex', entitlement_id: 'ent-1', entitlement_type: 'personal_subscription', model_id: 'model-1',
       reported_usage: { unit: usage.reported_usage.unit, request_count: usage.reported_usage.request_count },
       outcome: { status: result.status, duration_ms: null },
     });
-
     expect(recorded.reported_usage.request_count).toBe(1);
     expect(recorded.reported_usage.input_tokens).toBeNull();
     expect(recorded.unknown_fields).toContain('input_tokens');
