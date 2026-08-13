@@ -3,6 +3,7 @@ import {
   createEntitlementRegistry,
   createProviderCapabilityRegistry,
 } from './provider-entitlement-registry.mjs';
+import { createProviderCompatibilityRegistry } from './provider-compatibility-registry.mjs';
 import { createExecutionBindingService } from './execution-binding-service.mjs';
 import { createExecutionCapabilityPlanner } from './execution-capability-planner.mjs';
 
@@ -67,6 +68,43 @@ function entitlement(overrides = {}) {
   };
 }
 
+function compatibility(overrides = {}) {
+  return {
+    record_id: 'compat_local_owner_v1',
+    schema_version: 'govibe-provider-entitlement-compatibility/v1',
+    version: '1.0.0',
+    provider: 'local',
+    product: 'govibe-local-runtime',
+    plan: 'self-hosted',
+    execution_surface: 'local_runtime',
+    entitlement_type: 'local_compute',
+    owner_type: 'user',
+    permitted_user_model: 'owner',
+    approved_scope: 'owner_only',
+    automation_allowed: true,
+    credential_delegation_allowed: false,
+    session_reuse_allowed: false,
+    session_isolation_domain: null,
+    concurrent_use_allowed: false,
+    allowed_principals: [],
+    allowed_workspaces: [],
+    allowed_organizations: [],
+    allowed_adapter_ids: ['local-adapter'],
+    quota_visibility: { compute_seconds: 'provider_reported', token_usage: 'govibe_estimated' },
+    cache_visibility: { prompt_cache: 'unknown', provider_session: 'not_applicable' },
+    evidence_refs: ['internal:test-local-runtime-policy'],
+    evidence_hashes: ['sha256:test-local-runtime-policy-v1'],
+    reviewer: 'test-reviewer',
+    approval_state: 'approved_owner_only',
+    approved_date: '2026-08-01T00:00:00.000Z',
+    expiry_date: '2027-08-01T00:00:00.000Z',
+    next_review_date: '2027-02-01T00:00:00.000Z',
+    restrictions: [],
+    fail_closed_reasons: [],
+    ...overrides,
+  };
+}
+
 function planningRequest(overrides = {}) {
   return {
     request_id: 'req_1',
@@ -91,10 +129,11 @@ function planningRequest(overrides = {}) {
   };
 }
 
-function createPlanner(entitlements = [entitlement()], capabilities = [capability()]) {
+function createPlanner(entitlements = [entitlement()], capabilities = [capability()], compatibilityRecords = [compatibility()]) {
   return createExecutionCapabilityPlanner({
     capabilityRegistry: createProviderCapabilityRegistry(capabilities),
     entitlementRegistry: createEntitlementRegistry(entitlements),
+    compatibilityRegistry: createProviderCompatibilityRegistry(compatibilityRecords),
     clock: () => new Date('2026-08-03T01:00:00.000Z'),
   });
 }
@@ -110,9 +149,45 @@ describe('execution capability planner', () => {
       provider_id: 'local',
       entitlement_id: 'ent_1',
       model_id: 'qwen',
+      compatibility: {
+        authorized: true,
+        record_id: 'compat_local_owner_v1',
+        product: 'govibe-local-runtime',
+        plan: 'self-hosted',
+        execution_surface: 'local_runtime',
+      },
     });
+    expect(plan.eligible_targets[0].policy_refs).toContain('compatibility:compat_local_owner_v1:1.0.0');
     expect(plan).not.toHaveProperty('knowledge');
     expect(plan.constraints_for_msp.required_rendering_contracts).toEqual(['tools_1']);
+  });
+
+  it('fails closed when a compatibility record is missing', () => {
+    const planner = createPlanner([entitlement()], [capability()], []);
+    expect(() => planner.plan(planningRequest())).toThrowError(
+      expect.objectContaining({
+        code: 'NO_AUTHORIZED_ENTITLEMENT',
+        details: expect.objectContaining({
+          rejected_targets: expect.arrayContaining([
+            expect.objectContaining({ reason_code: 'COMPATIBILITY_RECORD_MISSING' }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  it('fails closed when the matching compatibility record is expired', () => {
+    const planner = createPlanner([entitlement()], [capability()], [compatibility({ expiry_date: '2026-08-02T00:00:00.000Z' })]);
+    expect(() => planner.plan(planningRequest())).toThrowError(
+      expect.objectContaining({
+        code: 'NO_AUTHORIZED_ENTITLEMENT',
+        details: expect.objectContaining({
+          rejected_targets: expect.arrayContaining([
+            expect.objectContaining({ reason_code: 'COMPATIBILITY_RECORD_EXPIRED' }),
+          ]),
+        }),
+      }),
+    );
   });
 
   it('rejects when no entitlement is authorized', () => {
@@ -159,7 +234,7 @@ describe('execution capability planner', () => {
     );
   });
 
-  it('creates a binding only from the planner-selected authorized target', () => {
+  it('creates a binding only from a planner-selected target that carries compatibility proof', () => {
     const planner = createPlanner();
     const bindingService = createExecutionBindingService({
       idFactory: () => '1',
@@ -198,7 +273,12 @@ describe('execution capability planner', () => {
       entitlement_id: 'ent_1',
       model_id: 'qwen',
       context_hash: 'hash_1',
+      compatibility: {
+        record_id: 'compat_local_owner_v1',
+        authorized: true,
+      },
     });
     expect(binding.policy_decision_refs).toContain('entitlement:ent_1:1');
+    expect(binding.policy_decision_refs).toContain('compatibility:compat_local_owner_v1:1.0.0');
   });
 });
