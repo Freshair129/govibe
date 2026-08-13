@@ -2,8 +2,8 @@
 title: "Evidence: Provider Entitlement Runtime Conformance"
 doc_id: "EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE"
 status: "draft"
-version: "0.3.2+draft"
-updated: "2026-08-05"
+version: "0.4.0+draft"
+updated: "2026-08-14"
 owner: "ATHER"
 source_of_truth: false
 review_state: "pending"
@@ -17,7 +17,12 @@ related_issues:
   - 62
   - 63
   - 64
-related_apis: ["API-008"]
+  - 76
+  - 109
+  - 110
+  - 111
+  - 112
+related_apis: ["API-008", "API-009"]
 related_docs:
   - "docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md"
   - "docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md"
@@ -51,7 +56,9 @@ Per the `TSK-PER-64` Definition of Done, closing the gate requires all of:
 | security and release review approval naming the provider scope covered | **not met**, requires a human reviewer |
 
 Until every row is met, issues #58 to #63 stay open and **no document may
-describe the entitlement runtime as implemented.**
+describe the full entitlement runtime as production or commercially ready.**
+Repository-scoped slices may still be described with their exact implementation
+and test evidence.
 
 ## 2. Scope covered
 
@@ -85,6 +92,15 @@ Mapped to the issue #64 acceptance criteria:
 | negative tests for unauthorized/revoked entitlements | revoked entitlement, wrong principal against an owner-only entitlement, unpersisted context, unapproved adapter policy, denied policy decision | pass |
 | partial/unknown quota telemetry | rate-limit-only provider keeps every reported field null and named; a remaining-quota figure is rejected | pass |
 | implementation status propagated only after tests pass | no status propagation is performed by this branch; see section 1 | held |
+
+### 3.1 MSP health boundary evidence (#76)
+
+`packages/msp-runtime/test/health.test.mjs` proves the MSP-owned
+`govibe-msp-health/v1` response for ready, GKS-blocked/unavailable,
+MSP/storage-unavailable, timeout, and malformed probe cases. The GoVibe
+`MspClient.probeHealth()` tests prove invalid or unreachable parent responses
+become bounded `unavailable` results. This is process/SQLite health evidence; it
+does not prove a persistent external provider, a GKS provider, or restart E2E.
 
 ## 4. Not covered
 
@@ -174,20 +190,21 @@ durable persistence, and behavior across process restart are unevidenced.
 Concurrency limits, queue behavior under contention, and routing stability under
 parallel dispatch are untested.
 
-## 5. Recorded contract gaps
+## 5. Recorded contract gap dispositions
 
-Three gaps were found while implementing issues #61 to #63. None is resolved by
-inventing a field or schema outside the contract, and each needs an owner
-decision before or with this gate.
+The follow-up issue sweep resolved the three repository-observable contract gaps
+without widening the provider-facing authority boundary. The final conformance
+gate remains `not_passed` because the external-provider, durable-ledger, and human
+security/release review evidence is still absent.
 
-| Gap | Where recorded | Effect |
+| Former gap | Evidence of disposition | Issue |
 |---|---|---|
-| the `v1` usage-event schema has no `not_applicable` telemetry classification, so the sharing policy's four-way classification is three-way in practice | `POLICY-Provider-Entitlement-Usage-Ledger-Redaction-and-Retention.md` section 4.1 | a field that cannot apply to an entitlement type is recorded as unknown |
-| `govibe-scheduler-decision/v1` is not defined in API-008, although issue #62 requires scheduler decision evidence | `SDD-Execution-Routing-and-Failover.md` section 9.1 | the record is GoVibe-internal evidence, exchanged with no provider |
-| dispatch selects an adapter by `provider_id`, not by `binding.adapter_id` as the target contract requires | `RECONCILIATION-API-005-006-008-Executor-Router.md` section 6 | the section 7 target dispatch path is not fully realized |
+| The usage-event schema had no `not_applicable` telemetry classification | API-008 section 10 now defines `not_applicable_fields`; the ledger validates known, disjoint classifications and a local-compute fixture proves N/A versus unknown separation. | #110 |
+| The scheduler decision record was not distinguished from the provider contract | SDD section 9.1 explicitly governs `govibe-scheduler-decision/v1` as internal GoVibe evidence, not API-008/provider surface. | #109 |
+| Dispatch selected an adapter by `provider_id` | The executor resolves the exact binding `adapter_id`, verifies provider/compatibility alignment, and the two-adapter security test proves the selected adapter is the one bound. | #111 |
 
-Each requires an API-008 or reconciliation change. They are listed here so the
-gate reviewer dispositions them explicitly rather than discovering them later.
+These dispositions do not close issue #64: the gate still requires evidence beyond
+repository fixtures and local CI.
 
 ## 5.1 Security finding: binding authenticity was not verified at dispatch
 
@@ -305,6 +322,7 @@ branch `fix/issue-59-binding-authenticity`). CI run for that commit: workflow
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.4.0+draft | 2026-08-14 | ATHER | Dispositioned the #109, #110 and #111 contract gaps and recorded bounded #76 MSP health evidence; gate remains not passed for external-provider, durable-ledger, and human review requirements. |
 | 0.3.2+draft | 2026-08-05 | Claude (final-gate session) | Recorded the owner's section 6 ruling: #58, #60, #61, #62 closed on their own acceptance criteria with scoped comments; #59/#63 stay open pending #112 and the #59 scope items; follow-up issues #109–#112 filed for the section 5 gaps. No change to review_state or gate_state. |
 | 0.3.1+draft | 2026-08-05 | Claude (adversarial gate correction) | Factual corrections from adversarial gate review: section 4.1 boundary statement (createExecutorRegistry is exported and constructed in runtime-core.mjs with null services, inspect-only usage), test count 28→30 in section 4.3, and CI reference status in section 7 (merge commit b8604d7, run id 30863047065, success). No change to review_state or gate_state. |
 | 0.3.0+draft | 2026-08-04 | ATHER | Section 5.1 fixed: dispatch now verifies binding authenticity, expiry and revocation against the issuing service, fail-closed, and emits the API-008 BINDING_EXPIRED code for the first time. Recorded the remaining entitlement-lifecycle recheck gap. Gate remains not passed. |

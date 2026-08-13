@@ -70,6 +70,10 @@ function normalizeCompatibilityProof(input) {
 function assertEligibleTarget(target, request) {
   if (!target || typeof target !== "object") fail("ELIGIBLE_TARGET_REQUIRED", "eligible target is required");
   const providerId = requireText(target.provider_id, "eligible_target.provider_id");
+  const adapterId = requireText(
+    target.adapter_id ?? target.compatibility?.adapter_id ?? providerId,
+    "eligible_target.adapter_id",
+  );
   const entitlementId = requireText(target.entitlement_id, "eligible_target.entitlement_id");
   const executorClass = requireText(target.executor_class, "eligible_target.executor_class");
   const modelId = requireText(target.model_id, "eligible_target.model_id");
@@ -82,6 +86,7 @@ function assertEligibleTarget(target, request) {
 
   return Object.freeze({
     providerId,
+    adapterId,
     entitlementId,
     executorClass,
     modelId,
@@ -124,6 +129,7 @@ export function createExecutionBindingService({
       if (target.compatibility.workspace_id !== workspaceId) fail("ENTITLEMENT_WORKSPACE_MISMATCH", "compatibility proof belongs to another workspace");
       if (target.compatibility.organization_id !== organizationId) fail("ENTITLEMENT_ORGANIZATION_MISMATCH", "compatibility proof belongs to another organization");
       if (target.compatibility.provider !== target.providerId) fail("PROVIDER_COMPATIBILITY_DENIED", "compatibility proof provider does not match target provider");
+      if (target.compatibility.adapter_id !== target.adapterId) fail("PROVIDER_COMPATIBILITY_DENIED", "compatibility proof adapter does not match target adapter");
       if (!policyDecisionRefs.includes(target.compatibility.policy_ref)) fail("POLICY_DECISION_REQUIRED", "compatibility policy reference must be preserved on the binding");
     }
 
@@ -152,6 +158,7 @@ export function createExecutionBindingService({
       context_profile: context.context_profile,
       tool_contract_hash: context.tool_contract_hash,
       provider_id: target.providerId,
+      adapter_id: target.adapterId,
       entitlement_id: target.entitlementId,
       executor_class: target.executorClass,
       model_id: target.modelId,
@@ -189,6 +196,7 @@ export function createExecutionBindingService({
       "context_id",
       "cache_id",
       "provider_id",
+      "adapter_id",
       "entitlement_id",
       "context_hash",
     ]) {

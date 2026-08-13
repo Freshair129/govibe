@@ -6,7 +6,9 @@
 // govibe-mcp-server.mjs are excluded from
 // scripts/mcp/runtime/dependency-boundaries.test.mjs.
 //
-// Phase 0/1 (WP-12) registered only a diagnostic `msp_ping`. WP-13 Phase 2
+// Phase 0/1 (WP-12) registered only a diagnostic `msp_ping`. The bounded
+// `msp_health` query is now registered alongside the
+// WP-13 Phase 2
 // adds the eleven-tool `msp_*` contract surface (vault registry, context
 // tools, promotion tools) that packages/govibe-core/src/msp-client.mjs and
 // scripts/mcp/msp-vault-context-contracts.mjs already call today. `msp_ping`
@@ -28,6 +30,7 @@ import { createContextHandlers } from "./transport/handlers/context-handlers.mjs
 import { createLifecycleHandlers } from "./transport/handlers/lifecycle-handlers.mjs";
 import { createMemoryHandlers } from "./transport/handlers/memory-handlers.mjs";
 import { createVaultHandlers } from "./transport/handlers/vault-handlers.mjs";
+import { createHealthHandler } from "./transport/handlers/health-handlers.mjs";
 import { createStdioJsonRpcServer } from "./transport/stdio-jsonrpc-server.mjs";
 import { ToolRegistry } from "./transport/tool-registry.mjs";
 
@@ -40,8 +43,23 @@ const DEFAULT_MIGRATIONS_DIR = path.join(here, "db", "migrations");
  * @param {string} [options.migrationsDir] override for testing.
  * @param {NodeJS.ReadableStream} [options.input] override for testing.
  * @param {NodeJS.WritableStream} [options.output] override for testing.
+ * @param {(args: Record<string, unknown>) => object|Promise<object>} [options.mspProbe]
+ * @param {(args: Record<string, unknown>) => object|Promise<object>} [options.gksProbe]
+ * @param {(args: Record<string, unknown>) => object|Promise<object>} [options.storageProbe]
+ * @param {number} [options.healthTimeoutMs]
+ * @param {() => Date} [options.clock]
  */
-export function createServer({ dbPath, migrationsDir = DEFAULT_MIGRATIONS_DIR, input, output } = {}) {
+export function createServer({
+  dbPath,
+  migrationsDir = DEFAULT_MIGRATIONS_DIR,
+  input,
+  output,
+  mspProbe,
+  gksProbe,
+  storageProbe,
+  healthTimeoutMs = 1_000,
+  clock = () => new Date(),
+} = {}) {
   if (!dbPath) {
     throw new TypeError("createServer requires dbPath (MSP_DB_PATH).");
   }
@@ -60,9 +78,11 @@ export function createServer({ dbPath, migrationsDir = DEFAULT_MIGRATIONS_DIR, i
   const contextHandlers = createContextHandlers({ db, journal });
   const lifecycleHandlers = createLifecycleHandlers({ db, entityStore, vaultRegistry, journal });
   const memoryHandlers = createMemoryHandlers({ db, entityStore, vaultRegistry, journal, retrievalService, vectorClient, linksStore });
+  const healthHandler = createHealthHandler({ db, mspProbe, gksProbe, storageProbe, timeoutMs: healthTimeoutMs, clock });
 
   const toolRegistry = new ToolRegistry();
   toolRegistry.register("msp_ping", async () => ({ ok: true, timestamp: new Date().toISOString() }));
+  toolRegistry.register("msp_health", healthHandler);
   for (const [name, handler] of Object.entries(vaultHandlers)) toolRegistry.register(name, handler);
   for (const [name, handler] of Object.entries(contextHandlers)) toolRegistry.register(name, handler);
   for (const [name, handler] of Object.entries(lifecycleHandlers)) toolRegistry.register(name, handler);
@@ -75,5 +95,5 @@ export function createServer({ dbPath, migrationsDir = DEFAULT_MIGRATIONS_DIR, i
     db.close();
   }
 
-  return { db, entityStore, journal, vaultRegistry, linksStore, retrievalService, vectorClient, toolRegistry, transport, close };
+  return { db, entityStore, journal, vaultRegistry, linksStore, retrievalService, vectorClient, healthHandler, toolRegistry, transport, close };
 }

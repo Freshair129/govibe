@@ -2,8 +2,8 @@
 doc_id: "API-008-PROVIDER-ENTITLEMENT-ROUTING-USAGE-CONTRACT"
 title: "API-008: Provider Entitlement, Routing and Usage Contract"
 status: "draft"
-version: "0.3.0+draft"
-updated: "2026-08-03"
+version: "0.4.0+draft"
+updated: "2026-08-14"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 related_issue: 55
@@ -26,7 +26,8 @@ This API consumes MSP-governed context. It does not define knowledge retrieval, 
 - Execution binding occurs only after a valid persisted MSP context packet exists.
 - Routers and adapters must not mutate context content, scope, exclusions, source identity, reason chains, or authority state.
 - Provider output is candidate state.
-- Reported, estimated, and unknown usage values remain distinguishable.
+- Reported, estimated, unknown, and not-applicable usage values remain distinguishable.
+- Adapter dispatch uses the authorized binding `adapter_id`; `provider_id` alone never selects an adapter.
 - Failover creates a new binding and preserves context lineage.
 
 ### 2.1 Execution-binding identity correlation
@@ -166,6 +167,7 @@ schema: govibe-execution-capability-plan/v1
 request_id: string
 eligible_targets:
   - provider_id: string
+    adapter_id: string
     entitlement_id: string
     executor_class: string
     model_candidates: [string]
@@ -329,6 +331,7 @@ estimated_usage:
   compute_weight: number|null
   confidence: number|null
 unknown_fields: [string]
+not_applicable_fields: [string]
 affinity:
   session_affinity_used: boolean
   prompt_cache_ref_used: boolean
@@ -343,7 +346,7 @@ outcome:
 recorded_at: string
 ```
 
-A field must remain null or appear in `unknown_fields` when the provider does not expose it. GoVibe estimates must not populate `reported_usage`.
+A field must remain null or appear in `unknown_fields` when the provider does not expose it. A field may appear in `not_applicable_fields` only when the entitlement semantics make it inapplicable, and its `reported_usage` value must be null. The two classification lists must be disjoint and may name only fields in `reported_usage`. GoVibe estimates must not populate `reported_usage`.
 
 ## 11. Quota snapshot
 
@@ -404,6 +407,7 @@ Minimum normalized failure codes:
 - `PROVIDER_UNAVAILABLE`
 - `SESSION_AFFINITY_UNAVAILABLE`
 - `USAGE_SEMANTICS_UNKNOWN`
+- `USAGE_CLASSIFICATION_CONFLICT`
 - `CONTEXT_INTEGRITY_FAILED`
 - `BINDING_EXPIRED`
 
@@ -433,6 +437,7 @@ Where execution-resource behavior conflicts with context authority, API-007 and 
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.4.0+draft | 2026-08-14 | ATHER | Added binding adapter selection to the capability-plan contract and added explicit `not_applicable_fields` classification to usage events; both remain additive v1 contract fields. |
 | 0.3.0+draft | 2026-08-03 | ATHER | Removed the schema-absent principal-only compatibility path under authorized WP-11; all execution bindings now require complete `govibe-execution-binding/v1` before adapter dispatch. API lifecycle remains draft. |
 | 0.2.1+draft | 2026-08-03 | ARCHON / ATHER | Made the v1 actor/principal and workspace/task/agent/run/session/turn/context/cache correlation tuple mandatory and fail closed; bounded legacy compatibility to an absent-schema principal-only runtime binding. |
 | 0.2.0+draft | 2026-08-03 | ARCHON / ATHER | Defined D-01 actor/principal correlation: binding-service output carries equal `actor_id` and `principal_id`; adapters fail closed on a supplied mismatch while retaining the bounded legacy single-principal compatibility path. |

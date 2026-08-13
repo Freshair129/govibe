@@ -230,6 +230,7 @@ export function extractProviderUsage(runResult, descriptor) {
     visibility,
     reported_usage: Object.freeze(reported),
     unknown_fields: Object.freeze(unknownFields.sort()),
+    not_applicable_fields: Object.freeze([]),
   });
 }
 
@@ -282,10 +283,12 @@ export function createProviderAdapterHost({
     'a governed executor registry is required',
   );
 
-  const policies = new Map();
+  const policiesByProvider = new Map();
+  const policiesByAdapter = new Map();
   for (const input of policyRecords) {
     const record = normalizeAdapterPolicyRecord(input);
-    policies.set(record.provider_id, record);
+    policiesByProvider.set(record.provider_id, record);
+    policiesByAdapter.set(record.adapter_id, record);
   }
 
   let sequence = 0;
@@ -294,18 +297,34 @@ export function createProviderAdapterHost({
     return idFactory ? `run_${idFactory(sequence)}` : `run_${sequence}`;
   };
 
-  function enablement(providerId) {
-    const policy = policies.get(providerId) ?? null;
+  function policyFor(providerId, adapterId = null) {
+    const adapterPolicy = adapterId ? policiesByAdapter.get(adapterId) ?? null : null;
+    if (adapterPolicy && adapterPolicy.provider_id !== providerId) {
+      fail('ADAPTER_POLICY_PROVIDER_MISMATCH', 'adapter policy does not belong to the dispatch provider', {
+        provider_id: providerId,
+        adapter_id: adapterId,
+        policy_provider_id: adapterPolicy.provider_id,
+      });
+    }
+    return adapterPolicy ?? policiesByProvider.get(providerId) ?? null;
+  }
+
+  function enablement(providerId, adapterId = null) {
+    const policy = policyFor(providerId, adapterId);
     if (!policy) return { enabled: false, reason: 'ADAPTER_POLICY_MISSING', policy: null };
     if (policy.approval_state !== 'approved') return { enabled: false, reason: 'ADAPTER_POLICY_NOT_APPROVED', policy };
     if (!capabilityRegistry?.get?.(providerId)) return { enabled: false, reason: 'PROVIDER_DESCRIPTOR_MISSING', policy };
     return { enabled: true, reason: null, policy };
   }
 
-  function assertEnabled(providerId) {
-    const state = enablement(providerId);
+  function assertEnabled(providerId, adapterId = null) {
+    const state = enablement(providerId, adapterId);
     if (!state.enabled) {
-      fail(state.reason, `provider adapter is not enabled: ${providerId}`, { provider_id: providerId, reason: state.reason });
+      fail(state.reason, `provider adapter is not enabled: ${providerId}`, {
+        provider_id: providerId,
+        adapter_id: adapterId,
+        reason: state.reason,
+      });
     }
     return state.policy;
   }
@@ -314,7 +333,7 @@ export function createProviderAdapterHost({
     const dispatchable = new Map(
       (typeof executorRegistry.inspect === 'function' ? executorRegistry.inspect() : []).map((entry) => [entry.id, entry]),
     );
-    const providerIds = [...new Set([...dispatchable.keys(), ...policies.keys()])].sort();
+    const providerIds = [...new Set([...dispatchable.keys(), ...policiesByProvider.keys()])].sort();
     return Object.freeze(providerIds.map((providerId) => {
       const state = enablement(providerId);
       const descriptor = capabilityRegistry?.get?.(providerId) ?? null;
@@ -353,7 +372,8 @@ export function createProviderAdapterHost({
   }
 
   async function execute(providerId, request) {
-    assertEnabled(providerId);
+    const adapterId = request?.executionBinding?.adapter_id ?? null;
+    assertEnabled(providerId, adapterId);
     const startedAt = clock().toISOString();
     let raw;
     try {

@@ -2,8 +2,8 @@
 title: "Reconciliation: API-005, API-006, API-008 and Executor Router"
 doc_id: "RECONCILIATION-API-005-006-008-EXECUTOR-ROUTER"
 status: "draft"
-version: "0.1.1+draft"
-updated: "2026-08-04"
+version: "0.2.0+draft"
+updated: "2026-08-14"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 related_issue: 70
@@ -138,7 +138,7 @@ Measured against the section 7 target contract:
 | recheck binding lifecycle (authenticity, expiry, revocation) | present: dispatch verifies the binding against its issuing service, fail-closed | #59 |
 | recheck entitlement lifecycle and compatibility policy | **absent at dispatch**: eligibility is evaluated during planning; an entitlement revoked after its binding was issued is not caught while the binding remains live | #59, #64 |
 | acquire run-scoped credential grant | present | #59 |
-| invoke adapter selected by `binding.adapter_id` | **partial**: dispatch selects by `provider_id`; `adapter_id` is carried on the enablement record, not used for selection | #63, #62 |
+| invoke adapter selected by `binding.adapter_id` | present: the executor resolves the exact bound adapter, verifies its provider and compatibility proof, and fails closed when it is missing or mismatched | #111 |
 | normalize provider result | present | #63 |
 | revoke/expire grant | present | #59 |
 | emit usage event | **not wired**: the ledger exists but no dispatch path writes to it | #61, #64 |
@@ -239,7 +239,7 @@ The following behavior is deprecated immediately:
 | #59 | Credential Vault, run-scoped grants, revocation and session isolation |
 | #60 | Capability planning and governed execution binding service |
 | #61 | Usage events and quota snapshots |
-| #63 | Binding-only adapter dispatch and normalized results |
+| #111 | Binding-only adapter dispatch and normalized results |
 | #62 | Rebind/failover after authorization-first filtering |
 | #64 | End-to-end proof across API-005 → API-006 → API-008 → adapter |
 
@@ -250,5 +250,5 @@ The following behavior is deprecated immediately:
 - Existing executor calls have a fail-closed migration path.
 - Credential and provider-session fields have an explicit serialization boundary.
 - Failure codes have one owning layer.
-- Provider-string dispatch is marked deprecated and cannot silently create authorization.
+- Provider-string dispatch is marked deprecated and cannot silently create authorization; exact adapter selection comes from `binding.adapter_id`.
 - Runtime implementation remains gated by #59, #60, #61, #63, #62 and final #64.

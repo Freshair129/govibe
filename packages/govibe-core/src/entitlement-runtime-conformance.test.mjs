@@ -228,6 +228,7 @@ async function endToEnd(rt, { affinityScope = null } = {}) {
     entitlement_type: 'api',
     model_id: binding.model_id,
     reported_usage: { unit: usage.reported_usage.unit, request_count: usage.reported_usage.request_count },
+    not_applicable_fields: usage.not_applicable_fields,
     routing: { attempt: 1, fallback_used: false },
     outcome: { status: runResult.status, duration_ms: null },
   });
@@ -275,7 +276,7 @@ describe('#64 conformance: API-008 schema contracts', () => {
     const { event } = await endToEnd(runtime());
     expect(Object.keys(event).sort()).toEqual([
       'affinity', 'binding_id', 'entitlement_id', 'entitlement_type', 'estimated_usage', 'event_id',
-      'model_id', 'organization_id', 'outcome', 'project_id', 'provider_id', 'recorded_at',
+      'model_id', 'not_applicable_fields', 'organization_id', 'outcome', 'project_id', 'provider_id', 'recorded_at',
       'reported_usage', 'routing', 'run_id', 'schema', 'task_id', 'unknown_fields', 'user_id', 'workspace_id',
     ]);
   });

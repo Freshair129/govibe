@@ -18,6 +18,8 @@ export class MspConfigurationError extends Error {
 
 const HASH = /^[a-f0-9]{64}$/i;
 const KNOWLEDGE_FIELDS = ["atoms", "symbols", "relations", "nodes", "edges", "communities", "processes", "context_snapshots"];
+const HEALTH_STATES = new Set(["ready", "unavailable", "degraded", "blocked"]);
+const HEALTH_COMPONENTS = ["msp", "gks", "storage"];
 
 function requireRef(value, prefix, label) {
   if (typeof value !== "string" || !value.startsWith(prefix)) throw new Error(`MSP returned an invalid ${label} reference.`);
@@ -44,6 +46,57 @@ function validateKnowledgeCandidate(input) {
   if (!requireRef(input.provenance_ref, "msp:proof/", "provenance")) throw new TypeError("Knowledge candidate provenance is required.");
 }
 
+function validateHealthResponse(input) {
+  if (!input || typeof input !== "object" || Array.isArray(input)) throw new TypeError("MSP health response must be an object.");
+  if (input.schema !== "govibe-msp-health/v1") throw new TypeError("Invalid MSP health schema.");
+  if (!HEALTH_STATES.has(input.health_state)) throw new TypeError("Invalid MSP health state.");
+  if (typeof input.checked_at !== "string" || Number.isNaN(Date.parse(input.checked_at))) throw new TypeError("Invalid MSP health timestamp.");
+  if (typeof input.evidence_ref !== "string" || !input.evidence_ref.startsWith("msp:health/")) throw new TypeError("Invalid MSP health evidence reference.");
+  if (input.reason != null && typeof input.reason !== "string") throw new TypeError("Invalid MSP health reason.");
+  if (!input.components || typeof input.components !== "object" || Array.isArray(input.components)) throw new TypeError("MSP health components are required.");
+
+  const components = {};
+  for (const name of HEALTH_COMPONENTS) {
+    const component = input.components[name];
+    if (!component || typeof component !== "object" || Array.isArray(component)) throw new TypeError(`Invalid MSP health component: ${name}.`);
+    if (!HEALTH_STATES.has(component.state)) throw new TypeError(`Invalid MSP health component state: ${name}.`);
+    if (typeof component.evidence_ref !== "string" || !component.evidence_ref.startsWith("msp:health/")) {
+      throw new TypeError(`Invalid MSP health component evidence reference: ${name}.`);
+    }
+    if (component.reason != null && typeof component.reason !== "string") throw new TypeError(`Invalid MSP health component reason: ${name}.`);
+    components[name] = {
+      state: component.state,
+      reason: component.reason ?? null,
+      evidence_ref: component.evidence_ref,
+      ...(component.malformed === true ? { malformed: true } : {}),
+    };
+  }
+
+  return {
+    schema: input.schema,
+    health_state: input.health_state,
+    checked_at: input.checked_at,
+    evidence_ref: input.evidence_ref,
+    reason: input.reason ?? null,
+    components,
+  };
+}
+
+function unavailableHealth(reason) {
+  return {
+    schema: "govibe-msp-health/v1",
+    health_state: "unavailable",
+    checked_at: null,
+    evidence_ref: null,
+    reason,
+    components: {
+      msp: { state: "unavailable", reason, evidence_ref: null },
+      gks: { state: "unavailable", reason, evidence_ref: null },
+      storage: { state: "unavailable", reason, evidence_ref: null },
+    },
+  };
+}
+
 export class MspClient {
   constructor(callTool) {
     this.callTool = callTool;
@@ -52,6 +105,20 @@ export class MspClient {
   async call(name, input) {
     if (typeof this.callTool !== "function") throw new MspUnavailableError();
     return this.callTool(name, input);
+  }
+
+  async probeHealth() {
+    let result;
+    try {
+      result = await this.call("msp_health", {});
+    } catch {
+      return unavailableHealth("msp_parent_unreachable");
+    }
+    try {
+      return validateHealthResponse(result);
+    } catch {
+      return unavailableHealth("msp_health_invalid_response");
+    }
   }
 
   registerWorkspace(input) {

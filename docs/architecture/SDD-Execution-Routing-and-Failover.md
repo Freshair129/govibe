@@ -2,8 +2,8 @@
 title: "SDD: Execution Routing and Governed Failover"
 doc_id: "SDD-EXECUTION-ROUTING-AND-FAILOVER"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-08-04"
+version: "0.2.0+draft"
+updated: "2026-08-14"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-06::MCP-Runtime-System"
@@ -13,6 +13,7 @@ related_issues:
   - 61
   - 62
   - 64
+  - 109
 related_docs:
   - "docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md"
   - "docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md"
@@ -185,16 +186,16 @@ The decision id is written into the resulting binding's
 `policy_decision_refs` as `scheduler:<decision_id>`, so a binding can be traced
 back to the scoring that produced it.
 
-### 9.1 Known gap against API-008
+### 9.1 Internal evidence boundary
 
-`govibe-scheduler-decision/v1` is **not defined in API-008**. Issue #62 requires
-scheduler decision evidence, but API-008 sections 3 to 12 define no such record.
-It is therefore treated as GoVibe-internal execution evidence, not a provider
-contract surface, and it is not exchanged with any provider.
+`govibe-scheduler-decision/v1` is intentionally governed by this SDD as
+GoVibe-internal execution evidence. It is not an API-008/provider contract and
+is not exchanged with any provider. The decision record is carried through
+`policy_decision_refs` as an opaque internal reference.
 
-Promoting it to a contract surface requires an API-008 change. That is recorded
-here rather than resolved by asserting a schema the contract does not define, and
-is carried into the #64 evidence package.
+This boundary resolves the issue #109 acceptance question: the scheduler schema
+does not need to be added to API-008 unless a future owner decision promotes it
+to a provider-facing surface.
 
 ## 10. Required tests
 
@@ -215,11 +216,12 @@ is carried into the #64 evidence package.
 
 This design is satisfied for repository scope when the tests in section 10 pass
 on `main`. Wiring the router into dispatch, operating the quota/reliability/queue
-signal sources, and the API-008 decision-record gap all remain open under issues
+signal sources, and the final runtime conformance gate remain open under issues
 #62 and #64.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0+draft | 2026-08-14 | ATHER | Clarified that `govibe-scheduler-decision/v1` is SDD-governed internal evidence, not an API-008/provider contract, resolving the issue #109 contract-boundary acceptance. |
 | 0.1.0+draft | 2026-08-04 | ARCHON / ATHER | Initial routing and governed failover design with the scheduler decision evidence record delivered under issue #62; records the API-008 gap for the decision schema and claims no runtime conformance. |

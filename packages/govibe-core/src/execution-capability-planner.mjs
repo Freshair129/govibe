@@ -236,6 +236,7 @@ export function createExecutionCapabilityPlanner({ capabilityRegistry, entitleme
         workspace_id: request.workspace_id,
         project_id: request.project_id,
         provider_id: descriptor.provider_id,
+        adapter_id: descriptor.adapter_id,
         entitlement_id: entitlement.entitlement_id,
         executor_class: request.executor_class,
         model_id: authorizedModel.model_id,

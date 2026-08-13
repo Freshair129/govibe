@@ -209,15 +209,31 @@ function normalizeEstimatedUsage(input) {
   return normalized;
 }
 
+function normalizeDeclaredFields(input, field) {
+  if (input == null) return [];
+  assert(Array.isArray(input), 'USAGE_EVENT_INVALID', `${field} must be an array`, { field });
+  const fields = input.map((value, index) => requiredString(value, `${field}[${index}]`));
+  assert(new Set(fields).size === fields.length, 'USAGE_CLASSIFICATION_CONFLICT', `${field} must not contain duplicate fields`, { field });
+  for (const [index, value] of fields.entries()) {
+    assert(REPORTED_FIELDS.includes(value), 'USAGE_EVENT_INVALID', `${field}[${index}] must name a reported usage field`, {
+      field: `${field}[${index}]`,
+    });
+  }
+  return fields.sort();
+}
+
 // Every reported field the provider cannot expose is named, so a null is readable as
 // "not reported" rather than "measured as zero".
-function deriveUnknownFields(reported, descriptor, declared) {
+function deriveUnknownFields(reported, descriptor, declared, notApplicable) {
   const unknown = new Set();
+  const excluded = new Set(notApplicable);
   for (const field of REPORTED_FIELDS) {
-    if (reported[field] == null) unknown.add(field);
+    if (reported[field] == null && !excluded.has(field)) unknown.add(field);
   }
   if (descriptor.usage_visibility === 'unknown' || !descriptor.known) {
-    for (const field of REPORTED_FIELDS) unknown.add(field);
+    for (const field of REPORTED_FIELDS) {
+      if (!excluded.has(field)) unknown.add(field);
+    }
   }
   for (const [index, field] of (declared ?? []).entries()) {
     unknown.add(requiredString(field, `unknown_fields[${index}]`));
@@ -269,6 +285,20 @@ export function normalizeUsageEvent(input, { descriptor = resolveDescriptor(null
 
   const reported = normalizeReportedUsage(input.reported_usage, descriptor, identity.provider_id);
   const estimated = normalizeEstimatedUsage(input.estimated_usage);
+  const notApplicableFields = normalizeDeclaredFields(input.not_applicable_fields, 'not_applicable_fields');
+  const declaredUnknownFields = normalizeDeclaredFields(input.unknown_fields, 'unknown_fields');
+  const unknownSet = new Set(declaredUnknownFields);
+  for (const field of notApplicableFields) {
+    assert(!unknownSet.has(field), 'USAGE_CLASSIFICATION_CONFLICT', `${field} cannot be both not applicable and unknown`, { field });
+    assert(reported[field] == null, 'USAGE_CLASSIFICATION_CONFLICT', `${field} cannot be not applicable when it has a reported value`, {
+      field: `reported_usage.${field}`,
+    });
+  }
+  for (const field of declaredUnknownFields) {
+    assert(reported[field] == null, 'USAGE_CLASSIFICATION_CONFLICT', `${field} cannot be unknown when it has a reported value`, {
+      field: `reported_usage.${field}`,
+    });
+  }
 
   return Object.freeze({
     schema: USAGE_EVENT_SCHEMA,
@@ -286,7 +316,8 @@ export function normalizeUsageEvent(input, { descriptor = resolveDescriptor(null
     model_id: identity.model_id,
     reported_usage: Object.freeze(reported),
     estimated_usage: Object.freeze(estimated),
-    unknown_fields: Object.freeze(deriveUnknownFields(reported, descriptor, input.unknown_fields)),
+    unknown_fields: Object.freeze(deriveUnknownFields(reported, descriptor, declaredUnknownFields, notApplicableFields)),
+    not_applicable_fields: Object.freeze(notApplicableFields),
     affinity: Object.freeze(normalizeAffinity(input.affinity)),
     routing: Object.freeze(normalizeRouting(input.routing)),
     outcome: Object.freeze(normalizeOutcome(input.outcome)),
@@ -406,6 +437,7 @@ export function aggregateUsageEvents(events, { by = ['entitlement_id'] } = {}) {
         estimation_methods: new Set(),
         min_estimate_confidence: null,
         unknown_field_counts: {},
+        not_applicable_field_counts: {},
         outcomes: {},
       });
     }
@@ -439,6 +471,9 @@ export function aggregateUsageEvents(events, { by = ['entitlement_id'] } = {}) {
     for (const field of event.unknown_fields) {
       group.unknown_field_counts[field] = (group.unknown_field_counts[field] ?? 0) + 1;
     }
+    for (const field of event.not_applicable_fields) {
+      group.not_applicable_field_counts[field] = (group.not_applicable_field_counts[field] ?? 0) + 1;
+    }
   }
 
   return Object.freeze([...groups.values()].map((group) => Object.freeze({
@@ -450,6 +485,7 @@ export function aggregateUsageEvents(events, { by = ['entitlement_id'] } = {}) {
     estimation_methods: Object.freeze([...group.estimation_methods].sort()),
     min_estimate_confidence: group.min_estimate_confidence,
     unknown_field_counts: Object.freeze({ ...group.unknown_field_counts }),
+    not_applicable_field_counts: Object.freeze({ ...group.not_applicable_field_counts }),
     outcomes: Object.freeze({ ...group.outcomes }),
   })));
 }

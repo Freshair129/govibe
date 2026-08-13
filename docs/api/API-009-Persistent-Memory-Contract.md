@@ -1,9 +1,9 @@
 ---
-title: "API Contract: Persistent-Memory MSP Runtime (msp_memory_*)"
+title: "API Contract: Persistent-Memory MSP Runtime (msp_memory_* and msp_health)"
 doc_id: "API-009-PERSISTENT-MEMORY-CONTRACT"
 status: "draft"
-version: "0.1.1+draft"
-updated: "2026-08-05"
+version: "0.2.0+draft"
+updated: "2026-08-14"
 owner: "Boss (CEO)"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -16,7 +16,7 @@ related_docs:
   - "docs/lld/LLD-GoVibe-MCP-Tools.md"
 ---
 
-# API Contract: Persistent-Memory MSP Runtime (msp_memory_*)
+# API Contract: Persistent-Memory MSP Runtime (msp_memory_* and msp_health)
 
 ## 1. Purpose
 
@@ -32,7 +32,8 @@ surface (`msp_workspace_register`, `msp_context_resolve`,
 `msp_context_audit`, `msp_vault_status`, `msp_vault_mount`,
 `msp_evidence_record`, `msp_knowledge_promote`, `msp_memory_promote`), which
 remains governed by `docs/api/API-006-Vault-Context-and-Replay-Contracts.md`;
-it only records that this runtime is the implementation those tools now run
+`msp_health` is the additive bounded status query for that parent boundary. This
+contract records that this runtime is the implementation those tools now run
 against, and that their behavior (including the fail-closed
 `gks_provider_unconfigured` denial and the hard-coded-false replay-execution
 fields) is unchanged by adding memory tools alongside them.
@@ -49,6 +50,7 @@ msp_memory_search(input)
 msp_memory_decay_tick(input)
 msp_memory_links_list(input)
 msp_memory_links_create(input)
+msp_health({})
 
 govibe.memory.search(input)   # Mission Control / agent-facing, delegates to msp_memory_search
 govibe.memory.select(input)   # Mission Control-facing, records a UI selection, no MSP call
@@ -103,7 +105,49 @@ type SearchHit = {
 };
 ```
 
+### 3.1 Health types
+
+```ts
+type HealthState = "ready" | "unavailable" | "degraded" | "blocked";
+
+type HealthComponent = {
+  state: HealthState;
+  reason: string | null;
+  evidence_ref: string;
+  malformed?: boolean;
+};
+```
+
 ## 4. Tool Contracts
+
+### 4.0 `msp_health`
+
+Request: `{}`
+
+Response:
+
+```json
+{
+  "schema": "govibe-msp-health/v1",
+  "health_state": "degraded",
+  "checked_at": "2026-08-14T00:00:00.000Z",
+  "evidence_ref": "msp:health/<opaque-id>",
+  "reason": "gks_provider_unconfigured",
+  "components": {
+    "msp": { "state": "ready", "reason": null, "evidence_ref": "msp:health/<opaque-id>" },
+    "gks": { "state": "blocked", "reason": "gks_provider_unconfigured", "evidence_ref": "msp:health/<opaque-id>" },
+    "storage": { "state": "ready", "reason": null, "evidence_ref": "msp:health/<opaque-id>" }
+  }
+}
+```
+
+The health query is MSP-owned. Its default v1 GKS result is `blocked` with
+`gks_provider_unconfigured`; this is a bounded policy result, not a direct GKS
+connection. Storage checks only the MSP-owned SQLite connection. Probe timeout
+and malformed responses fail closed and never expose raw provider errors or
+credentials. A blocked or unavailable optional GKS component is reported as
+`degraded`; MSP or storage unavailability, timeout, and malformed probe data
+produce overall `unavailable`.
 
 ### 4.1 `msp_memory_upsert`
 
@@ -331,6 +375,8 @@ Response:
 | `conflict` | A concurrent write raced this request under the same `(vault_id, category, key)` | Retry with the latest `current_version` |
 | `gks_provider_unconfigured` | Shared-scope knowledge/memory promotion was requested | Not recoverable in v1; shared promotion is an explicit, documented exclusion until a GKS provider exists |
 | `db_unavailable` | SQLite connection or migration state is invalid | Operator action required; see `docs/operations/runbooks/RUNBOOK-Persistent-Memory-Runtime.md` |
+| `health_probe_timeout` | A bounded MSP health probe did not respond in time | Treat the health result as unavailable and investigate the owning dependency |
+| `malformed_health_probe_response` | A health probe returned an unsupported shape or state | Treat the health result as unavailable; do not infer readiness |
 
 ## 6. Security
 
@@ -364,7 +410,7 @@ independently verified before any real multi-agent use of
 
 ## 7. Compatibility
 
-- Versioning: this contract is `0.1.0+draft`; breaking changes to any request
+- Versioning: this contract is `0.2.0+draft`; breaking changes to any request
   or response shape require a version bump and a Changelog row, following
   `docs/STD-Document-Versioning-Governance.md`.
 - Deprecation: none yet — this is the initial contract. When Phase 5 wires
@@ -388,10 +434,14 @@ independently verified before any real multi-agent use of
 - Phase 5 (future work packet): `govibe.memory.*` MCP surface tests in
   `scripts/mcp/memory-surface.mjs`'s own test file, confirming
   `govibe.memory.promote` is not a duplicate tool definition.
+- Repository scope: `msp_health` tests cover ready, GKS blocked/unavailable,
+  MSP/storage unavailable, timeout, malformed response, opaque evidence refs,
+  and preservation of the existing `msp_ping` response.
 
 ## Changelog
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.2.0+draft | 2026-08-14 | Added the MSP-owned `msp_health` status query with bounded component states, opaque evidence references, fail-closed timeout/malformed handling, and the explicit no-direct-GKS boundary for issue #76. |
 | 0.1.1+draft | 2026-08-05 | Owner-approved corrections against the actual `packages/msp-runtime` implementation. §4.1: corrected the no-op-on-unchanged-content behavior (an unchanged-`source_hash` upsert on a non-`forgotten` entity writes no `entity_history` row and does not increment `current_version`, returning `created: false, changed: false`) and documented the `changed: boolean` response field the code already returns; this was previously misdocumented as writing history and incrementing version on every call. §6: added an explicit amendment note that vault-scope enforcement and the `vault_scope_denied` error are NOT implemented in v1 (the schema lacks `entities.vault_id`, and `promotions.idempotency_key` is globally unique rather than vault-scoped, risking cross-agent Global-Private disclosure); implementation is mandated by blocking work packet WP-14 before any real multi-agent use. |
 | 0.1.0+draft | 2026-08-04 | Initial wire contract for the nine new `msp_memory_*` tools and their `govibe.memory.*` GoVibe-side exposure; documented request/response shapes, the bi-temporal point-read parameters, the soft-delete-only `msp_memory_forget` contract, the hybrid search degradation-reporting contract, and the fail-closed error table. |

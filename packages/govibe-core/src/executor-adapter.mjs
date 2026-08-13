@@ -3,11 +3,12 @@ import { assertExecutorDispatchAllowed } from "./authority-enforcement.mjs";
 const PROVIDERS = ["codex", "claude-code", "crewai", "local"];
 
 export class ProviderUnavailableError extends Error {
-  constructor(provider) {
-    super(`Executor provider unavailable: ${provider}`);
+  constructor(provider, adapterId = provider) {
+    super(`Executor adapter unavailable: ${adapterId} for provider ${provider}`);
     this.name = "ProviderUnavailableError";
     this.code = "PROVIDER_UNAVAILABLE";
     this.provider = provider;
+    this.adapter_id = adapterId;
   }
 }
 
@@ -35,6 +36,29 @@ function scopeMismatch(field) {
   fail("EXECUTION_BINDING_SCOPE_MISMATCH", `binding ${field} does not match dispatch scope`, { field });
 }
 
+function resolveAdapter(entries, provider, binding) {
+  const adapterId = binding?.adapter_id ?? provider;
+  const exactEntries = entries.filter((candidate) => candidate.adapterId === adapterId);
+  if (exactEntries.length > 1) {
+    fail("ADAPTER_ID_AMBIGUOUS", "execution binding adapter id resolves to multiple adapters", {
+      provider_id: provider,
+      adapter_id: adapterId,
+    });
+  }
+  const exactEntry = exactEntries[0] ?? null;
+  if (exactEntry && exactEntry.providerId !== provider) {
+    fail("ADAPTER_PROVIDER_MISMATCH", "execution binding adapter does not belong to the dispatch provider", {
+      provider_id: provider,
+      adapter_id: adapterId,
+      adapter_provider_id: exactEntry.providerId ?? null,
+    });
+  }
+  const legacyEntries = entries.filter((candidate) => candidate.key === provider && candidate.providerId === provider);
+  const entry = exactEntry ?? (legacyEntries.length === 1 ? legacyEntries[0] : null);
+  if (!entry) throw new ProviderUnavailableError(provider, adapterId);
+  return entry.adapter;
+}
+
 function validateBinding(provider, request) {
   const binding = request?.executionBinding;
   if (!binding || typeof binding !== "object") {
@@ -58,6 +82,7 @@ function validateBinding(provider, request) {
     entitlement_id: requireText(binding.entitlement_id, "executionBinding.entitlement_id"),
     actor_id: actorId,
     principal_id: principalId,
+    adapter_id: requireText(binding.adapter_id ?? binding.provider_id, "executionBinding.adapter_id"),
     workspace_id: requireText(binding.workspace_id, "executionBinding.workspace_id"),
     task_id: requireText(binding.task_id, "executionBinding.task_id"),
     agent_id: requireText(binding.agent_id, "executionBinding.agent_id"),
@@ -106,6 +131,7 @@ function safeRequest(request) {
   return Object.freeze({ ...safe, executionBinding: Object.freeze({
     binding_id: executionBinding.binding_id,
     provider_id: executionBinding.provider_id,
+    adapter_id: executionBinding.adapter_id,
     entitlement_id: executionBinding.entitlement_id,
     principal_id: executionBinding.principal_id,
     run_id: executionBinding.run_id,
@@ -118,8 +144,7 @@ function assertBindingIssued(bindingService, binding, request) {
     fail("EXECUTION_BINDING_SERVICE_REQUIRED", "a binding service is required to verify binding authenticity");
   }
 
-  try {
-    return bindingService.assertUsable(binding.binding_id, {
+  const expected = {
       actor_id: binding.actor_id,
       principal_id: binding.principal_id,
       workspace_id: binding.workspace_id,
@@ -132,7 +157,11 @@ function assertBindingIssued(bindingService, binding, request) {
       cache_id: binding.cache_id,
       provider_id: binding.provider_id,
       entitlement_id: binding.entitlement_id,
-    });
+    };
+  if (request?.executionBinding?.adapter_id != null) expected.adapter_id = binding.adapter_id;
+
+  try {
+    return bindingService.assertUsable(binding.binding_id, expected);
   } catch (error) {
     if (error?.code === "EXECUTION_BINDING_EXPIRED") {
       fail("BINDING_EXPIRED", "execution binding expired", { binding_id: binding.binding_id, source_code: error.code });
@@ -156,6 +185,12 @@ function assertCompatibility(compatibilityRegistry, bindingService, issuedBindin
   if (!proof || proof.authorized !== true) {
     fail("PROVIDER_COMPATIBILITY_DENIED", "execution binding has no authorized compatibility proof", {
       reason_code: "COMPATIBILITY_RECORD_MISSING",
+    });
+  }
+  if (issuedBinding.adapter_id !== proof.adapter_id) {
+    fail("PROVIDER_COMPATIBILITY_DENIED", "execution binding adapter does not match its compatibility proof", {
+      reason_code: "ADAPTER_MISMATCH",
+      record_id: proof.record_id,
     });
   }
 
@@ -206,36 +241,55 @@ export function createExecutorRegistry(adapters = {}, {
   compatibilityRegistry = null,
   clock = () => new Date(),
 } = {}) {
+  const adapterEntries = Object.entries(adapters).map(([key, adapter]) => Object.freeze({
+    key,
+    adapter,
+    adapterId: adapter?.adapter_id ?? adapter?.adapterId ?? key,
+    providerId: adapter?.provider_id ?? adapter?.providerId ?? (adapter?.adapter_id ? null : key),
+  }));
+
   return {
     inspect() {
-      return PROVIDERS.map((id) => ({
-        id,
-        available: typeof adapters[id]?.execute === "function",
-        capabilities: adapters[id]?.capabilities ?? [],
-      }));
+      const providerIds = [...new Set([
+        ...PROVIDERS,
+        ...adapterEntries.map((entry) => entry.providerId).filter(Boolean),
+      ])];
+      return providerIds.map((id) => {
+        const matches = adapterEntries.filter((entry) => entry.providerId === id || entry.key === id);
+        return {
+          id,
+          provider_id: id,
+          available: matches.some((entry) => typeof entry.adapter?.execute === "function"),
+          adapter_ids: matches.map((entry) => entry.adapterId).sort(),
+          capabilities: [...new Set(matches.flatMap((entry) => entry.adapter?.capabilities ?? []))],
+        };
+      });
     },
     async execute(provider, request) {
-      const adapter = adapters[provider];
-      if (typeof adapter?.execute !== "function") throw new ProviderUnavailableError(provider);
+      const providerEntries = adapterEntries.filter((entry) => entry.providerId === provider || entry.key === provider);
+      if (providerEntries.length === 0 && !request?.executionBinding) throw new ProviderUnavailableError(provider);
       const binding = validateBinding(provider, request);
       const issuedBinding = assertBindingIssued(bindingService, binding, request);
       assertCompatibility(compatibilityRegistry, bindingService, issuedBinding, clock());
       assertExecutorDispatchAllowed(request);
+      const dispatchBinding = Object.freeze({ ...binding, adapter_id: issuedBinding.adapter_id });
+      const adapter = resolveAdapter(adapterEntries, provider, dispatchBinding);
+      if (typeof adapter?.execute !== "function") throw new ProviderUnavailableError(provider, dispatchBinding.adapter_id);
 
       let providerSession = null;
-      if (binding.provider_session_id) {
+      if (dispatchBinding.provider_session_id) {
         if (!sessionRegistry) fail("PROVIDER_SESSION_REGISTRY_REQUIRED", "provider session registry is required");
-        providerSession = sessionRegistry.assertUsable(binding.provider_session_id, {
-          principal_id: binding.principal_id,
-          entitlement_id: binding.entitlement_id,
-          provider_id: binding.provider_id,
-          run_id: binding.run_id,
-          binding_id: binding.binding_id,
+        providerSession = sessionRegistry.assertUsable(dispatchBinding.provider_session_id, {
+          principal_id: dispatchBinding.principal_id,
+          entitlement_id: dispatchBinding.entitlement_id,
+          provider_id: dispatchBinding.provider_id,
+          run_id: dispatchBinding.run_id,
+          binding_id: dispatchBinding.binding_id,
         });
       }
 
-      const invoke = (credentialBytes = null) => adapter.execute(safeRequest(request), Object.freeze({
-        executionBinding: binding,
+      const invoke = (credentialBytes = null) => adapter.execute(safeRequest({ ...request, executionBinding: dispatchBinding }), Object.freeze({
+        executionBinding: dispatchBinding,
         credential: credentialBytes,
         providerSession,
       }));
@@ -244,11 +298,11 @@ export function createExecutorRegistry(adapters = {}, {
       if (!credentialVault) fail("CREDENTIAL_VAULT_REQUIRED", "credential vault is required for credentialed dispatch");
 
       return credentialVault.withCredential(binding.credential_grant_id, {
-        entitlement_id: binding.entitlement_id,
-        principal_id: binding.principal_id,
-        run_id: binding.run_id,
-        binding_id: binding.binding_id,
-        provider_id: binding.provider_id,
+        entitlement_id: dispatchBinding.entitlement_id,
+        principal_id: dispatchBinding.principal_id,
+        run_id: dispatchBinding.run_id,
+        binding_id: dispatchBinding.binding_id,
+        provider_id: dispatchBinding.provider_id,
       }, invoke);
     },
     async cancel(provider, runId) {

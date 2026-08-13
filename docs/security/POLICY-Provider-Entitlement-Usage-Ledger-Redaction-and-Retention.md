@@ -1,9 +1,9 @@
 ---
 title: "Provider Entitlement Usage Ledger Redaction and Retention Policy"
 doc_id: "POLICY-PROVIDER-ENTITLEMENT-USAGE-LEDGER-REDACTION-AND-RETENTION"
-version: "0.1.0+draft"
+version: "0.1.1+draft"
 status: draft
-updated: "2026-08-04"
+updated: "2026-08-14"
 owner: "Boss / ATHER"
 source_of_truth: true
 related_issues:
@@ -11,6 +11,7 @@ related_issues:
   - 59
   - 61
   - 64
+  - 110
 related_docs:
   - "docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md"
   - "docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md"
@@ -67,7 +68,8 @@ caller cannot smuggle payload data into an accounting record.
 |---|---|---|
 | `reported_usage` | the provider, as declared by its capability descriptor | a numeric value is accepted only when the descriptor declares that the provider reports that field |
 | `estimated_usage` | GoVibe | requires `method` and `confidence`; can never be written into `reported_usage` |
-| `unknown_fields` | derived | every reported field that is null is named, so a null is readable as "not reported" and never as "measured zero" |
+| `unknown_fields` | derived | every reported field that is null is named unless it is explicitly classified as not applicable |
+| `not_applicable_fields` | entitlement semantics carried by the execution record | an explicitly named known field must have a null reported value and cannot also be unknown |
 
 Consequences enforced in code:
 
@@ -84,20 +86,20 @@ Aggregation keeps the two buckets in separate totals and publishes a `coverage`
 count per field. A total of `0` with `coverage: 0` means "nothing was reported",
 never "zero was consumed".
 
-### 4.1 Known gap against the sharing policy classification
+### 4.1 Four-way classification
 
 `docs/security/POLICY-Provider-Entitlement-Sharing-Compatibility.md` section 9
 requires each telemetry field to be classified as `provider_reported`,
 `govibe_estimated`, `unknown`, or `not_applicable`. The `v1` usage-event schema
-in API-008 section 10 carries the first three structurally — the reported bucket,
-the estimated bucket, and `unknown_fields` — but has no representation for
-`not_applicable`. A field that cannot apply to an entitlement type, such as
-`provider_credits` on a local-compute entitlement, is therefore recorded as
-unknown rather than as not applicable.
+in API-008 section 10 carries the fourth classification as
+`not_applicable_fields`, alongside the reported, estimated, and unknown buckets.
+A field may be marked not applicable only when the entitlement semantics make it
+inapplicable, and the ledger requires its reported value to be null.
 
-This is a contract-level gap, not an implementation shortcut. Closing it requires
-an API-008 change and must not be resolved by inventing a field outside the `v1`
-schema. It is carried into the issue #64 evidence package.
+The ledger also requires known usage field names, disjoint unknown and
+not-applicable lists, and rejects a reported value that is declared unknown.
+Local-compute token fields can therefore be not applicable while a provider-credit
+field remains unknown when the provider does not expose it.
 
 ## 5. Knowledge boundary
 
@@ -138,6 +140,7 @@ outcome. A dimension outside that list is rejected
 - credential material rejected at top level and nested;
 - unreported provider fields rejected rather than stored;
 - partial-telemetry and rate-limit-only providers preserved as unknown;
+- not-applicable fields separated from unknown fields and conflicting classifications rejected;
 - estimates rejected without method and confidence;
 - retention window purges by record timestamp;
 - knowledge-boundary assertion for the module.
@@ -152,4 +155,5 @@ sign-off remain open under issues #61 and #64.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-14 | ATHER | Recorded the API-008 `not_applicable_fields` classification and its ledger enforcement under issue #110; durable storage and security review remain outside this policy. |
 | 0.1.0+draft | 2026-08-04 | ATHER | Initial redaction and retention policy for the entitlement usage ledger delivered under issue #61; no runtime conformance claim. |

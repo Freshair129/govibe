@@ -259,4 +259,93 @@ describe("executor adapter governed handoff", () => {
     await expect(registry.execute("codex", governedRequest({ executionBinding: binding }))).rejects.toMatchObject({ code });
     expect(execute).not.toHaveBeenCalled();
   });
+
+  it("selects the bound adapter when two adapters share one provider", async () => {
+    const record = {
+      ...compatibilityRecord(),
+      record_id: "compat-shared-owner-v1",
+      provider: "shared",
+      product: "shared-test-product",
+      allowed_adapter_ids: ["adapter-shared-b"],
+      evidence_refs: ["internal:test-shared-policy"],
+      evidence_hashes: ["sha256:test-shared-policy-v1"],
+    };
+    const proof = {
+      ...compatibilityProof(),
+      record_id: record.record_id,
+      provider: "shared",
+      product: record.product,
+      adapter_id: "adapter-shared-b",
+      policy_ref: "compatibility:compat-shared-owner-v1:1.0.0",
+    };
+    const compatibilityRegistry = createProviderCompatibilityRegistry([record]);
+    const bindingService = createExecutionBindingService({ idFactory: () => "shared" });
+    const binding = bindingService.createBinding({
+      binding_request_id: "br-shared",
+      actor_id: "user-1",
+      organization_id: "org-1",
+      workspace_id: "ws-1",
+      project_id: "project-1",
+      task_id: "task-1",
+      agent_id: "agent-1",
+      run_id: "run-1",
+      session_id: "session-1",
+      turn_id: "turn-1",
+      context: {
+        context_id: "context-1", cache_id: "cache-1", context_hash: "hash-1", source_manifest_hash: "manifest-1",
+        context_profile: "T-ctx", tool_contract_hash: "tools-1", persisted: true,
+      },
+      eligible_target: {
+        authorized: true,
+        actor_id: "user-1",
+        workspace_id: "ws-1",
+        project_id: "project-1",
+        provider_id: "shared",
+        adapter_id: "adapter-shared-b",
+        entitlement_id: "ent-shared",
+        executor_class: "external-agent",
+        model_id: "model-shared",
+        state: "active",
+        compatibility: proof,
+      },
+      policy_decision_refs: ["policy:entitlement:shared", proof.policy_ref],
+    });
+    const first = vi.fn(async () => "adapter-a");
+    const second = vi.fn(async () => "adapter-b");
+    const registry = createExecutorRegistry({
+      "adapter-shared-a": { provider_id: "shared", adapter_id: "adapter-shared-a", execute: first },
+      "adapter-shared-b": { provider_id: "shared", adapter_id: "adapter-shared-b", execute: second },
+    }, { bindingService, compatibilityRegistry });
+
+    await expect(registry.execute("shared", governedRequest({ executionBinding: binding }))).resolves.toBe("adapter-b");
+    expect(first).not.toHaveBeenCalled();
+    expect(second).toHaveBeenCalledOnce();
+  });
+
+  it("fails closed when the bound adapter belongs to another provider", async () => {
+    const bindingService = createExecutionBindingService({ idFactory: () => "mismatch" });
+    const binding = bindingService.createBinding({
+      ...bindingRequest(),
+      binding_request_id: "br-mismatch",
+      eligible_target: {
+        ...bindingRequest().eligible_target,
+        adapter_id: "adapter-other",
+        compatibility: { ...compatibilityProof(), adapter_id: "adapter-other" },
+      },
+      policy_decision_refs: ["policy:entitlement:1", COMPAT_POLICY_REF],
+    });
+    const compatibilityRegistry = createProviderCompatibilityRegistry([{
+      ...compatibilityRecord(),
+      allowed_adapter_ids: ["adapter-other"],
+    }]);
+    const execute = vi.fn(async () => "wrong");
+    const registry = createExecutorRegistry({
+      "adapter-other": { provider_id: "other", adapter_id: "adapter-other", execute },
+    }, { bindingService, compatibilityRegistry });
+
+    await expect(registry.execute("codex", governedRequest({ executionBinding: binding }))).rejects.toMatchObject({
+      code: "ADAPTER_PROVIDER_MISMATCH",
+    });
+    expect(execute).not.toHaveBeenCalled();
+  });
 });
