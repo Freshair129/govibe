@@ -43,6 +43,7 @@ function baseResult(providerId, providerVersion, context, output) {
  */
 export function createLocalComputeAdapter({
   providerId = 'local',
+  adapterId = `adapter-${providerId}`,
   providerVersion = null,
   run,
   clock = () => new Date(),
@@ -50,6 +51,8 @@ export function createLocalComputeAdapter({
   if (typeof run !== 'function') throw new ProviderInvocationError('PROVIDER_REJECTED', 'local compute adapter requires a run function');
 
   return Object.freeze({
+    provider_id: providerId,
+    adapter_id: adapterId,
     capabilities: Object.freeze(['local-compute']),
     async execute(request, context) {
       const startedAt = clock();
@@ -77,6 +80,7 @@ export function createLocalComputeAdapter({
  */
 export function createSubscriptionCliAdapter({
   providerId,
+  adapterId = `adapter-${providerId}`,
   providerVersion = null,
   run,
   classifyFailure = null,
@@ -94,6 +98,8 @@ export function createSubscriptionCliAdapter({
   });
 
   return Object.freeze({
+    provider_id: providerId,
+    adapter_id: adapterId,
     capabilities: Object.freeze(['external-agent']),
     async execute(request, context) {
       let output;

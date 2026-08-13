@@ -2,8 +2,8 @@
 doc_id: "ADR-027-IN-REPO-MSP-RUNTIME-PACKAGE-BOUNDARY"
 title: "ADR-027: In-repo MSP runtime package boundary"
 status: "accepted"
-version: "0.2.0"
-updated: "2026-08-05"
+version: "0.3.0"
+updated: "2026-08-14"
 owner: "Boss (CEO)"
 approval_owner: "Boss (CEO)"
 approval_recorded_at: "2026-08-05"
@@ -208,11 +208,12 @@ Every response and every explicit status query surfaces a machine-actionable
 ADR's Decision, item 5, unchanged): `health_state` must reflect a real,
 checked condition, not configuration presence.
 
-Implementation of this contract (health checks, configuration validation,
-and fail-closed status reporting for `packages/msp-runtime`'s transport and
-storage layers) is tracked by GitHub issue #76 (MSP transport health,
-configuration validation, fail-closed status). This ADR defines the
-contract; it does not claim the implementation exists yet.
+Implementation of this contract is present in `packages/msp-runtime`'s
+`msp_health` handler and the GoVibe `MspClient.probeHealth()` normalization
+boundary. The implementation reports MSP, GKS and private-storage components,
+uses bounded timeout/malformed handling, and keeps GKS unconfigured/blocked by
+default. Issue #76 remains subject to the repository and operational evidence
+gate; this ADR does not claim a persistent external provider or restart E2E.
 
 ## Contract version and compatibility
 
@@ -308,6 +309,7 @@ Consequences section (ADR-026's own Decision text is not rewritten):
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0 | 2026-08-14 | ATHER | Implemented the bounded `msp_health` status query and GoVibe client normalization from issue #76; preserved the no-direct-GKS boundary and kept external-provider/restart evidence explicitly out of scope. |
 | 0.2.0 | 2026-08-05 | Boss (CEO) | **Accepted.** `status: proposed -> accepted`. Closes ADR-026's Required-follow-up item "Owner approves or rejects this proposal and records the MSP runtime location" (Issue #75). Recorded `approval_owner`/`approval_recorded_at`. Acceptance covers the architecture decision only; it does not itself authorize any specific work packet's execution — WP-12 and WP-13 were already independently authorized/executed/verified before this acceptance landed (see their own Execution closure sections), and WP-14 onward remain gated by the CR's own per-packet authorization step. |
 | 0.1.1+draft | 2026-08-05 | Boss (CEO) / Claude (final-gate session) | Added two required sections (issue #75 acceptance criteria): "Service health states" (the `ready`/`unavailable`/`degraded`/`blocked` four-state contract, per-state permitted-operations table, `health_state` and `reason` fields; implementation tracked by issue #76, not claimed here) and "Contract version and compatibility" (the wire contract is governed by API-009, currently `0.1.1+draft`; breaking changes require an API-009 version bump plus Changelog row). Added `docs/api/API-009-Persistent-Memory-Contract.md` to `related_docs`. `status` remains `proposed`; not an owner acceptance of this ADR. |
 | 0.1.0+draft | 2026-08-04 | Claude (final-gate session) | Proposed resolving ADR-026's unresolved MSP runtime repository/process prerequisite as in-repo `packages/msp-runtime`, spawned as a separate OS process; recorded relationship to ADR-020 (memory-unit shape), ADR-023 (knowledge/context authority boundary, no `gks:` minting), and ADR-025 (storage-backend independence scope); recorded the ADR-026 amendment note. Status remains proposed pending owner acceptance. |
