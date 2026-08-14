@@ -22,3 +22,6 @@ export { createWorkflowPlan, getWorkflowStatus, transitionWorkflow } from "./wor
 export { createExecutorRegistry, ProviderUnavailableError } from "./executor-adapter.mjs";
 export { createPolicyEnvelope, assertPolicyAllows } from "./policy-envelope.mjs";
 export { reviewWorkspace, optimizeMeasured, workspaceImpact, docsVersion } from "./governance-operations.mjs";
+export { createCredentialVault, createEncryptedSecretBackend, createInMemorySecretBackend, CredentialVaultError } from "./credential-vault.mjs";
+export { createDurableEncryptedSecretBackend } from "./credential-durable-backend.mjs";
+export { CREDENTIAL_HANDOFF_MODES, DERIVED_HANDOFF_SCHEMA, CredentialHandoffError, normalizeCredentialMode, normalizeDerivedCredentialHandoff } from "./credential-handoff.mjs";
