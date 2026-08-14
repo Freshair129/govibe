@@ -1,9 +1,5 @@
-// transport/handlers/vault-handlers: msp_vault_status, msp_vault_mount,
-// msp_workspace_register (WP-13 Bounded Scope item 4). Response shapes
-// exactly as consumed by getVaultStatus/mountVault in
-// scripts/mcp/msp-vault-context-contracts.mjs and registerWorkspace in
-// packages/govibe-core/src/msp-client.mjs -- both read directly (not
-// paraphrased) as this packet's ground truth.
+// transport/handlers/vault-handlers: workspace/vault registration, status,
+// mounting, and Issue #136 authorized vault-set resolution.
 import { workspaceRef, vaultRegistryRef } from "../../contracts/refs.mjs";
 import { ValidationError } from "../../contracts/errors.mjs";
 import { assertVaultScope } from "../../contracts/vault-scope-guard.mjs";
@@ -19,28 +15,52 @@ function optionalString(value) {
   return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
+function readContext(args) {
+  const source = args.access_context && typeof args.access_context === "object" ? args.access_context : args;
+  return {
+    tenantId: requireString(source.tenantId ?? source.tenant_id, "tenant_id"),
+    businessId: optionalString(source.businessId ?? source.business_id),
+    principalId: requireString(source.principalId ?? source.principal_id, "principal_id"),
+    agentId: requireString(source.agentId ?? source.agent_id, "agent_id"),
+    instanceId: optionalString(source.instanceId ?? source.instance_id),
+    projectId: requireString(source.projectId ?? source.project_id, "project_id"),
+    workspaceId: requireString(source.workspaceId ?? source.workspace_id, "workspace_id"),
+    threadId: optionalString(source.threadId ?? source.thread_id),
+    sessionId: optionalString(source.sessionId ?? source.session_id),
+    policyVersion: String(source.policyVersion ?? source.policy_version ?? "1"),
+  };
+}
+
+function readAuthorization(args) {
+  const source = args.authorization && typeof args.authorization === "object" ? args.authorization : {};
+  return {
+    // Multi-tenant resolution is intentionally fail-closed: the identity /
+    // policy layer must affirm current membership on every turn. Omission is
+    // not interpreted as authorization.
+    membershipActive: source.membershipActive ?? source.membership_active ?? false,
+    allowed: source.allowed ?? true,
+    allowGlobalPrivate: source.allowGlobalPrivate ?? source.allow_global_private ?? true,
+    allowTenantGlobalPrivate: source.allowTenantGlobalPrivate ?? source.allow_tenant_global_private ?? true,
+    allowShared: source.allowShared ?? source.allow_shared ?? true,
+    read: source.read ?? true,
+    writePrivate: source.writePrivate ?? source.write_private ?? true,
+    writeShared: source.writeShared ?? source.write_shared ?? false,
+  };
+}
+
 export function createVaultHandlers({ vaultRegistry, journal }) {
   return {
-    // Request fields as built by registerWorkspace in msp-client.mjs:
-    // schema_version, actor, workspace_id, project_id, workspace_path,
-    // vault_bindings, idempotency_key, run_id, recorded_at, source_hash.
     async msp_workspace_register(args = {}) {
       const actor = requireString(args.actor, "actor");
       const workspaceId = requireString(args.workspace_id, "workspace_id");
       requireString(args.workspace_path, "workspace_path");
       const projectId = optionalString(args.project_id);
 
-      // Lazy provisioning on first reference (WP-13 Bounded Scope item 1):
-      // registering a workspace is one of the two events that provisions
-      // its workspace_private vault; if a project_id is known, the
-      // project's shared vault is also provisioned here for identity
-      // completeness -- it is never a write target for promotion.
       vaultRegistry.provisionWorkspacePrivateVault(workspaceId, { projectId });
       if (projectId) vaultRegistry.provisionSharedVault(projectId);
 
       const workspace_ref = workspaceRef(workspaceId);
       const registry_ref = vaultRegistryRef(workspaceId);
-
       journal.append({
         actor,
         toolName: "msp_workspace_register",
@@ -54,20 +74,14 @@ export function createVaultHandlers({ vaultRegistry, journal }) {
         },
         policyDecision: "allow",
       });
-
       return { workspace_ref, registry_ref };
     },
 
-    // Request fields as built by getVaultStatus in
-    // msp-vault-context-contracts.mjs: actor, workspace_id, workspace_path,
-    // agent_id.
     async msp_vault_status(args = {}) {
       const actor = requireString(args.actor, "actor");
       const workspaceId = optionalString(args.workspace_id);
       const agentId = optionalString(args.agent_id);
-
       const { vaults } = vaultRegistry.getVaultStatus({ workspaceId, agentId });
-
       const workspace_ref = workspaceId ? workspaceRef(workspaceId) : null;
       const registry_ref = workspaceId ? vaultRegistryRef(workspaceId) : null;
 
@@ -90,6 +104,11 @@ export function createVaultHandlers({ vaultRegistry, journal }) {
           project_id: vault.project_id,
           workspace_id: vault.workspace_id,
           agent_id: vault.agent_id,
+          tenant_id: vault.tenant_id,
+          business_id: vault.business_id,
+          principal_id: vault.principal_id,
+          visibility: vault.visibility,
+          policy_version: vault.policy_version,
           status: vault.status,
         })),
         policy_decision: "allow",
@@ -97,22 +116,42 @@ export function createVaultHandlers({ vaultRegistry, journal }) {
       };
     },
 
-    // Request fields as built by mountVault in
-    // msp-vault-context-contracts.mjs: actor, workspace_id, workspace_path,
-    // vault_id, mount_alias, access_mode, reason.
-    //
-    // WP-14 AC-04: of the tools in this packet's actual delivered surface
-    // (see the final report's Bounded-Scope investigation), this is the
-    // ONLY one whose request carries a real, caller-supplied vault_id --
-    // msp_context_resolve and msp_memory_promote derive their scope from
-    // workspace_id/agent_id internally and accept no vault_id parameter
-    // (Explicit Exclusion #1 forbids adding one to their wire shape). So
-    // vault_scope_denied enforcement is implemented here: reject before the
-    // mutating vaultRegistry.mountVault() call (which writes a vault_mounts
-    // row) if the caller's workspace does not actually own vault_id, or
-    // has not already legitimately mounted it. An unknown vault_id is left
-    // to mountVault()'s own existing not_found path, unchanged from WP-13
-    // -- it is a different condition from "known vault I don't own".
+    /**
+     * Issue #136 public runtime contract. Application Identity/Policy supplies
+     * current authorization facts on every call; MSP resolves and enforces the
+     * canonical vault bindings. thread/session/instance are provenance only and
+     * never participate in vault ownership ids.
+     */
+    async msp_vault_resolve(args = {}) {
+      const actor = requireString(args.actor, "actor");
+      const context = readContext(args);
+      const authorization = readAuthorization(args);
+      const resolved = vaultRegistry.resolveAuthorizedVaultSet(context, authorization);
+
+      journal.append({
+        actor,
+        toolName: "msp_vault_resolve",
+        ref: workspaceRef(context.workspaceId),
+        workspaceId: context.workspaceId,
+        payload: {
+          tenant_id: context.tenantId,
+          business_id: context.businessId,
+          principal_id: context.principalId,
+          agent_id: context.agentId,
+          project_id: context.projectId,
+          thread_id: context.threadId,
+          session_id: context.sessionId,
+          instance_id: context.instanceId,
+          policy_version: context.policyVersion,
+          resolved_vault_count:
+            1 + resolved.globalPrivateVaultIds.length + resolved.sharedVaultIds.length,
+        },
+        policyDecision: "allow",
+      });
+
+      return resolved;
+    },
+
     async msp_vault_mount(args = {}) {
       const actor = requireString(args.actor, "actor");
       const workspaceId = requireString(args.workspace_id, "workspace_id");
@@ -125,13 +164,22 @@ export function createVaultHandlers({ vaultRegistry, journal }) {
       const knownVault = vaultRegistry.getVaultById(vaultId);
       if (knownVault) {
         assertVaultScope(
-          vaultRegistry.isVaultAccessibleTo(vaultId, { workspaceId }),
-          `vault_scope_denied: vault_id "${vaultId}" is not owned by, or already mounted for, workspace "${workspaceId}".`,
+          vaultRegistry.isVaultAccessibleTo(vaultId, {
+            workspaceId,
+            agentId: optionalString(args.agent_id),
+            tenantId: optionalString(args.tenant_id),
+            businessId: optionalString(args.business_id),
+            principalId: optionalString(args.principal_id),
+            // Legacy msp_vault_mount has no membership field, so keep its
+            // existing behavior. Scoped vaults still fail closed because the
+            // required tenant/principal/agent dimensions must match first.
+            membershipActive: args.membership_active ?? true,
+          }),
+          `vault_scope_denied: vault_id "${vaultId}" is outside the caller's current authorized scope.`,
         );
       }
 
       const { mount, vault } = vaultRegistry.mountVault({ vaultId, workspaceId, mountAlias, accessMode });
-
       journal.append({
         actor,
         toolName: "msp_vault_mount",
@@ -140,7 +188,6 @@ export function createVaultHandlers({ vaultRegistry, journal }) {
         payload: { vault_id: vaultId, mount_alias: mountAlias, access_mode: accessMode, reason },
         policyDecision: "allow",
       });
-
       return {
         mount_ref: mount.mount_ref,
         vault_ref: vault.vault_ref,
