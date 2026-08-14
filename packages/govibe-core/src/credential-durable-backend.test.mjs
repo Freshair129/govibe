@@ -122,6 +122,9 @@ describe("protected child-process credential handoff", () => {
           GOVIBE_RAW_SHA256: rawHash,
         };
         expect(JSON.stringify(childEnv)).not.toContain(rawSecret);
+        expect(childEnv).not.toHaveProperty("GOVIBE_CREDENTIAL_REF");
+        expect(childEnv).not.toHaveProperty("GOVIBE_RAW_CREDENTIAL");
+        expect(childEnv).not.toHaveProperty("GOVIBE_ENTITLEMENT_SECRET");
 
         const child = spawnSync(process.execPath, ["-e", childScript], {
           encoding: "utf8",
