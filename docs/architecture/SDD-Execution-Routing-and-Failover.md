@@ -2,14 +2,13 @@
 title: "SDD: Execution Routing and Governed Failover"
 doc_id: "SDD-EXECUTION-ROUTING-AND-FAILOVER"
 status: "draft"
-version: "0.3.0+draft"
+version: "0.2.0+draft"
 updated: "2026-08-14"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-06::MCP-Runtime-System"
 related_issues:
   - 55
-  - 59
   - 60
   - 61
   - 62
@@ -137,13 +136,6 @@ Because planning re-runs rather than being cached, a fallback entitlement that w
 revoked between the original binding and the failover is rejected at failover
 time.
 
-Credential lifecycle is rechecked at the same boundary. A run-scoped grant
-captures the credential generation at issuance; rotation changes that generation
-and makes older grants invalid before adapter invocation. Rebind/failover must
-obtain a new grant and must never inherit credential material or provider-session
-state from the failed binding. This repository evidence is provider-neutral and
-process-local; durable key management and provider-side revocation remain open.
-
 ## 8. Downgrade reporting
 
 When failover selects a target weaker than the previous one, the decision record
@@ -216,7 +208,6 @@ to a provider-facing surface.
 - failover produces a new binding id, excludes the failed target and preserves
   context identity and hash;
 - a revoked fallback entitlement is rejected at failover time;
-- a rotated credential's stale grant is rejected before adapter invocation;
 - a changed context id or hash is rejected;
 - downgrades are reported;
 - one decision record exists per routing attempt, including failures.
@@ -232,6 +223,5 @@ signal sources, and the final runtime conformance gate remain open under issues
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
-| 0.3.0+draft | 2026-08-14 | ATHER | Added the credential-generation rule for rotation/rebind and recorded the provider-neutral, process-local evidence boundary for issue #59. |
 | 0.2.0+draft | 2026-08-14 | ATHER | Clarified that `govibe-scheduler-decision/v1` is SDD-governed internal evidence, not an API-008/provider contract, resolving the issue #109 contract-boundary acceptance. |
 | 0.1.0+draft | 2026-08-04 | ARCHON / ATHER | Initial routing and governed failover design with the scheduler decision evidence record delivered under issue #62; records the API-008 gap for the decision schema and claims no runtime conformance. |

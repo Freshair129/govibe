@@ -1,8 +1,8 @@
 ---
 title: "Threat Model: Provider Entitlement Credential and Session Boundary"
 doc_id: "THREAT-MODEL-PROVIDER-ENTITLEMENT-CREDENTIAL-SESSION"
-version: "0.3.0+draft"
-updated: "2026-08-14"
+version: "0.1.0+draft"
+updated: "2026-08-03"
 status: "draft"
 owner: "ATHER / ARCHON"
 source_of_truth: true
@@ -27,13 +27,7 @@ This document defines the security boundary required before GoVibe may use provi
 
 It converts the authority decisions in ADR-024 and the contracts in API-008 into explicit threats, mandatory controls, negative tests, incident actions, and release gates.
 
-The repository now contains an in-memory Credential Vault boundary, an explicit
-AES-256-GCM encrypted backend fixture, run-scoped grants with credential
-generation checks, binding/session checks, and an explicit `derived_token`
-handoff fixture whose raw bytes are restricted to an adapter-owned derivation
-callback. This is bounded repository evidence only: durable storage and key
-management, a real provider handoff, complete operational controls, and final
-conformance remain tracked by Issues #59 and #64.
+This document does **not** claim that Credential Vault, provider-session isolation, or protected credential handoff are implemented. Implementation is tracked by Issue #59 and final conformance by Issue #64.
 
 ## 2. Security objective
 
@@ -475,17 +469,6 @@ Credential Vault implementation is not acceptable unless it provides:
 11. audit events without secret values;
 12. rotation, revocation, purge, and incident response operations.
 
-The derived-token control is additionally required for any adapter that selects
-that mode: raw bytes must not reach `execute`, the handoff must be bound to the
-provider/adapter/binding tuple, and exact raw-secret reuse must be rejected.
-
-Repository evidence for this slice covers encrypted-at-rest transformation and
-metadata-only inspection in the provider-neutral backend, generation capture on
-credential records/grants, stale-grant rejection after rotation, and purge on
-revocation. It does not establish a durable backend, host key lifecycle,
-protected child process, provider-side revocation, or human security/release
-approval; Gate B therefore remains open.
-
 ## 9. Provider compatibility dependency
 
 No subscription or organization seat may be marked `workspace_pool` or `organization_pool` solely because the implementation technically supports it.
@@ -542,8 +525,6 @@ On suspected credential or session compromise:
 ### Gate B — Credential Vault implementation (#59)
 
 - mandatory control set implemented;
-- repository derived-token boundary and negative fixture pass, where that mode
-  is used;
 - focused security tests pass;
 - no secret material appears in test evidence.
 
@@ -578,10 +559,3 @@ Issue #67 is complete when:
 - provider compatibility is explicitly gated by #69;
 - contract reconciliation remains gated by #70;
 - no runtime implementation claim is made by this document alone.
-
-## 15. Changelog
-
-| Version | Date | Owner | Summary |
-|---|---|---|---|
-| 0.3.0+draft | 2026-08-14 | ATHER | Recorded the provider-neutral encrypted backend and credential-generation/rotation repository controls; durable key/storage, provider, and human review gates remain open. |
-| 0.2.0+draft | 2026-08-14 | ATHER | Recorded the repository derived-token handoff control and its remaining production limits; no real-provider or final #59/#64 closure claim. |
