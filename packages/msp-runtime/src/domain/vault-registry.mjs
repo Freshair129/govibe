@@ -245,7 +245,7 @@ export class VaultRegistry {
       );
     }
     assertPrincipalAgentSeparation(agentId, principalId);
-    if (authorization.membershipActive === false || authorization.allowed === false) {
+    if (authorization.membershipActive !== true || authorization.allowed === false) {
       throw new MspRuntimeError("Vault access denied by current membership/policy facts.", "vault_scope_denied");
     }
 
