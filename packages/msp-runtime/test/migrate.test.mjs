@@ -44,9 +44,7 @@ describe("db/migrate (AC-03)", () => {
   it("applies all migration files in order and records them with a checksum in schema_migrations", () => {
     const migrationsDir = setupMigrationsDir({ "0001_a.sql": migration1, "0002_b.sql": migration2 });
     const db = freshDb();
-
     const result = runMigrations(db, migrationsDir);
-
     expect(result.appliedCount).toBe(2);
     const rows = db.prepare("SELECT version, name, checksum FROM schema_migrations ORDER BY version").all();
     expect(rows).toHaveLength(2);
@@ -54,18 +52,14 @@ describe("db/migrate (AC-03)", () => {
     expect(rows[1].version).toBe(2);
     expect(rows[0].checksum).toMatch(/^[0-9a-f]{64}$/);
     expect(db.pragma("user_version", { simple: true })).toBe(2);
-
-    // The migrations actually ran (not just recorded).
     expect(db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name IN ('t1','t2')").all()).toHaveLength(2);
   });
 
   it("re-running migrations against an already-migrated database is a no-op", () => {
     const migrationsDir = setupMigrationsDir({ "0001_a.sql": migration1 });
     const db = freshDb();
-
     runMigrations(db, migrationsDir);
     const second = runMigrations(db, migrationsDir);
-
     expect(second.appliedCount).toBe(0);
     expect(db.prepare("SELECT COUNT(*) AS count FROM schema_migrations").get().count).toBe(1);
   });
@@ -73,12 +67,8 @@ describe("db/migrate (AC-03)", () => {
   it("throws SchemaVersionError when an already-applied migration file's checksum has drifted", () => {
     const migrationsDir = setupMigrationsDir({ "0001_a.sql": migration1 });
     const db = freshDb();
-
     runMigrations(db, migrationsDir);
-
-    // Tamper with the already-applied migration file after the fact.
     writeFileSync(path.join(migrationsDir, "0001_a.sql"), `${migration1}\n-- tampered`, "utf8");
-
     expect(() => runMigrations(db, migrationsDir)).toThrow(SchemaVersionError);
     expect(() => runMigrations(db, migrationsDir)).toThrow(/checksum drift/i);
   });
@@ -86,18 +76,17 @@ describe("db/migrate (AC-03)", () => {
   it("throws SchemaVersionError when PRAGMA user_version exceeds the newest migration file present (downgrade guard)", () => {
     const migrationsDir = setupMigrationsDir({ "0001_a.sql": migration1 });
     const db = freshDb();
-
     db.pragma("user_version = 999");
-
     expect(() => runMigrations(db, migrationsDir)).toThrow(SchemaVersionError);
     expect(() => runMigrations(db, migrationsDir)).toThrow(/downgrade|newer than the newest/i);
   });
 
-  it("applies the real packaged migrations (0001-0006, through WP-17's links table) without error", () => {
+  it("applies the real packaged migrations (0001-0007) without error", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     const result = runMigrations(db, migrationsDir);
-    expect(result.appliedCount).toBe(6);
+    expect(result.appliedCount).toBe(7);
+    expect(result.currentVersion).toBe(7);
     const tables = db
       .prepare(
         "SELECT name FROM sqlite_master WHERE type='table' AND name IN " +
@@ -105,41 +94,34 @@ describe("db/migrate (AC-03)", () => {
       )
       .all();
     expect(tables).toHaveLength(10);
-    // WP-15: entities_fts is a virtual table (type='table' in sqlite_master
-    // for FTS5's shadow-table implementation detail is not guaranteed
-    // portable, so check by name against the sqlite_master rows FTS5 itself
-    // registers instead).
-    const ftsRows = db.prepare("SELECT name FROM sqlite_master WHERE name = 'entities_fts'").all();
-    expect(ftsRows).toHaveLength(1);
+    expect(db.prepare("SELECT name FROM sqlite_master WHERE name = 'entities_fts'").all()).toHaveLength(1);
 
-    // WP-14 AC-01/AC-05: the new columns this migration adds are present.
     const entityCols = db.prepare("PRAGMA table_info(entities)").all().map((col) => col.name);
     expect(entityCols).toContain("vault_id");
+    expect(entityCols).toContain("last_accessed_at");
     const promotionCols = db.prepare("PRAGMA table_info(promotions)").all().map((col) => col.name);
     expect(promotionCols).toContain("vault_id");
     const vaultCols = db.prepare("PRAGMA table_info(vaults)").all().map((col) => col.name);
-    expect(vaultCols).toContain("role");
+    expect(vaultCols).toEqual(expect.arrayContaining([
+      "role", "tenant_id", "business_id", "principal_id", "visibility", "policy_version",
+    ]));
 
-    // WP-16 AC-01: last_accessed_at exists.
-    expect(entityCols).toContain("last_accessed_at");
-
-    // WP-17 AC-01: links table exists with its documented columns.
     const linkCols = db.prepare("PRAGMA table_info(links)").all().map((col) => col.name);
     expect(linkCols).toEqual(
       expect.arrayContaining(["link_id", "vault_id", "from_entity_id", "to_entity_id", "link_type", "confidence", "valid_from", "valid_to", "recorded_at", "created_at"]),
     );
   });
 
-  it("re-applying the packaged migrations directory a second time is a no-op (AC-01: migrations apply idempotently)", () => {
+  it("re-applying the packaged migrations directory a second time is a no-op", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     runMigrations(db, migrationsDir);
     const second = runMigrations(db, migrationsDir);
     expect(second.appliedCount).toBe(0);
-    expect(second.currentVersion).toBe(6);
+    expect(second.currentVersion).toBe(7);
   });
 
-  it("WP-16 AC-01: the lifecycle_state CHECK constraint rejects an out-of-enum value", () => {
+  it("the lifecycle_state CHECK constraint rejects an out-of-enum value", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     runMigrations(db, migrationsDir);
@@ -156,7 +138,7 @@ describe("db/migrate (AC-03)", () => {
     }).toThrow(/CHECK constraint failed/i);
   });
 
-  it("WP-16 AC-01: entities_fts triggers survive migration 0005's rebuild of entities -- a post-migration mutation still projects into entities_fts", () => {
+  it("entities_fts triggers survive later migrations", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     runMigrations(db, migrationsDir);
@@ -173,8 +155,7 @@ describe("db/migrate (AC-03)", () => {
     expect(db.prepare("SELECT COUNT(*) AS count FROM entities_fts WHERE entity_id = ?").get("msp:entity/fts-survival").count).toBe(1);
 
     db.prepare("UPDATE entities SET body_json = '{\"hello\":\"updated\"}' WHERE entity_id = ?").run("msp:entity/fts-survival");
-    const afterUpdate = db.prepare("SELECT body_text FROM entities_fts WHERE entity_id = ?").get("msp:entity/fts-survival");
-    expect(afterUpdate.body_text).toBe('{"hello":"updated"}');
+    expect(db.prepare("SELECT body_text FROM entities_fts WHERE entity_id = ?").get("msp:entity/fts-survival").body_text).toBe('{"hello":"updated"}');
 
     db.prepare("DELETE FROM entities WHERE entity_id = ?").run("msp:entity/fts-survival");
     expect(db.prepare("SELECT COUNT(*) AS count FROM entities_fts WHERE entity_id = ?").get("msp:entity/fts-survival").count).toBe(0);
