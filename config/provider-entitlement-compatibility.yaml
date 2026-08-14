@@ -1,6 +1,6 @@
 schema: govibe-provider-entitlement-compatibility-registry/v1
-version: 0.1.0
-updated: 2026-08-03
+version: 0.2.0
+updated: 2026-08-13
 default_decision: deny
 required_policy_doc: docs/security/POLICY-Provider-Entitlement-Sharing-Compatibility.md
 
@@ -20,8 +20,11 @@ reason_codes:
   - PROVIDER_POLICY_UNKNOWN
 
 records:
+  # Deliberately not approved. This is a machine-readable review candidate, not
+  # an authorization grant. Runtime remains fail-closed until evidence is reviewed.
   - record_id: local-runtime-owner-host-v1
     schema_version: govibe-provider-entitlement-compatibility/v1
+    version: 1.0.0
     provider: local
     product: govibe-local-runtime
     plan: self-hosted
@@ -29,11 +32,16 @@ records:
     entitlement_type: local_compute
     owner_type: user_or_organization
     permitted_user_model: host_policy
-    approved_scope: local_host
+    approved_scope: owner_only
     automation_allowed: true
     credential_delegation_allowed: false
     session_reuse_allowed: false
-    concurrent_use_allowed: host_policy
+    session_isolation_domain: null
+    concurrent_use_allowed: false
+    allowed_principals: []
+    allowed_workspaces: []
+    allowed_organizations: []
+    allowed_adapter_ids: []
     quota_visibility:
       compute_seconds: provider_reported
       gpu_memory: provider_reported
@@ -42,18 +50,25 @@ records:
     cache_visibility:
       prompt_cache: unknown
       provider_session: not_applicable
-    approval_state: approved_owner_only
-    approved_date: 2026-08-03
-    expiry_date: 2027-02-03
-    next_review_date: 2026-11-03
     evidence_refs:
       - internal:govibe-local-runtime-ownership-policy
+    evidence_hashes: []
+    reviewer: null
+    approval_state: under_review
+    approved_date: null
+    expiry_date: 2027-02-03
+    next_review_date: 2026-11-03
     restrictions:
       - Execution is restricted to the registered host and authorized workspace policy.
       - This record does not authorize remote credential sharing or cross-user sessions.
+    fail_closed_reasons:
+      - PROVIDER_POLICY_UNKNOWN
 
+  # Wildcard posture records may only deny. Approved records are prohibited from
+  # using wildcard provider/product/plan/surface values by the runtime validator.
   - record_id: external-provider-default-deny-v1
     schema_version: govibe-provider-entitlement-compatibility/v1
+    version: 1.0.0
     provider: "*"
     product: "*"
     plan: "*"
@@ -65,7 +80,12 @@ records:
     automation_allowed: false
     credential_delegation_allowed: false
     session_reuse_allowed: false
+    session_isolation_domain: null
     concurrent_use_allowed: false
+    allowed_principals: []
+    allowed_workspaces: []
+    allowed_organizations: []
+    allowed_adapter_ids: []
     quota_visibility:
       request_quota: unknown
       token_usage: unknown
@@ -74,11 +94,16 @@ records:
     cache_visibility:
       prompt_cache: unknown
       provider_session: unknown
+    evidence_refs: []
+    evidence_hashes: []
+    reviewer: null
     approval_state: unknown
     approved_date: null
     expiry_date: null
     next_review_date: null
-    evidence_refs: []
     restrictions:
       - External provider sharing is denied until an exact provider/product/plan/surface record is approved.
       - Technical access or observed concurrency is not evidence of authorization.
+    fail_closed_reasons:
+      - COMPATIBILITY_RECORD_MISSING
+      - PROVIDER_POLICY_UNKNOWN

@@ -2,8 +2,8 @@
 title: "RUNBOOK: Persistent-Memory MSP Runtime"
 doc_id: "RUNBOOK-PERSISTENT-MEMORY-RUNTIME"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-08-04"
+version: "0.2.0+draft"
+updated: "2026-08-14"
 owner: "Boss (CEO)"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -26,12 +26,11 @@ Use this runbook when starting, stopping, configuring, or troubleshooting the
 cover the underlying architecture (see the SDD) or the wire contract (see
 API-009); it covers operating the process that implements them.
 
-This runbook describes operations for a runtime that this documentation pass
-specifies but does not implement. Until the corresponding work packets close,
-treat every command below as the intended operator procedure, not proof the
-binary exists yet — check
-`docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md`
-for current phase status before relying on it in production.
+The runtime and its bounded `msp_health` query are implemented in the repository.
+The health result is evidence for the current process and SQLite connection only;
+it is not proof of a persistent external MSP provider, a GKS provider, or a
+restart-surviving production deployment. Check the relevant work packet and
+issue evidence before making an operational readiness claim.
 
 ## 2. Preconditions
 
@@ -69,12 +68,28 @@ for current phase status before relying on it in production.
 2. Start GoVibe's MCP server normally (`npm run mcp:dev`). GoVibe spawns the
    MSP runtime as a child process on first use of a governed operation that
    requires it; a valid configuration is not itself a health result (per
-   ADR-026) — confirm the process actually started by observing a successful
-   `msp_vault_status` call, not merely the absence of a startup error.
+   ADR-026) — confirm the process actually started with `msp_health`, not merely
+   the absence of a startup error.
 3. On first start against a new `MSP_DB_PATH`, the runtime's migration
    runner applies every migration in order and records each in
    `schema_migrations`. Confirm the migration log shows no drift or
    downgrade rejection before treating the runtime as ready.
+
+### 4.1.1 Checking bounded health
+
+1. Call `msp_health` through the existing MSP stdio client.
+2. Treat `health_state: "ready"` as repository-local readiness only when
+   `components.msp`, `components.storage`, and the required operation's
+   dependency are all `ready`.
+3. In the default v1 configuration, `components.gks.state` is `blocked` with
+   reason `gks_provider_unconfigured`, so the overall result is `degraded` and
+   shared-scope promotion remains fail-closed.
+4. Record the top-level and component `evidence_ref` values. They are opaque
+   references; they do not grant a direct GKS or GenesisBlockDB connection.
+5. For `unavailable`, `health_probe_timeout`, or
+   `malformed_health_probe_response`, stop governed operations and investigate
+   the bounded reason before retrying. Do not infer readiness from configuration
+   presence or from `msp_ping` alone.
 
 ### 4.2 Stopping the runtime
 
@@ -156,6 +171,8 @@ database:
   rejection).
 - `msp_memory_search` responses used to confirm degraded state
   (`vector_available`, `searchMode`).
+- `msp_health` response, including `health_state`, bounded `reason`, and opaque
+  component evidence references.
 - `msp_memory_decay_tick` dry-run and applied responses when performing a
   manual decay tick.
 - Backup file checksum and timestamp for every backup taken.
@@ -166,6 +183,8 @@ database:
   migrations applying without drift or downgrade errors.
 - A degraded-search state is confirmable from the `msp_memory_search`
   response alone, without needing to inspect process logs.
+- The process health state is confirmable from `msp_health`; no claim relies on
+  configuration presence alone.
 - A manual decay tick can be previewed (`dry_run: true`) before being
   applied.
 - A backup and restore cycle preserves all `active` and `decayed` entities
@@ -187,6 +206,8 @@ database:
   ADR-026 and ADR-027 both depend on.
 - Never treat a valid `GOVIBE_MSP_COMMAND`/`GOVIBE_MSP_ARGS` configuration as
   proof the runtime is healthy; only a successful call result is evidence.
+- Never add a direct GKS/GenesisBlockDB client or provider credential to GoVibe
+  for health probing; `msp_health` is the MSP-owned boundary and GKS is opaque.
 - Never work around the absence of an in-process scheduler by writing a
   script that calls internal runtime functions directly instead of the
   `msp_memory_decay_tick` tool; that bypasses the audit trail.
@@ -195,4 +216,5 @@ database:
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.2.0+draft | 2026-08-14 | Added the implemented `msp_health` procedure, bounded timeout/malformed handling, opaque evidence-reference recording, and explicit no-direct-GKS operational rules. |
 | 0.1.0+draft | 2026-08-04 | Initial operations runbook for the persistent-memory MSP runtime: start/stop procedure, configuration variables, degraded-search (`searchMode`/`vector_available`) confirmation procedure, manual decay-tick procedure, single-SQLite-file backup guidance, and explicit "never do this" operator rules. |

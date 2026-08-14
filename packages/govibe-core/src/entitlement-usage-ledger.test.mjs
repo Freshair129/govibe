@@ -44,6 +44,15 @@ function registry() {
       cached_token_usage_reported: false,
       remaining_quota_reported: false,
     }),
+    descriptor({
+      provider_id: 'local-compute',
+      adapter_id: 'adapter-local-compute',
+      entitlement_types: ['local_compute'],
+      usage_visibility: 'partial',
+      token_usage_reported: false,
+      cached_token_usage_reported: false,
+      remaining_quota_reported: false,
+    }),
   ]);
 }
 
@@ -178,6 +187,43 @@ describe('entitlement usage ledger', () => {
     ]);
   });
 
+  it('keeps local-compute not-applicable fields separate from unknown telemetry', () => {
+    const local = ledger().record(event({
+      provider_id: 'local-compute',
+      entitlement_id: 'ent_local',
+      entitlement_type: 'local_compute',
+      reported_usage: { unit: 'second', request_count: 1 },
+      not_applicable_fields: ['input_tokens', 'output_tokens', 'reasoning_tokens', 'cached_input_tokens'],
+    }));
+
+    expect(local.not_applicable_fields).toEqual(['cached_input_tokens', 'input_tokens', 'output_tokens', 'reasoning_tokens']);
+    expect(local.unknown_fields).toEqual(['provider_credits']);
+    const [group] = ledgerWithEvent(local).aggregate({ by: ['entitlement_id'] });
+    expect(group.not_applicable_field_counts).toEqual({
+      cached_input_tokens: 1,
+      input_tokens: 1,
+      output_tokens: 1,
+      reasoning_tokens: 1,
+    });
+    expect(group.unknown_field_counts).toEqual({ provider_credits: 1 });
+  });
+
+  it('rejects invalid or conflicting telemetry classifications', () => {
+    expect(() => ledger().record(event({
+      not_applicable_fields: ['not_a_usage_field'],
+    }))).toThrowError(expect.objectContaining({ code: 'USAGE_EVENT_INVALID' }));
+
+    expect(() => ledger().record(event({
+      reported_usage: { unit: 'token', input_tokens: 10 },
+      not_applicable_fields: ['input_tokens'],
+    }))).toThrowError(expect.objectContaining({ code: 'USAGE_CLASSIFICATION_CONFLICT' }));
+
+    expect(() => ledger().record(event({
+      not_applicable_fields: ['input_tokens'],
+      unknown_fields: ['input_tokens'],
+    }))).toThrowError(expect.objectContaining({ code: 'USAGE_CLASSIFICATION_CONFLICT' }));
+  });
+
   it('rejects credential material anywhere in an event', () => {
     expect(() => ledger().record(event({ api_key: 'sk-live-1' }))).toThrowError(
       expect.objectContaining({ code: 'USAGE_EVENT_CREDENTIAL_MATERIAL' }),
@@ -196,6 +242,14 @@ describe('entitlement usage ledger', () => {
     );
   });
 });
+
+function ledgerWithEvent(recorded) {
+  return {
+    aggregate(options) {
+      return aggregateUsageEvents([recorded], options);
+    },
+  };
+}
 
 describe('entitlement quota snapshots', () => {
   it('records a detailed provider quota with its reset window', () => {

@@ -9,11 +9,75 @@ import { createExecutionBindingService } from './execution-binding-service.mjs';
 import { createExecutorRegistry, ProviderUnavailableError } from './executor-adapter.mjs';
 import { createPolicyEnvelope, assertPolicyAllows } from './policy-envelope.mjs';
 import { reviewWorkspace, optimizeMeasured, workspaceImpact, docsVersion } from './governance-operations.mjs';
+import { createProviderCompatibilityRegistry } from './provider-compatibility-registry.mjs';
 import { legacyAliasCatalog, resolveToolName, toolCatalog } from '../../../scripts/mcp/registry.mjs';
 
 const roots = [];
 async function root() { const value = await mkdtemp(path.join(os.tmpdir(), 'govibe-migration-')); roots.push(value); return value; }
 afterEach(async () => Promise.all(roots.splice(0).map((value) => rm(value, { recursive: true, force: true }))));
+
+const COMPAT_POLICY_REF = 'compatibility:compat-codex-migration-v1:1.0.0';
+
+function migrationCompatibilityRecord() {
+  return {
+    record_id: 'compat-codex-migration-v1',
+    schema_version: 'govibe-provider-entitlement-compatibility/v1',
+    version: '1.0.0',
+    provider: 'codex',
+    product: 'codex-migration-test',
+    plan: 'test-plan',
+    execution_surface: 'cli',
+    entitlement_type: 'api',
+    owner_type: 'user',
+    permitted_user_model: 'owner',
+    approved_scope: 'owner_only',
+    automation_allowed: false,
+    credential_delegation_allowed: false,
+    session_reuse_allowed: false,
+    session_isolation_domain: null,
+    concurrent_use_allowed: false,
+    allowed_principals: [],
+    allowed_workspaces: [],
+    allowed_organizations: [],
+    allowed_adapter_ids: ['adapter-codex'],
+    quota_visibility: { request_quota: 'unknown' },
+    cache_visibility: { provider_session: 'unknown' },
+    evidence_refs: ['internal:migration-codex-policy'],
+    evidence_hashes: ['sha256:migration-codex-policy-v1'],
+    reviewer: 'migration-test',
+    approval_state: 'approved_owner_only',
+    approved_date: '2026-08-01T00:00:00.000Z',
+    expiry_date: '2027-08-01T00:00:00.000Z',
+    next_review_date: '2027-02-01T00:00:00.000Z',
+    restrictions: [],
+    fail_closed_reasons: [],
+  };
+}
+
+function migrationCompatibilityProof() {
+  return {
+    authorized: true,
+    record_id: 'compat-codex-migration-v1',
+    record_version: '1.0.0',
+    provider: 'codex',
+    product: 'codex-migration-test',
+    plan: 'test-plan',
+    execution_surface: 'cli',
+    entitlement_type: 'api',
+    owner_id: 'migration-agent',
+    requested_scope: 'owner_only',
+    principal_id: 'migration-agent',
+    organization_id: 'org-migration',
+    workspace_id: 'workspace-migration',
+    adapter_id: 'adapter-codex',
+    automation_requested: false,
+    session_reuse_requested: false,
+    concurrent_use_requested: false,
+    credential_delegation_requested: false,
+    evidence_valid: true,
+    policy_ref: COMPAT_POLICY_REF,
+  };
+}
 
 function governedRequest() {
   return {
@@ -101,9 +165,8 @@ describe('durable workflow', () => {
 
 describe('providers and policy', () => {
   it('boots with unavailable providers and fails with a typed error only when selected', async () => {
-    // Dispatch verifies the binding against its issuing service, so the fixture
-    // binding is issued rather than hand-written.
     const bindingService = createExecutionBindingService({ idFactory: () => 'migration' });
+    const proof = migrationCompatibilityProof();
     const issued = bindingService.createBinding({
       binding_request_id: 'br-migration',
       actor_id: 'migration-agent',
@@ -134,10 +197,15 @@ describe('providers and policy', () => {
         executor_class: 'external-agent',
         model_id: 'model-migration',
         state: 'active',
+        compatibility: proof,
       },
-      policy_decision_refs: ['policy:entitlement:migration'],
+      policy_decision_refs: ['policy:entitlement:migration', COMPAT_POLICY_REF],
     });
-    const registry = createExecutorRegistry({ codex: { execute: async () => ({ ok: true }) } }, { bindingService });
+    const compatibilityRegistry = createProviderCompatibilityRegistry([migrationCompatibilityRecord()]);
+    const registry = createExecutorRegistry({ codex: { execute: async () => ({ ok: true }) } }, {
+      bindingService,
+      compatibilityRegistry,
+    });
     const request = { ...governedRequest(), executionBinding: issued };
     expect(registry.inspect()).toEqual(expect.arrayContaining([expect.objectContaining({ id: 'claude-code', available: false })]));
     await expect(registry.execute('claude-code', {})).rejects.toBeInstanceOf(ProviderUnavailableError);

@@ -1,9 +1,8 @@
 // A small, transport-agnostic tool dispatch table.
 //
-// Phase 0/1 scope note: this registry is generic; it does not itself define
-// any `msp_*`/`msp_memory_*` tool. `src/server.mjs` (the composition root)
-// registers only a diagnostic `msp_ping` tool in this packet, per WP-12's
-// explicit exclusion of the contract surface until Phase 2.
+// The registry is generic; `src/server.mjs` (the composition root) owns the
+// concrete `msp_*` and `msp_memory_*` registrations, including the diagnostic
+// `msp_ping` and bounded `msp_health` queries.
 
 export class ToolRegistry {
   #handlers = new Map();

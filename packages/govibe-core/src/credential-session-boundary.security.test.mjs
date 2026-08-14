@@ -1,23 +1,80 @@
 /**
  * Negative security matrix for issue #59, at the dispatch boundary.
  *
- * The unit tests in credential-vault.test.mjs and provider-session-registry.test.mjs
- * already prove the vault and the session registry reject bad input. What they do
- * not prove is the issue #59 acceptance criterion that matters operationally:
- * that a revoked, expired, replayed or foreign credential or session stops
- * execution *before the provider is invoked*.
- *
- * Every test here therefore asserts on a spy that the adapter was never called,
- * not merely that a promise rejected.
+ * Every negative case starts from an otherwise authorized provider compatibility
+ * baseline so failures continue to isolate credential/session/binding behavior.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { createCredentialVault, createInMemorySecretBackend } from './credential-vault.mjs';
 import { createExecutionBindingService } from './execution-binding-service.mjs';
 import { createExecutorRegistry } from './executor-adapter.mjs';
+import { createProviderCompatibilityRegistry } from './provider-compatibility-registry.mjs';
 import { createProviderSessionRegistry } from './provider-session-registry.mjs';
 
-const SECRET = 'sk-live-boundary-must-not-leak';
+const SECRET = 'boundary-fixture-value';
 const PROVIDER = 'alpha';
+const COMPAT_POLICY_REF = 'compatibility:compat-alpha-owner-v1:1.0.0';
+
+function compatibilityRecord() {
+  return {
+    record_id: 'compat-alpha-owner-v1',
+    schema_version: 'govibe-provider-entitlement-compatibility/v1',
+    version: '1.0.0',
+    provider: PROVIDER,
+    product: 'alpha-test-product',
+    plan: 'test-plan',
+    execution_surface: 'api',
+    entitlement_type: 'api',
+    owner_type: 'user',
+    permitted_user_model: 'owner',
+    approved_scope: 'owner_only',
+    automation_allowed: false,
+    credential_delegation_allowed: false,
+    session_reuse_allowed: false,
+    session_isolation_domain: null,
+    concurrent_use_allowed: false,
+    allowed_principals: [],
+    allowed_workspaces: [],
+    allowed_organizations: [],
+    allowed_adapter_ids: ['adapter-alpha'],
+    quota_visibility: { request_quota: 'unknown' },
+    cache_visibility: { provider_session: 'unknown' },
+    evidence_refs: ['internal:test-alpha-policy'],
+    evidence_hashes: ['sha256:test-alpha-policy-v1'],
+    reviewer: 'security-fixture',
+    approval_state: 'approved_owner_only',
+    approved_date: '2026-08-01T00:00:00.000Z',
+    expiry_date: '2027-08-01T00:00:00.000Z',
+    next_review_date: '2027-02-01T00:00:00.000Z',
+    restrictions: [],
+    fail_closed_reasons: [],
+  };
+}
+
+function compatibilityProof() {
+  return {
+    authorized: true,
+    record_id: 'compat-alpha-owner-v1',
+    record_version: '1.0.0',
+    provider: PROVIDER,
+    product: 'alpha-test-product',
+    plan: 'test-plan',
+    execution_surface: 'api',
+    entitlement_type: 'api',
+    owner_id: 'user-1',
+    requested_scope: 'owner_only',
+    principal_id: 'user-1',
+    organization_id: 'org-1',
+    workspace_id: 'ws-1',
+    adapter_id: 'adapter-alpha',
+    automation_requested: false,
+    session_reuse_requested: false,
+    concurrent_use_requested: false,
+    credential_delegation_requested: false,
+    evidence_valid: true,
+    policy_ref: COMPAT_POLICY_REF,
+  };
+}
 
 function contextAuthority() {
   return {
@@ -33,8 +90,6 @@ function contextAuthority() {
   };
 }
 
-// Dispatch verifies a binding against its issuing service, so fixtures use a
-// binding the service actually issued. harness() refreshes this.
 let ISSUED = { binding_id: 'binding-unissued' };
 
 function binding(overrides = {}) {
@@ -88,6 +143,7 @@ function harness({ clock = () => new Date('2026-08-04T00:00:00.000Z') } = {}) {
     clock,
     idFactory: () => { sessionId += 1; return String(sessionId); },
   });
+  const compatibilityRegistry = createProviderCompatibilityRegistry([compatibilityRecord()]);
   let bindingCounter = 0;
   const bindingService = createExecutionBindingService({
     clock,
@@ -104,13 +160,8 @@ function harness({ clock = () => new Date('2026-08-04T00:00:00.000Z') } = {}) {
     session_id: 'session-1',
     turn_id: 'turn-1',
     context: {
-      context_id: 'ctx-1',
-      cache_id: 'cache-1',
-      context_hash: 'hash-1',
-      source_manifest_hash: 'manifest-1',
-      context_profile: 'T-ctx',
-      tool_contract_hash: 'tools-1',
-      persisted: true,
+      context_id: 'ctx-1', cache_id: 'cache-1', context_hash: 'hash-1', source_manifest_hash: 'manifest-1',
+      context_profile: 'T-ctx', tool_contract_hash: 'tools-1', persisted: true,
     },
     eligible_target: {
       authorized: true,
@@ -121,44 +172,32 @@ function harness({ clock = () => new Date('2026-08-04T00:00:00.000Z') } = {}) {
       executor_class: 'api-llm',
       model_id: 'model-1',
       state: 'active',
+      compatibility: compatibilityProof(),
     },
-    policy_decision_refs: ['policy:entitlement:1'],
+    policy_decision_refs: ['policy:entitlement:1', COMPAT_POLICY_REF],
     ttl_ms: 3_600_000,
   });
-  const registry = createExecutorRegistry({ [PROVIDER]: adapter }, { credentialVault, sessionRegistry, bindingService });
+  const registry = createExecutorRegistry({ [PROVIDER]: adapter }, {
+    credentialVault, sessionRegistry, bindingService, compatibilityRegistry, clock,
+  });
 
   credentialVault.registerCredential({
-    credential_ref: 'cred-1',
-    entitlement_id: 'ent-1',
-    owner_id: 'user-1',
-    provider_id: PROVIDER,
-    secret: SECRET,
+    credential_ref: 'cred-1', entitlement_id: 'ent-1', owner_id: 'user-1', provider_id: PROVIDER, secret: SECRET,
   });
 
   const grantFor = (overrides = {}) => credentialVault.issueGrant({
-    credential_ref: 'cred-1',
-    entitlement_id: 'ent-1',
-    principal_id: 'user-1',
-    run_id: 'run-1',
-    binding_id: ISSUED.binding_id,
-    provider_id: PROVIDER,
-    ...overrides,
+    credential_ref: 'cred-1', entitlement_id: 'ent-1', principal_id: 'user-1', run_id: 'run-1',
+    binding_id: ISSUED.binding_id, provider_id: PROVIDER, ...overrides,
   });
 
   const sessionFor = (overrides = {}) => sessionRegistry.createSession({
-    principal_id: 'user-1',
-    entitlement_id: 'ent-1',
-    provider_id: PROVIDER,
-    run_id: 'run-1',
-    binding_id: ISSUED.binding_id,
-    external_session_id: 'provider-side-session-handle',
-    ...overrides,
+    principal_id: 'user-1', entitlement_id: 'ent-1', provider_id: PROVIDER, run_id: 'run-1',
+    binding_id: ISSUED.binding_id, external_session_id: 'provider-side-session-handle', ...overrides,
   });
 
-  return { adapter, credentialVault, sessionRegistry, bindingService, registry, grantFor, sessionFor };
+  return { adapter, credentialVault, sessionRegistry, compatibilityRegistry, bindingService, registry, grantFor, sessionFor, clock };
 }
 
-/** Asserts the dispatch failed with `code` and that the provider was never reached. */
 async function expectBlockedBeforeProvider(harnessInstance, dispatchRequest, code) {
   await expect(harnessInstance.registry.execute(PROVIDER, dispatchRequest)).rejects.toMatchObject({ code });
   expect(harnessInstance.adapter.execute, 'provider must not be invoked').not.toHaveBeenCalled();
@@ -177,24 +216,14 @@ describe('#59 negative matrix: credential state blocks execution before provider
     const h = harness({ clock: () => now });
     h.credentialVault.revokeCredential('cred-1');
     h.credentialVault.registerCredential({
-      credential_ref: 'cred-exp',
-      entitlement_id: 'ent-1',
-      owner_id: 'user-1',
-      provider_id: PROVIDER,
-      secret: SECRET,
-      valid_until: '2026-08-04T00:00:10.000Z',
+      credential_ref: 'cred-exp', entitlement_id: 'ent-1', owner_id: 'user-1', provider_id: PROVIDER,
+      secret: SECRET, valid_until: '2026-08-04T00:00:10.000Z',
     });
     const grant = h.credentialVault.issueGrant({
-      credential_ref: 'cred-exp',
-      entitlement_id: 'ent-1',
-      principal_id: 'user-1',
-      run_id: 'run-1',
-      binding_id: ISSUED.binding_id,
-      provider_id: PROVIDER,
+      credential_ref: 'cred-exp', entitlement_id: 'ent-1', principal_id: 'user-1', run_id: 'run-1',
+      binding_id: ISSUED.binding_id, provider_id: PROVIDER,
     });
     now = new Date('2026-08-04T00:00:20.000Z');
-    // The grant itself is still inside its TTL here, so this isolates credential
-    // expiry rather than grant expiry.
     await expectBlockedBeforeProvider(h, request({ credential_grant_id: grant.grant_id }), 'CREDENTIAL_EXPIRED');
   });
 
@@ -218,7 +247,6 @@ describe('#59 negative matrix: credential state blocks execution before provider
     const grant = h.grantFor();
     await h.registry.execute(PROVIDER, request({ credential_grant_id: grant.grant_id }));
     expect(h.adapter.execute).toHaveBeenCalledOnce();
-
     h.adapter.execute.mockClear();
     await expectBlockedBeforeProvider(h, request({ credential_grant_id: grant.grant_id }), 'CREDENTIAL_GRANT_CONSUMED');
   });
@@ -231,10 +259,10 @@ describe('#59 negative matrix: credential state blocks execution before provider
   it('fails closed when a grant is presented but no vault is configured', async () => {
     const h = harness();
     const adapter = { capabilities: ['api-llm'], execute: vi.fn(async () => ({})), cancel: vi.fn() };
-    const registry = createExecutorRegistry({ [PROVIDER]: adapter }, { bindingService: h.bindingService });
-    await expect(registry.execute(PROVIDER, request({ credential_grant_id: 'grant_1' }))).rejects.toMatchObject({
-      code: 'CREDENTIAL_VAULT_REQUIRED',
+    const registry = createExecutorRegistry({ [PROVIDER]: adapter }, {
+      bindingService: h.bindingService, compatibilityRegistry: h.compatibilityRegistry, clock: h.clock,
     });
+    await expect(registry.execute(PROVIDER, request({ credential_grant_id: 'grant_1' }))).rejects.toMatchObject({ code: 'CREDENTIAL_VAULT_REQUIRED' });
     expect(adapter.execute).not.toHaveBeenCalled();
   });
 });
@@ -242,21 +270,8 @@ describe('#59 negative matrix: credential state blocks execution before provider
 describe('#59 negative matrix: confused deputy at the dispatch boundary', () => {
   it('blocks a grant issued for another entitlement', async () => {
     const h = harness();
-    h.credentialVault.registerCredential({
-      credential_ref: 'cred-2',
-      entitlement_id: 'ent-2',
-      owner_id: 'user-1',
-      provider_id: PROVIDER,
-      secret: SECRET,
-    });
-    const foreign = h.credentialVault.issueGrant({
-      credential_ref: 'cred-2',
-      entitlement_id: 'ent-2',
-      principal_id: 'user-1',
-      run_id: 'run-1',
-      binding_id: ISSUED.binding_id,
-      provider_id: PROVIDER,
-    });
+    h.credentialVault.registerCredential({ credential_ref: 'cred-2', entitlement_id: 'ent-2', owner_id: 'user-1', provider_id: PROVIDER, secret: SECRET });
+    const foreign = h.credentialVault.issueGrant({ credential_ref: 'cred-2', entitlement_id: 'ent-2', principal_id: 'user-1', run_id: 'run-1', binding_id: ISSUED.binding_id, provider_id: PROVIDER });
     await expectBlockedBeforeProvider(h, request({ credential_grant_id: foreign.grant_id }), 'CREDENTIAL_GRANT_SCOPE_MISMATCH');
   });
 
@@ -274,11 +289,7 @@ describe('#59 negative matrix: confused deputy at the dispatch boundary', () => 
 
   it('blocks a binding whose principal is not the dispatch actor', async () => {
     const h = harness();
-    await expectBlockedBeforeProvider(
-      h,
-      request({ actor_id: 'user-2', principal_id: 'user-2' }),
-      'EXECUTION_BINDING_PRINCIPAL_MISMATCH',
-    );
+    await expectBlockedBeforeProvider(h, request({ actor_id: 'user-2', principal_id: 'user-2' }), 'EXECUTION_BINDING_PRINCIPAL_MISMATCH');
   });
 
   it('blocks a binding whose actor and principal disagree', async () => {
@@ -296,31 +307,19 @@ describe('#59 negative matrix: provider session isolation at the dispatch bounda
   it('blocks a session belonging to another user', async () => {
     const h = harness();
     const foreign = h.sessionFor({ principal_id: 'user-2' });
-    await expectBlockedBeforeProvider(
-      h,
-      request({ provider_session_id: foreign.session_id }),
-      'PROVIDER_SESSION_SCOPE_MISMATCH',
-    );
+    await expectBlockedBeforeProvider(h, request({ provider_session_id: foreign.session_id }), 'PROVIDER_SESSION_SCOPE_MISMATCH');
   });
 
   it('blocks a session belonging to another entitlement', async () => {
     const h = harness();
     const foreign = h.sessionFor({ entitlement_id: 'ent-2' });
-    await expectBlockedBeforeProvider(
-      h,
-      request({ provider_session_id: foreign.session_id }),
-      'PROVIDER_SESSION_SCOPE_MISMATCH',
-    );
+    await expectBlockedBeforeProvider(h, request({ provider_session_id: foreign.session_id }), 'PROVIDER_SESSION_SCOPE_MISMATCH');
   });
 
   it('blocks cross-run session reuse by default', async () => {
     const h = harness();
     const other = h.sessionFor({ run_id: 'run-2' });
-    await expectBlockedBeforeProvider(
-      h,
-      request({ provider_session_id: other.session_id }),
-      'PROVIDER_SESSION_RUN_MISMATCH',
-    );
+    await expectBlockedBeforeProvider(h, request({ provider_session_id: other.session_id }), 'PROVIDER_SESSION_RUN_MISMATCH');
   });
 
   it('blocks a revoked session', async () => {
@@ -348,10 +347,11 @@ describe('#59 negative matrix: provider session isolation at the dispatch bounda
   it('fails closed when a session is presented but no session registry is configured', async () => {
     const h = harness();
     const adapter = { capabilities: ['api-llm'], execute: vi.fn(async () => ({})), cancel: vi.fn() };
-    const registry = createExecutorRegistry({ [PROVIDER]: adapter }, { credentialVault: null, sessionRegistry: null, bindingService: h.bindingService });
-    await expect(registry.execute(PROVIDER, request({ provider_session_id: 'ps_1' }))).rejects.toMatchObject({
-      code: 'PROVIDER_SESSION_REGISTRY_REQUIRED',
+    const registry = createExecutorRegistry({ [PROVIDER]: adapter }, {
+      credentialVault: null, sessionRegistry: null, bindingService: h.bindingService,
+      compatibilityRegistry: h.compatibilityRegistry, clock: h.clock,
     });
+    await expect(registry.execute(PROVIDER, request({ provider_session_id: 'ps_1' }))).rejects.toMatchObject({ code: 'PROVIDER_SESSION_REGISTRY_REQUIRED' });
     expect(adapter.execute).not.toHaveBeenCalled();
   });
 });
@@ -361,20 +361,15 @@ describe('#59 negative matrix: the adapter receives only its bound scope', () =>
     const h = harness();
     const grant = h.grantFor();
     await h.registry.execute(PROVIDER, request({ credential_grant_id: grant.grant_id }, {
-      api_key: SECRET,
-      access_token: SECRET,
-      secret: SECRET,
-      credential: SECRET,
+      api_key: SECRET, access_token: SECRET, secret: SECRET, credential: SECRET,
     }));
 
     const [safeRequest, context] = h.adapter.execute.mock.calls[0];
     expect(JSON.stringify(safeRequest)).not.toContain(SECRET);
-    for (const field of ['api_key', 'access_token', 'secret', 'credential']) {
-      expect(safeRequest, field).not.toHaveProperty(field);
-    }
+    for (const field of ['api_key', 'access_token', 'secret', 'credential']) expect(safeRequest, field).not.toHaveProperty(field);
     expect(safeRequest.executionBinding).not.toHaveProperty('credential_grant_id');
     expect(Object.keys(safeRequest.executionBinding).sort()).toEqual([
-      'binding_id', 'entitlement_id', 'principal_id', 'provider_id', 'provider_session_id', 'run_id',
+      'adapter_id', 'binding_id', 'entitlement_id', 'principal_id', 'provider_id', 'provider_session_id', 'run_id',
     ]);
     expect(context.executionBinding.entitlement_id).toBe('ent-1');
   });
@@ -392,22 +387,10 @@ describe('#59 negative matrix: the adapter receives only its bound scope', () =>
   });
 });
 
-/**
- * These were characterization tests pinning a high-severity gap: dispatch never
- * verified that a binding came from the binding service, so a forged, expired or
- * revoked binding reached the provider. The gap is now closed and the assertions
- * are flipped to prove it.
- */
 describe('#59 binding authenticity is verified at dispatch', () => {
   it('blocks a binding the binding service never issued', async () => {
     const h = harness();
-    // Internally consistent and correlating with the context authority is no
-    // longer sufficient: the binding must have been issued.
-    await expectBlockedBeforeProvider(
-      h,
-      request({ binding_id: 'binding_forged', entitlement_id: 'ent-never-granted' }),
-      'EXECUTION_BINDING_NOT_ISSUED',
-    );
+    await expectBlockedBeforeProvider(h, request({ binding_id: 'binding_forged', entitlement_id: 'ent-never-granted' }), 'EXECUTION_BINDING_NOT_ISSUED');
   });
 
   it('blocks an expired binding and emits the API-008 BINDING_EXPIRED code', async () => {
@@ -433,18 +416,13 @@ describe('#59 binding authenticity is verified at dispatch', () => {
     await h.registry.execute(PROVIDER, request({ credential_grant_id: null }));
     expect(h.adapter.execute).toHaveBeenCalledOnce();
     const [, context] = h.adapter.execute.mock.calls[0];
-    // A local or unauthenticated provider needs no credential. This is safe now
-    // only because the binding itself is verified, so the grant id cannot be
-    // dropped by a caller to escape the vault.
     expect(context.credential).toBeNull();
   });
 
   it('fails closed when no binding service is wired at all', async () => {
     const adapter = { capabilities: ['api-llm'], execute: vi.fn(async () => ({})), cancel: vi.fn() };
     const registry = createExecutorRegistry({ [PROVIDER]: adapter });
-    await expect(registry.execute(PROVIDER, request())).rejects.toMatchObject({
-      code: 'EXECUTION_BINDING_SERVICE_REQUIRED',
-    });
+    await expect(registry.execute(PROVIDER, request())).rejects.toMatchObject({ code: 'EXECUTION_BINDING_SERVICE_REQUIRED' });
     expect(adapter.execute).not.toHaveBeenCalled();
   });
 });
@@ -453,25 +431,12 @@ describe('#59 negative matrix: no credential material in thrown errors', () => {
   it('keeps the secret out of every rejection produced by the boundary', async () => {
     const cases = [
       async () => {
-        const h = harness();
-        const grant = h.grantFor();
-        h.credentialVault.revokeCredential('cred-1');
+        const h = harness(); const grant = h.grantFor(); h.credentialVault.revokeCredential('cred-1');
         return h.registry.execute(PROVIDER, request({ credential_grant_id: grant.grant_id }));
       },
-      async () => {
-        const h = harness();
-        return h.registry.execute(PROVIDER, request({ credential_grant_id: 'grant_forged' }));
-      },
-      async () => {
-        const h = harness();
-        const foreign = h.grantFor({ run_id: 'run-2' });
-        return h.registry.execute(PROVIDER, request({ credential_grant_id: foreign.grant_id }));
-      },
-      async () => {
-        const h = harness();
-        const foreign = h.sessionFor({ principal_id: 'user-2' });
-        return h.registry.execute(PROVIDER, request({ provider_session_id: foreign.session_id }));
-      },
+      async () => { const h = harness(); return h.registry.execute(PROVIDER, request({ credential_grant_id: 'grant_forged' })); },
+      async () => { const h = harness(); const foreign = h.grantFor({ run_id: 'run-2' }); return h.registry.execute(PROVIDER, request({ credential_grant_id: foreign.grant_id })); },
+      async () => { const h = harness(); const foreign = h.sessionFor({ principal_id: 'user-2' }); return h.registry.execute(PROVIDER, request({ provider_session_id: foreign.session_id })); },
     ];
 
     for (const [index, run] of cases.entries()) {

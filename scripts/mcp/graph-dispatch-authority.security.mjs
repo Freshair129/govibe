@@ -3,8 +3,9 @@ import test from "node:test";
 
 import { RuntimeAuthorityError, buildBoundedGraphQuery } from "../../packages/govibe-core/src/authority-enforcement.mjs";
 import { createExecutionBindingService } from "../../packages/govibe-core/src/execution-binding-service.mjs";
-import { createExecutorRegistry } from "../../packages/govibe-core/src/executor-adapter.mjs";
+import { createExecutorRegistry, ExecutionBindingError } from "../../packages/govibe-core/src/executor-adapter.mjs";
 import { MspClient } from "../../packages/govibe-core/src/msp-client.mjs";
+import { createProviderCompatibilityRegistry } from "../../packages/govibe-core/src/provider-compatibility-registry.mjs";
 
 const hash = "b".repeat(64);
 
@@ -36,6 +37,40 @@ const BINDING_SERVICE = createExecutionBindingService({
   defaultTtlMs: 60_000,
 });
 
+const COMPATIBILITY_REGISTRY = createProviderCompatibilityRegistry([{
+  record_id: "local-runtime-owner-host-v1",
+  schema_version: "govibe-provider-entitlement-compatibility/v1",
+  version: "1.0.0",
+  provider: "local",
+  product: "govibe-local-runtime",
+  plan: "self-hosted",
+  execution_surface: "local_runtime",
+  entitlement_type: "local_compute",
+  owner_type: "user",
+  permitted_user_model: "owner",
+  approved_scope: "owner_only",
+  automation_allowed: false,
+  credential_delegation_allowed: false,
+  session_reuse_allowed: false,
+  session_isolation_domain: null,
+  concurrent_use_allowed: false,
+  allowed_principals: [],
+  allowed_workspaces: [],
+  allowed_organizations: [],
+  allowed_adapter_ids: ["local"],
+  quota_visibility: { request_count: "provider_reported" },
+  cache_visibility: { provider_session: "not_applicable" },
+  evidence_refs: ["internal:test-local-runtime-policy"],
+  evidence_hashes: ["sha256:test-local-runtime-policy"],
+  reviewer: "test-reviewer",
+  approval_state: "approved_owner_only",
+  approved_date: "2026-08-01T00:00:00.000Z",
+  expiry_date: "2027-08-01T00:00:00.000Z",
+  next_review_date: "2027-02-01T00:00:00.000Z",
+  restrictions: [],
+  fail_closed_reasons: [],
+}]);
+
 const ISSUED_BINDING = BINDING_SERVICE.createBinding({
   binding_request_id: "br-local-2",
   actor_id: "local-agent-2",
@@ -66,9 +101,38 @@ const ISSUED_BINDING = BINDING_SERVICE.createBinding({
     executor_class: "local-agent",
     model_id: "model-local-2",
     state: "active",
+    compatibility: {
+      authorized: true,
+      record_id: "local-runtime-owner-host-v1",
+      record_version: "1.0.0",
+      provider: "local",
+      product: "govibe-local-runtime",
+      plan: "self-hosted",
+      execution_surface: "local_runtime",
+      entitlement_type: "local_compute",
+      owner_id: "local-agent-2",
+      requested_scope: "owner_only",
+      principal_id: "local-agent-2",
+      organization_id: "org-local",
+      workspace_id: "govibe",
+      adapter_id: "local",
+      automation_requested: false,
+      session_reuse_requested: false,
+      concurrent_use_requested: false,
+      credential_delegation_requested: false,
+      evidence_valid: true,
+      policy_ref: "compatibility:local-runtime-owner-host-v1:1.0.0",
+    },
   },
-  policy_decision_refs: ["policy:local:2"],
+  policy_decision_refs: ["policy:local:2", "compatibility:local-runtime-owner-host-v1:1.0.0"],
 });
+
+function governedRegistry(adapter = { execute: async () => ({ ok: true }) }) {
+  return createExecutorRegistry({ local: adapter }, {
+    bindingService: BINDING_SERVICE,
+    compatibilityRegistry: COMPATIBILITY_REGISTRY,
+  });
+}
 
 function dispatchRequest(overrides = {}) {
   return {
@@ -163,18 +227,18 @@ test("MspClient forwards context authority and bounded graph query intact", asyn
   assert.deepEqual(result.boundedGraphQuery.source_constraints, [{ id: "API-007", version: "0.1.0", hash }]);
 });
 
-test("blocks executor dispatch without validated authority", async () => {
+test("blocks executor dispatch without a governed binding", async () => {
   let executed = false;
-  const registry = createExecutorRegistry({ local: { execute: async () => { executed = true; return { ok: true }; } } });
+  const registry = governedRegistry({ execute: async () => { executed = true; return { ok: true }; } });
   await assert.rejects(
     registry.execute("local", { task: "unsafe" }),
-    (error) => error instanceof RuntimeAuthorityError && error.code === "missing_runtime_authority",
+    (error) => error instanceof ExecutionBindingError && error.code === "EXECUTION_BINDING_REQUIRED",
   );
   assert.equal(executed, false);
 });
 
 test("blocks executor dispatch when MSP policy is not allow", async () => {
-  const registry = createExecutorRegistry({ local: { execute: async () => ({ ok: true }) } });
+  const registry = governedRegistry();
   await assert.rejects(
     registry.execute("local", dispatchRequest({ policyDecision: "deny" })),
     (error) => error instanceof RuntimeAuthorityError && error.code === "dispatch_denied",
@@ -182,7 +246,7 @@ test("blocks executor dispatch when MSP policy is not allow", async () => {
 });
 
 test("blocks executor dispatch on lineage mismatch", async () => {
-  const registry = createExecutorRegistry({ local: { execute: async () => ({ ok: true }) } });
+  const registry = governedRegistry();
   await assert.rejects(
     registry.execute("local", dispatchRequest({ contextLineage: { runId: "other", sessionId: "session-2", turnId: "turn-2" } })),
     (error) => error instanceof RuntimeAuthorityError && error.code === "lineage_mismatch",
@@ -191,7 +255,7 @@ test("blocks executor dispatch on lineage mismatch", async () => {
 
 test("dispatches only after bounded authority, allow policy, and lineage validation", async () => {
   const calls = [];
-  const registry = createExecutorRegistry({ local: { execute: async (request) => { calls.push(request); return { ok: true }; } } }, { bindingService: BINDING_SERVICE });
+  const registry = governedRegistry({ execute: async (request) => { calls.push(request); return { ok: true }; } });
   const request = dispatchRequest();
   assert.deepEqual(request.executionBinding, {
     schema: "govibe-execution-binding/v1",
