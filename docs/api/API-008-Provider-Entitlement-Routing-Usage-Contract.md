@@ -2,7 +2,7 @@
 doc_id: "API-008-PROVIDER-ENTITLEMENT-ROUTING-USAGE-CONTRACT"
 title: "API-008: Provider Entitlement, Routing and Usage Contract"
 status: "draft"
-version: "0.4.0+draft"
+version: "0.6.0+draft"
 updated: "2026-08-14"
 owner: "ARCHON / ATHER"
 source_of_truth: true
@@ -168,6 +168,7 @@ request_id: string
 eligible_targets:
   - provider_id: string
     adapter_id: string
+    credential_mode: none|raw_secret|derived_token|null
     entitlement_id: string
     executor_class: string
     model_candidates: [string]
@@ -252,6 +253,7 @@ adapter_id: string
 adapter_version: string
 entitlement_id: string
 credential_ref: string|null
+credential_mode: none|raw_secret|derived_token|null
 executor_class: string
 model_id: string
 resolved_tools: [string]
@@ -265,7 +267,63 @@ authorized_at: string
 expires_at: string|null
 ```
 
-The adapter receives `credential_ref` through a protected runtime channel. It must not serialize it into logs, context packets, candidate output, or user-visible traces.
+`credential_ref` remains an opaque vault reference and is not sent to the
+adapter. The binding's `credential_mode` is authoritative:
+
+- `none` means the run has no credential grant;
+- `raw_secret` is the legacy protected vault-to-adapter byte channel and is not
+  evidence of a derived-token handoff;
+- `derived_token` requires an adapter-owned derivation callback. Raw bytes may
+  exist only inside that protected callback; `execute` receives the frozen
+  `govibe-credential-handoff/v1` object instead;
+- `null` preserves the pre-mode compatibility path and must not be treated as
+  proof of any credential mode.
+
+Mode substitution, a missing grant, a missing deriver, unsupported adapter
+mode, invalid handoff, or exact raw-secret reuse fails closed before provider
+invocation. GoVibe does not define a provider-neutral token derivation
+algorithm. A capability descriptor advertising an unsupported or ambiguous
+credential mode is rejected during planning rather than downgraded to the
+legacy path.
+
+### 8.1 Derived credential handoff
+
+Schema identifier: `govibe-credential-handoff/v1`
+
+```yaml
+schema: govibe-credential-handoff/v1
+mode: derived_token
+provider_id: string
+adapter_id: string
+binding_id: string
+token_type: string
+token: string
+```
+
+The handoff is a protected in-process adapter channel. It must not enter the
+safe request, MSP context, candidate output, usage ledger, logs, or errors.
+
+### 8.2 Credential storage and lifecycle
+
+Credential backends are host-owned implementation details behind the opaque
+`credential_ref`. A backend used for provider credentials must encrypt secret
+bytes before storing them and must return a fresh, caller-wipeable byte buffer
+only inside the protected vault callback. The repository's provider-neutral
+encrypted fixture uses AES-256-GCM with a host-supplied 32-byte key, a fresh
+nonce per write, and an authentication tag. Its inspection surface exposes
+metadata only.
+
+`createInMemorySecretBackend` remains a compatibility/test fixture and is not
+production-at-rest evidence. The encrypted fixture is process-local; durable
+key management, restart persistence, backup deletion, and provider-side
+revocation remain outside this contract slice.
+
+Every credential starts at generation `1`. A run-scoped grant captures the
+credential generation at issuance. Rotation replaces the protected record and
+increments the generation; a grant from an older generation fails closed before
+adapter invocation. Revocation invalidates active grants, increments the
+generation, and purges the protected record. A new grant is required after
+rotation or revocation.
 
 ## 9. Provider run result
 
@@ -410,10 +468,21 @@ Minimum normalized failure codes:
 - `USAGE_CLASSIFICATION_CONFLICT`
 - `CONTEXT_INTEGRITY_FAILED`
 - `BINDING_EXPIRED`
+- `CREDENTIAL_MODE_INVALID`
+- `CREDENTIAL_MODE_UNSUPPORTED`
+- `CREDENTIAL_GRANT_REQUIRED`
+- `CREDENTIAL_MODE_GRANT_MISMATCH`
+- `CREDENTIAL_DERIVER_REQUIRED`
+- `CREDENTIAL_HANDOFF_INVALID`
+- `CREDENTIAL_DERIVATION_RAW_SECRET_REUSED`
+- `CREDENTIAL_GENERATION_MISMATCH`
+- `CREDENTIAL_BACKEND_ROTATION_UNSUPPORTED`
+- `CREDENTIAL_BACKEND_KEY_INVALID`
 
 ## 14. Prohibited behavior
 
 - raw credential routing;
+- generic or router-owned credential-token derivation;
 - anonymous cross-user session reuse;
 - router-side context trimming;
 - treating a request count as an exact token quantity;
@@ -437,6 +506,8 @@ Where execution-resource behavior conflicts with context authority, API-007 and 
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.6.0+draft | 2026-08-14 | ATHER | Added the provider-neutral encrypted credential-backend and generation/rotation boundary; durable key management and live provider revocation remain unevidenced. |
+| 0.5.0+draft | 2026-08-14 | ATHER | Added explicit credential handoff modes and the provider-neutral `govibe-credential-handoff/v1` boundary; repository fixtures prove derived-token fail-closed behavior without claiming a real provider. |
 | 0.4.0+draft | 2026-08-14 | ATHER | Added binding adapter selection to the capability-plan contract and added explicit `not_applicable_fields` classification to usage events; both remain additive v1 contract fields. |
 | 0.3.0+draft | 2026-08-03 | ATHER | Removed the schema-absent principal-only compatibility path under authorized WP-11; all execution bindings now require complete `govibe-execution-binding/v1` before adapter dispatch. API lifecycle remains draft. |
 | 0.2.1+draft | 2026-08-03 | ARCHON / ATHER | Made the v1 actor/principal and workspace/task/agent/run/session/turn/context/cache correlation tuple mandatory and fail closed; bounded legacy compatibility to an absent-schema principal-only runtime binding. |

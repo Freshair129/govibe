@@ -1,3 +1,5 @@
+import { CREDENTIAL_HANDOFF_MODES } from './credential-handoff.mjs';
+
 export class ExecutionPlanningError extends Error {
   constructor(code, message, details = {}) {
     super(message);
@@ -230,6 +232,20 @@ export function createExecutionCapabilityPlanner({ capabilityRegistry, entitleme
         continue;
       }
 
+      if (descriptor.credential_modes.length > 0
+        && (descriptor.credential_modes.length !== 1
+          || !CREDENTIAL_HANDOFF_MODES.includes(descriptor.credential_modes[0]))) {
+        rejectedTargets.push(Object.freeze({
+          provider_id: descriptor.provider_id,
+          entitlement_id: entitlement.entitlement_id,
+          reason_code: 'CREDENTIAL_MODE_UNSUPPORTED',
+          reasons: Object.freeze(['CREDENTIAL_MODE_UNSUPPORTED']),
+        }));
+        continue;
+      }
+
+      const credentialMode = descriptor.credential_modes[0] ?? null;
+
       eligibleTargets.push(Object.freeze({
         authorized: true,
         actor_id: request.actor_id,
@@ -237,6 +253,7 @@ export function createExecutionCapabilityPlanner({ capabilityRegistry, entitleme
         project_id: request.project_id,
         provider_id: descriptor.provider_id,
         adapter_id: descriptor.adapter_id,
+        ...(credentialMode ? { credential_mode: credentialMode } : {}),
         entitlement_id: entitlement.entitlement_id,
         executor_class: request.executor_class,
         model_id: authorizedModel.model_id,

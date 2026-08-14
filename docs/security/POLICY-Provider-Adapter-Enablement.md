@@ -1,9 +1,9 @@
 ---
 title: "Provider Adapter Enablement Policy"
 doc_id: "POLICY-PROVIDER-ADAPTER-ENABLEMENT"
-version: "0.1.0+draft"
+version: "0.3.0+draft"
 status: draft
-updated: "2026-08-04"
+updated: "2026-08-14"
 owner: "Boss / ATHER"
 source_of_truth: true
 related_issues:
@@ -109,6 +109,39 @@ read from adapter output only when the descriptor declares that the provider
 reports it. An adapter therefore cannot widen a provider's declared telemetry by
 returning more fields.
 
+### 5.1 Credential handoff modes
+
+Credential handling is explicit and remains adapter-owned:
+
+- `none` is used for host-owned execution with no credential grant;
+- `raw_secret` is the compatibility path where the vault gives protected bytes
+  to the adapter runtime;
+- `derived_token` requires an adapter `deriveCredential` callback. The callback
+  is the only fixture boundary that may see raw bytes, and `execute` receives
+  only `govibe-credential-handoff/v1` with the bound provider, adapter and
+  binding IDs.
+
+The router and GoVibe core do not select an OAuth/JWT/provider derivation
+algorithm. Unsupported modes, missing grants, missing derivers, invalid
+handoffs and exact raw-secret reuse fail closed before adapter invocation. The
+current implementation and tests are provider-neutral fixtures; they do not
+prove a live provider handoff.
+
+### 5.2 Credential backend and rotation boundary
+
+Provider credential bytes must be held by an encrypted vault backend, never by
+the compatibility registry, binding, context packet, or adapter capability
+metadata. The repository fixture uses AES-256-GCM with a host-supplied key and
+exposes only backend metadata through inspection. Credential grants capture the
+credential generation; rotation increments that generation and stale grants
+fail closed, while revocation purges the protected record and invalidates active
+grants.
+
+The encrypted fixture is process-local and does not provide durable key
+management, restart persistence, backup deletion, or provider-side revocation.
+Those are required external/operational evidence before a provider record may
+move from `pending` to `approved`.
+
 ## 6. Candidate boundary
 
 Adapter output is a **candidate**, never canonical knowledge:
@@ -156,6 +189,8 @@ Mapped from section 14 of the sharing policy, for the part owned by issue #63:
 - provider-reported and estimated quota fields remain separate;
 - unsupported usage and cache fields remain unknown;
 - rate-limit, timeout, unavailable and cancellation states normalize;
+- derived-token mode never passes raw secret bytes to `execute`, rejects raw
+  secret reuse, and rejects a caller mode substitution;
 - no GKS or GenesisBlockDB path exists from an adapter.
 
 Items owned by issue #59 and #64 — expired compatibility records, product/plan
@@ -173,4 +208,6 @@ and the #64 evidence package.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.0+draft | 2026-08-14 | ATHER | Added the encrypted backend and credential-generation/rotation repository boundary; provider records remain pending and operational/provider evidence remains open. |
+| 0.2.0+draft | 2026-08-14 | ATHER | Added explicit `none`/`raw_secret`/`derived_token` handoff rules and mapped the repository fixture evidence; provider records remain pending and no live-provider claim is made. |
 | 0.1.0+draft | 2026-08-04 | ATHER | Initial adapter enablement policy and provider records for issue #63; all provider records remain pending and no runtime conformance is claimed. |
