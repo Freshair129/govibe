@@ -34,7 +34,10 @@ function readContext(args) {
 function readAuthorization(args) {
   const source = args.authorization && typeof args.authorization === "object" ? args.authorization : {};
   return {
-    membershipActive: source.membershipActive ?? source.membership_active ?? true,
+    // Multi-tenant resolution is intentionally fail-closed: the identity /
+    // policy layer must affirm current membership on every turn. Omission is
+    // not interpreted as authorization.
+    membershipActive: source.membershipActive ?? source.membership_active ?? false,
     allowed: source.allowed ?? true,
     allowGlobalPrivate: source.allowGlobalPrivate ?? source.allow_global_private ?? true,
     allowTenantGlobalPrivate: source.allowTenantGlobalPrivate ?? source.allow_tenant_global_private ?? true,
@@ -167,6 +170,9 @@ export function createVaultHandlers({ vaultRegistry, journal }) {
             tenantId: optionalString(args.tenant_id),
             businessId: optionalString(args.business_id),
             principalId: optionalString(args.principal_id),
+            // Legacy msp_vault_mount has no membership field, so keep its
+            // existing behavior. Scoped vaults still fail closed because the
+            // required tenant/principal/agent dimensions must match first.
             membershipActive: args.membership_active ?? true,
           }),
           `vault_scope_denied: vault_id "${vaultId}" is outside the caller's current authorized scope.`,
