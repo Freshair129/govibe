@@ -55,6 +55,7 @@ export class VaultRegistry {
   #backfillProjectId;
   #selectMount;
   #selectAnyMount;
+  #selectWorkspaceCandidates;
   #insertMount;
 
   constructor(db) {
@@ -78,6 +79,9 @@ export class VaultRegistry {
     this.#selectMount = db.prepare("SELECT * FROM vault_mounts WHERE vault_id = ? AND workspace_id = ? AND mount_alias = ?");
     this.#selectAnyMount = db.prepare(
       "SELECT 1 FROM vault_mounts WHERE vault_id = ? AND workspace_id = ? AND status = 'mounted' LIMIT 1",
+    );
+    this.#selectWorkspaceCandidates = db.prepare(
+      "SELECT * FROM vaults WHERE vault_type = 'workspace_private' AND workspace_id = ? AND status = 'active'",
     );
     this.#insertMount = db.prepare(`
       INSERT INTO vault_mounts (mount_id, vault_id, workspace_id, mount_alias, access_mode, status, mounted_at)
@@ -161,7 +165,6 @@ export class VaultRegistry {
     return run();
   }
 
-  /** Principal-scoped Workspace Private identity: Tenant × Principal × Agent × Workspace. */
   provisionScopedWorkspacePrivateVault({ workspaceId, projectId = null, agentId, tenantId, businessId = null, principalId, policyVersion = "1" }) {
     if (!workspaceId || !agentId || !tenantId || !principalId) {
       throw new TypeError("Scoped Workspace Private requires workspaceId, agentId, tenantId, and principalId.");
@@ -185,7 +188,6 @@ export class VaultRegistry {
     });
   }
 
-  /** Global Private remains private/global; only its binding key changes. */
   provisionScopedGlobalPrivateVault({ agentId, tenantId, principalId = null, businessId = null, role = null, policyVersion = "1" }) {
     if (!agentId || !tenantId) throw new TypeError("Scoped Global Private requires agentId and tenantId.");
     assertPrincipalAgentSeparation(agentId, principalId);
@@ -231,10 +233,6 @@ export class VaultRegistry {
     });
   }
 
-  /**
-   * Resolve an authorized vault set per turn. Authorization facts are inputs
-   * from the application identity/policy layer; they are never cached here.
-   */
   resolveAuthorizedVaultSet(context, authorization = {}) {
     const {
       tenantId, businessId = null, principalId, agentId, projectId, workspaceId,
@@ -295,14 +293,23 @@ export class VaultRegistry {
     return rowToVault(this.#selectById.get(vaultId));
   }
 
-  isVaultAccessibleTo(vaultId, { workspaceId = null, agentId = null, tenantId = null, businessId = null, principalId = null } = {}) {
+  isVaultAccessibleTo(vaultId, {
+    workspaceId = null,
+    agentId = null,
+    tenantId = null,
+    businessId = null,
+    principalId = null,
+    membershipActive = true,
+  } = {}) {
     const vault = this.#selectById.get(vaultId);
-    if (!vault || vault.status === "revoked" || vault.status === "archived") return false;
+    if (!vault || membershipActive === false || vault.status === "revoked" || vault.status === "archived") return false;
 
-    // A mount never widens tenant/principal scope. First prove the binding scope.
+    // Binding dimensions are attenuation-only: omitted or mismatched identity
+    // facts can never widen a scoped vault.
     if (vault.tenant_id && vault.tenant_id !== tenantId) return false;
     if (vault.principal_id && vault.principal_id !== principalId) return false;
-    if (vault.business_id && businessId && vault.business_id !== businessId) return false;
+    if (vault.business_id && vault.business_id !== businessId) return false;
+    if (vault.agent_id && agentId && vault.agent_id !== agentId) return false;
 
     if (workspaceId && this.#selectAnyMount.get(vaultId, workspaceId)) return true;
 
@@ -315,10 +322,19 @@ export class VaultRegistry {
       return Boolean(agentId) && vault.agent_id === agentId;
     }
     if (vault.vault_type === "shared") {
-      if (vault.principal_id) return false;
-      if (vault.project_id == null) return false;
-      if (tenantId && vault.tenant_id && vault.tenant_id !== tenantId) return false;
-      return Boolean(workspaceId);
+      if (!workspaceId || vault.principal_id || vault.project_id == null) return false;
+      // Legacy callers may access only legacy project-shared bindings. Scoped
+      // callers must prove a workspace-private binding in the same tenant and
+      // project; a legacy workspace row cannot bootstrap tenant access.
+      const candidates = this.#selectWorkspaceCandidates.all(workspaceId);
+      return candidates.some((candidate) => {
+        if (candidate.project_id !== vault.project_id) return false;
+        if ((candidate.tenant_id ?? null) !== (vault.tenant_id ?? null)) return false;
+        if (vault.business_id && candidate.business_id !== vault.business_id) return false;
+        if (candidate.principal_id && candidate.principal_id !== principalId) return false;
+        if (candidate.agent_id && candidate.agent_id !== agentId) return false;
+        return true;
+      });
     }
     return false;
   }
