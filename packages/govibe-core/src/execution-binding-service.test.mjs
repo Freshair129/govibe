@@ -70,6 +70,21 @@ describe("execution binding service", () => {
     );
   });
 
+  it("preserves an explicit credential handoff mode in the issued binding", () => {
+    const service = createExecutionBindingService({ idFactory: () => "derived" });
+    const binding = service.createBinding(request({ eligible_target: { ...request().eligible_target, credential_mode: "derived_token" } }));
+
+    expect(binding.credential_mode).toBe("derived_token");
+    expect(service.assertUsable(binding.binding_id, { credential_mode: "derived_token" })).toBe(binding);
+  });
+
+  it("rejects unsupported credential handoff modes", () => {
+    const service = createExecutionBindingService();
+    expect(() => service.createBinding(request({ eligible_target: { ...request().eligible_target, credential_mode: "oauth-session" } }))).toThrowError(
+      expect.objectContaining({ code: "CREDENTIAL_MODE_INVALID" }),
+    );
+  });
+
   it("rejects an unauthorized entitlement target", () => {
     const service = createExecutionBindingService();
     expect(() => service.createBinding(request({ eligible_target: { ...request().eligible_target, authorized: false } }))).toThrowError(

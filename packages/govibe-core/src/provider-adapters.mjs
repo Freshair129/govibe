@@ -53,6 +53,7 @@ export function createLocalComputeAdapter({
   return Object.freeze({
     provider_id: providerId,
     adapter_id: adapterId,
+    credential_modes: Object.freeze(['none']),
     capabilities: Object.freeze(['local-compute']),
     async execute(request, context) {
       const startedAt = clock();
@@ -84,11 +85,15 @@ export function createSubscriptionCliAdapter({
   providerVersion = null,
   run,
   classifyFailure = null,
+  deriveCredential = null,
 } = {}) {
   if (typeof providerId !== 'string' || providerId.trim() === '') {
     throw new ProviderInvocationError('PROVIDER_REJECTED', 'subscription adapter requires a provider id');
   }
   if (typeof run !== 'function') throw new ProviderInvocationError('PROVIDER_REJECTED', 'subscription adapter requires a run function');
+  if (deriveCredential != null && typeof deriveCredential !== 'function') {
+    throw new ProviderInvocationError('PROVIDER_REJECTED', 'credential deriver must be a function');
+  }
 
   const classify = classifyFailure ?? ((error) => {
     if (/rate.?limit|429|quota exceeded/i.test(error?.message ?? '')) return 'PROVIDER_RATE_LIMITED';
@@ -100,7 +105,9 @@ export function createSubscriptionCliAdapter({
   return Object.freeze({
     provider_id: providerId,
     adapter_id: adapterId,
+    credential_modes: Object.freeze(deriveCredential ? ['none', 'derived_token'] : ['none', 'raw_secret']),
     capabilities: Object.freeze(['external-agent']),
+    ...(deriveCredential ? { deriveCredential } : {}),
     async execute(request, context) {
       let output;
       try {

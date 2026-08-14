@@ -92,7 +92,7 @@ describe('execution capability planner', () => {
     const plan = createPlanner().plan(planningRequest());
     expect(plan.eligible_targets).toHaveLength(1);
     expect(plan.eligible_targets[0]).toMatchObject({
-      authorized: true, provider_id: 'local', entitlement_id: 'ent_1', model_id: 'qwen',
+      authorized: true, provider_id: 'local', entitlement_id: 'ent_1', model_id: 'qwen', credential_mode: 'none',
       compatibility: { authorized: true, record_id: 'compat_local_owner_v1', product: 'govibe-local-runtime', plan: 'self-hosted', execution_surface: 'local_runtime' },
     });
     expect(plan.eligible_targets[0].policy_refs).toContain('compatibility:compat_local_owner_v1:1.0.0');
@@ -103,6 +103,19 @@ describe('execution capability planner', () => {
   it('fails closed when a compatibility record is missing', () => {
     expect(() => createPlanner([entitlement()], [capability()], []).plan(planningRequest())).toThrowError(
       expect.objectContaining({ code: 'NO_AUTHORIZED_ENTITLEMENT', details: expect.objectContaining({ rejected_targets: expect.arrayContaining([expect.objectContaining({ reason_code: 'COMPATIBILITY_RECORD_MISSING' })]) }) }),
+    );
+  });
+
+  it('fails closed when a capability advertises an unsupported credential mode', () => {
+    expect(() => createPlanner([entitlement()], [capability({ credential_modes: ['oauth-session'] })]).plan(planningRequest())).toThrowError(
+      expect.objectContaining({
+        code: 'NO_AUTHORIZED_ENTITLEMENT',
+        details: expect.objectContaining({
+          rejected_targets: expect.arrayContaining([
+            expect.objectContaining({ reason_code: 'CREDENTIAL_MODE_UNSUPPORTED' }),
+          ]),
+        }),
+      }),
     );
   });
 
