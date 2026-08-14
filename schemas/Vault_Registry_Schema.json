@@ -57,11 +57,18 @@
         },
         {
           "if": { "properties": { "visibility": { "const": "principal_private" } }, "required": ["visibility"] },
-          "then": { "required": ["tenant_id", "principal_id", "agent_id"] }
+          "then": {
+            "required": ["tenant_id", "principal_id", "agent_id"],
+            "properties": {
+              "tenant_id": { "type": "string", "minLength": 1 },
+              "principal_id": { "type": "string", "minLength": 1 },
+              "agent_id": { "type": "string", "minLength": 1 }
+            }
+          }
         },
         {
           "if": { "properties": { "vault_type": { "const": "shared" } }, "required": ["vault_type"] },
-          "then": { "not": { "required": ["principal_id"] } }
+          "then": { "properties": { "principal_id": { "type": "null" } } }
         }
       ],
       "additionalProperties": false
