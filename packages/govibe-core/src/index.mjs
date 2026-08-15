@@ -20,6 +20,7 @@ export { validateDeepScan } from "./scan/graph-validation.mjs";
 export { initializeWorkspace } from "./workspace.mjs";
 export { bindExternalWorkspace, inspectExternalWorkspace } from "./mode2/external-binding.mjs";
 export { createMetadataStore, MetadataWritePolicyError, MODE2_METADATA_ROOT } from "./mode2/metadata-store.mjs";
+export { getMode2ScanStatus, runMode2Scan } from "./mode2/pipeline.mjs";
 export { MODE2_STAGES, MODE2_STAGE_RUN_SCHEMA, validateMode2StageRun } from "./mode2/stage-contract.mjs";
 export { createMode2Stages } from "./mode2/stages.mjs";
 export { createWorkspaceAdapter, DEFAULT_EXCLUSIONS, resolveClient, WORKSPACE_CLIENTS } from "./mode2/workspace-adapter.mjs";
