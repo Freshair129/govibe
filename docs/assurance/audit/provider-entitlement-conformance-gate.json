@@ -1,0 +1,72 @@
+{
+  "schema": "govibe-provider-entitlement-conformance-gate-evidence-set/v1",
+  "issue": 64,
+  "evaluated_at": "2026-08-15T00:13:00.000Z",
+  "expected_status": "BLOCKED",
+  "evidence": [
+    {
+      "schema": "govibe-provider-entitlement-conformance-evidence/v1",
+      "gate": "repository_contracts",
+      "state": "PASS",
+      "source_kind": "ci",
+      "evidence_ref": "packages/govibe-core/src/entitlement-runtime-conformance.test.mjs",
+      "note": "API-008 contract and end-to-end repository conformance suite"
+    },
+    {
+      "schema": "govibe-provider-entitlement-conformance-evidence/v1",
+      "gate": "credential_session_isolation",
+      "state": "PASS",
+      "source_kind": "ci",
+      "evidence_ref": "packages/govibe-core/src/credential-session-boundary.security.test.mjs",
+      "note": "Credential/session isolation and redaction security tests"
+    },
+    {
+      "schema": "govibe-provider-entitlement-conformance-evidence/v1",
+      "gate": "context_integrity",
+      "state": "PASS",
+      "source_kind": "ci",
+      "evidence_ref": "packages/govibe-core/src/entitlement-runtime-conformance.test.mjs#context-integrity",
+      "note": "Router/binding preserves persisted context identity and hash"
+    },
+    {
+      "schema": "govibe-provider-entitlement-conformance-evidence/v1",
+      "gate": "failover_lineage",
+      "state": "PASS",
+      "source_kind": "ci",
+      "evidence_ref": "packages/govibe-core/src/entitlement-runtime-conformance.test.mjs#failover",
+      "note": "Rebind preserves context identity and issues a new binding"
+    },
+    {
+      "schema": "govibe-provider-entitlement-conformance-evidence/v1",
+      "gate": "usage_semantics",
+      "state": "PASS",
+      "source_kind": "ci",
+      "evidence_ref": "packages/govibe-core/src/entitlement-runtime-conformance.test.mjs#usage",
+      "note": "Reported, estimated, unknown and not-applicable semantics remain distinct"
+    },
+    {
+      "schema": "govibe-provider-entitlement-conformance-evidence/v1",
+      "gate": "durable_usage_ledger",
+      "state": "BLOCKED",
+      "source_kind": "runtime",
+      "evidence_ref": "blocked:durable-usage-ledger-not-yet-proven",
+      "note": "Current conformance ledger is process-memory scoped; restart persistence evidence is still required"
+    },
+    {
+      "schema": "govibe-provider-entitlement-conformance-evidence/v1",
+      "gate": "live_provider_execution",
+      "state": "BLOCKED",
+      "source_kind": "provider",
+      "evidence_ref": "blocked:no-live-provider-run-evidence",
+      "note": "No real third-party provider credential/invocation evidence is present in CI"
+    },
+    {
+      "schema": "govibe-provider-entitlement-conformance-evidence/v1",
+      "gate": "human_security_release_review",
+      "state": "BLOCKED",
+      "source_kind": "human_review",
+      "evidence_ref": "blocked:no-independent-release-approval",
+      "note": "Independent human security/release approval has not been recorded"
+    }
+  ]
+}
