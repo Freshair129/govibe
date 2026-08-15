@@ -38,6 +38,15 @@ function authority({ workspaceId = "workspace-fixture", agentId = "agent-fixture
       cacheId: "cache-authority-fixture",
       parentContextId: null,
     },
+    knowledgeRefs: [],
+    requiredReasonRefs: ["msp:proof/reason-fixture"],
+    unresolvedAssumptions: [],
+    traversal: {
+      relationAllowlist: ["defines", "references"],
+      retrievalRadius: 2,
+      inclusions: [],
+      exclusions: [],
+    },
     sources: [{ id: "docs/fixture.md", version: "1", hash: sourceHash }],
     budget: { maxTokens: 4096 },
   };
@@ -57,6 +66,36 @@ function boundedGraphQuery(sourceHash) {
   };
 }
 
+async function promoteFixture(instance, {
+  id,
+  workspaceId = "workspace-fixture",
+  sourceHash,
+  atomRef,
+  text,
+}) {
+  const proof = (await instance.toolRegistry.dispatch("msp_evidence_record", {
+    schema_version: "govibe-proof-batch/v1",
+    idempotency_key: `proof-${id}`,
+    run_id: `run-${id}`,
+    stage: 4,
+    source_snapshot_hash: sourceHash,
+    verification: { verdict: "passed" },
+  })).structuredContent;
+
+  return (await instance.toolRegistry.dispatch("msp_knowledge_promote", {
+    schema_version: "govibe-knowledge-candidate/v1",
+    idempotency_key: `candidate-${id}`,
+    workspace_id: workspaceId,
+    run_id: `run-${id}`,
+    stage: 4,
+    source_snapshot_hash: sourceHash,
+    source_version: "1",
+    provenance_ref: proof.proof_ref,
+    atom_ref: atomRef,
+    atom: { kind: "heading", text },
+  })).structuredContent;
+}
+
 describe("#74 persistent GKS vertical slice", () => {
   it("promotes canonical knowledge, closes the runtime, reopens it, and retrieves provenance", async () => {
     const directory = mkdtempSync(path.join(tmpdir(), "govibe-gks-74-"));
@@ -71,27 +110,12 @@ describe("#74 persistent GKS vertical slice", () => {
       components: { gks: { state: "ready" }, storage: { state: "ready" } },
     });
 
-    const proof = (await first.toolRegistry.dispatch("msp_evidence_record", {
-      schema_version: "govibe-proof-batch/v1",
-      idempotency_key: "proof-74",
-      run_id: "run-promote",
-      stage: 4,
-      source_snapshot_hash: sourceHash,
-      verification: { verdict: "passed" },
-    })).structuredContent;
-
-    const promoted = (await first.toolRegistry.dispatch("msp_knowledge_promote", {
-      schema_version: "govibe-knowledge-candidate/v1",
-      idempotency_key: "candidate-74",
-      workspace_id: "workspace-fixture",
-      run_id: "run-promote",
-      stage: 4,
-      source_snapshot_hash: sourceHash,
-      source_version: "1",
-      provenance_ref: proof.proof_ref,
-      atom_ref: "atom:fixture/readme-heading",
-      atom: { kind: "heading", text: "Persistent fixture knowledge" },
-    })).structuredContent;
+    const promoted = await promoteFixture(first, {
+      id: "74",
+      sourceHash,
+      atomRef: "atom:fixture/readme-heading",
+      text: "Persistent fixture knowledge",
+    });
 
     expect(promoted.knowledge_ref).toMatch(/^gks:knowledge\/[a-f0-9]{64}$/);
     expect(promoted.source_hash).toBe(sourceHash);
@@ -123,16 +147,51 @@ describe("#74 persistent GKS vertical slice", () => {
     expect(resolved.provenance).toContainEqual(expect.objectContaining({
       knowledgeRef: promoted.knowledge_ref,
       sourceHash,
-      provenanceRef: proof.proof_ref,
       atomRef: "atom:fixture/readme-heading",
-      runId: "run-promote",
+      runId: "run-74",
       stage: 4,
     }));
+    expect(resolved.provenance[0].provenanceRef).toMatch(/^msp:proof\//);
     expect(resolved.lineage).toMatchObject({
       runId: "run-retrieve",
       sessionId: "session-retrieve",
       turnId: "turn-retrieve",
     });
+  });
+
+  it("filters same-workspace knowledge by authorized source hash inside the provider query", async () => {
+    const directory = mkdtempSync(path.join(tmpdir(), "govibe-gks-74-source-scope-"));
+    cleanups.push(() => rmSync(directory, { recursive: true, force: true }));
+    const instance = openServer(path.join(directory, "msp.sqlite3"));
+    cleanups.push(() => instance.close());
+    const allowedHash = "d".repeat(64);
+    const deniedHash = "e".repeat(64);
+
+    const allowed = await promoteFixture(instance, {
+      id: "allowed",
+      sourceHash: allowedHash,
+      atomRef: "atom:allowed",
+      text: "Allowed source",
+    });
+    const denied = await promoteFixture(instance, {
+      id: "denied",
+      sourceHash: deniedHash,
+      atomRef: "atom:denied",
+      text: "Different source in same workspace",
+    });
+
+    const resolved = (await instance.toolRegistry.dispatch("msp_context_resolve", {
+      workspace_root: directory,
+      workspace_id: "workspace-fixture",
+      agent_id: "agent-fixture",
+      context_authority: authority({ sourceHash: allowedHash }),
+      bounded_graph_query: boundedGraphQuery(allowedHash),
+    })).structuredContent;
+
+    expect(resolved.shared_vault_refs.map((item) => item.ref)).toEqual([allowed.knowledge_ref]);
+    expect(resolved.shared_vault_refs.map((item) => item.ref)).not.toContain(denied.knowledge_ref);
+    expect(resolved.provenance).toHaveLength(1);
+    expect(resolved.provenance[0]).toMatchObject({ knowledgeRef: allowed.knowledge_ref, sourceHash: allowedHash });
   });
 
   it("rejects an authority/workspace mismatch before GKS retrieval evidence is written", async () => {
