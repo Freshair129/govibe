@@ -35,6 +35,17 @@ function resolveSourceVersion(candidate) {
   return String(value);
 }
 
+function normalizeSourceHashes(sourceHashes) {
+  if (!Array.isArray(sourceHashes) || sourceHashes.length === 0) {
+    throw new TypeError("sourceHashes must contain at least one authorized SHA-256 digest.");
+  }
+  const normalized = [...new Set(sourceHashes.map((value) => String(value).replace(/^sha256:/i, "").toLowerCase()))];
+  if (normalized.some((value) => !HASH.test(value))) {
+    throw new TypeError("sourceHashes must contain only SHA-256 hex digests.");
+  }
+  return normalized;
+}
+
 /**
  * Backend-neutral first-slice GKS provider for #74.
  *
@@ -58,14 +69,6 @@ export function createSqliteGksProvider({ db, clock = () => new Date() }) {
       @source_snapshot_hash, @source_version, @provenance_ref, @atom_ref,
       @canonical_hash, @candidate_json, @created_at
     )
-  `);
-  const selectWorkspace = db.prepare(`
-    SELECT knowledge_ref, source_snapshot_hash, source_version, provenance_ref,
-           atom_ref, canonical_hash, run_id, stage, created_at
-    FROM gks_knowledge
-    WHERE workspace_id = ?
-    ORDER BY created_at DESC, knowledge_ref ASC
-    LIMIT ?
   `);
   const insertRetrievalEvidence = db.prepare(`
     INSERT INTO gks_retrieval_evidence (
@@ -136,17 +139,27 @@ export function createSqliteGksProvider({ db, clock = () => new Date() }) {
 
     /**
      * Policy is evaluated by the MSP knowledge handler before this method is
-     * called. This method therefore accepts only a normalized, already-
-     * authorized workspace query and performs no cross-workspace lookup.
+     * called. The provider still receives the authorized source hashes and
+     * applies them in SQL so workspace co-tenancy cannot widen the result set.
      */
-    retrieve({ workspaceId, agentId, contextId = null, radius, budget }) {
+    retrieve({ workspaceId, agentId, contextId = null, radius, budget, sourceHashes }) {
       const safeWorkspaceId = requireString(workspaceId, "workspaceId");
       const safeAgentId = requireString(agentId, "agentId");
       if (!Number.isInteger(radius) || radius < 0) throw new TypeError("radius must be a non-negative integer.");
       if (!Number.isInteger(budget) || budget < 1) throw new TypeError("budget must be a positive integer.");
-
-      const limit = Math.min(radius || budget, budget, 1000);
-      const rows = limit === 0 ? [] : selectWorkspace.all(safeWorkspaceId, limit);
+      const safeSourceHashes = normalizeSourceHashes(sourceHashes);
+      const limit = Math.min(budget, 1000);
+      const placeholders = safeSourceHashes.map(() => "?").join(", ");
+      const selectAuthorized = db.prepare(`
+        SELECT knowledge_ref, source_snapshot_hash, source_version, provenance_ref,
+               atom_ref, canonical_hash, run_id, stage, created_at
+        FROM gks_knowledge
+        WHERE workspace_id = ?
+          AND source_snapshot_hash IN (${placeholders})
+        ORDER BY created_at DESC, knowledge_ref ASC
+        LIMIT ?
+      `);
+      const rows = selectAuthorized.all(safeWorkspaceId, ...safeSourceHashes, limit);
       const items = rows.map((row) => ({
         ref: row.knowledge_ref,
         sourceHash: row.source_snapshot_hash,
@@ -157,7 +170,13 @@ export function createSqliteGksProvider({ db, clock = () => new Date() }) {
         runId: row.run_id,
         stage: row.stage,
       }));
-      const queryHash = sha256(stableStringify({ workspaceId: safeWorkspaceId, agentId: safeAgentId, radius, budget }));
+      const queryHash = sha256(stableStringify({
+        workspaceId: safeWorkspaceId,
+        agentId: safeAgentId,
+        radius,
+        budget,
+        sourceHashes: safeSourceHashes,
+      }));
       const retrievalRef = `gks:retrieval/${randomUUID()}`;
 
       insertRetrievalEvidence.run({
