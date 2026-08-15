@@ -5,7 +5,7 @@
  * baseline so failures continue to isolate credential/session/binding behavior.
  */
 import { describe, expect, it, vi } from 'vitest';
-import { createCredentialVault, createInMemorySecretBackend } from './credential-vault.mjs';
+import { createCredentialVault, createEncryptedSecretBackend, createInMemorySecretBackend } from './credential-vault.mjs';
 import { createExecutionBindingService } from './execution-binding-service.mjs';
 import { createExecutorRegistry } from './executor-adapter.mjs';
 import { createProviderCompatibilityRegistry } from './provider-compatibility-registry.mjs';
@@ -126,7 +126,7 @@ function request(bindingOverrides = {}, requestOverrides = {}) {
   };
 }
 
-function harness({ clock = () => new Date('2026-08-04T00:00:00.000Z') } = {}) {
+function harness({ clock = () => new Date('2026-08-04T00:00:00.000Z'), backend = createInMemorySecretBackend() } = {}) {
   const adapter = {
     capabilities: ['api-llm'],
     execute: vi.fn(async () => ({ status: 'completed' })),
@@ -135,7 +135,7 @@ function harness({ clock = () => new Date('2026-08-04T00:00:00.000Z') } = {}) {
   let grantId = 0;
   let sessionId = 0;
   const credentialVault = createCredentialVault({
-    backend: createInMemorySecretBackend(),
+    backend,
     clock,
     idFactory: () => { grantId += 1; return String(grantId); },
   });
@@ -195,7 +195,7 @@ function harness({ clock = () => new Date('2026-08-04T00:00:00.000Z') } = {}) {
     binding_id: ISSUED.binding_id, external_session_id: 'provider-side-session-handle', ...overrides,
   });
 
-  return { adapter, credentialVault, sessionRegistry, compatibilityRegistry, bindingService, registry, grantFor, sessionFor, clock };
+  return { adapter, backend, credentialVault, sessionRegistry, compatibilityRegistry, bindingService, registry, grantFor, sessionFor, clock };
 }
 
 async function expectBlockedBeforeProvider(harnessInstance, dispatchRequest, code) {
@@ -209,6 +209,29 @@ describe('#59 negative matrix: credential state blocks execution before provider
     const grant = h.grantFor();
     h.credentialVault.revokeCredential('cred-1');
     await expectBlockedBeforeProvider(h, request({ credential_grant_id: grant.grant_id }), 'CREDENTIAL_GRANT_REVOKED');
+  });
+
+  it('blocks a stale grant after credential rotation before provider invocation', async () => {
+    const h = harness();
+    const grant = h.grantFor();
+    h.credentialVault.rotateCredential({ credential_ref: 'cred-1', secret: `${SECRET}-rotated` });
+    await expectBlockedBeforeProvider(h, request({ credential_grant_id: grant.grant_id }), 'CREDENTIAL_GENERATION_MISMATCH');
+  });
+
+  it('dispatches through encrypted storage and wipes the adapter buffer after use', async () => {
+    const backend = createEncryptedSecretBackend({ key: new Uint8Array(32).fill(4) });
+    const h = harness({ backend });
+    const grant = h.grantFor();
+
+    await expect(h.registry.execute(PROVIDER, request({ credential_grant_id: grant.grant_id }))).resolves.toMatchObject({
+      status: 'completed',
+    });
+    expect(JSON.stringify(backend.inspect())).not.toContain(SECRET);
+    const adapterBytes = h.adapter.execute.mock.calls[0][1].credential;
+    expect(adapterBytes).toEqual(new Uint8Array(adapterBytes.length));
+
+    h.credentialVault.revokeCredential('cred-1');
+    expect(backend.has('cred-1')).toBe(false);
   });
 
   it('blocks an expired credential', async () => {
@@ -369,7 +392,7 @@ describe('#59 negative matrix: the adapter receives only its bound scope', () =>
     for (const field of ['api_key', 'access_token', 'secret', 'credential']) expect(safeRequest, field).not.toHaveProperty(field);
     expect(safeRequest.executionBinding).not.toHaveProperty('credential_grant_id');
     expect(Object.keys(safeRequest.executionBinding).sort()).toEqual([
-      'adapter_id', 'binding_id', 'entitlement_id', 'principal_id', 'provider_id', 'provider_session_id', 'run_id',
+      'adapter_id', 'binding_id', 'credential_mode', 'entitlement_id', 'principal_id', 'provider_id', 'provider_session_id', 'run_id',
     ]);
     expect(context.executionBinding.entitlement_id).toBe('ent-1');
   });

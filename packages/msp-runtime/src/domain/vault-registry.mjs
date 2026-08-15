@@ -1,24 +1,6 @@
-// domain/vault-registry: lazy, idempotent Shared / Workspace-Private /
-// Global-Private vault provisioning and mount tracking (WP-13 Phase 2,
-// Bounded Scope item 1). Depends only on db/ (an already-open connection
-// passed in by the composition root) and other domain/ modules
-// (domain/ids.mjs, domain/errors.mjs) -- never contracts/ or transport/,
-// per ADR-027's layering rule.
-//
-// Id minting reuses domain/ids.mjs's stableId/mintRef, following the same
-// stableId(prefix, ...parts) call shape packages/govibe-core/src/vaults.mjs
-// uses for its own local preview ids (e.g. stableId("vault", "shared",
-// projectId)). The two implementations are not byte-identical: vaults.mjs
-// joins hash parts with a NUL separator and uses a two-value vault_type
-// (shared/private) plus a separate vault_level, while WP-13's schema (see
-// 0002_phase2.sql) collapses type+level into a single three-value
-// vault_type enum (shared/workspace_private/global_private) and
-// domain/ids.mjs's stableId joins parts with a plain space -- a pre-existing
-// mismatch already present in WP-12's domain/ids.mjs (its own header
-// comment claims NUL-joining, its implementation does not); that is not
-// this packet's file to fix. This module reuses the *mechanism*
-// (stableId/mintRef) exactly as instructed; it does not claim byte-for-byte
-// id parity with vaults.mjs's preview ids.
+// domain/vault-registry: canonical Shared / Workspace-Private / Global-Private
+// registry and authorization authority. Issue #136 extends binding identity
+// with optional tenant/principal dimensions without adding a vault tier.
 import { MspRuntimeError } from "./errors.mjs";
 import { mintRef, stableId } from "./ids.mjs";
 
@@ -32,6 +14,11 @@ function rowToVault(row) {
     workspace_id: row.workspace_id,
     agent_id: row.agent_id,
     role: row.role ?? null,
+    tenant_id: row.tenant_id ?? null,
+    business_id: row.business_id ?? null,
+    principal_id: row.principal_id ?? null,
+    visibility: row.visibility ?? null,
+    policy_version: row.policy_version ?? null,
     status: row.status,
     created_at: row.created_at,
   };
@@ -52,6 +39,12 @@ function rowToMount(row) {
   };
 }
 
+function assertPrincipalAgentSeparation(agentId, principalId) {
+  if (principalId && principalId === agentId) {
+    throw new MspRuntimeError("principal_id must never substitute for agent_id.", "invalid_request");
+  }
+}
+
 export class VaultRegistry {
   #db;
   #selectShared;
@@ -62,17 +55,23 @@ export class VaultRegistry {
   #backfillProjectId;
   #selectMount;
   #selectAnyMount;
+  #selectWorkspaceCandidates;
   #insertMount;
 
   constructor(db) {
     this.#db = db;
-    this.#selectShared = db.prepare("SELECT * FROM vaults WHERE vault_type = 'shared' AND project_id = ?");
-    this.#selectWorkspacePrivate = db.prepare("SELECT * FROM vaults WHERE vault_type = 'workspace_private' AND workspace_id = ?");
-    this.#selectGlobalPrivate = db.prepare("SELECT * FROM vaults WHERE vault_type = 'global_private' AND agent_id = ?");
+    this.#selectShared = db.prepare("SELECT * FROM vaults WHERE vault_type = 'shared' AND project_id = ? AND tenant_id IS NULL AND business_id IS NULL LIMIT 1");
+    this.#selectWorkspacePrivate = db.prepare("SELECT * FROM vaults WHERE vault_type = 'workspace_private' AND workspace_id = ? AND tenant_id IS NULL AND principal_id IS NULL LIMIT 1");
+    this.#selectGlobalPrivate = db.prepare("SELECT * FROM vaults WHERE vault_type = 'global_private' AND agent_id = ? AND tenant_id IS NULL AND principal_id IS NULL LIMIT 1");
     this.#selectById = db.prepare("SELECT * FROM vaults WHERE vault_id = ?");
     this.#insertVault = db.prepare(`
-      INSERT INTO vaults (vault_id, vault_type, project_id, workspace_id, agent_id, role, status, created_at)
-      VALUES (@vault_id, @vault_type, @project_id, @workspace_id, @agent_id, @role, 'active', @created_at)
+      INSERT INTO vaults (
+        vault_id, vault_type, project_id, workspace_id, agent_id, role, status, created_at,
+        tenant_id, business_id, principal_id, visibility, policy_version
+      ) VALUES (
+        @vault_id, @vault_type, @project_id, @workspace_id, @agent_id, @role, 'active', @created_at,
+        @tenant_id, @business_id, @principal_id, @visibility, @policy_version
+      )
     `);
     this.#backfillProjectId = db.prepare(
       "UPDATE vaults SET project_id = @project_id WHERE vault_id = @vault_id AND project_id IS NULL",
@@ -81,47 +80,47 @@ export class VaultRegistry {
     this.#selectAnyMount = db.prepare(
       "SELECT 1 FROM vault_mounts WHERE vault_id = ? AND workspace_id = ? AND status = 'mounted' LIMIT 1",
     );
+    this.#selectWorkspaceCandidates = db.prepare(
+      "SELECT * FROM vaults WHERE vault_type = 'workspace_private' AND workspace_id = ? AND status = 'active'",
+    );
     this.#insertMount = db.prepare(`
       INSERT INTO vault_mounts (mount_id, vault_id, workspace_id, mount_alias, access_mode, status, mounted_at)
       VALUES (@mount_id, @vault_id, @workspace_id, @mount_alias, @access_mode, 'mounted', @mounted_at)
     `);
   }
 
-  /**
-   * Lazy, idempotent by project_id. Per WP-13 Bounded Scope item 1, a shared
-   * vault is provisioned for identity completeness only -- it is never a
-   * write target for promotion (msp_memory_promote/msp_knowledge_promote
-   * always deny shared-scope writes; see transport/handlers/lifecycle-handlers.mjs).
-   */
+  #insertAndRead(values) {
+    this.#insertVault.run({
+      tenant_id: null,
+      business_id: null,
+      principal_id: null,
+      visibility: null,
+      policy_version: null,
+      ...values,
+      created_at: new Date().toISOString(),
+    });
+    return rowToVault(this.#selectById.get(values.vault_id));
+  }
+
   provisionSharedVault(projectId) {
     if (!projectId) throw new TypeError("provisionSharedVault requires projectId.");
     const run = this.#db.transaction(() => {
       const existing = this.#selectShared.get(projectId);
       if (existing) return rowToVault(existing);
-      const vaultId = stableId("vault", "shared", projectId);
-      this.#insertVault.run({
-        vault_id: vaultId,
+      return this.#insertAndRead({
+        vault_id: stableId("vault", "shared", projectId),
         vault_type: "shared",
         project_id: projectId,
         workspace_id: null,
         agent_id: null,
-        // WP-14: `role` is an agent-role/tiering concept (ADR-020, "memory
-        // is keyed by role / named-agent"). A Shared vault has no single
-        // owning agent, so it has no natural role value -- left null rather
-        // than inventing one.
         role: null,
-        created_at: new Date().toISOString(),
+        visibility: "project_shared",
+        policy_version: "1",
       });
-      return rowToVault(this.#selectById.get(vaultId));
     });
     return run();
   }
 
-  /**
-   * Lazy, idempotent by workspace_id. If the vault already exists without a
-   * known project_id and one is supplied now, backfills it (registration
-   * can happen after an earlier vault-status-only reference).
-   */
   provisionWorkspacePrivateVault(workspaceId, { projectId = null } = {}) {
     if (!workspaceId) throw new TypeError("provisionWorkspacePrivateVault requires workspaceId.");
     const run = this.#db.transaction(() => {
@@ -133,79 +132,160 @@ export class VaultRegistry {
         }
         return rowToVault(existing);
       }
-      const vaultId = stableId("vault", "workspace-private", workspaceId);
-      this.#insertVault.run({
-        vault_id: vaultId,
+      return this.#insertAndRead({
+        vault_id: stableId("vault", "workspace-private", workspaceId),
         vault_type: "workspace_private",
         project_id: projectId,
         workspace_id: workspaceId,
         agent_id: null,
-        // Same reasoning as provisionSharedVault: a Workspace-Private vault
-        // is not agent-role scoped, so `role` is left null.
         role: null,
-        created_at: new Date().toISOString(),
+        visibility: "tenant_private",
+        policy_version: "1",
       });
-      return rowToVault(this.#selectById.get(vaultId));
     });
     return run();
   }
 
-  /**
-   * Lazy, idempotent by agent_id.
-   *
-   * WP-14 `role`: per ADR-020 ("memory is keyed by role / named-agent, not
-   * per ephemeral instance"), a Global-Private vault is the one vault_type
-   * that genuinely has a role concept -- it belongs to exactly one agent
-   * identity. If an explicit `role` is supplied (e.g. a role-aggregate
-   * identifier distinct from the raw agent_id), it is recorded as-is; if
-   * omitted, this falls back to agentId itself (an honest default: the
-   * agent's own identity acts as its own role when no separate role
-   * aggregate is known) rather than leaving it unset. Callers cannot
-   * supply role today (no msp_* request in this packet's Explicit
-   * Exclusions carries one on the wire) -- this parameter exists so
-   * domain-level callers and future work packets have it, verified directly
-   * by test/vaults-role-column.test.mjs (AC-05).
-   */
   provisionGlobalPrivateVault(agentId, { role = null } = {}) {
     if (!agentId) throw new TypeError("provisionGlobalPrivateVault requires agentId.");
     const run = this.#db.transaction(() => {
       const existing = this.#selectGlobalPrivate.get(agentId);
       if (existing) return rowToVault(existing);
-      const vaultId = stableId("vault", "global-private", agentId);
-      this.#insertVault.run({
-        vault_id: vaultId,
+      return this.#insertAndRead({
+        vault_id: stableId("vault", "global-private", agentId),
         vault_type: "global_private",
         project_id: null,
         workspace_id: null,
         agent_id: agentId,
         role: role ?? agentId,
-        created_at: new Date().toISOString(),
+        visibility: "tenant_private",
+        policy_version: "1",
       });
-      return rowToVault(this.#selectById.get(vaultId));
     });
     return run();
   }
 
-  /**
-   * Status for a workspace_id/agent_id pair: lazily provisions and returns
-   * whichever vaults are known for this caller. msp_vault_status carries no
-   * project_id, so the shared vault is only surfaced when the workspace's
-   * own project_id is already known (e.g. from an earlier
-   * msp_workspace_register call) -- it is never speculatively provisioned
-   * from a status-only call.
-   */
+  provisionScopedWorkspacePrivateVault({ workspaceId, projectId = null, agentId, tenantId, businessId = null, principalId, policyVersion = "1" }) {
+    if (!workspaceId || !agentId || !tenantId || !principalId) {
+      throw new TypeError("Scoped Workspace Private requires workspaceId, agentId, tenantId, and principalId.");
+    }
+    assertPrincipalAgentSeparation(agentId, principalId);
+    const vaultId = stableId("vault", "workspace-private", agentId, workspaceId, tenantId, principalId);
+    const existing = this.#selectById.get(vaultId);
+    if (existing) return rowToVault(existing);
+    return this.#insertAndRead({
+      vault_id: vaultId,
+      vault_type: "workspace_private",
+      project_id: projectId,
+      workspace_id: workspaceId,
+      agent_id: agentId,
+      role: "episodic_memory",
+      tenant_id: tenantId,
+      business_id: businessId,
+      principal_id: principalId,
+      visibility: "principal_private",
+      policy_version: String(policyVersion),
+    });
+  }
+
+  provisionScopedGlobalPrivateVault({ agentId, tenantId, principalId = null, businessId = null, role = null, policyVersion = "1" }) {
+    if (!agentId || !tenantId) throw new TypeError("Scoped Global Private requires agentId and tenantId.");
+    assertPrincipalAgentSeparation(agentId, principalId);
+    const vaultId = principalId
+      ? stableId("vault", "global-private", agentId, tenantId, principalId)
+      : stableId("vault", "global-private", agentId, tenantId);
+    const existing = this.#selectById.get(vaultId);
+    if (existing) return rowToVault(existing);
+    return this.#insertAndRead({
+      vault_id: vaultId,
+      vault_type: "global_private",
+      project_id: null,
+      workspace_id: null,
+      agent_id: agentId,
+      role: role ?? agentId,
+      tenant_id: tenantId,
+      business_id: businessId,
+      principal_id: principalId,
+      visibility: principalId ? "principal_private" : "tenant_private",
+      policy_version: String(policyVersion),
+    });
+  }
+
+  provisionScopedSharedVault({ projectId, tenantId = null, businessId = null, policyVersion = "1" }) {
+    if (!projectId) throw new TypeError("Scoped Shared requires projectId.");
+    const vaultId = tenantId || businessId
+      ? stableId("vault", "shared", projectId, tenantId ?? "", businessId ?? "")
+      : stableId("vault", "shared", projectId);
+    const existing = this.#selectById.get(vaultId);
+    if (existing) return rowToVault(existing);
+    return this.#insertAndRead({
+      vault_id: vaultId,
+      vault_type: "shared",
+      project_id: projectId,
+      workspace_id: null,
+      agent_id: null,
+      role: businessId ? "business_source_of_truth" : "project_source_of_truth",
+      tenant_id: tenantId,
+      business_id: businessId,
+      principal_id: null,
+      visibility: businessId ? "business_shared" : "project_shared",
+      policy_version: String(policyVersion),
+    });
+  }
+
+  resolveAuthorizedVaultSet(context, authorization = {}) {
+    const {
+      tenantId, businessId = null, principalId, agentId, projectId, workspaceId,
+      policyVersion = "1",
+    } = context ?? {};
+    if (!tenantId || !principalId || !agentId || !projectId || !workspaceId) {
+      throw new MspRuntimeError(
+        "Multi-tenant vault resolution requires tenantId, principalId, agentId, projectId, and workspaceId.",
+        "invalid_request",
+      );
+    }
+    assertPrincipalAgentSeparation(agentId, principalId);
+    if (authorization.membershipActive !== true || authorization.allowed === false) {
+      throw new MspRuntimeError("Vault access denied by current membership/policy facts.", "vault_scope_denied");
+    }
+
+    const workspacePrivate = this.provisionScopedWorkspacePrivateVault({
+      workspaceId, projectId, agentId, tenantId, businessId, principalId, policyVersion,
+    });
+    const globalPrincipal = this.provisionScopedGlobalPrivateVault({
+      agentId, tenantId, businessId, principalId, policyVersion,
+    });
+    const globalTenant = this.provisionScopedGlobalPrivateVault({
+      agentId, tenantId, businessId, principalId: null, policyVersion,
+    });
+    const shared = this.provisionScopedSharedVault({ projectId, tenantId, businessId, policyVersion });
+
+    const allowGlobal = authorization.allowGlobalPrivate !== false;
+    const allowTenantGlobal = authorization.allowTenantGlobalPrivate !== false;
+    const allowShared = authorization.allowShared !== false;
+    return {
+      workspacePrivateVaultId: workspacePrivate.vault_id,
+      globalPrivateVaultIds: allowGlobal
+        ? [globalPrincipal.vault_id, ...(allowTenantGlobal ? [globalTenant.vault_id] : [])]
+        : [],
+      sharedVaultIds: allowShared ? [shared.vault_id] : [],
+      permissions: {
+        read: authorization.read !== false,
+        writePrivate: authorization.writePrivate !== false,
+        writeShared: authorization.writeShared === true,
+        policyVersion: String(policyVersion),
+      },
+    };
+  }
+
   getVaultStatus({ workspaceId = null, agentId = null } = {}) {
     const vaults = [];
     if (workspaceId) {
       const workspaceVault = this.provisionWorkspacePrivateVault(workspaceId);
       vaults.push(workspaceVault);
-      if (workspaceVault.project_id) {
-        vaults.push(this.provisionSharedVault(workspaceVault.project_id));
-      }
+      if (workspaceVault.project_id) vaults.push(this.provisionSharedVault(workspaceVault.project_id));
     }
-    if (agentId) {
-      vaults.push(this.provisionGlobalPrivateVault(agentId));
-    }
+    if (agentId) vaults.push(this.provisionGlobalPrivateVault(agentId));
     return { vaults };
   }
 
@@ -213,65 +293,52 @@ export class VaultRegistry {
     return rowToVault(this.#selectById.get(vaultId));
   }
 
-  /**
-   * WP-14 AC-04: the ownership/scope check backing `vault_scope_denied`
-   * enforcement. Returns a plain boolean -- never throws, never itself
-   * shapes an error -- so transport/handlers/*.mjs can pass the result
-   * across the contracts/domain boundary as a plain argument into
-   * contracts/vault-scope-guard.mjs's assertVaultScope(), keeping
-   * contracts/ decoupled from this module (see that file's header comment
-   * for the layering rationale).
-   *
-   * A caller (identified by workspaceId and/or agentId, whichever the
-   * calling tool's request shape actually carries) is considered
-   * authorized for vaultId if:
-   *   - the vault is unknown: false (an unknown vault_id is a distinct
-   *     not_found condition, not a scope question -- callers check
-   *     getVaultById() separately when they need to tell the two apart);
-   *   - a workspace_mounts row already links vaultId to workspaceId
-   *     (status='mounted'): true -- a previously-authorized mount remains
-   *     authorized (idempotent re-mount with a different alias, etc.);
-   *   - vault_type is 'workspace_private': true only if the vault's own
-   *     workspace_id equals the caller's workspaceId (a workspace never
-   *     owns another workspace's private vault);
-   *   - vault_type is 'global_private': true only if the vault's own
-   *     agent_id equals the caller's agentId (this cannot be satisfied
-   *     through a request shape that carries no agentId, e.g.
-   *     msp_vault_mount's current request -- that is a deliberate,
-   *     conservative consequence of this fix, not an oversight: a
-   *     workspace-scoped mount request has no way to prove agent
-   *     ownership of a Global-Private vault, so it is denied);
-   *   - vault_type is 'shared': true only if the caller's own
-   *     workspace-private vault (looked up by workspaceId) is already
-   *     known to belong to the same project_id as the shared vault.
-   */
-  isVaultAccessibleTo(vaultId, { workspaceId = null, agentId = null } = {}) {
+  isVaultAccessibleTo(vaultId, {
+    workspaceId = null,
+    agentId = null,
+    tenantId = null,
+    businessId = null,
+    principalId = null,
+    membershipActive = true,
+  } = {}) {
     const vault = this.#selectById.get(vaultId);
-    if (!vault) return false;
+    if (!vault || membershipActive === false || vault.status === "revoked" || vault.status === "archived") return false;
 
-    if (workspaceId && this.#selectAnyMount.get(vaultId, workspaceId)) {
-      return true;
-    }
+    // Binding dimensions are attenuation-only: omitted or mismatched identity
+    // facts can never widen a scoped vault.
+    if (vault.tenant_id && vault.tenant_id !== tenantId) return false;
+    if (vault.principal_id && vault.principal_id !== principalId) return false;
+    if (vault.business_id && vault.business_id !== businessId) return false;
+    if (vault.agent_id && agentId && vault.agent_id !== agentId) return false;
+
+    if (workspaceId && this.#selectAnyMount.get(vaultId, workspaceId)) return true;
 
     if (vault.vault_type === "workspace_private") {
-      return Boolean(workspaceId) && vault.workspace_id === workspaceId;
+      if (!workspaceId || vault.workspace_id !== workspaceId) return false;
+      if (vault.agent_id && vault.agent_id !== agentId) return false;
+      return true;
     }
     if (vault.vault_type === "global_private") {
       return Boolean(agentId) && vault.agent_id === agentId;
     }
     if (vault.vault_type === "shared") {
-      if (!workspaceId) return false;
-      const callerWorkspaceVault = this.#selectWorkspacePrivate.get(workspaceId);
-      return Boolean(callerWorkspaceVault?.project_id) && callerWorkspaceVault.project_id === vault.project_id;
+      if (!workspaceId || vault.principal_id || vault.project_id == null) return false;
+      // Legacy callers may access only legacy project-shared bindings. Scoped
+      // callers must prove a workspace-private binding in the same tenant and
+      // project; a legacy workspace row cannot bootstrap tenant access.
+      const candidates = this.#selectWorkspaceCandidates.all(workspaceId);
+      return candidates.some((candidate) => {
+        if (candidate.project_id !== vault.project_id) return false;
+        if ((candidate.tenant_id ?? null) !== (vault.tenant_id ?? null)) return false;
+        if (vault.business_id && candidate.business_id !== vault.business_id) return false;
+        if (candidate.principal_id && candidate.principal_id !== principalId) return false;
+        if (candidate.agent_id && candidate.agent_id !== agentId) return false;
+        return true;
+      });
     }
     return false;
   }
 
-  /**
-   * Idempotent by (vault_id, workspace_id, mount_alias). Rejects an unknown
-   * vault_id (fail closed -- a mount must target a vault this registry
-   * actually provisioned, never an arbitrary caller-supplied string).
-   */
   mountVault({ vaultId, workspaceId, mountAlias, accessMode }) {
     if (!vaultId) throw new TypeError("mountVault requires vaultId.");
     if (!workspaceId) throw new TypeError("mountVault requires workspaceId.");
@@ -283,9 +350,7 @@ export class VaultRegistry {
       );
     }
     const vault = this.getVaultById(vaultId);
-    if (!vault) {
-      throw new MspRuntimeError(`mountVault: unknown vault_id "${vaultId}".`, "not_found");
-    }
+    if (!vault) throw new MspRuntimeError(`mountVault: unknown vault_id "${vaultId}".`, "not_found");
 
     const run = this.#db.transaction(() => {
       const existing = this.#selectMount.get(vaultId, workspaceId, mountAlias);
@@ -301,7 +366,6 @@ export class VaultRegistry {
       });
       return rowToMount(this.#selectMount.get(vaultId, workspaceId, mountAlias));
     });
-
     return { mount: run(), vault };
   }
 }

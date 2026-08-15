@@ -1,3 +1,4 @@
+import { normalizeCredentialMode } from "./credential-handoff.mjs";
 import { randomUUID } from "node:crypto";
 
 export class ExecutionBindingError extends Error {
@@ -77,6 +78,7 @@ function assertEligibleTarget(target, request) {
   const entitlementId = requireText(target.entitlement_id, "eligible_target.entitlement_id");
   const executorClass = requireText(target.executor_class, "eligible_target.executor_class");
   const modelId = requireText(target.model_id, "eligible_target.model_id");
+  const credentialMode = normalizeCredentialMode(target.credential_mode, "eligible_target.credential_mode");
 
   if (target.authorized !== true) fail("ENTITLEMENT_NOT_AUTHORIZED", "target was not authorized by entitlement policy");
   if (target.actor_id && target.actor_id !== request.actor_id) fail("ENTITLEMENT_PRINCIPAL_MISMATCH", "eligible target belongs to another principal");
@@ -90,6 +92,7 @@ function assertEligibleTarget(target, request) {
     entitlementId,
     executorClass,
     modelId,
+    credentialMode,
     compatibility: normalizeCompatibilityProof(target.compatibility),
   });
 }
@@ -160,6 +163,7 @@ export function createExecutionBindingService({
       provider_id: target.providerId,
       adapter_id: target.adapterId,
       entitlement_id: target.entitlementId,
+      credential_mode: target.credentialMode,
       executor_class: target.executorClass,
       model_id: target.modelId,
       provider_session_id: input?.provider_session_id ?? null,
@@ -198,6 +202,7 @@ export function createExecutionBindingService({
       "provider_id",
       "adapter_id",
       "entitlement_id",
+      "credential_mode",
       "context_hash",
     ]) {
       if (expected[field] !== undefined && binding[field] !== expected[field]) {
