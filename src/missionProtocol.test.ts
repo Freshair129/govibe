@@ -22,14 +22,14 @@ const snapshotFixture = {
   specs: [],
   symbols: [],
   campaignLogs: [],
+  orchestration: { waves: [], updatedAt: "2026-08-10T00:00:00.000Z" },
   workflowRuns: [],
-  orchestrationState: { activeRunId: null },
 };
 
-describe("mission protocol v1", () => {
+describe("mission protocol v2", () => {
   it("publishes an explicit semantic and compatibility version", () => {
-    expect(MISSION_PROTOCOL_VERSION).toBe("1.0.0");
-    expect(MISSION_PROTOCOL_COMPATIBILITY).toBe(1);
+    expect(MISSION_PROTOCOL_VERSION).toBe("2.0.0");
+    expect(MISSION_PROTOCOL_COMPATIBILITY).toBe(2);
   });
 
   it("validates the shared snapshot fixture and allows unknown optional fields", () => {
@@ -82,6 +82,7 @@ describe("mission protocol v1", () => {
       { type: "roadmap.assignment", assignment: { taskId: "task-1" } },
       { type: "roadmap.handoff", handoff: { taskId: "task-1" } },
       { type: "roadmap.verification", verification: { taskId: "task-1" } },
+      { type: "orchestration.update", orchestration: { waves: [], updatedAt: "2026-08-10T00:00:00.000Z" } },
       { type: "workflow.run", run: { runId: "run-1" } },
       { type: "memory.search.result", result: { query: "hello", vaultId: "vault_a", hits: [] } },
       { type: "memory.selection", entityId: "msp:entity/x" },
@@ -98,6 +99,8 @@ describe("mission protocol v1", () => {
     expect(isMissionCommand({ type: "workspace.scan", workspacePath: "C:/workspace", deep: "yes" })).toBe(false);
     expect(isMissionCommand({ type: "unknown.command" })).toBe(false);
     expect(isMissionEvent({ type: "metrics.update", metrics: [], trusted: true })).toBe(false);
+    expect(isMissionEvent({ type: "orchestration.update", orchestration: { waves: [], updatedAt: "2026-08-10T00:00:00.000Z" }, trusted: true })).toBe(false);
+    expect(isMissionEvent({ type: "orchestration.update", orchestration: { waves: [{ id: "wave-0" }], updatedAt: "2026-08-10T00:00:00.000Z" } })).toBe(false);
     expect(isMissionEvent({ type: "command.ack", commandId: 1, ok: true })).toBe(false);
     expect(isMissionEvent({ type: "unknown.event" })).toBe(false);
     // WP-17: memory.* commands/events reject unknown fields, missing
@@ -141,8 +144,8 @@ describe("mission protocol v1", () => {
     });
     expect(isCommandResponse(response)).toBe(true);
     expect(response).toMatchObject({
-      protocolVersion: "1.0.0",
-      compatibilityVersion: 1,
+      protocolVersion: "2.0.0",
+      compatibilityVersion: 2,
       commandId: "cmd-1",
       ok: true,
     });
@@ -150,6 +153,6 @@ describe("mission protocol v1", () => {
 
   it("fails contract validation for a breaking compatibility version", () => {
     const response = createCommandResponse({ commandId: "cmd-1", ok: true });
-    expect(isCommandResponse({ ...response, compatibilityVersion: 2 })).toBe(false);
+    expect(isCommandResponse({ ...response, compatibilityVersion: 3 })).toBe(false);
   });
 });

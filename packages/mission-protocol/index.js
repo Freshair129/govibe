@@ -1,5 +1,5 @@
-export const MISSION_PROTOCOL_VERSION = "1.0.0";
-export const MISSION_PROTOCOL_COMPATIBILITY = 1;
+export const MISSION_PROTOCOL_VERSION = "2.0.0";
+export const MISSION_PROTOCOL_COMPATIBILITY = 2;
 export const MAX_PROTOCOL_MESSAGE_LENGTH = 240;
 export const MISSION_PROTOCOL_LIMITS = Object.freeze({
   typeChars: 64,
@@ -43,6 +43,40 @@ function isBoundedJson(value, maxBytes = MISSION_PROTOCOL_LIMITS.eventBytes) {
 
 function isBoundedRecord(value) {
   return isRecord(value) && isBoundedJson(value);
+}
+
+const orchestrationTaskStatuses = new Set(["queued", "running", "verifying", "done", "failed", "blocked"]);
+const orchestrationWaveStatuses = new Set(["pending", "active", "complete", "skipped"]);
+
+function isMissionOrchestrationTask(value) {
+  return isBoundedRecord(value)
+    && hasOnlyKeys(value, ["taskId", "assigneeId", "status", "attempts"])
+    && isBoundedString(value.taskId, MISSION_PROTOCOL_LIMITS.idChars)
+    && (value.assigneeId === undefined || isBoundedString(value.assigneeId, MISSION_PROTOCOL_LIMITS.idChars))
+    && orchestrationTaskStatuses.has(value.status)
+    && Number.isInteger(value.attempts) && value.attempts >= 0;
+}
+
+function isMissionOrchestrationWave(value) {
+  return isBoundedRecord(value)
+    && hasOnlyKeys(value, ["id", "index", "level", "status", "taskIds", "tasks", "concurrency", "startedAt", "completedAt"])
+    && isBoundedString(value.id, MISSION_PROTOCOL_LIMITS.idChars)
+    && Number.isInteger(value.index) && value.index >= 0
+    && Number.isInteger(value.level) && value.level >= 0
+    && orchestrationWaveStatuses.has(value.status)
+    && isBoundedArray(value.taskIds) && value.taskIds.every((taskId) => isBoundedString(taskId, MISSION_PROTOCOL_LIMITS.idChars))
+    && isBoundedArray(value.tasks) && value.tasks.every(isMissionOrchestrationTask)
+    && Number.isInteger(value.concurrency) && value.concurrency >= 0
+    && (value.startedAt === undefined || isBoundedString(value.startedAt, MISSION_PROTOCOL_LIMITS.idChars))
+    && (value.completedAt === undefined || isBoundedString(value.completedAt, MISSION_PROTOCOL_LIMITS.idChars));
+}
+
+function isMissionOrchestrationSnapshot(value) {
+  return isBoundedRecord(value)
+    && hasOnlyKeys(value, ["waves", "updatedAt"])
+    && isBoundedArray(value.waves)
+    && value.waves.every(isMissionOrchestrationWave)
+    && isBoundedString(value.updatedAt, MISSION_PROTOCOL_LIMITS.idChars);
 }
 
 export function isFileSaveMetadata(value) {
@@ -110,6 +144,7 @@ export function isMissionSnapshot(value) {
     && isBoundedArray(value.specs)
     && isBoundedArray(value.symbols)
     && isBoundedArray(value.campaignLogs)
+    && isMissionOrchestrationSnapshot(value.orchestration)
     && isBoundedJson(value);
 }
 
@@ -128,6 +163,7 @@ export function isMissionEvent(value) {
     case "roadmap.assignment": return hasOnlyKeys(value, ["type", "assignment"]) && isBoundedRecord(value.assignment) && isBoundedString(value.assignment.taskId, MISSION_PROTOCOL_LIMITS.idChars);
     case "roadmap.handoff": return hasOnlyKeys(value, ["type", "handoff"]) && isBoundedRecord(value.handoff) && isBoundedString(value.handoff.taskId, MISSION_PROTOCOL_LIMITS.idChars);
     case "roadmap.verification": return hasOnlyKeys(value, ["type", "verification"]) && isBoundedRecord(value.verification) && isBoundedString(value.verification.taskId, MISSION_PROTOCOL_LIMITS.idChars);
+    case "orchestration.update": return hasOnlyKeys(value, ["type", "orchestration"]) && isMissionOrchestrationSnapshot(value.orchestration);
     case "workflow.run": return hasOnlyKeys(value, ["type", "run"]) && isBoundedRecord(value.run) && isBoundedString(value.run.runId, MISSION_PROTOCOL_LIMITS.idChars);
     case "memory.search.result": return hasOnlyKeys(value, ["type", "result"]) && isBoundedRecord(value.result) && isBoundedString(value.result.query, MISSION_PROTOCOL_LIMITS.commandChars);
     case "memory.selection": return hasOnlyKeys(value, ["type", "entityId"]) && (value.entityId === null || isBoundedString(value.entityId, MISSION_PROTOCOL_LIMITS.idChars));

@@ -1,5 +1,5 @@
-export const MISSION_PROTOCOL_VERSION: "1.0.0";
-export const MISSION_PROTOCOL_COMPATIBILITY: 1;
+export const MISSION_PROTOCOL_VERSION: "2.0.0";
+export const MISSION_PROTOCOL_COMPATIBILITY: 2;
 export const MAX_PROTOCOL_MESSAGE_LENGTH: 240;
 export const MISSION_PROTOCOL_LIMITS: Readonly<{
   typeChars: 64;
@@ -44,11 +44,36 @@ export type MissionSnapshot = {
   roadmap?: Record<string, unknown>;
   masterPlanPreview?: Record<string, unknown>;
   roadmapSources?: unknown[];
+  orchestration: MissionOrchestrationSnapshot;
   workflowRuns?: unknown[];
   providers?: unknown[];
   memory?: Record<string, unknown>;
   usage?: Record<string, unknown>;
   [forwardCompatibleField: string]: unknown;
+};
+
+export type MissionOrchestrationTask = {
+  taskId: string;
+  assigneeId?: string;
+  status: "queued" | "running" | "verifying" | "done" | "failed" | "blocked";
+  attempts: number;
+};
+
+export type MissionOrchestrationWave = {
+  id: string;
+  index: number;
+  level: number;
+  status: "pending" | "active" | "complete" | "skipped";
+  taskIds: string[];
+  tasks: MissionOrchestrationTask[];
+  concurrency: number;
+  startedAt?: string;
+  completedAt?: string;
+};
+
+export type MissionOrchestrationSnapshot = {
+  waves: MissionOrchestrationWave[];
+  updatedAt: string;
 };
 
 export type MissionEvent =
@@ -64,6 +89,7 @@ export type MissionEvent =
   | { type: "roadmap.assignment"; assignment: Record<string, unknown> & { taskId: string } }
   | { type: "roadmap.handoff"; handoff: Record<string, unknown> & { taskId: string } }
   | { type: "roadmap.verification"; verification: Record<string, unknown> & { taskId: string } }
+  | { type: "orchestration.update"; orchestration: MissionOrchestrationSnapshot }
   | { type: "workflow.run"; run: Record<string, unknown> & { runId: string } }
   | { type: "memory.search.result"; result: Record<string, unknown> & { query: string } }
   | { type: "memory.selection"; entityId: string | null }

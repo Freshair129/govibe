@@ -253,6 +253,30 @@ export type MissionWorkflowRun = {
   graphValidation?: { passed: boolean; errors?: string[] };
 };
 
+export type MissionOrchestrationTask = {
+  taskId: string;
+  assigneeId?: string;
+  status: "queued" | "running" | "verifying" | "done" | "failed" | "blocked";
+  attempts: number;
+};
+
+export type MissionOrchestrationWave = {
+  id: string;
+  index: number;
+  level: number;
+  status: "pending" | "active" | "complete" | "skipped";
+  taskIds: string[];
+  tasks: MissionOrchestrationTask[];
+  concurrency: number;
+  startedAt?: string;
+  completedAt?: string;
+};
+
+export type MissionOrchestrationSnapshot = {
+  waves: MissionOrchestrationWave[];
+  updatedAt: string;
+};
+
 export type UsageModelBreakdown = {
   percent: number;
   input_tokens: number;
@@ -302,6 +326,7 @@ export type MissionSnapshot = {
   roadmap?: RoadmapSnapshot;
   masterPlanPreview?: RoadmapSnapshot;
   roadmapSources?: RoadmapSourceRecord[];
+  orchestration: MissionOrchestrationSnapshot;
   workflowRuns?: MissionWorkflowRun[];
   providers?: Array<{ id: string; available: boolean; capabilities: string[] }>;
   memory?: MissionMemorySnapshot;
@@ -321,6 +346,7 @@ export type MissionEvent =
   | { type: "roadmap.assignment"; assignment: WorkflowAssignment }
   | { type: "roadmap.handoff"; handoff: WorkflowHandoff }
   | { type: "roadmap.verification"; verification: WorkflowVerification }
+  | { type: "orchestration.update"; orchestration: MissionOrchestrationSnapshot }
   | { type: "workflow.run"; run: MissionWorkflowRun }
   | { type: "memory.search.result"; result: MissionMemorySearchResult }
   | { type: "memory.selection"; entityId: string | null }

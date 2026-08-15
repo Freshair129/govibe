@@ -3,6 +3,7 @@ import type { MissionEvent, MissionMemorySnapshot, MissionSnapshot, RoadmapSnaps
 export const emptyMissionSnapshot: MissionSnapshot = {
   connectionState: "disconnected", metrics: [], chart: { labels: [], series: [] }, reactor: [], agents: [], capabilities: [],
   terminal: [], graph: { nodes: [], edges: [] }, specs: [], symbols: [], campaignLogs: [], roadmapSources: [], workflowRuns: [], providers: [],
+  orchestration: { waves: [], updatedAt: new Date().toISOString() },
   memory: { results: [], selectedEntityId: null, lastQuery: null, lastSearchedAt: null, lastDecayResult: null },
 };
 
@@ -14,6 +15,7 @@ export function mergeMissionSnapshot(current: MissionSnapshot, patch: Partial<Mi
     terminal: patch.terminal ?? current.terminal, graph: patch.graph ?? current.graph, specs: patch.specs ?? current.specs,
     symbols: patch.symbols ?? current.symbols, campaignLogs: patch.campaignLogs ?? current.campaignLogs,
     roadmap: patch.roadmap ?? current.roadmap, roadmapSources: patch.roadmapSources ?? current.roadmapSources,
+    orchestration: patch.orchestration ?? current.orchestration,
     workflowRuns: patch.workflowRuns ?? current.workflowRuns, providers: patch.providers ?? current.providers,
     memory: patch.memory ?? current.memory,
     usage: patch.usage ?? current.usage,
@@ -47,6 +49,7 @@ export function reduceMissionEvent(current: MissionSnapshot, event: MissionEvent
     case "roadmap.assignment": { const value = roadmap(current.roadmap); return mergeMissionSnapshot(current, { roadmap: { ...value, updatedAt: new Date().toISOString(), assignments: upsert(value.assignments, event.assignment, (item) => item.taskId === event.assignment.taskId) } }); }
     case "roadmap.handoff": { const value = roadmap(current.roadmap); return mergeMissionSnapshot(current, { roadmap: { ...value, updatedAt: new Date().toISOString(), handoffs: upsert(value.handoffs, event.handoff, (item) => item.taskId === event.handoff.taskId && item.fromId === event.handoff.fromId && item.toId === event.handoff.toId) } }); }
     case "roadmap.verification": { const value = roadmap(current.roadmap); return mergeMissionSnapshot(current, { roadmap: { ...value, updatedAt: new Date().toISOString(), verifications: upsert(value.verifications, event.verification, (item) => item.taskId === event.verification.taskId) } }); }
+    case "orchestration.update": return mergeMissionSnapshot(current, { orchestration: event.orchestration });
     case "workflow.run": return mergeMissionSnapshot(current, { workflowRuns: [...(current.workflowRuns ?? []).filter((run) => run.runId !== event.run.runId), event.run] });
     case "memory.search.result": return mergeMissionSnapshot(current, { memory: { ...memory(current.memory), results: event.result.hits, lastQuery: event.result.query, lastSearchedAt: event.result.updatedAt } });
     case "memory.selection": return mergeMissionSnapshot(current, { memory: { ...memory(current.memory), selectedEntityId: event.entityId } });

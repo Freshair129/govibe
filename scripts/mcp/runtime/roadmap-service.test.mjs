@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { isMissionEvent } from "../../../packages/mission-protocol/index.js";
 import { RoadmapService, scoreApprovedSources } from "./roadmap-service.mjs";
 import { RuntimeSnapshotStore, createRuntimeSnapshot } from "./snapshot-store.mjs";
 import { TemporalOverlayStore } from "./temporal-overlay-store.mjs";
@@ -6,8 +7,11 @@ import { TemporalOverlayStore } from "./temporal-overlay-store.mjs";
 describe("roadmap service", () => {
   it("loads roadmap state without starting HTTP, WebSocket, stdio, or executors", async () => {
     const root = process.cwd();
+    const snapshotStore = new RuntimeSnapshotStore(createRuntimeSnapshot());
+    const events = [];
+    snapshotStore.subscribe((event) => events.push(event));
     const service = new RoadmapService({
-      snapshotStore: new RuntimeSnapshotStore(createRuntimeSnapshot()),
+      snapshotStore,
       temporalOverlayStore: new TemporalOverlayStore(),
       allowedRoadmapReadRoots: [`${root}/docs/roadmap`],
       allowedRoadmapWriteRoots: [`${root}/docs/roadmap`],
@@ -15,6 +19,10 @@ describe("roadmap service", () => {
     const sources = await service.discoverSources();
     expect(sources.length).toBeGreaterThan(0);
     await expect(service.reloadRoadmap()).resolves.toMatchObject({ approvalStatus: "approved" });
+    expect(snapshotStore.getSnapshot().orchestration).toMatchObject({ waves: expect.any(Array), updatedAt: expect.any(String) });
+    const orchestrationEvent = events.find((event) => event.type === "orchestration.update");
+    expect(orchestrationEvent).toEqual({ type: "orchestration.update", orchestration: snapshotStore.getSnapshot().orchestration });
+    expect(isMissionEvent(orchestrationEvent)).toBe(true);
   });
 });
 
