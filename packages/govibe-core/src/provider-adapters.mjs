@@ -1,5 +1,6 @@
 const CANDIDATE_SCHEMA = 'govibe-provider-candidate/v1';
 const RUN_RESULT_SCHEMA = 'govibe-provider-run-result/v1';
+const ADAPTER_DESCRIPTOR_SCHEMA = 'govibe-provider-adapter-descriptor/v1';
 
 export class ProviderInvocationError extends Error {
   constructor(code, message) {
@@ -7,6 +8,18 @@ export class ProviderInvocationError extends Error {
     this.name = 'ProviderInvocationError';
     this.code = code;
   }
+}
+
+function adapterDescriptor({ providerId, adapterId, providerVersion, credentialModes, capabilities, executionSurface }) {
+  return Object.freeze({
+    schema: ADAPTER_DESCRIPTOR_SCHEMA,
+    provider_id: providerId,
+    adapter_id: adapterId,
+    provider_version: providerVersion,
+    execution_surface: executionSurface,
+    credential_modes: Object.freeze([...credentialModes]),
+    capabilities: Object.freeze([...capabilities]),
+  });
 }
 
 function candidateFrom(providerId, providerVersion, context, output) {
@@ -46,15 +59,24 @@ export function createLocalComputeAdapter({
   adapterId = `adapter-${providerId}`,
   providerVersion = null,
   run,
+  cancel = null,
   clock = () => new Date(),
 } = {}) {
   if (typeof run !== 'function') throw new ProviderInvocationError('PROVIDER_REJECTED', 'local compute adapter requires a run function');
+  if (cancel != null && typeof cancel !== 'function') throw new ProviderInvocationError('PROVIDER_REJECTED', 'local cancel handler must be a function');
+
+  const credentialModes = Object.freeze(['none']);
+  const capabilities = Object.freeze(['local-compute']);
+  const descriptor = adapterDescriptor({ providerId, adapterId, providerVersion, credentialModes, capabilities, executionSurface: 'local_runtime' });
 
   return Object.freeze({
     provider_id: providerId,
     adapter_id: adapterId,
-    credential_modes: Object.freeze(['none']),
-    capabilities: Object.freeze(['local-compute']),
+    credential_modes: credentialModes,
+    capabilities,
+    inspect() {
+      return descriptor;
+    },
     async execute(request, context) {
       const startedAt = clock();
       const output = await run(request, context);
@@ -69,21 +91,23 @@ export function createLocalComputeAdapter({
       };
     },
     async cancel(runId) {
+      if (cancel) return cancel(runId);
       throw new ProviderInvocationError('PROVIDER_CANCELLED', `local run cancelled: ${runId}`);
     },
   });
 }
 
 /**
- * Subscription/CLI-backed adapter. A subscription surface exposes request-level
- * throttling and nothing else, so this adapter reports a request count and leaves
- * every token and quota field absent rather than deriving one.
+ * Subscription/CLI-backed adapter. Subscription-backed execution is intentionally
+ * bounded: a credentialed CLI may receive only a derived run-scoped handoff.
+ * Raw provider credentials are never an advertised adapter mode.
  */
 export function createSubscriptionCliAdapter({
   providerId,
   adapterId = `adapter-${providerId}`,
   providerVersion = null,
   run,
+  cancel = null,
   classifyFailure = null,
   deriveCredential = null,
 } = {}) {
@@ -91,6 +115,7 @@ export function createSubscriptionCliAdapter({
     throw new ProviderInvocationError('PROVIDER_REJECTED', 'subscription adapter requires a provider id');
   }
   if (typeof run !== 'function') throw new ProviderInvocationError('PROVIDER_REJECTED', 'subscription adapter requires a run function');
+  if (cancel != null && typeof cancel !== 'function') throw new ProviderInvocationError('PROVIDER_REJECTED', 'subscription cancel handler must be a function');
   if (deriveCredential != null && typeof deriveCredential !== 'function') {
     throw new ProviderInvocationError('PROVIDER_REJECTED', 'credential deriver must be a function');
   }
@@ -102,12 +127,19 @@ export function createSubscriptionCliAdapter({
     return null;
   });
 
+  const credentialModes = Object.freeze(deriveCredential ? ['none', 'derived_token'] : ['none']);
+  const capabilities = Object.freeze(['external-agent']);
+  const descriptor = adapterDescriptor({ providerId, adapterId, providerVersion, credentialModes, capabilities, executionSurface: 'cli' });
+
   return Object.freeze({
     provider_id: providerId,
     adapter_id: adapterId,
-    credential_modes: Object.freeze(deriveCredential ? ['none', 'derived_token'] : ['none', 'raw_secret']),
-    capabilities: Object.freeze(['external-agent']),
+    credential_modes: credentialModes,
+    capabilities,
     ...(deriveCredential ? { deriveCredential } : {}),
+    inspect() {
+      return descriptor;
+    },
     async execute(request, context) {
       let output;
       try {
@@ -124,7 +156,10 @@ export function createSubscriptionCliAdapter({
       };
     },
     async cancel(runId) {
+      if (cancel) return cancel(runId);
       throw new ProviderInvocationError('PROVIDER_CANCELLED', `subscription run cancelled: ${runId}`);
     },
   });
 }
+
+export { ADAPTER_DESCRIPTOR_SCHEMA };
