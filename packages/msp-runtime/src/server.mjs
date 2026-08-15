@@ -1,20 +1,7 @@
 // Composition root: wires db -> domain -> contracts -> transport together.
 // This is the one module allowed to import from every layer (db/, domain/,
-// contracts/, transport/); it is excluded from
-// test/dependency-boundaries.test.mjs, mirroring how
-// scripts/mcp/runtime/runtime-core.mjs / sidecar-server.mjs /
-// govibe-mcp-server.mjs are excluded from
-// scripts/mcp/runtime/dependency-boundaries.test.mjs.
-//
-// Phase 0/1 (WP-12) registered only a diagnostic `msp_ping`. The bounded
-// `msp_health` query is now registered alongside the
-// WP-13 Phase 2
-// adds the eleven-tool `msp_*` contract surface (vault registry, context
-// tools, promotion tools) that packages/govibe-core/src/msp-client.mjs and
-// scripts/mcp/msp-vault-context-contracts.mjs already call today. `msp_ping`
-// stays registered alongside them. WP-15 Phase 3 adds the six-tool
-// `msp_memory_*` CRUD/search surface, backed by the new retrieval/ layer
-// (FTS5 + bge-m3 vectors + RRF fusion).
+// retrieval/, contracts/, transport/, and provider adapters); it is excluded
+// from test/dependency-boundaries.test.mjs.
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -24,22 +11,26 @@ import { EntityStore } from "./domain/entity-store.mjs";
 import { Journal } from "./domain/journal.mjs";
 import { LinksStore } from "./domain/links.mjs";
 import { VaultRegistry } from "./domain/vault-registry.mjs";
+import { createSqliteGksProvider } from "./gks/sqlite-provider.mjs";
 import { createRetrievalService } from "./retrieval/retrieval-service.mjs";
 import { createVectorClient } from "./retrieval/vector.mjs";
 import { createContextHandlers } from "./transport/handlers/context-handlers.mjs";
+import { createHealthHandler } from "./transport/handlers/health-handlers.mjs";
+import { createKnowledgeHandlers } from "./transport/handlers/knowledge-handlers.mjs";
 import { createLifecycleHandlers } from "./transport/handlers/lifecycle-handlers.mjs";
 import { createMemoryHandlers } from "./transport/handlers/memory-handlers.mjs";
 import { createVaultHandlers } from "./transport/handlers/vault-handlers.mjs";
-import { createHealthHandler } from "./transport/handlers/health-handlers.mjs";
 import { createStdioJsonRpcServer } from "./transport/stdio-jsonrpc-server.mjs";
 import { ToolRegistry } from "./transport/tool-registry.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_MIGRATIONS_DIR = path.join(here, "db", "migrations");
+const GKS_PROVIDER_MODES = new Set(["unconfigured", "sqlite"]);
 
 /**
  * @param {object} options
  * @param {string} options.dbPath absolute path to the SQLite database file (MSP_DB_PATH).
+ * @param {"unconfigured"|"sqlite"} [options.gksProviderMode] explicit GKS provider selection.
  * @param {string} [options.migrationsDir] override for testing.
  * @param {NodeJS.ReadableStream} [options.input] override for testing.
  * @param {NodeJS.WritableStream} [options.output] override for testing.
@@ -51,6 +42,7 @@ const DEFAULT_MIGRATIONS_DIR = path.join(here, "db", "migrations");
  */
 export function createServer({
   dbPath,
+  gksProviderMode = "unconfigured",
   migrationsDir = DEFAULT_MIGRATIONS_DIR,
   input,
   output,
@@ -60,8 +52,9 @@ export function createServer({
   healthTimeoutMs = 1_000,
   clock = () => new Date(),
 } = {}) {
-  if (!dbPath) {
-    throw new TypeError("createServer requires dbPath (MSP_DB_PATH).");
+  if (!dbPath) throw new TypeError("createServer requires dbPath (MSP_DB_PATH).");
+  if (!GKS_PROVIDER_MODES.has(gksProviderMode)) {
+    throw new TypeError(`Unsupported GKS provider mode "${gksProviderMode}". Expected one of: ${[...GKS_PROVIDER_MODES].join(", ")}.`);
   }
 
   const db = open(dbPath);
@@ -73,19 +66,60 @@ export function createServer({
   const linksStore = new LinksStore(db);
   const vectorClient = createVectorClient();
   const retrievalService = createRetrievalService({ db, vectorClient });
+  const gksProvider = gksProviderMode === "sqlite" ? createSqliteGksProvider({ db, clock }) : null;
 
   const vaultHandlers = createVaultHandlers({ vaultRegistry, journal });
   const contextHandlers = createContextHandlers({ db, journal });
   const lifecycleHandlers = createLifecycleHandlers({ db, entityStore, vaultRegistry, journal });
   const memoryHandlers = createMemoryHandlers({ db, entityStore, vaultRegistry, journal, retrievalService, vectorClient, linksStore });
-  const healthHandler = createHealthHandler({ db, mspProbe, gksProbe, storageProbe, timeoutMs: healthTimeoutMs, clock });
+  const knowledgeHandlers = gksProvider ? createKnowledgeHandlers({ gksProvider, journal }) : null;
+
+  const effectiveGksProbe = gksProbe ?? (gksProvider ? (() => gksProvider.health()) : undefined);
+  const healthHandler = createHealthHandler({
+    db,
+    mspProbe,
+    gksProbe: effectiveGksProbe,
+    storageProbe,
+    timeoutMs: healthTimeoutMs,
+    clock,
+  });
 
   const toolRegistry = new ToolRegistry();
-  toolRegistry.register("msp_ping", async () => ({ ok: true, timestamp: new Date().toISOString() }));
+  toolRegistry.register("msp_ping", async () => ({ ok: true, timestamp: clock().toISOString() }));
   toolRegistry.register("msp_health", healthHandler);
   for (const [name, handler] of Object.entries(vaultHandlers)) toolRegistry.register(name, handler);
-  for (const [name, handler] of Object.entries(contextHandlers)) toolRegistry.register(name, handler);
-  for (const [name, handler] of Object.entries(lifecycleHandlers)) toolRegistry.register(name, handler);
+
+  for (const [name, handler] of Object.entries(contextHandlers)) {
+    if (name === "msp_context_resolve" && knowledgeHandlers) {
+      toolRegistry.register(name, async (args = {}) => {
+        // The legacy v1 context handler rejects caller-supplied gks: refs by
+        // design. In provider mode, canonical refs are selected by MSP/GKS,
+        // not trusted from the caller, so persist the ordinary context shell
+        // without those refs and merge the governed provider selection.
+        const base = await handler({ ...args, knowledge_refs: [] });
+        const governed = await knowledgeHandlers.resolveKnowledgeContext(args);
+        return {
+          ...base,
+          ...governed,
+          context_id: base.context_id,
+          cache_id: base.cache_id,
+          policy_decision: "allow",
+          policy_decisions: [...(base.policy_decisions ?? []), ...(governed.policy_decisions ?? [])],
+          diagnostics: base.diagnostics ?? [],
+        };
+      });
+    } else {
+      toolRegistry.register(name, handler);
+    }
+  }
+
+  for (const [name, handler] of Object.entries(lifecycleHandlers)) {
+    if (name === "msp_knowledge_promote" && knowledgeHandlers) {
+      toolRegistry.register(name, knowledgeHandlers.msp_knowledge_promote);
+    } else {
+      toolRegistry.register(name, handler);
+    }
+  }
   for (const [name, handler] of Object.entries(memoryHandlers)) toolRegistry.register(name, handler);
 
   const transport = createStdioJsonRpcServer({ toolRegistry, input, output });
@@ -95,5 +129,18 @@ export function createServer({
     db.close();
   }
 
-  return { db, entityStore, journal, vaultRegistry, linksStore, retrievalService, vectorClient, healthHandler, toolRegistry, transport, close };
+  return {
+    db,
+    entityStore,
+    journal,
+    vaultRegistry,
+    linksStore,
+    retrievalService,
+    vectorClient,
+    gksProvider,
+    healthHandler,
+    toolRegistry,
+    transport,
+    close,
+  };
 }
