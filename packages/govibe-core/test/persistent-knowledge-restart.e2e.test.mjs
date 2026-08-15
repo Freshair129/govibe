@@ -5,8 +5,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 
-import Database from "better-sqlite3";
 import { afterEach, describe, expect, it } from "vitest";
+import { open as openMspDb } from "../../msp-runtime/src/db/connection.mjs";
 
 const execFileAsync = promisify(execFile);
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -52,7 +52,7 @@ async function runWorker(phase, fixture, sourceHash = "0".repeat(64), env = {}) 
 }
 
 function dbCounts(dbPath) {
-  const db = new Database(dbPath, { readonly: true });
+  const db = openMspDb(dbPath);
   try {
     return {
       contexts: db.prepare("SELECT COUNT(*) AS count FROM contexts").get().count,
@@ -67,7 +67,6 @@ function dbCounts(dbPath) {
 describe("#77 persistent MSP-governed knowledge E2E", () => {
   it("Deep Scans Markdown + TypeScript, restarts the GoVibe/MSP processes, and retrieves canonical provenance", async () => {
     const fixture = await fixtureWorkspace();
-
     const firstProcess = await runWorker("scan", fixture);
     expect(firstProcess.health.health_state).toBe("ready");
     expect(firstProcess.result.status).toBe("complete");
@@ -81,9 +80,6 @@ describe("#77 persistent MSP-governed knowledge E2E", () => {
     expect(markdownStage.outputRefs.some((ref) => ref.startsWith("gks:"))).toBe(true);
     expect(typescriptStage.outputRefs.some((ref) => ref.startsWith("gks:"))).toBe(true);
 
-    // runWorker exits completely here. The next invocation is a fresh GoVibe
-    // Node process which also spawns a fresh MSP process over stdio, reusing
-    // only the persistent DB file.
     const secondProcess = await runWorker("retrieve", fixture, firstProcess.result.sourceSnapshotHash);
     expect(secondProcess.health.health_state).toBe("ready");
     expect(secondProcess.context.contextId).toMatch(/^msp:context\//);
@@ -131,8 +127,6 @@ describe("#77 persistent MSP-governed knowledge E2E", () => {
 
   it("never reports promotion success when the GKS provider is unavailable", async () => {
     const fixture = await fixtureWorkspace();
-    // Seed the persistent database/migrations once with the real provider so
-    // the unavailable check isolates provider state rather than DB absence.
     const scanned = await runWorker("scan", fixture);
     const unavailable = await runWorker("unavailable", fixture, scanned.result.sourceSnapshotHash, { TEST_GKS_PROVIDER: "unconfigured" });
     expect(unavailable.health.health_state).not.toBe("ready");
