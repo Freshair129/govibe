@@ -26,20 +26,21 @@ function freshDb() {
 }
 
 describe("vault-scoping migrations", () => {
-  it("applies all seven packaged migrations idempotently", () => {
+  it("applies all eight packaged migrations idempotently", () => {
     const db = freshDb();
     const first = runMigrations(db, migrationsDir);
-    expect(first.appliedCount).toBe(7);
-    expect(first.currentVersion).toBe(7);
+    expect(first.appliedCount).toBe(8);
+    expect(first.currentVersion).toBe(8);
 
     const second = runMigrations(db, migrationsDir);
     expect(second.appliedCount).toBe(0);
-    expect(second.currentVersion).toBe(7);
+    expect(second.currentVersion).toBe(8);
 
     const rows = db.prepare("SELECT version, name FROM schema_migrations ORDER BY version").all();
-    expect(rows.map((row) => row.version)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(rows.map((row) => row.version)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
     expect(rows[2].name).toBe("0003_vault_scoping.sql");
     expect(rows[6].name).toBe("0007_principal_scoped_vaults.sql");
+    expect(rows[7].name).toBe("0008_gks_knowledge.sql");
   });
 
   it("entities.vault_id remains NOT NULL and foreign-key-references vaults(vault_id)", () => {
