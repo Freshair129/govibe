@@ -11,6 +11,10 @@ function sha256(value) {
   return createHash("sha256").update(value, "utf8").digest("hex");
 }
 
+function normalizeHash(value) {
+  return String(value ?? "").replace(/^sha256:/i, "").toLowerCase();
+}
+
 function requireAuthority(args) {
   const authority = args.context_authority;
   if (!authority || typeof authority !== "object" || Array.isArray(authority)) {
@@ -53,16 +57,26 @@ function requireAuthority(args) {
   }
 
   const sources = Array.isArray(authority.sources) ? authority.sources : [];
-  const approvedSourceHashes = new Set(bounded.source_constraints.map((source) => String(source.hash ?? "").replace(/^sha256:/i, "").toLowerCase()));
-  if (approvedSourceHashes.size === 0 || sources.some((source) => !approvedSourceHashes.has(String(source.hash ?? "").replace(/^sha256:/i, "").toLowerCase()))) {
+  const approvedSourceHashes = new Set(
+    bounded.source_constraints.map((source) => normalizeHash(source.hash)).filter(Boolean),
+  );
+  if (approvedSourceHashes.size === 0 || sources.some((source) => !approvedSourceHashes.has(normalizeHash(source.hash)))) {
     throw new ValidationError("knowledge_scope_denied: source constraints do not match context authority.", "knowledge_scope_denied");
   }
 
   // Translate token budget into a conservative record budget for this first
-  // vertical slice. The provider receives an explicit finite item bound and
-  // never gets an unbounded query request.
+  // vertical slice. Radius remains graph-policy evidence; it is never
+  // reinterpreted as an item-count limit.
   const budget = Math.max(1, Math.min(100, Math.floor(maxTokens / 256) || 1));
-  return { authority, bounded, workspaceId, agentId, radius, budget };
+  return {
+    authority,
+    bounded,
+    workspaceId,
+    agentId,
+    radius,
+    budget,
+    sourceHashes: [...approvedSourceHashes],
+  };
 }
 
 export function createKnowledgeHandlers({ gksProvider, journal }) {
@@ -103,6 +117,7 @@ export function createKnowledgeHandlers({ gksProvider, journal }) {
         contextId: policy.authority.lineage?.contextId ?? null,
         radius: policy.radius,
         budget: policy.budget,
+        sourceHashes: policy.sourceHashes,
       });
 
       const policyRef = `msp:policy/${sha256(`${policy.workspaceId}:${policy.agentId}:${result.query_hash}`)}`;
