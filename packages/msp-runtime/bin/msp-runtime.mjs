@@ -4,6 +4,7 @@
 import { createServer } from "../src/server.mjs";
 
 const dbPath = process.env.MSP_DB_PATH;
+const gksProviderMode = process.env.MSP_GKS_PROVIDER ?? "unconfigured";
 
 if (!dbPath) {
   process.stderr.write(
@@ -14,4 +15,9 @@ if (!dbPath) {
   process.exit(1);
 }
 
-createServer({ dbPath });
+try {
+  createServer({ dbPath, gksProviderMode });
+} catch (error) {
+  process.stderr.write(`msp-runtime: ${error instanceof Error ? error.message : String(error)}\n`);
+  process.exit(1);
+}
