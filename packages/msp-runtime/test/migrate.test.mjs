@@ -25,9 +25,7 @@ function tempDir() {
 
 function setupMigrationsDir(files) {
   const dir = tempDir();
-  for (const [name, sql] of Object.entries(files)) {
-    writeFileSync(path.join(dir, name), sql, "utf8");
-  }
+  for (const [name, sql] of Object.entries(files)) writeFileSync(path.join(dir, name), sql, "utf8");
   return dir;
 }
 
@@ -81,19 +79,19 @@ describe("db/migrate (AC-03)", () => {
     expect(() => runMigrations(db, migrationsDir)).toThrow(/downgrade|newer than the newest/i);
   });
 
-  it("applies the real packaged migrations (0001-0007) without error", () => {
+  it("applies the real packaged migrations (0001-0008) without error", () => {
     const migrationsDir = fileURLToPath(new URL("../src/db/migrations", import.meta.url));
     const db = freshDb();
     const result = runMigrations(db, migrationsDir);
-    expect(result.appliedCount).toBe(7);
-    expect(result.currentVersion).toBe(7);
+    expect(result.appliedCount).toBe(8);
+    expect(result.currentVersion).toBe(8);
     const tables = db
       .prepare(
         "SELECT name FROM sqlite_master WHERE type='table' AND name IN " +
-          "('entities','entity_history','vaults','vault_mounts','contexts','journal','state','promotions','embeddings','links')",
+          "('entities','entity_history','vaults','vault_mounts','contexts','journal','state','promotions','embeddings','links','gks_knowledge','gks_retrieval_evidence')",
       )
       .all();
-    expect(tables).toHaveLength(10);
+    expect(tables).toHaveLength(12);
     expect(db.prepare("SELECT name FROM sqlite_master WHERE name = 'entities_fts'").all()).toHaveLength(1);
 
     const entityCols = db.prepare("PRAGMA table_info(entities)").all().map((col) => col.name);
@@ -110,6 +108,10 @@ describe("db/migrate (AC-03)", () => {
     expect(linkCols).toEqual(
       expect.arrayContaining(["link_id", "vault_id", "from_entity_id", "to_entity_id", "link_type", "confidence", "valid_from", "valid_to", "recorded_at", "created_at"]),
     );
+    const gksCols = db.prepare("PRAGMA table_info(gks_knowledge)").all().map((col) => col.name);
+    expect(gksCols).toEqual(expect.arrayContaining([
+      "knowledge_ref", "idempotency_key", "workspace_id", "source_snapshot_hash", "source_version", "provenance_ref", "atom_ref", "canonical_hash",
+    ]));
   });
 
   it("re-applying the packaged migrations directory a second time is a no-op", () => {
@@ -118,7 +120,7 @@ describe("db/migrate (AC-03)", () => {
     runMigrations(db, migrationsDir);
     const second = runMigrations(db, migrationsDir);
     expect(second.appliedCount).toBe(0);
-    expect(second.currentVersion).toBe(7);
+    expect(second.currentVersion).toBe(8);
   });
 
   it("the lifecycle_state CHECK constraint rejects an out-of-enum value", () => {
