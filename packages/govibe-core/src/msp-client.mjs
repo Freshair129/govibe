@@ -2,18 +2,11 @@ import { buildBoundedGraphQuery } from "./authority-enforcement.mjs";
 import { createMspStdioCaller } from "./msp-stdio-transport.mjs";
 
 export class MspUnavailableError extends Error {
-  constructor(message = "MSP transport is unavailable.") {
-    super(message);
-    this.name = "MspUnavailableError";
-  }
+  constructor(message = "MSP transport is unavailable.") { super(message); this.name = "MspUnavailableError"; }
 }
 
 export class MspConfigurationError extends Error {
-  constructor(message, code = "MSP_CONFIGURATION_INVALID") {
-    super(message);
-    this.name = "MspConfigurationError";
-    this.code = code;
-  }
+  constructor(message, code = "MSP_CONFIGURATION_INVALID") { super(message); this.name = "MspConfigurationError"; this.code = code; }
 }
 
 const HASH = /^[a-f0-9]{64}$/i;
@@ -54,41 +47,21 @@ function validateHealthResponse(input) {
   if (typeof input.evidence_ref !== "string" || !input.evidence_ref.startsWith("msp:health/")) throw new TypeError("Invalid MSP health evidence reference.");
   if (input.reason != null && typeof input.reason !== "string") throw new TypeError("Invalid MSP health reason.");
   if (!input.components || typeof input.components !== "object" || Array.isArray(input.components)) throw new TypeError("MSP health components are required.");
-
   const components = {};
   for (const name of HEALTH_COMPONENTS) {
     const component = input.components[name];
     if (!component || typeof component !== "object" || Array.isArray(component)) throw new TypeError(`Invalid MSP health component: ${name}.`);
     if (!HEALTH_STATES.has(component.state)) throw new TypeError(`Invalid MSP health component state: ${name}.`);
-    if (typeof component.evidence_ref !== "string" || !component.evidence_ref.startsWith("msp:health/")) {
-      throw new TypeError(`Invalid MSP health component evidence reference: ${name}.`);
-    }
+    if (typeof component.evidence_ref !== "string" || !component.evidence_ref.startsWith("msp:health/")) throw new TypeError(`Invalid MSP health component evidence reference: ${name}.`);
     if (component.reason != null && typeof component.reason !== "string") throw new TypeError(`Invalid MSP health component reason: ${name}.`);
-    components[name] = {
-      state: component.state,
-      reason: component.reason ?? null,
-      evidence_ref: component.evidence_ref,
-      ...(component.malformed === true ? { malformed: true } : {}),
-    };
+    components[name] = { state: component.state, reason: component.reason ?? null, evidence_ref: component.evidence_ref, ...(component.malformed === true ? { malformed: true } : {}) };
   }
-
-  return {
-    schema: input.schema,
-    health_state: input.health_state,
-    checked_at: input.checked_at,
-    evidence_ref: input.evidence_ref,
-    reason: input.reason ?? null,
-    components,
-  };
+  return { schema: input.schema, health_state: input.health_state, checked_at: input.checked_at, evidence_ref: input.evidence_ref, reason: input.reason ?? null, components };
 }
 
 function unavailableHealth(reason) {
   return {
-    schema: "govibe-msp-health/v1",
-    health_state: "unavailable",
-    checked_at: null,
-    evidence_ref: null,
-    reason,
+    schema: "govibe-msp-health/v1", health_state: "unavailable", checked_at: null, evidence_ref: null, reason,
     components: {
       msp: { state: "unavailable", reason, evidence_ref: null },
       gks: { state: "unavailable", reason, evidence_ref: null },
@@ -97,89 +70,80 @@ function unavailableHealth(reason) {
   };
 }
 
-export class MspClient {
-  constructor(callTool) {
-    this.callTool = callTool;
-  }
+function normalizeProvenance(items) {
+  if (items == null) return [];
+  if (!Array.isArray(items)) throw new Error("MSP returned invalid knowledge provenance.");
+  return items.map((item) => {
+    const knowledgeRef = requireRef(item?.knowledgeRef ?? item?.knowledge_ref, "gks:", "provenance knowledge");
+    const sourceHash = item?.sourceHash ?? item?.source_hash;
+    if (!HASH.test(sourceHash ?? "")) throw new Error("MSP returned invalid provenance source hash.");
+    const provenanceRef = requireRef(item?.provenanceRef ?? item?.provenance_ref, "msp:proof/", "provenance proof");
+    const atomRefs = Array.isArray(item?.atomRefs ?? item?.atom_refs) ? (item.atomRefs ?? item.atom_refs) : [];
+    const sourceRefs = Array.isArray(item?.sourceRefs ?? item?.source_refs) ? (item.sourceRefs ?? item.source_refs) : [];
+    if (atomRefs.some((ref) => typeof ref !== "string" || !ref) || sourceRefs.some((ref) => typeof ref !== "string" || !ref)) throw new Error("MSP returned invalid provenance lineage refs.");
+    return {
+      knowledgeRef,
+      sourceHash: sourceHash.toLowerCase(),
+      version: item?.version ?? null,
+      provenanceRef,
+      atomRef: item?.atomRef ?? item?.atom_ref ?? null,
+      atomRefs,
+      sourceRefs,
+      runId: item?.runId ?? item?.run_id ?? null,
+      stage: item?.stage ?? null,
+    };
+  });
+}
 
-  async call(name, input) {
-    if (typeof this.callTool !== "function") throw new MspUnavailableError();
-    return this.callTool(name, input);
-  }
+export class MspClient {
+  constructor(callTool) { this.callTool = callTool; }
+  async call(name, input) { if (typeof this.callTool !== "function") throw new MspUnavailableError(); return this.callTool(name, input); }
 
   async probeHealth() {
     let result;
-    try {
-      result = await this.call("msp_health", {});
-    } catch {
-      return unavailableHealth("msp_parent_unreachable");
-    }
-    try {
-      return validateHealthResponse(result);
-    } catch {
-      return unavailableHealth("msp_health_invalid_response");
-    }
+    try { result = await this.call("msp_health", {}); } catch { return unavailableHealth("msp_parent_unreachable"); }
+    try { return validateHealthResponse(result); } catch { return unavailableHealth("msp_health_invalid_response"); }
   }
 
   registerWorkspace(input) {
     return this.call("msp_workspace_register", {
-      schema_version: "govibe-workspace-registration/v1",
-      actor: input.actor,
-      workspace_id: input.workspaceId,
-      project_id: input.projectId ?? null,
-      workspace_path: input.workspacePath,
-      vault_bindings: input.vaultBindings ?? null,
-      idempotency_key: input.recordId,
-      run_id: input.runId,
-      recorded_at: input.timestamp,
-      source_hash: input.sourceHash,
-    }).then((result) => ({
-      workspaceRef: requireRef(result?.workspace_ref ?? result?.workspaceRef, "msp:workspace/", "workspace"),
-      registryRef: result?.registry_ref ?? result?.registryRef ?? null,
-    }));
+      schema_version: "govibe-workspace-registration/v1", actor: input.actor, workspace_id: input.workspaceId, project_id: input.projectId ?? null,
+      workspace_path: input.workspacePath, vault_bindings: input.vaultBindings ?? null, idempotency_key: input.recordId, run_id: input.runId,
+      recorded_at: input.timestamp, source_hash: input.sourceHash,
+    }).then((result) => ({ workspaceRef: requireRef(result?.workspace_ref ?? result?.workspaceRef, "msp:workspace/", "workspace"), registryRef: result?.registry_ref ?? result?.registryRef ?? null }));
   }
 
   async resolveContext(input) {
     const boundedGraphQuery = buildBoundedGraphQuery(input.contextAuthority);
     const result = await this.call("msp_context_resolve", {
-      workspace_root: input.workspacePath,
-      workspace_id: input.workspaceId,
-      agent_id: input.agentId,
-      context_profile: input.contextProfile ?? "T-ctx",
-      parent_context_id: input.parentContextId ?? null,
-      workflow_ref: input.workflowRef ?? null,
-      mode: input.mode ?? "codev",
-      state_keys: input.stateKeys ?? [],
-      knowledge_refs: input.knowledgeRefs ?? [],
-      context_authority: input.contextAuthority,
-      bounded_graph_query: boundedGraphQuery,
+      workspace_root: input.workspacePath, workspace_id: input.workspaceId, agent_id: input.agentId, context_profile: input.contextProfile ?? "T-ctx",
+      parent_context_id: input.parentContextId ?? null, workflow_ref: input.workflowRef ?? null, mode: input.mode ?? "codev", state_keys: input.stateKeys ?? [],
+      knowledge_refs: input.knowledgeRefs ?? [], context_authority: input.contextAuthority, bounded_graph_query: boundedGraphQuery,
     });
     const normalizeRefs = (refs, label, prefix) => (refs ?? []).map((item) => {
-      const ref = item?.ref;
-      const sourceHash = item?.sourceHash ?? item?.source_hash;
-      if (typeof ref !== "string" || !ref || typeof sourceHash !== "string" || !HASH.test(sourceHash)) {
-        throw new Error(`MSP returned an invalid ${label} reference.`);
-      }
+      const ref = item?.ref; const sourceHash = item?.sourceHash ?? item?.source_hash;
+      if (typeof ref !== "string" || !ref || typeof sourceHash !== "string" || !HASH.test(sourceHash)) throw new Error(`MSP returned an invalid ${label} reference.`);
       if (!ref.startsWith(prefix)) throw new Error(`MSP returned an out-of-namespace ${label} reference.`);
       return { ref, sourceHash: sourceHash.toLowerCase(), version: item.version ?? null };
     });
     const policyDecisions = (result.policyDecisions ?? result.policy_decisions ?? []).map((item) => {
-      if (!["allow", "deny", "shadow"].includes(item?.decision) || typeof item?.ref !== "string" || typeof item?.reason !== "string") {
-        throw new Error("MSP returned an invalid policy decision.");
-      }
+      if (!["allow", "deny", "shadow"].includes(item?.decision) || typeof item?.ref !== "string" || typeof item?.reason !== "string") throw new Error("MSP returned an invalid policy decision.");
       return { decision: item.decision, ref: item.ref, reason: item.reason };
     });
+    const approvedBudget = result.approved_budget ?? result.approvedBudget ?? null;
+    if (approvedBudget != null && (typeof approvedBudget !== "object" || Array.isArray(approvedBudget))) throw new Error("MSP returned an invalid approved budget.");
+    const retrievalEvidenceRef = result.retrieval_evidence_ref ?? result.retrievalEvidenceRef ?? null;
+    if (retrievalEvidenceRef != null) requireRef(retrievalEvidenceRef, "gks:retrieval/", "retrieval evidence");
     return {
       contextId: result.context_id ?? result.contextId ?? null,
       cacheId: result.cache_id ?? result.cacheId ?? null,
       policyDecision: result.policy_decision ?? result.policyDecision ?? null,
       sources: result.sources ?? input.contextAuthority.sources,
-      lineage: result.lineage ?? {
-        runId: input.contextAuthority.identity.runId,
-        sessionId: input.contextAuthority.identity.sessionId,
-        turnId: input.contextAuthority.identity.turnId,
-      },
+      lineage: result.lineage ?? { runId: input.contextAuthority.identity.runId, sessionId: input.contextAuthority.identity.sessionId, turnId: input.contextAuthority.identity.turnId },
       boundedGraphQuery: result.bounded_graph_query ?? result.boundedGraphQuery ?? boundedGraphQuery,
+      approvedBudget,
+      retrievalEvidenceRef,
+      provenance: normalizeProvenance(result.provenance),
       globalPrivateVaultRefs: normalizeRefs(result.global_private_vault_refs ?? result.globalStateRefs, "global private vault", "msp:vault/"),
       workspacePrivateVaultRefs: normalizeRefs(result.workspace_private_vault_refs ?? result.workspaceStateRefs, "workspace private vault", "msp:vault/"),
       sharedVaultRefs: normalizeRefs(result.shared_vault_refs ?? result.knowledgeRefs, "shared vault", "gks:"),
@@ -195,83 +159,37 @@ export class MspClient {
     const result = await this.call("msp_knowledge_promote", input);
     return {
       knowledgeRef: requireRef(result?.knowledge_ref ?? result?.knowledgeRef, "gks:", "knowledge"),
-      sourceHash: (() => {
-        const value = result?.source_hash ?? result?.sourceHash;
-        if (!HASH.test(value ?? "")) throw new Error("MSP returned an invalid promoted knowledge hash.");
-        return value.toLowerCase();
-      })(),
+      sourceHash: (() => { const value = result?.source_hash ?? result?.sourceHash; if (!HASH.test(value ?? "")) throw new Error("MSP returned an invalid promoted knowledge hash."); return value.toLowerCase(); })(),
       promotionRef: requireRef(result?.promotion_ref ?? result?.promotionRef, "msp:promotion/", "promotion"),
     };
   }
 
-  async recordContextInjection(input) {
-    const result = await this.call("msp_context_injection_record", input);
-    return { injectionRef: requireRef(result?.injection_ref ?? result?.injectionRef, "msp:context-injection/", "context injection") };
-  }
-
-  async replayContext(input) {
-    const result = await this.call("msp_context_replay", input);
-    return {
-      replayRef: requireRef(result?.replay_ref ?? result?.replayRef, "msp:replay/", "replay"),
-      contextReproducible: Boolean(result?.context_reproducible ?? result?.contextReproducible),
-      executionReproducible: Boolean(result?.execution_reproducible ?? result?.executionReproducible),
-      outputIdentical: Boolean(result?.output_identical ?? result?.outputIdentical),
-    };
-  }
-
-  async recordEvidence(input) {
-    validateProofBatch(input);
-    const result = await this.call("msp_evidence_record", input);
-    return { proofRef: requireRef(result?.proof_ref ?? result?.proofRef, "msp:proof/", "proof") };
-  }
+  async recordContextInjection(input) { const result = await this.call("msp_context_injection_record", input); return { injectionRef: requireRef(result?.injection_ref ?? result?.injectionRef, "msp:context-injection/", "context injection") }; }
+  async replayContext(input) { const result = await this.call("msp_context_replay", input); return { replayRef: requireRef(result?.replay_ref ?? result?.replayRef, "msp:replay/", "replay"), contextReproducible: Boolean(result?.context_reproducible ?? result?.contextReproducible), executionReproducible: Boolean(result?.execution_reproducible ?? result?.executionReproducible), outputIdentical: Boolean(result?.output_identical ?? result?.outputIdentical) }; }
+  async recordEvidence(input) { validateProofBatch(input); const result = await this.call("msp_evidence_record", input); return { proofRef: requireRef(result?.proof_ref ?? result?.proofRef, "msp:proof/", "proof") }; }
 }
 
-export function createUnavailableMspClient() {
-  return new MspClient(undefined);
-}
+export function createUnavailableMspClient() { return new MspClient(undefined); }
 
 function parseMspConfiguration(env = process.env) {
   const command = env.GOVIBE_MSP_COMMAND;
   if (command == null || command === "") return { status: "unconfigured", command: null, args: [], cwd: null };
-  if (typeof command !== "string" || !command.trim()) {
-    throw new MspConfigurationError("GOVIBE_MSP_COMMAND must be a non-empty string.");
-  }
+  if (typeof command !== "string" || !command.trim()) throw new MspConfigurationError("GOVIBE_MSP_COMMAND must be a non-empty string.");
   let args = [];
   if (env.GOVIBE_MSP_ARGS) {
-    try {
-      args = JSON.parse(env.GOVIBE_MSP_ARGS);
-    } catch {
-      throw new MspConfigurationError("GOVIBE_MSP_ARGS must be valid JSON.");
-    }
-    if (!Array.isArray(args) || args.some((item) => typeof item !== "string")) {
-      throw new MspConfigurationError("GOVIBE_MSP_ARGS must be a JSON array of strings.");
-    }
+    try { args = JSON.parse(env.GOVIBE_MSP_ARGS); } catch { throw new MspConfigurationError("GOVIBE_MSP_ARGS must be valid JSON."); }
+    if (!Array.isArray(args) || args.some((item) => typeof item !== "string")) throw new MspConfigurationError("GOVIBE_MSP_ARGS must be a JSON array of strings.");
   }
-  if (env.GOVIBE_MSP_CWD != null && (typeof env.GOVIBE_MSP_CWD !== "string" || !env.GOVIBE_MSP_CWD.trim())) {
-    throw new MspConfigurationError("GOVIBE_MSP_CWD must be a non-empty string when provided.");
-  }
+  if (env.GOVIBE_MSP_CWD != null && (typeof env.GOVIBE_MSP_CWD !== "string" || !env.GOVIBE_MSP_CWD.trim())) throw new MspConfigurationError("GOVIBE_MSP_CWD must be a non-empty string when provided.");
   return { status: "configured", command: command.trim(), args, cwd: env.GOVIBE_MSP_CWD?.trim() ?? null };
 }
 
-/**
- * Configuration-only preflight. A configured transport is not evidence that
- * the MSP process is running or that its downstream GKS/storage is healthy.
- */
 export function inspectMspConfiguration(env = process.env) {
   try {
     const configuration = parseMspConfiguration(env);
-    return {
-      ...configuration,
-      dispatchable: false,
-      reason: configuration.status === "configured" ? "msp_parent_not_probed" : "msp_command_missing",
-    };
+    return { ...configuration, dispatchable: false, reason: configuration.status === "configured" ? "msp_parent_not_probed" : "msp_command_missing" };
   } catch (error) {
-    return {
-      status: "invalid",
-      dispatchable: false,
-      reason: error instanceof MspConfigurationError ? error.code.toLowerCase() : "msp_configuration_invalid",
-      diagnostics: [error instanceof Error ? error.message : String(error)],
-    };
+    return { status: "invalid", dispatchable: false, reason: error instanceof MspConfigurationError ? error.code.toLowerCase() : "msp_configuration_invalid", diagnostics: [error instanceof Error ? error.message : String(error)] };
   }
 }
 
