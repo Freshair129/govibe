@@ -19,10 +19,7 @@ function requireString(value, label) {
 }
 
 function resolveWorkspaceId(candidate) {
-  return requireString(
-    candidate.workspace_id ?? candidate.workspaceId ?? candidate.workspace?.id,
-    "workspace_id",
-  );
+  return requireString(candidate.workspace_id ?? candidate.workspaceId ?? candidate.workspace?.id, "workspace_id");
 }
 
 function resolveAtomRef(candidate) {
@@ -36,29 +33,38 @@ function resolveSourceVersion(candidate) {
 }
 
 function normalizeSourceHashes(sourceHashes) {
-  if (!Array.isArray(sourceHashes) || sourceHashes.length === 0) {
-    throw new TypeError("sourceHashes must contain at least one authorized SHA-256 digest.");
-  }
+  if (!Array.isArray(sourceHashes) || sourceHashes.length === 0) throw new TypeError("sourceHashes must contain at least one authorized SHA-256 digest.");
   const normalized = [...new Set(sourceHashes.map((value) => String(value).replace(/^sha256:/i, "").toLowerCase()))];
-  if (normalized.some((value) => !HASH.test(value))) {
-    throw new TypeError("sourceHashes must contain only SHA-256 hex digests.");
-  }
+  if (normalized.some((value) => !HASH.test(value))) throw new TypeError("sourceHashes must contain only SHA-256 hex digests.");
   return normalized;
 }
 
-/**
- * Backend-neutral first-slice GKS provider for #74.
- *
- * This module is the only layer in packages/msp-runtime that mints gks:
- * canonical identity. MSP transport handlers call this provider through the
- * narrow promote/retrieve/health surface and never inspect provider tables.
- * A GenesisBlockDB adapter can replace this implementation without changing
- * the MSP or GoVibe contracts.
- */
+function candidateLineage(candidateJson, legacyAtomRef) {
+  let envelope;
+  try { envelope = JSON.parse(candidateJson); } catch { envelope = {}; }
+  const payload = envelope?.candidate && typeof envelope.candidate === "object" ? envelope.candidate : {};
+  const candidates = [
+    ...(Array.isArray(payload.atoms) ? payload.atoms : []),
+    ...(Array.isArray(payload.symbols) ? payload.symbols : []),
+  ];
+  const atomRefs = [...new Set([
+    ...(legacyAtomRef ? [legacyAtomRef] : []),
+    ...candidates.map((item) => item?.id).filter((value) => typeof value === "string" && value),
+  ])];
+  const sourceRefs = new Set();
+  for (const item of candidates) {
+    const direct = item?.path ?? item?.props?.path;
+    if (typeof direct === "string" && direct) sourceRefs.add(direct);
+    for (const source of Array.isArray(item?.sourceRefs) ? item.sourceRefs : []) {
+      if (typeof source?.file === "string" && source.file) sourceRefs.add(source.file);
+    }
+  }
+  return { atomRefs, sourceRefs: [...sourceRefs] };
+}
+
+/** Backend-neutral first-slice GKS provider behind the MSP process. */
 export function createSqliteGksProvider({ db, clock = () => new Date() }) {
-  const selectByIdempotency = db.prepare(
-    "SELECT * FROM gks_knowledge WHERE idempotency_key = ?",
-  );
+  const selectByIdempotency = db.prepare("SELECT * FROM gks_knowledge WHERE idempotency_key = ?");
   const insertKnowledge = db.prepare(`
     INSERT INTO gks_knowledge (
       knowledge_ref, idempotency_key, workspace_id, run_id, stage,
@@ -82,31 +88,19 @@ export function createSqliteGksProvider({ db, clock = () => new Date() }) {
 
   const promoteTx = db.transaction((candidate) => {
     const existing = selectByIdempotency.get(candidate.idempotency_key);
-    if (existing) {
-      return {
-        knowledge_ref: existing.knowledge_ref,
-        source_hash: existing.source_snapshot_hash,
-        version: existing.source_version,
-      };
-    }
+    if (existing) return { knowledge_ref: existing.knowledge_ref, source_hash: existing.source_snapshot_hash, version: existing.source_version };
 
     const workspaceId = resolveWorkspaceId(candidate);
     const runId = requireString(candidate.run_id, "run_id");
     const idempotencyKey = requireString(candidate.idempotency_key, "idempotency_key");
     const provenanceRef = requireString(candidate.provenance_ref, "provenance_ref");
-    if (!Number.isInteger(candidate.stage) || candidate.stage < 1 || candidate.stage > 12) {
-      throw new TypeError("stage must be an integer from 1 through 12.");
-    }
-    if (!HASH.test(candidate.source_snapshot_hash ?? "")) {
-      throw new TypeError("source_snapshot_hash must be a SHA-256 hex digest.");
-    }
+    if (!Number.isInteger(candidate.stage) || candidate.stage < 1 || candidate.stage > 12) throw new TypeError("stage must be an integer from 1 through 12.");
+    if (!HASH.test(candidate.source_snapshot_hash ?? "")) throw new TypeError("source_snapshot_hash must be a SHA-256 hex digest.");
 
     const candidateJson = stableStringify(candidate);
     const canonicalHash = sha256(candidateJson);
     const knowledgeRef = `gks:knowledge/${canonicalHash}`;
     const sourceVersion = resolveSourceVersion(candidate);
-    const createdAt = clock().toISOString();
-
     insertKnowledge.run({
       knowledge_ref: knowledgeRef,
       idempotency_key: idempotencyKey,
@@ -119,29 +113,17 @@ export function createSqliteGksProvider({ db, clock = () => new Date() }) {
       atom_ref: resolveAtomRef(candidate),
       canonical_hash: canonicalHash,
       candidate_json: candidateJson,
-      created_at: createdAt,
+      created_at: clock().toISOString(),
     });
-
-    return {
-      knowledge_ref: knowledgeRef,
-      source_hash: candidate.source_snapshot_hash.toLowerCase(),
-      version: sourceVersion,
-    };
+    return { knowledge_ref: knowledgeRef, source_hash: candidate.source_snapshot_hash.toLowerCase(), version: sourceVersion };
   });
 
   return {
     promote(candidate) {
-      if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
-        throw new TypeError("Knowledge candidate is required.");
-      }
+      if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) throw new TypeError("Knowledge candidate is required.");
       return promoteTx(candidate);
     },
 
-    /**
-     * Policy is evaluated by the MSP knowledge handler before this method is
-     * called. The provider still receives the authorized source hashes and
-     * applies them in SQL so workspace co-tenancy cannot widen the result set.
-     */
     retrieve({ workspaceId, agentId, contextId = null, radius, budget, sourceHashes }) {
       const safeWorkspaceId = requireString(workspaceId, "workspaceId");
       const safeAgentId = requireString(agentId, "agentId");
@@ -150,35 +132,32 @@ export function createSqliteGksProvider({ db, clock = () => new Date() }) {
       const safeSourceHashes = normalizeSourceHashes(sourceHashes);
       const limit = Math.min(budget, 1000);
       const placeholders = safeSourceHashes.map(() => "?").join(", ");
-      const selectAuthorized = db.prepare(`
+      const rows = db.prepare(`
         SELECT knowledge_ref, source_snapshot_hash, source_version, provenance_ref,
-               atom_ref, canonical_hash, run_id, stage, created_at
+               atom_ref, canonical_hash, candidate_json, run_id, stage, created_at
         FROM gks_knowledge
         WHERE workspace_id = ?
           AND source_snapshot_hash IN (${placeholders})
         ORDER BY created_at DESC, knowledge_ref ASC
         LIMIT ?
-      `);
-      const rows = selectAuthorized.all(safeWorkspaceId, ...safeSourceHashes, limit);
-      const items = rows.map((row) => ({
-        ref: row.knowledge_ref,
-        sourceHash: row.source_snapshot_hash,
-        version: row.source_version,
-        provenanceRef: row.provenance_ref,
-        atomRef: row.atom_ref,
-        canonicalHash: row.canonical_hash,
-        runId: row.run_id,
-        stage: row.stage,
-      }));
-      const queryHash = sha256(stableStringify({
-        workspaceId: safeWorkspaceId,
-        agentId: safeAgentId,
-        radius,
-        budget,
-        sourceHashes: safeSourceHashes,
-      }));
+      `).all(safeWorkspaceId, ...safeSourceHashes, limit);
+      const items = rows.map((row) => {
+        const lineage = candidateLineage(row.candidate_json, row.atom_ref);
+        return {
+          ref: row.knowledge_ref,
+          sourceHash: row.source_snapshot_hash,
+          version: row.source_version,
+          provenanceRef: row.provenance_ref,
+          atomRef: row.atom_ref,
+          atomRefs: lineage.atomRefs,
+          sourceRefs: lineage.sourceRefs,
+          canonicalHash: row.canonical_hash,
+          runId: row.run_id,
+          stage: row.stage,
+        };
+      });
+      const queryHash = sha256(stableStringify({ workspaceId: safeWorkspaceId, agentId: safeAgentId, radius, budget, sourceHashes: safeSourceHashes }));
       const retrievalRef = `gks:retrieval/${randomUUID()}`;
-
       insertRetrievalEvidence.run({
         retrieval_ref: retrievalRef,
         workspace_id: safeWorkspaceId,
@@ -191,17 +170,12 @@ export function createSqliteGksProvider({ db, clock = () => new Date() }) {
         query_hash: queryHash,
         created_at: clock().toISOString(),
       });
-
       return { items, retrieval_ref: retrievalRef, query_hash: queryHash };
     },
 
     health() {
       db.prepare("SELECT 1 AS ok FROM gks_knowledge LIMIT 1").get();
-      return {
-        state: "ready",
-        reason: null,
-        evidence_ref: `msp:health/gks-sqlite/${sha256(String(db.name ?? "msp-db")).slice(0, 16)}`,
-      };
+      return { state: "ready", reason: null, evidence_ref: `msp:health/gks-sqlite/${sha256(String(db.name ?? "msp-db")).slice(0, 16)}` };
     },
   };
 }
