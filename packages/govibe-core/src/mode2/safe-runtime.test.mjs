@@ -34,7 +34,7 @@ describe("Mode 2 governance-safe runtime foundation", () => {
 
   it("defaults unknown clients to the generic adapter profile", () => {
     expect(resolveClient("not-a-real-client")).toBe("generic");
-    expect(WORKSPACE_CLIENTS.generic).toBeDefined();
+    expect(WORKSPACE_CLIENTS).toContain("generic");
   });
 
   it("keeps every write target under the disposable Mode 2 metadata root", () => {
