@@ -39,7 +39,7 @@ async function recordTerminalEvidence({ mspClient, runId, stage, inventoryHash, 
   });
 }
 
-export async function runDeepScan({ workspacePath, inventory, mspClient, actor, adapters, runId = randomUUID(), resume = false }) {
+export async function runDeepScan({ workspacePath, workspaceId = null, inventory, mspClient, actor, adapters, runId = randomUUID(), resume = false }) {
   if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(runId) || runId.includes("..")) throw new Error(`Invalid scan runId: ${runId}`);
   if (!mspClient?.submitKnowledgeCandidate) throw new Error("Deep scan requires an MSP client with parent-mediated knowledge promotion.");
 
@@ -77,6 +77,8 @@ export async function runDeepScan({ workspacePath, inventory, mspClient, actor, 
         const promoted = await mspClient.submitKnowledgeCandidate({
           schema_version: "govibe-knowledge-candidate/v1",
           idempotency_key: recordId,
+          workspace_id: workspaceId ?? undefined,
+          source_version: runMeta.createdAt,
           run_id: runId,
           stage,
           source_snapshot_hash: inventoryHash,
@@ -110,5 +112,5 @@ export async function runDeepScan({ workspacePath, inventory, mspClient, actor, 
   }
 
   const graphValidation = validateDeepScan(stageRuns);
-  return { schema: "govibe-scan-result/v1", runId, level: "L2", status: graphValidation.passed ? "complete" : "incomplete", stageRuns, graphValidation };
+  return { schema: "govibe-scan-result/v1", runId, level: "L2", status: graphValidation.passed ? "complete" : "incomplete", sourceSnapshotHash: inventoryHash, workspaceId, stageRuns, graphValidation };
 }

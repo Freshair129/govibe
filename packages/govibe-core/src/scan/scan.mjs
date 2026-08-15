@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { readdir, stat } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 import { createDefaultStageAdapters } from "./stage-adapters.mjs";
@@ -44,8 +44,23 @@ export async function inventoryWorkspace(workspacePath) {
   };
 }
 
+async function readWorkspaceId(workspacePath) {
+  try {
+    const config = JSON.parse(await readFile(path.join(workspacePath, ".govibe", "config.json"), "utf8"));
+    if (config?.schema !== "govibe-workspace-config/v1" || typeof config.workspaceId !== "string" || !config.workspaceId.trim()) {
+      throw new Error("invalid .govibe/config.json workspace identity");
+    }
+    return config.workspaceId.trim();
+  } catch (error) {
+    if (error?.code === "ENOENT") return null;
+    throw error;
+  }
+}
+
 export async function scanWorkspace({ workspacePath, deep = false, mspClient, actor = "unknown", adapters = createDefaultStageAdapters(), runId = randomUUID(), resume = false }) {
-  const inventory = await inventoryWorkspace(workspacePath);
+  const root = path.resolve(workspacePath);
+  const inventory = await inventoryWorkspace(root);
   if (!deep) return { schema: "govibe-scan-result/v1", runId, level: "L1", status: "complete", inventory, deepScanRun: false };
-  return runDeepScan({ workspacePath: path.resolve(workspacePath), inventory, mspClient, actor, adapters, runId, resume });
+  const workspaceId = await readWorkspaceId(root);
+  return runDeepScan({ workspacePath: root, workspaceId, inventory, mspClient, actor, adapters, runId, resume });
 }

@@ -27,19 +27,6 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const DEFAULT_MIGRATIONS_DIR = path.join(here, "db", "migrations");
 const GKS_PROVIDER_MODES = new Set(["unconfigured", "sqlite"]);
 
-/**
- * @param {object} options
- * @param {string} options.dbPath absolute path to the SQLite database file (MSP_DB_PATH).
- * @param {"unconfigured"|"sqlite"} [options.gksProviderMode] explicit GKS provider selection.
- * @param {string} [options.migrationsDir] override for testing.
- * @param {NodeJS.ReadableStream} [options.input] override for testing.
- * @param {NodeJS.WritableStream} [options.output] override for testing.
- * @param {(args: Record<string, unknown>) => object|Promise<object>} [options.mspProbe]
- * @param {(args: Record<string, unknown>) => object|Promise<object>} [options.gksProbe]
- * @param {(args: Record<string, unknown>) => object|Promise<object>} [options.storageProbe]
- * @param {number} [options.healthTimeoutMs]
- * @param {() => Date} [options.clock]
- */
 export function createServer({
   dbPath,
   gksProviderMode = "unconfigured",
@@ -53,9 +40,7 @@ export function createServer({
   clock = () => new Date(),
 } = {}) {
   if (!dbPath) throw new TypeError("createServer requires dbPath (MSP_DB_PATH).");
-  if (!GKS_PROVIDER_MODES.has(gksProviderMode)) {
-    throw new TypeError(`Unsupported GKS provider mode "${gksProviderMode}". Expected one of: ${[...GKS_PROVIDER_MODES].join(", ")}.`);
-  }
+  if (!GKS_PROVIDER_MODES.has(gksProviderMode)) throw new TypeError(`Unsupported GKS provider mode "${gksProviderMode}". Expected one of: ${[...GKS_PROVIDER_MODES].join(", ")}.`);
 
   const db = open(dbPath);
   runMigrations(db, migrationsDir);
@@ -75,14 +60,7 @@ export function createServer({
   const knowledgeHandlers = gksProvider ? createKnowledgeHandlers({ gksProvider, journal }) : null;
 
   const effectiveGksProbe = gksProbe ?? (gksProvider ? (() => gksProvider.health()) : undefined);
-  const healthHandler = createHealthHandler({
-    db,
-    mspProbe,
-    gksProbe: effectiveGksProbe,
-    storageProbe,
-    timeoutMs: healthTimeoutMs,
-    clock,
-  });
+  const healthHandler = createHealthHandler({ db, mspProbe, gksProbe: effectiveGksProbe, storageProbe, timeoutMs: healthTimeoutMs, clock });
 
   const toolRegistry = new ToolRegistry();
   toolRegistry.register("msp_ping", async () => ({ ok: true, timestamp: clock().toISOString() }));
@@ -92,12 +70,13 @@ export function createServer({
   for (const [name, handler] of Object.entries(contextHandlers)) {
     if (name === "msp_context_resolve" && knowledgeHandlers) {
       toolRegistry.register(name, async (args = {}) => {
-        // The legacy v1 context handler rejects caller-supplied gks: refs by
-        // design. In provider mode, canonical refs are selected by MSP/GKS,
-        // not trusted from the caller, so persist the ordinary context shell
-        // without those refs and merge the governed provider selection.
-        const base = await handler({ ...args, knowledge_refs: [] });
+        // Evaluate the complete authority/radius/source/budget contract first.
+        // A denied request therefore writes neither a context row nor GKS
+        // retrieval evidence and performs no provider traversal.
         const governed = await knowledgeHandlers.resolveKnowledgeContext(args);
+        // The legacy context shell deliberately receives no caller-supplied
+        // gks: refs. Canonical refs are selected only by the governed provider.
+        const base = await handler({ ...args, knowledge_refs: [] });
         return {
           ...base,
           ...governed,
@@ -114,33 +93,12 @@ export function createServer({
   }
 
   for (const [name, handler] of Object.entries(lifecycleHandlers)) {
-    if (name === "msp_knowledge_promote" && knowledgeHandlers) {
-      toolRegistry.register(name, knowledgeHandlers.msp_knowledge_promote);
-    } else {
-      toolRegistry.register(name, handler);
-    }
+    if (name === "msp_knowledge_promote" && knowledgeHandlers) toolRegistry.register(name, knowledgeHandlers.msp_knowledge_promote);
+    else toolRegistry.register(name, handler);
   }
   for (const [name, handler] of Object.entries(memoryHandlers)) toolRegistry.register(name, handler);
 
   const transport = createStdioJsonRpcServer({ toolRegistry, input, output });
-
-  function close() {
-    transport.close();
-    db.close();
-  }
-
-  return {
-    db,
-    entityStore,
-    journal,
-    vaultRegistry,
-    linksStore,
-    retrievalService,
-    vectorClient,
-    gksProvider,
-    healthHandler,
-    toolRegistry,
-    transport,
-    close,
-  };
+  function close() { transport.close(); db.close(); }
+  return { db, entityStore, journal, vaultRegistry, linksStore, retrievalService, vectorClient, gksProvider, healthHandler, toolRegistry, transport, close };
 }
