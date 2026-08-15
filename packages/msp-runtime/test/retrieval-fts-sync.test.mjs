@@ -48,16 +48,17 @@ describe("AC-01: migration 0004_retrieval.sql applies idempotently", () => {
   it("applies cleanly as migration version 4, alongside the prior three and later migrations", () => {
     const db = freshDb();
     const rows = db.prepare("SELECT version, name FROM schema_migrations ORDER BY version").all();
-    expect(rows.map((row) => row.version)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+    expect(rows.map((row) => row.version)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
     expect(rows[3].name).toBe("0004_retrieval.sql");
-    expect(db.pragma("user_version", { simple: true })).toBe(7);
+    expect(rows[7].name).toBe("0008_gks_knowledge.sql");
+    expect(db.pragma("user_version", { simple: true })).toBe(8);
   });
 
   it("re-running migrations against an already-migrated database is a no-op (idempotent)", () => {
     const db = freshDb();
     const second = runMigrations(db, migrationsDir);
     expect(second.appliedCount).toBe(0);
-    expect(second.currentVersion).toBe(7);
+    expect(second.currentVersion).toBe(8);
   });
 
   it("entities_fts and embeddings tables exist with the documented columns", () => {
@@ -105,7 +106,7 @@ describe("AC-01: entities_fts stays in sync with entities across insert/update/d
       "msp:entity/direct-2",
     );
 
-    expect(ftsRowCount(db, "msp:entity/direct-2")).toBe(1); // replaced, not duplicated
+    expect(ftsRowCount(db, "msp:entity/direct-2")).toBe(1);
     const ftsRow = db.prepare("SELECT body_text FROM entities_fts WHERE entity_id = ?").get("msp:entity/direct-2");
     expect(ftsRow.body_text).toContain("manager-promoted-widget");
   });
@@ -146,14 +147,10 @@ describe("AC-01: entities_fts stays in sync with entities across insert/update/d
       actor: "test",
     });
     expect(updated.entity.entity_id).toBe(created.entity.entity_id);
-    expect(ftsRowCount(db, created.entity.entity_id)).toBe(1); // still exactly one row, content replaced
+    expect(ftsRowCount(db, created.entity.entity_id)).toBe(1);
     const afterUpdate = db.prepare("SELECT body_text FROM entities_fts WHERE entity_id = ?").get(created.entity.entity_id);
     expect(afterUpdate.body_text).toContain("gadget");
 
-    // forget() is a soft delete (UPDATE lifecycle_state='forgotten'), which
-    // fires the AFTER UPDATE trigger -- entities_fts keeps a row (the
-    // exclusion from search results is ftsSearch's job, via a JOIN back to
-    // entities.lifecycle_state, not entities_fts deletion).
     store.forget({ vaultId: "vault-store", category: "note", key: "widget-spec", reason: "done", actor: "test" });
     expect(ftsRowCount(db, created.entity.entity_id)).toBe(1);
   });
@@ -165,20 +162,8 @@ describe("retrieval/fts.mjs ftsSearch (WP-15 Bounded Scope item 2)", () => {
     insertVault(db, "vault-a");
     insertVault(db, "vault-b");
     const store = new EntityStore(db);
-    const a = store.upsert({
-      vaultId: "vault-a",
-      category: "note",
-      key: "a1",
-      bodyJson: { summary: "widget alpha rollout plan" },
-      actor: "test",
-    }).entity;
-    const b = store.upsert({
-      vaultId: "vault-b",
-      category: "note",
-      key: "b1",
-      bodyJson: { summary: "widget alpha rollout plan" },
-      actor: "test",
-    }).entity;
+    const a = store.upsert({ vaultId: "vault-a", category: "note", key: "a1", bodyJson: { summary: "widget alpha rollout plan" }, actor: "test" }).entity;
+    const b = store.upsert({ vaultId: "vault-b", category: "note", key: "b1", bodyJson: { summary: "widget alpha rollout plan" }, actor: "test" }).entity;
     return { db, store, a, b };
   }
 
