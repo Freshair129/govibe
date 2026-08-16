@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import { Terminal } from "@xterm/xterm";
 import "@xterm/xterm/css/xterm.css";
 import type { AgentSessionAccessScope, AgentSessionRecord, MissionCommand, MissionSnapshot } from "../../mission";
@@ -6,7 +6,7 @@ import { EmptyState } from "../../shared/EmptyState";
 import { ViewHeader } from "../../shared/ViewHeader";
 
 // Mirror of the sidecar allowlist for the start form. The sidecar remains the
-// authority — an agent outside its allowlist is rejected server-side.
+// authority - an agent outside its allowlist is rejected server-side.
 const AGENT_OPTIONS = ["claude-code", "codex"];
 const ACCESS_SCOPES: AgentSessionAccessScope[] = ["H0", "H1", "H2", "H3", "H4"];
 
@@ -63,13 +63,51 @@ function SessionTerminal({ session, send }: { session: AgentSessionRecord; send:
     writtenRef.current = session.buffer;
   }, [session.buffer, session.id]);
 
+  const repaint = () => {
+    const terminal = termRef.current;
+    if (!terminal) return;
+    terminal.resize(119, 32);
+    terminal.resize(120, 32);
+    terminal.focus();
+  };
+
   return (
     <div>
-      <div ref={hostRef} style={{ height: 440 }} onClick={() => termRef.current?.focus()} />
+      <div ref={hostRef} style={{ height: 440 }} onClick={repaint} />
       <p style={{ fontSize: 12, opacity: 0.7, margin: "6px 2px 0" }}>
-        The terminal itself is the input — click inside it and type exactly as you would in the agent&apos;s own CLI. Keystrokes go straight to the PTY.
+        Power users can type directly into the terminal above; everyone else can use the prompt box below. Click the terminal if it ever looks stale - it repaints.
       </p>
     </div>
+  );
+}
+
+function PromptComposer({ session, send }: { session: AgentSessionRecord; send: (command: MissionCommand) => void }) {
+  const [prompt, setPrompt] = useState("");
+
+  const submit = () => {
+    const text = prompt.trim();
+    if (!text || session.state !== "running") return;
+    // Bracketed paste (the TUI enables ?2004h) inserts the whole prompt
+    // reliably; the deferred CR then submits it.
+    send({ type: "agent.session.input", sessionId: session.id, data: `\u001b[200~${text}\u001b[201~` });
+    window.setTimeout(() => send({ type: "agent.session.input", sessionId: session.id, data: "\r" }), 150);
+    setPrompt("");
+  };
+
+  return (
+    <form
+      onSubmit={(event) => { event.preventDefault(); submit(); }}
+      style={{ display: "flex", gap: 8, marginTop: 8 }}
+    >
+      <input
+        value={prompt}
+        onChange={(event) => setPrompt(event.target.value)}
+        placeholder={session.state === "running" ? "Type a prompt for the agent and press Enter..." : "Session has exited - start a new one to talk"}
+        disabled={session.state !== "running"}
+        style={{ flex: 1 }}
+      />
+      <button type="submit" disabled={session.state !== "running" || !prompt.trim()}>Send</button>
+    </form>
   );
 }
 
@@ -127,7 +165,7 @@ export function AgentConsoleView({ snapshot, send }: { snapshot: MissionSnapshot
       {sessions.length === 0 ? (
         <EmptyState
           title="No agent sessions"
-          body="The sidecar has not spawned any PTY sessions. Start an allowlisted CLI agent above — the sidecar on 127.0.0.1:4310 must be running."
+          body="The sidecar has not spawned any PTY sessions. Start an allowlisted CLI agent above - the sidecar on 127.0.0.1:4310 must be running."
         />
       ) : (
         <section style={{ display: "flex", gap: 12, alignItems: "stretch" }}>
@@ -139,7 +177,7 @@ export function AgentConsoleView({ snapshot, send }: { snapshot: MissionSnapshot
                 onClick={() => setSelectedId(session.id)}
                 style={{ textAlign: "left", opacity: session.state === "exited" ? 0.6 : 1, fontWeight: selected?.id === session.id ? 600 : 400 }}
               >
-                {session.agentId} · {session.accessScope} · {session.state}
+                {session.agentId} Â· {session.accessScope} Â· {session.state}
                 {session.state === "exited" && session.exitCode !== null ? ` (${session.exitCode})` : ""}
               </button>
             ))}
@@ -148,12 +186,13 @@ export function AgentConsoleView({ snapshot, send }: { snapshot: MissionSnapshot
             {selected ? (
               <>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6, fontSize: 12 }}>
-                  <span>{selected.agentId} · ceiling {selected.accessScope} · {selected.cwd}</span>
+                  <span>{selected.agentId} Â· ceiling {selected.accessScope} Â· {selected.cwd}</span>
                   {selected.state === "running" && (
                     <button type="button" onClick={() => send({ type: "agent.session.stop", sessionId: selected.id })}>Stop</button>
                   )}
                 </div>
                 <SessionTerminal key={selected.id} session={selected} send={send} />
+                <PromptComposer key={`composer-${selected.id}`} session={selected} send={send} />
               </>
             ) : null}
           </div>
