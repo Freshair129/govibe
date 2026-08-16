@@ -68,6 +68,7 @@ describe("mission protocol v2", () => {
       { type: "agent.session.start", agent: "claude-code", cwd: "G:/workspace", accessScope: "H4", approvalRef: "adr-029", cols: 120, rows: 32 },
       { type: "agent.session.input", sessionId: "session-1", data: "ls\r" },
       { type: "agent.session.stop", sessionId: "session-1" },
+      { type: "agent.session.resize", sessionId: "session-1", cols: 120, rows: 32 },
     ];
     expect(commands.every(isMissionCommand)).toBe(true);
   });
@@ -124,6 +125,7 @@ describe("mission protocol v2", () => {
     expect(isMissionCommand({ type: "agent.session.start", agent: "claude-code", cwd: "G:/workspace", accessScope: "H9" })).toBe(false);
     expect(isMissionCommand({ type: "agent.session.start", agent: "claude-code", cwd: "G:/workspace", accessScope: "H2", command: "rm -rf" })).toBe(false);
     expect(isMissionCommand({ type: "agent.session.input", sessionId: "session-1" })).toBe(false);
+    expect(isMissionCommand({ type: "agent.session.resize", sessionId: "session-1", cols: 0, rows: 32 })).toBe(false);
     expect(isMissionEvent({ type: "sessions.update", sessions: [{ id: "session-1" }] })).toBe(false);
     expect(isMissionEvent({ type: "agent.session.output", sessionId: "session-1", data: "x", trusted: true })).toBe(false);
     expect(isMissionEvent({ type: "agent.session.output", sessionId: "session-1", data: "x".repeat(MISSION_PROTOCOL_LIMITS.commandChars + 1) })).toBe(false);

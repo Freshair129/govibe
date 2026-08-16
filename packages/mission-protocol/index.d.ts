@@ -40,7 +40,8 @@ export type MissionCommand =
   | { type: "memory.decay.run"; vaultId: string; dryRun?: boolean }
   | { type: "agent.session.start"; agent: string; cwd: string; accessScope: AgentSessionRecord["accessScope"]; approvalRef?: string; cols?: number; rows?: number }
   | { type: "agent.session.input"; sessionId: string; data: string }
-  | { type: "agent.session.stop"; sessionId: string };
+  | { type: "agent.session.stop"; sessionId: string }
+  | { type: "agent.session.resize"; sessionId: string; cols: number; rows: number };
 
 export type MissionSnapshot = {
   connectionState: "disconnected" | "connecting" | "connected" | "error";

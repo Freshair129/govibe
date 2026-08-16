@@ -29,6 +29,8 @@ function fakePtyFactory() {
       onData(handler) { this.dataHandler = handler; },
       onExit(handler) { this.exitHandler = handler; },
       write(data) { this.written.push(data); },
+      resized: [],
+      resize(cols, rows) { this.resized.push([cols, rows]); },
       kill() { this.killed = true; this.exitHandler?.({ exitCode: 0 }); },
     };
     spawned.push(pty);
@@ -109,6 +111,16 @@ describe("AgentSessionService", () => {
     expect(spawned[0].killed).toBe(true);
     expect(service.listSessions()[0]).toMatchObject({ state: "exited", exitCode: 0 });
     expect(() => service.input({ sessionId: record.id, data: "late" })).toThrow(/exited/);
+  });
+
+  it("resizes a running pty and no-ops after exit", async () => {
+    const { service, spawned, allowedRoot } = serviceWith();
+    const record = await service.start({ agent: "claude-code", cwd: allowedRoot, accessScope: "H2" });
+    service.resize({ sessionId: record.id, cols: 120, rows: 31 });
+    expect(spawned[0].resized).toEqual([[120, 31]]);
+    service.stop({ sessionId: record.id });
+    service.resize({ sessionId: record.id, cols: 120, rows: 32 });
+    expect(spawned[0].resized).toEqual([[120, 31]]);
   });
 
   it("resolves Windows npm shims through cmd.exe and unix binaries directly", () => {

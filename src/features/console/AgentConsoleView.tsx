@@ -25,7 +25,22 @@ function SessionTerminal({ session, send }: { session: AgentSessionRecord; send:
     terminal.focus();
     termRef.current = terminal;
     writtenRef.current = "";
+    const timers: number[] = [];
+    // The renderer measures cell size at open(); when layout or fonts are not
+    // settled yet it keeps painting zero-sized cells until the next resize, so
+    // force one re-measure wiggle after the DOM settles.
+    timers.push(window.setTimeout(() => {
+      terminal.resize(119, 32);
+      terminal.resize(120, 32);
+    }, 120));
+    // A replayed ring-buffer tail cannot reconstruct a full-screen TUI, so
+    // nudge the PTY size to raise SIGWINCH and make the agent repaint.
+    if (session.state === "running") {
+      timers.push(window.setTimeout(() => send({ type: "agent.session.resize", sessionId: session.id, cols: 120, rows: 31 }), 200));
+      timers.push(window.setTimeout(() => send({ type: "agent.session.resize", sessionId: session.id, cols: 120, rows: 32 }), 350));
+    }
     return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
       terminal.dispose();
       termRef.current = null;
     };

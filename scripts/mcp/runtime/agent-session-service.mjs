@@ -103,6 +103,12 @@ export class AgentSessionService {
     return { ...entry.record };
   }
 
+  resize({ sessionId, cols, rows }) {
+    const entry = this.#requireSession(sessionId);
+    if (entry.record.state === "running") entry.pty.resize(cols, rows);
+    return { sessionId, cols, rows };
+  }
+
   #requireSession(sessionId) {
     const entry = this.#sessions.get(sessionId);
     if (!entry) throw new Error(`Unknown agent session: ${sessionId}`);

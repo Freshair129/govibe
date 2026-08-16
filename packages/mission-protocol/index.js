@@ -157,6 +157,10 @@ export function isMissionCommand(value) {
       && isBoundedString(value.data, MISSION_PROTOCOL_LIMITS.commandChars, { allowEmpty: true });
     case "agent.session.stop": return hasOnlyKeys(value, ["type", "sessionId"])
       && isBoundedString(value.sessionId, MISSION_PROTOCOL_LIMITS.idChars);
+    case "agent.session.resize": return hasOnlyKeys(value, ["type", "sessionId", "cols", "rows"])
+      && isBoundedString(value.sessionId, MISSION_PROTOCOL_LIMITS.idChars)
+      && Number.isInteger(value.cols) && value.cols > 0 && value.cols <= 500
+      && Number.isInteger(value.rows) && value.rows > 0 && value.rows <= 500;
     default: return false;
   }
 }

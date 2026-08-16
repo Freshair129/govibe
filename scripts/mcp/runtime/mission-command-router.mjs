@@ -69,6 +69,10 @@ export class MissionCommandRouter {
       const result = service.inputAgentSession({ sessionId: command.sessionId, data: command.data });
       return { ok: true, action: "agent.session.input", result };
     }
+    if (command.type === "agent.session.resize") {
+      const result = service.resizeAgentSession({ sessionId: command.sessionId, cols: command.cols, rows: command.rows });
+      return { ok: true, action: "agent.session.resize", result };
+    }
     if (command.type === "agent.session.stop") {
       const session = service.stopAgentSession({ sessionId: command.sessionId });
       service.appendTerminal("sys", `Agent session stop requested: ${command.sessionId}`);

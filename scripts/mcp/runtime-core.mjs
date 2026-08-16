@@ -253,6 +253,7 @@ export class GovibeRuntime {
   async startAgentSession(args = {}) { return this.agentSessionService.start(args); }
   inputAgentSession(args = {}) { return this.agentSessionService.input(args); }
   stopAgentSession(args = {}) { return this.agentSessionService.stop(args); }
+  resizeAgentSession(args = {}) { return this.agentSessionService.resize(args); }
 
   async handleMissionCommand(command) {
     return this.commandRouter.route(command);
