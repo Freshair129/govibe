@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { MissionMemoryHit } from "./domain";
+import { AGENT_SESSION_BUFFER_CHARS, type AgentSessionRecord, type MissionMemoryHit } from "./domain";
 import { MissionSnapshotStore } from "./snapshot-store";
 import { emptyMissionSnapshot, mergeMissionSnapshot, reduceMissionEvent } from "./snapshot-reducer";
 
@@ -36,6 +36,39 @@ describe("orchestration snapshot slice (TASK-PRD-005)", () => {
     const updated = reduceMissionEvent(emptyMissionSnapshot, { type: "orchestration.update", orchestration });
     expect(updated.orchestration).toEqual(orchestration);
     expect(mergeMissionSnapshot(updated, { connectionState: "connected" }).orchestration).toEqual(orchestration);
+  });
+});
+
+describe("agent session slice (GLS-001)", () => {
+  const session: AgentSessionRecord = {
+    id: "session-1", agentId: "claude-code", cwd: "G:/workspace", state: "running",
+    accessScope: "H2", startedAt: "2026-08-17T00:00:00.000Z", buffer: "", exitCode: null,
+  };
+
+  it("has a real empty sessions slice from first render", () => {
+    expect(emptyMissionSnapshot.sessions).toEqual([]);
+  });
+
+  it("reduces sessions.update and preserves the slice through unrelated patches", () => {
+    const next = reduceMissionEvent(emptyMissionSnapshot, { type: "sessions.update", sessions: [session] });
+    expect(next.sessions).toEqual([session]);
+    expect(mergeMissionSnapshot(next, { connectionState: "connected" }).sessions).toEqual([session]);
+  });
+
+  it("appends agent.session.output to the matching session's buffer with the shared cap", () => {
+    const withSession = reduceMissionEvent(emptyMissionSnapshot, { type: "sessions.update", sessions: [session] });
+    const once = reduceMissionEvent(withSession, { type: "agent.session.output", sessionId: "session-1", data: "hello " });
+    const twice = reduceMissionEvent(once, { type: "agent.session.output", sessionId: "session-1", data: "world" });
+    expect(twice.sessions?.[0]?.buffer).toBe("hello world");
+
+    const flooded = reduceMissionEvent(twice, { type: "agent.session.output", sessionId: "session-1", data: "x".repeat(AGENT_SESSION_BUFFER_CHARS + 100) });
+    expect(flooded.sessions?.[0]?.buffer).toHaveLength(AGENT_SESSION_BUFFER_CHARS);
+  });
+
+  it("ignores output for unknown sessions without corrupting the slice", () => {
+    const withSession = reduceMissionEvent(emptyMissionSnapshot, { type: "sessions.update", sessions: [session] });
+    const next = reduceMissionEvent(withSession, { type: "agent.session.output", sessionId: "ghost", data: "boo" });
+    expect(next.sessions).toEqual([session]);
   });
 });
 

@@ -64,6 +64,10 @@ describe("mission protocol v2", () => {
       { type: "memory.forget", entityId: "msp:entity/x", reason: "gdpr" },
       { type: "memory.decay.run", vaultId: "vault_a" },
       { type: "memory.decay.run", vaultId: "vault_a", dryRun: true },
+      { type: "agent.session.start", agent: "claude-code", cwd: "G:/workspace", accessScope: "H2" },
+      { type: "agent.session.start", agent: "claude-code", cwd: "G:/workspace", accessScope: "H4", approvalRef: "adr-029", cols: 120, rows: 32 },
+      { type: "agent.session.input", sessionId: "session-1", data: "ls\r" },
+      { type: "agent.session.stop", sessionId: "session-1" },
     ];
     expect(commands.every(isMissionCommand)).toBe(true);
   });
@@ -89,6 +93,9 @@ describe("mission protocol v2", () => {
       { type: "memory.selection", entityId: null },
       { type: "memory.forgotten", entityId: "msp:entity/x", vaultId: "vault_a" },
       { type: "memory.decay.result", result: { vaultId: "vault_a", evaluated: 0, transitioned: [] } },
+      { type: "sessions.update", sessions: [] },
+      { type: "sessions.update", sessions: [{ id: "session-1", agentId: "claude-code", cwd: "G:/workspace", state: "running", accessScope: "H2", startedAt: "2026-08-17T00:00:00.000Z", buffer: "" }] },
+      { type: "agent.session.output", sessionId: "session-1", data: "hello" },
       { type: "command.ack", commandId: "cmd-1", ok: true },
     ];
     expect(events.every(isMissionEvent)).toBe(true);
@@ -112,6 +119,14 @@ describe("mission protocol v2", () => {
     expect(isMissionCommand({ type: "memory.decay.run", vaultId: "vault_a", dryRun: "yes" })).toBe(false);
     expect(isMissionEvent({ type: "memory.search.result", result: { query: "hello" }, trusted: true })).toBe(false);
     expect(isMissionEvent({ type: "memory.forgotten", entityId: "msp:entity/x" })).toBe(false);
+    // GLS-001: agent.session.* discriminators enforce the allowlisted key sets,
+    // the H0..H4 scope vocabulary, and session-record field boundaries.
+    expect(isMissionCommand({ type: "agent.session.start", agent: "claude-code", cwd: "G:/workspace", accessScope: "H9" })).toBe(false);
+    expect(isMissionCommand({ type: "agent.session.start", agent: "claude-code", cwd: "G:/workspace", accessScope: "H2", command: "rm -rf" })).toBe(false);
+    expect(isMissionCommand({ type: "agent.session.input", sessionId: "session-1" })).toBe(false);
+    expect(isMissionEvent({ type: "sessions.update", sessions: [{ id: "session-1" }] })).toBe(false);
+    expect(isMissionEvent({ type: "agent.session.output", sessionId: "session-1", data: "x", trusted: true })).toBe(false);
+    expect(isMissionEvent({ type: "agent.session.output", sessionId: "session-1", data: "x".repeat(MISSION_PROTOCOL_LIMITS.commandChars + 1) })).toBe(false);
   });
 
   it("enforces documented string, path, array, metadata, and file limits", () => {

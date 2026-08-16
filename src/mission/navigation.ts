@@ -16,6 +16,7 @@ export const missionDomains: Record<DomainId, MissionDomain> = {
     { id: "A5", name: "Agent Management", icon: "robot" },
     { id: "A6", name: "Readiness Control", icon: "gauge" },
     { id: "A7", name: "Token Monitor", icon: "token" },
+    { id: "A9", name: "Agent Console", icon: "terminal" },
   ] },
   B: { id: "B", title: "Genesis Knowledge", shortTitle: "Genesis Knowledge", color: "#6366f1", icon: "brain", subModules: [
     { id: "B1", name: "AST Hierarchy Tree", icon: "tree" }, { id: "B2", name: "Business Specifications", icon: "doc" },

@@ -12,7 +12,19 @@ export const MISSION_PROTOCOL_LIMITS: Readonly<{
   fileBytes: 262144;
   eventBytes: 1000000;
   jsonBodyBytes: 1000000;
+  sessionBufferChars: 24000;
 }>;
+
+export type AgentSessionRecord = {
+  id: string;
+  agentId: string;
+  cwd: string;
+  state: "running" | "exited";
+  accessScope: "H0" | "H1" | "H2" | "H3" | "H4";
+  startedAt: string;
+  buffer: string;
+  exitCode?: number | null;
+};
 
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
@@ -25,7 +37,10 @@ export type MissionCommand =
   | { type: "memory.search"; vaultId: string; query: string; mode?: "hybrid" | "fts" | "vector"; limit?: number }
   | { type: "memory.select"; entityId: string | null }
   | { type: "memory.forget"; entityId: string; reason: string }
-  | { type: "memory.decay.run"; vaultId: string; dryRun?: boolean };
+  | { type: "memory.decay.run"; vaultId: string; dryRun?: boolean }
+  | { type: "agent.session.start"; agent: string; cwd: string; accessScope: AgentSessionRecord["accessScope"]; approvalRef?: string; cols?: number; rows?: number }
+  | { type: "agent.session.input"; sessionId: string; data: string }
+  | { type: "agent.session.stop"; sessionId: string };
 
 export type MissionSnapshot = {
   connectionState: "disconnected" | "connecting" | "connected" | "error";
@@ -49,6 +64,7 @@ export type MissionSnapshot = {
   providers?: unknown[];
   memory?: Record<string, unknown>;
   usage?: Record<string, unknown>;
+  sessions?: unknown[];
   [forwardCompatibleField: string]: unknown;
 };
 
@@ -96,6 +112,8 @@ export type MissionEvent =
   | { type: "memory.forgotten"; entityId: string; vaultId: string | null }
   | { type: "memory.decay.result"; result: Record<string, unknown> & { vaultId: string } }
   | { type: "usage.update"; usage: Record<string, unknown> }
+  | { type: "sessions.update"; sessions: AgentSessionRecord[] }
+  | { type: "agent.session.output"; sessionId: string; data: string }
   | { type: "command.ack"; commandId: string; ok: boolean; message?: string; snapshot?: Partial<MissionSnapshot> };
 
 export type CommandResponse = {

@@ -60,6 +60,20 @@ export class MissionCommandRouter {
       service.appendTerminal("sys", `Memory forgotten: ${command.entityId}.`);
       return { ok: true, action: "memory.forget", result, snapshot: service.getSnapshot() };
     }
+    if (command.type === "agent.session.start") {
+      const session = await service.startAgentSession({ agent: command.agent, cwd: command.cwd, accessScope: command.accessScope, approvalRef: command.approvalRef, cols: command.cols, rows: command.rows });
+      service.appendTerminal("sys", `Agent session started: ${command.agent} (${session.accessScope}) in ${session.cwd}`);
+      return { ok: true, action: "agent.session.start", session, snapshot: service.getSnapshot() };
+    }
+    if (command.type === "agent.session.input") {
+      const result = service.inputAgentSession({ sessionId: command.sessionId, data: command.data });
+      return { ok: true, action: "agent.session.input", result };
+    }
+    if (command.type === "agent.session.stop") {
+      const session = service.stopAgentSession({ sessionId: command.sessionId });
+      service.appendTerminal("sys", `Agent session stop requested: ${command.sessionId}`);
+      return { ok: true, action: "agent.session.stop", session, snapshot: service.getSnapshot() };
+    }
     if (command.type === "memory.decay.run") {
       const result = await service.runMemoryDecay({ vault_id: command.vaultId, dry_run: command.dryRun });
       service.appendTerminal("sys", `Memory decay tick (${command.dryRun ? "dry run" : "applied"}): ${result.evaluated} evaluated, ${result.transitioned.length} transitioned.`);
