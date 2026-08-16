@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.44+draft"
-updated: "2026-08-15"
+version: "0.3.46+draft"
+updated: "2026-08-17"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.44+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.46+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -97,6 +97,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Backlog | `BACKLOG-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/BACKLOG-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-PERSISTENT-MEMORY-RUNTIME` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/ROADMAP-persistent-memory-runtime.md` |
 | Backlog | `BACKLOG-PERSISTENT-MEMORY-RUNTIME` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-persistent-memory-runtime.md` |
+| Backlog | `BACKLOG-GOVLAYER-SUPERVISION-SURFACES` | `0.1.1+draft` | draft | LYRA | `docs/roadmap/BACKLOG-govlayer-supervision-surfaces.md` |
 | Implementation Plan | `IMP-SYSTEM05-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.2` | approved | LYRA / ARCHON / ATHER | `docs/roadmap/IMP-SYSTEM05-Task-Scoped-Context-Injection.md` |
 | Backlog | `IMP-GVMP01P05EP01` | `n/a` | tracked-outside-registry | LYRA | `.agents/.devlog/implement/IMP-GVMP01P05EP01.md` |
 
@@ -134,6 +135,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | ADR | `ADR-020-PER-AGENT-MEMORY-UNIT` | `0.1.2+draft` | proposed | ARCHON / ATHER | `docs/adr/ADR-020-Per-Agent-Memory-Unit.md` |
 | ADR | `ADR-027-IN-REPO-MSP-RUNTIME-PACKAGE-BOUNDARY` | `0.3.0` | accepted | Boss (CEO) | `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md` |
 | ADR | `ADR-028-MULTI-TENANT-PRINCIPAL-SCOPED-VAULT-BINDING` | `0.1.0+draft` | proposed | Boss (CEO) | `docs/adr/ADR-028-Multi-Tenant-Principal-Scoped-Vault-Binding.md` |
+| ADR | `ADR-029-GOV-LAYER-LAUNCHER-CONSOLE-BOUNDARY` | `0.2.0` | accepted | Boss (CEO) | `docs/adr/ADR-029-Gov-Layer-Launcher-Console-Boundary.md` |
 | ADR | `ADR-022-VAULT-OWNERSHIP-CONTEXT-LINEAGE` | `1.0.0` | approved | Boss / ATHER | `docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md` |
 | ADR | `ADR-023-KNOWLEDGE-AUTHORITY-CONTEXT-AUTHORITY-BOUNDARY` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-023-Knowledge-Authority-Context-Authority-Boundary.md` |
 | ADR | `ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY` | `0.1.1+draft` | draft | Boss (CEO) | `docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md` |
@@ -227,6 +229,8 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.46+draft | 2026-08-17 | Claude Fable 5 | Ratification row, by explicit owner (Boss, ratification authority) instruction in session: ADR-029-GOV-LAYER-LAUNCHER-CONSOLE-BOUNDARY 0.1.0+draft → 0.2.0 accepted, with the H4 override for GLS-001 authorized in the same decision; BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.1+draft (GLS-001 ratification handoff completed, task planned → ready). This row DOES change ADR-029 to accepted, on owner authority. |
+| 0.3.45+draft | 2026-08-17 | Claude Fable 5 | Registered ADR-029 (Gov-Layer, Launcher, and Console Boundary; proposed) and BACKLOG-GOVLAYER-SUPERVISION-SURFACES (draft) on owner direction from the 2026-08-17 session. No document was promoted or ratified by this registry-only row; ADR-029 ratification and the H4 authorization remain pending owner handoffs. |
 | 0.3.44+draft | 2026-08-15 | ATHER | Registered the owner-approved MissionSnapshot orchestration contract (CR-2026-08-10-MISSIONSNAPSHOT-ORCHESTRATION-CONTRACT) and refreshed PR #131 on current main with all newer main entries preserved; ATHER audit remains pending. |
 | 0.3.43+draft | 2026-08-15 | OpenAI | Registered Issue #136 multi-tenant principal-scoped vault CR, ADR-028, and API-010; no document was promoted or owner-approved by this registry-only row. |
 | 0.3.42+draft | 2026-08-14 | ATHER | Synchronized API-008/API-009, ADR-027, execution-routing SDD, entitlement evidence, usage policy, persistent-memory runbook, and their registry versions after the #109/#110/#111/#76 issue sweep. |
