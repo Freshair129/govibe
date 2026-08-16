@@ -1,5 +1,6 @@
 ﻿import { useEffect, useRef, useState } from "react";
 import { Terminal } from "@xterm/xterm";
+import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import type { AgentSessionAccessScope, AgentSessionRecord, MissionCommand, MissionSnapshot } from "../../mission";
 import { EmptyState } from "../../shared/EmptyState";
@@ -13,36 +14,47 @@ const ACCESS_SCOPES: AgentSessionAccessScope[] = ["H0", "H1", "H2", "H3", "H4"];
 function SessionTerminal({ session, send }: { session: AgentSessionRecord; send: (command: MissionCommand) => void }) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const termRef = useRef<Terminal | null>(null);
+  const fitRef = useRef<FitAddon | null>(null);
   const writtenRef = useRef("");
 
   useEffect(() => {
-    if (!hostRef.current) return;
-    // Dimensions must match the sidecar's PTY default (120x32) or full-screen
-    // TUIs render misaligned.
-    const terminal = new Terminal({ cols: 120, rows: 32, convertEol: false, scrollback: 2000, fontSize: 13 });
-    terminal.open(hostRef.current);
+    const host = hostRef.current;
+    if (!host) return;
+    const terminal = new Terminal({ convertEol: false, scrollback: 2000, fontSize: 13 });
+    const fit = new FitAddon();
+    terminal.loadAddon(fit);
+    terminal.open(host);
     terminal.onData((data) => send({ type: "agent.session.input", sessionId: session.id, data }));
+    // The addon measures real cell size and derives the geometry, replacing the
+    // fixed 120x32 guess; onResize then pushes that geometry to the PTY so both
+    // ends agree and the agent repaints at the right width.
+    terminal.onResize(({ cols, rows }) => {
+      if (session.state === "running") send({ type: "agent.session.resize", sessionId: session.id, cols, rows });
+    });
     terminal.focus();
     termRef.current = terminal;
+    fitRef.current = fit;
     writtenRef.current = "";
-    const timers: number[] = [];
-    // The renderer measures cell size at open(); when layout or fonts are not
-    // settled yet it keeps painting zero-sized cells until the next resize, so
-    // force one re-measure wiggle after the DOM settles.
-    timers.push(window.setTimeout(() => {
-      terminal.resize(119, 32);
-      terminal.resize(120, 32);
-    }, 120));
-    // A replayed ring-buffer tail cannot reconstruct a full-screen TUI, so
-    // nudge the PTY size to raise SIGWINCH and make the agent repaint.
-    if (session.state === "running") {
-      timers.push(window.setTimeout(() => send({ type: "agent.session.resize", sessionId: session.id, cols: 120, rows: 31 }), 200));
-      timers.push(window.setTimeout(() => send({ type: "agent.session.resize", sessionId: session.id, cols: 120, rows: 32 }), 350));
-    }
+
+    const applyFit = () => {
+      try {
+        fit.fit();
+      } catch {
+        // fit() throws while the host is detached or zero-sized; the observer
+        // fires again once layout settles.
+      }
+    };
+    // One deferred fit covers fonts/layout not being settled at open().
+    const initialFit = window.setTimeout(applyFit, 0);
+    const observer = new ResizeObserver(applyFit);
+    observer.observe(host);
+
     return () => {
-      timers.forEach((timer) => window.clearTimeout(timer));
+      window.clearTimeout(initialFit);
+      observer.disconnect();
       terminal.dispose();
       termRef.current = null;
+      fitRef.current = null;
     };
     // The terminal is bound to one session for its lifetime; input routing and
     // buffer replay both key off session.id.
@@ -63,19 +75,16 @@ function SessionTerminal({ session, send }: { session: AgentSessionRecord; send:
     writtenRef.current = session.buffer;
   }, [session.buffer, session.id]);
 
-  const repaint = () => {
-    const terminal = termRef.current;
-    if (!terminal) return;
-    terminal.resize(119, 32);
-    terminal.resize(120, 32);
-    terminal.focus();
+  const focusTerminal = () => {
+    fitRef.current?.fit();
+    termRef.current?.focus();
   };
 
   return (
     <div>
-      <div ref={hostRef} style={{ height: 440 }} onClick={repaint} />
+      <div ref={hostRef} style={{ height: 440 }} onClick={focusTerminal} />
       <p style={{ fontSize: 12, opacity: 0.7, margin: "6px 2px 0" }}>
-        Power users can type directly into the terminal above; everyone else can use the prompt box below. Click the terminal if it ever looks stale - it repaints.
+        Power users can type directly into the terminal above; everyone else can use the prompt box below.
       </p>
     </div>
   );
@@ -87,10 +96,10 @@ function PromptComposer({ session, send }: { session: AgentSessionRecord; send: 
   const submit = () => {
     const text = prompt.trim();
     if (!text || session.state !== "running") return;
-    // Bracketed paste (the TUI enables ?2004h) inserts the whole prompt
-    // reliably; the deferred CR then submits it.
-    send({ type: "agent.session.input", sessionId: session.id, data: `\u001b[200~${text}\u001b[201~` });
-    window.setTimeout(() => send({ type: "agent.session.input", sessionId: session.id, data: "\r" }), 150);
+    // The sidecar owns delivery: it chunks a payload the TUI would otherwise
+    // drop, brackets it as a paste once the session enabled ?2004h, and writes
+    // the trailing CR last so it submits instead of inserting a newline.
+    send({ type: "agent.session.input", sessionId: session.id, data: `${text}\r` });
     setPrompt("");
   };
 
