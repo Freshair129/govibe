@@ -22,6 +22,7 @@ function SessionTerminal({ session, send }: { session: AgentSessionRecord; send:
     const terminal = new Terminal({ cols: 120, rows: 32, convertEol: false, scrollback: 2000, fontSize: 13 });
     terminal.open(hostRef.current);
     terminal.onData((data) => send({ type: "agent.session.input", sessionId: session.id, data }));
+    terminal.focus();
     termRef.current = terminal;
     writtenRef.current = "";
     return () => {
@@ -47,7 +48,14 @@ function SessionTerminal({ session, send }: { session: AgentSessionRecord; send:
     writtenRef.current = session.buffer;
   }, [session.buffer, session.id]);
 
-  return <div ref={hostRef} style={{ height: 440 }} />;
+  return (
+    <div>
+      <div ref={hostRef} style={{ height: 440 }} onClick={() => termRef.current?.focus()} />
+      <p style={{ fontSize: 12, opacity: 0.7, margin: "6px 2px 0" }}>
+        The terminal itself is the input — click inside it and type exactly as you would in the agent&apos;s own CLI. Keystrokes go straight to the PTY.
+      </p>
+    </div>
+  );
 }
 
 export function AgentConsoleView({ snapshot, send }: { snapshot: MissionSnapshot; send: (command: MissionCommand) => void }) {
