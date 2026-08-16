@@ -13,6 +13,15 @@ export const DEFAULT_AGENT_SESSION_ALLOWLIST = Object.freeze({
 const ACCESS_SCOPES = new Set(["H0", "H1", "H2", "H3", "H4"]);
 const OUTPUT_CHUNK_CHARS = MISSION_PROTOCOL_LIMITS.commandChars;
 
+// npm-installed CLIs on Windows are .cmd/.ps1 shims, not .exe — ConPTY cannot
+// CreateProcess them directly, so route through cmd.exe. The argument is always
+// the fixed allowlist literal, never web input.
+export function resolveSpawnCommand(binary, platform = process.platform) {
+  return platform === "win32"
+    ? { file: "cmd.exe", args: ["/d", "/s", "/c", binary] }
+    : { file: binary, args: [] };
+}
+
 export class AgentSessionService {
   #store;
   #allowlist;
@@ -53,7 +62,8 @@ export class AgentSessionService {
     }
 
     const spawnPty = this.#spawnPty ?? (await import("@lydell/node-pty")).spawn;
-    const pty = spawnPty(binary, [], { name: "xterm-color", cols, rows, cwd: resolvedCwd, env: process.env });
+    const command = resolveSpawnCommand(binary);
+    const pty = spawnPty(command.file, command.args, { name: "xterm-color", cols, rows, cwd: resolvedCwd, env: process.env });
 
     const record = {
       id: crypto.randomUUID(),

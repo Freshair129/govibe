@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { AgentSessionService, DEFAULT_AGENT_SESSION_ALLOWLIST } from "./agent-session-service.mjs";
+import { AgentSessionService, DEFAULT_AGENT_SESSION_ALLOWLIST, resolveSpawnCommand } from "./agent-session-service.mjs";
 import { MISSION_PROTOCOL_LIMITS } from "../../../packages/mission-protocol/index.js";
 
 function fakeStore() {
@@ -71,7 +71,9 @@ describe("AgentSessionService", () => {
   it("starts an allowlisted session, publishes it, and maps the binary from the allowlist", async () => {
     const { service, store, spawned, allowedRoot } = serviceWith();
     const record = await service.start({ agent: "claude-code", cwd: allowedRoot, accessScope: "H4", approvalRef: "ADR-029-ratification" });
-    expect(spawned[0].binary).toBe(DEFAULT_AGENT_SESSION_ALLOWLIST["claude-code"]);
+    const expected = resolveSpawnCommand(DEFAULT_AGENT_SESSION_ALLOWLIST["claude-code"]);
+    expect(spawned[0].binary).toBe(expected.file);
+    expect(spawned[0].args).toEqual(expected.args);
     expect(record.state).toBe("running");
     expect(record.accessScope).toBe("H4");
     expect(store.snapshot.sessions).toHaveLength(1);
@@ -107,6 +109,11 @@ describe("AgentSessionService", () => {
     expect(spawned[0].killed).toBe(true);
     expect(service.listSessions()[0]).toMatchObject({ state: "exited", exitCode: 0 });
     expect(() => service.input({ sessionId: record.id, data: "late" })).toThrow(/exited/);
+  });
+
+  it("resolves Windows npm shims through cmd.exe and unix binaries directly", () => {
+    expect(resolveSpawnCommand("claude", "win32")).toEqual({ file: "cmd.exe", args: ["/d", "/s", "/c", "claude"] });
+    expect(resolveSpawnCommand("claude", "linux")).toEqual({ file: "claude", args: [] });
   });
 
   it("throws on unknown session ids", () => {
