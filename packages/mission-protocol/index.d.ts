@@ -26,6 +26,17 @@ export type AgentSessionRecord = {
   exitCode?: number | null;
 };
 
+export type WorkflowNodeAction = "approve" | "rerun" | "assign";
+
+export type WorkflowNodeAuditEntry = {
+  id: string;
+  actor: string;
+  taskId: string;
+  action: WorkflowNodeAction;
+  at: string;
+  approvalRef?: string;
+};
+
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
   | { type: "agent.select"; agentId: string }
@@ -41,7 +52,8 @@ export type MissionCommand =
   | { type: "agent.session.start"; agent: string; cwd: string; accessScope: AgentSessionRecord["accessScope"]; approvalRef?: string; cols?: number; rows?: number }
   | { type: "agent.session.input"; sessionId: string; data: string }
   | { type: "agent.session.stop"; sessionId: string }
-  | { type: "agent.session.resize"; sessionId: string; cols: number; rows: number };
+  | { type: "agent.session.resize"; sessionId: string; cols: number; rows: number }
+  | { type: "workflow.node.action"; taskId: string; action: WorkflowNodeAction; actor: string; assigneeId?: string; approvalRef?: string };
 
 export type MissionSnapshot = {
   connectionState: "disconnected" | "connecting" | "connected" | "error";
@@ -66,6 +78,7 @@ export type MissionSnapshot = {
   memory?: Record<string, unknown>;
   usage?: Record<string, unknown>;
   sessions?: unknown[];
+  auditLog?: WorkflowNodeAuditEntry[];
   [forwardCompatibleField: string]: unknown;
 };
 
@@ -115,6 +128,7 @@ export type MissionEvent =
   | { type: "usage.update"; usage: Record<string, unknown> }
   | { type: "sessions.update"; sessions: AgentSessionRecord[] }
   | { type: "agent.session.output"; sessionId: string; data: string }
+  | { type: "workflow.node.audit"; entry: WorkflowNodeAuditEntry }
   | { type: "command.ack"; commandId: string; ok: boolean; message?: string; snapshot?: Partial<MissionSnapshot> };
 
 export type CommandResponse = {

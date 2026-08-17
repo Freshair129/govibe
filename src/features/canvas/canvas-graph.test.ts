@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AgentSessionRecord, MissionSnapshot, WorkflowTaskNode } from "../../mission";
 import { emptyMissionSnapshot } from "../../mission/snapshot-reducer";
-import { deriveCanvasGraph, resolveNodeDetails } from "./canvas-graph";
+import { deriveCanvasGraph, requiresApprovalGate, resolveNodeDetails } from "./canvas-graph";
 
 function roadmapNode(overrides: Partial<WorkflowTaskNode> & { id: string }): WorkflowTaskNode {
   return { type: "task", title: overrides.id, state: "in_progress", ...overrides };
@@ -101,7 +101,7 @@ describe("deriveCanvasGraph", () => {
 describe("resolveNodeDetails", () => {
   it("returns the bare taskId when no roadmap node matches, never inventing a title", () => {
     const details = resolveNodeDetails(emptyMissionSnapshot, "GHOST-1");
-    expect(details).toEqual({ taskId: "GHOST-1", evidenceLinks: [] });
+    expect(details).toEqual({ taskId: "GHOST-1", evidenceLinks: [], requiresApproval: false });
   });
 
   it("resolves title, state, and deduplicated evidence links from the matching roadmap node", () => {
@@ -117,6 +117,7 @@ describe("resolveNodeDetails", () => {
       assigneeId: "VIBE", assigneeType: "agent",
       evidenceLinks: ["docs/a.md", "src/a.test.ts"],
       agentName: undefined, consoleSessionId: undefined,
+      complexity: undefined, requiresApproval: false,
     });
   });
 
@@ -148,5 +149,26 @@ describe("resolveNodeDetails", () => {
       sessions: [session({ id: "sess-1", agentId: "claude-code" })],
     };
     expect(resolveNodeDetails(snapshot, "T1").consoleSessionId).toBeUndefined();
+  });
+
+  it("resolves complexity from the matching Task Container and flags requiresApproval only for C-3", () => {
+    const snapshot: MissionSnapshot = {
+      ...emptyMissionSnapshot,
+      roadmap: { sourcePath: "x", sourceType: "event", updatedAt: "x", nodes: [roadmapNode({ id: "T1" })], assignments: [], handoffs: [], verifications: [], taskContainers: [
+        { task_container_id: "TC-T1", task_id: "T1", title: "x", complexity: "C-3" },
+      ] },
+    };
+    const details = resolveNodeDetails(snapshot, "T1");
+    expect(details.complexity).toBe("C-3");
+    expect(details.requiresApproval).toBe(true);
+  });
+});
+
+describe("requiresApprovalGate", () => {
+  it("gates only C-3", () => {
+    expect(requiresApprovalGate("C-3")).toBe(true);
+    expect(requiresApprovalGate("C-2")).toBe(false);
+    expect(requiresApprovalGate("C-0")).toBe(false);
+    expect(requiresApprovalGate(undefined)).toBe(false);
   });
 });

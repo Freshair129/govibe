@@ -2,7 +2,7 @@
 title: "BACKLOG: Gov-Layer Supervision Surfaces (Mission Canvas + Agent Console)"
 doc_id: "BACKLOG-GOVLAYER-SUPERVISION-SURFACES"
 status: "draft"
-version: "0.1.4+draft"
+version: "0.1.5+draft"
 updated: "2026-08-17"
 owner: "LYRA"
 auditor: "ATHER"
@@ -57,7 +57,7 @@ declares an `access_scope` ceiling per ADR-021.
 |---|---|---|---|---|---|---|---|---|
 | GLS-001 | SPR-GLS-01 | task | Agent Console MVP: sidecar PTY module, agent.session contract, A9 view | P0 | VIBE | done | TASK-PRD-005 | Task Containers TC-GLS-001 |
 | GLS-002 | SPR-GLS-02 | task | Mission Canvas read-only: A8 view rendering orchestration and workflow runs | P1 | VIBE | done | GLS-001 | Task Containers TC-GLS-002 |
-| GLS-003 | SPR-GLS-02 | task | Mission Canvas governed actions: approve, rerun, assign with audit events | P2 | ARCHON | planned | GLS-002 | Task Containers TC-GLS-003 |
+| GLS-003 | SPR-GLS-02 | task | Mission Canvas governed actions: approve, rerun, assign with audit events | P2 | ARCHON | done | GLS-002 | Task Containers TC-GLS-003 |
 | GLS-004 | SPR-GLS-01 | task | Node execution contract schema and STATE/contract generator with hook enforcement | P0 | ARCHON | done | - | Task Containers TC-GLS-004 |
 | GLS-005 | SPR-GLS-03 | task | PmAdapter contract: outbound-first plan projection to Notion and Jira class targets | P1 | ARCHON | planned | GLS-004 | Task Containers TC-GLS-005 |
 
@@ -84,7 +84,7 @@ declares an `access_scope` ceiling per ADR-021.
 |---|---|---|---|---|
 | GLS-001 | passed | passed | n/a | 2026-08-17T00:00:00Z |
 | GLS-002 | passed | passed | n/a | 2026-08-17T00:00:00Z |
-| GLS-003 | pending | pending | n/a | 2026-08-17T00:00:00Z |
+| GLS-003 | passed | passed | n/a | 2026-08-17T00:00:00Z |
 | GLS-004 | passed | passed | n/a | 2026-08-17T00:00:00Z |
 | GLS-005 | pending | pending | n/a | 2026-08-17T00:00:00Z |
 
@@ -195,35 +195,35 @@ title: Mission Canvas governed actions - approve, rerun, assign with audit event
 requirement_type: FR
 complexity: C-2
 access_scope: H3
-status: planned
-version: 0.1.0+draft
+status: done
+version: 0.2.0
 pic: ARCHON
 executor: ARCHON
 approver: Boss
 auditor: ATHER
 symbol_links:
-  code: scripts/mcp/runtime-core.mjs
+  code: scripts/mcp/runtime/workflow-node-action-service.mjs
   doc: docs/adr/ADR-029-Gov-Layer-Launcher-Console-Boundary.md
-  test: unavailable
+  test: scripts/mcp/runtime/workflow-node-action-service.test.mjs
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a selected node, when an approve, rerun, or assign action is invoked, then a workflow node action command reaches the runtime and the resulting state change appears in the snapshot
-      checked: false
+      checked: true
     - criterion: Given any canvas action executes, when the audit trail is read, then an event records the actor, the Task ID, the action, and the timestamp
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given an action targets a task whose access scope requires an approval gate, when the actor lacks the recorded approval, then the action is refused with the gate named in the error
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the composed change is complete, when npm run lint, npm test, and npm run mcp:smoke run, then all exit 0
-      checked: false
-changelog: Authored 2026-08-17 from ADR-029 phase 3 (governed actions). Actions are enabled one at a time behind the ADR-021 access-scope gates.
+      checked: true
+changelog: Authored 2026-08-17 from ADR-029 phase 3 (governed actions). Implemented and closed the same day as a thin, audited governance layer over the existing roadmap mutation engine (RoadmapService#applyRoadmapMutation) rather than a new mutation system - assign maps to an "assignment" mutation, rerun to a "node.update" state reset, approve to a "verification" auditStatus=passed record. The access-scope gate reads Task Container complexity (the canonical CLAUDE.md C-3/H4 axis) rather than inventing a parallel field; a C-3 task refuses any action without an approvalRef, naming the gate. 11 service unit tests plus protocol/reducer coverage for the new workflow.node.action command and workflow.node.audit event. Live-verified against the running sidecar with two real roadmap sources: approving MVP-BL-001 (no gate) recorded a real verification + audit entry visible in both the API and the Canvas UI; the approved-but-ungated masterplan TASK-PRD-007 (a real C-3 task) refused approve with "requires C-3/H4 owner approval override" until an approvalRef was supplied, then succeeded, and the Canvas inspector's Approve/Rerun/Assign buttons correctly rendered disabled with the same gate text as a tooltip. Found and flagged (not fixed, out of scope) a pre-existing gap unrelated to this task: dag.update, emitted by every reloadRoadmap() call since before GLS-003, was never registered in mission-protocol's isMissionEvent and is silently dropped.
 created_at: 2026-08-17T00:00:00Z,LYRA,pending
 token_telemetry:
-  model_name: claude-fable-5
+  model_name: claude-sonnet-5
   context_length: 200k
   predicted_token_usage: 35000
-  total_token_usage: 35000
+  total_token_usage: 65000
 ui_state:
   dropdown_default: expanded
   expanded: true
@@ -340,6 +340,7 @@ the command evidence the criterion names.
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.1.5+draft | 2026-08-17 | GLS-003 closed to done: Canvas governed actions (approve/rerun/assign) implemented as a thin, audited layer over the existing roadmap mutation engine, gated by Task Container complexity (C-3 requires an approvalRef, naming the gate). Live-verified against two real roadmap sources including a real C-3 task: gate refusal, gate acceptance, resulting state change, and audit trail all confirmed via API and the Canvas UI. Found and flagged (not fixed) a pre-existing, unrelated protocol gap: dag.update was never registered in mission-protocol. |
 | 0.1.4+draft | 2026-08-17 | GLS-002 closed to done: Mission Canvas (A8) implemented with @xyflow/react, wired into A-domain navigation with an onNavigate callback threaded App -> RenderView for the open-console affordance. Graph derivation and inspector resolution are pure, unit-tested functions in src/features/canvas/canvas-graph.ts. Live-verified against the running sidecar's real orchestration data in the browser. |
 | 0.1.3+draft | 2026-08-17 | GLS-004 closed to done: schemas/Node_Execution_Contract_Schema.json authored; scripts/mcp/runtime/node-contract-generator.mjs generates and validates contracts from real Task Containers; scripts/docs/validate-roadmap-containers.mjs Checks 4-5 enforce contract validity and handoff evidence at gate time, scoped to this backlog only (an unscoped first pass hard-failed 17 already-closed masterplan tasks — fixed and pinned with a regression test before landing). Contracts for GLS-001, GLS-004, and GLS-005 generated and committed under .govibe/node-contracts/. Criterion "the canvas renders the node as a defect" stays unchecked and handed off to GLS-002/003 — Canvas does not exist yet. |
 | 0.1.2+draft | 2026-08-17 | GLS-001 closed to done on owner-directed evidence review (Boss present in session, explicit closure instruction): all DoD criteria ticked with command/test evidence, verification set to passed/passed, the ATHER impact-analysis handoff completed with a fresh calculateWorkspaceImpact run against merged main. GLS-001 shipped via PR #150 (squash commit 1321013). |

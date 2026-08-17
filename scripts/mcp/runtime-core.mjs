@@ -9,6 +9,7 @@ import { TemporalOverlayStore } from "./runtime/temporal-overlay-store.mjs";
 import { MissionCommandRouter } from "./runtime/mission-command-router.mjs";
 import { MemoryService } from "./runtime/memory-service.mjs";
 import { AgentSessionService } from "./runtime/agent-session-service.mjs";
+import { WorkflowNodeActionService } from "./runtime/workflow-node-action-service.mjs";
 import { WorkspaceService } from "./runtime/workspace-service.mjs";
 import { TranslatorService } from "./runtime/translator-service.mjs";
 import { OrchestrationService } from "./runtime/orchestration-service.mjs";
@@ -86,6 +87,7 @@ export class GovibeRuntime {
     this.orchestrationService = new OrchestrationService({ workspaceRoot, runAgent: (args) => this.runAgent(args), applyMutation: (args) => this.applyRoadmapMutation(args), appendTerminal: (type, text) => this.appendTerminal(type, text), logEvent: (name, payload) => this.sessionTracker.logEvent(name, payload), emit: (event) => this.emit(event) });
     this.memoryService = new MemoryService({ snapshotStore: this.snapshotStore, mspClient: this.mspClient });
     this.agentSessionService = options.agentSessionService ?? new AgentSessionService({ store: this.snapshotStore, allowedRoots: this.allowedWorkspaceRoots });
+    this.workflowNodeActionService = options.workflowNodeActionService ?? new WorkflowNodeActionService({ store: this.snapshotStore, applyRoadmapMutation: (args) => this.applyRoadmapMutation(args), getSnapshot: () => this.snapshot });
     this.commandRouter = new MissionCommandRouter(this);
   }
 
@@ -254,6 +256,8 @@ export class GovibeRuntime {
   inputAgentSession(args = {}) { return this.agentSessionService.input(args); }
   stopAgentSession(args = {}) { return this.agentSessionService.stop(args); }
   resizeAgentSession(args = {}) { return this.agentSessionService.resize(args); }
+
+  async applyWorkflowNodeAction(args = {}) { return this.workflowNodeActionService.apply(args); }
 
   async handleMissionCommand(command) {
     return this.commandRouter.route(command);

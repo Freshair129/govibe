@@ -1,0 +1,53 @@
+{
+  "schema": "govibe-node-contract/v1",
+  "node_id": "GLS-003",
+  "task_id": "GLS-003",
+  "source": {
+    "path": "docs/roadmap/BACKLOG-govlayer-supervision-surfaces.md",
+    "task_container_id": "TC-GLS-003"
+  },
+  "generated_at": "2026-08-17T03:42:41.884Z",
+  "inputs": [
+    {
+      "ref": "GLS-002",
+      "kind": "payload"
+    }
+  ],
+  "outputs": [],
+  "acceptance_criteria": [
+    {
+      "criterion": "Given a selected node, when an approve, rerun, or assign action is invoked, then a workflow node action command reaches the runtime and the resulting state change appears in the snapshot",
+      "checked": true
+    },
+    {
+      "criterion": "Given any canvas action executes, when the audit trail is read, then an event records the actor, the Task ID, the action, and the timestamp",
+      "checked": true
+    },
+    {
+      "criterion": "Given an action targets a task whose access scope requires an approval gate, when the actor lacks the recorded approval, then the action is refused with the gate named in the error",
+      "checked": true
+    },
+    {
+      "criterion": "Given the composed change is complete, when npm run lint, npm test, and npm run mcp:smoke run, then all exit 0",
+      "checked": true
+    }
+  ],
+  "exit_gate": {
+    "commands": [
+      "npm run lint",
+      "npx vitest run scripts/mcp/runtime/workflow-node-action-service.test.mjs"
+    ],
+    "evidence": {
+      "passed": true,
+      "recorded_at": "2026-08-17T03:43:06.482Z",
+      "command_output_ref": "session evidence 2026-08-17: npm run lint && npx vitest run scripts/mcp/runtime/workflow-node-action-service.test.mjs -> exit 0; live-verified against real sidecar roadmap sources (gate refusal + acceptance + audit trail confirmed in API and UI)"
+    }
+  },
+  "retry": {
+    "max_attempts": 3,
+    "escalation": "T0"
+  },
+  "rework": {
+    "policy": "return-to-executor-with-tool-output"
+  }
+}
