@@ -1,10 +1,11 @@
-import type { MissionEvent, MissionMemorySnapshot, MissionSnapshot, RoadmapSnapshot } from "./domain";
+import { AGENT_SESSION_BUFFER_CHARS, type MissionEvent, type MissionMemorySnapshot, type MissionSnapshot, type RoadmapSnapshot } from "./domain";
 
 export const emptyMissionSnapshot: MissionSnapshot = {
   connectionState: "disconnected", metrics: [], chart: { labels: [], series: [] }, reactor: [], agents: [], capabilities: [],
   terminal: [], graph: { nodes: [], edges: [] }, specs: [], symbols: [], campaignLogs: [], roadmapSources: [], workflowRuns: [], providers: [],
   orchestration: { waves: [], updatedAt: new Date().toISOString() },
   memory: { results: [], selectedEntityId: null, lastQuery: null, lastSearchedAt: null, lastDecayResult: null },
+  sessions: [],
 };
 
 export function mergeMissionSnapshot(current: MissionSnapshot, patch: Partial<MissionSnapshot>): MissionSnapshot {
@@ -19,6 +20,7 @@ export function mergeMissionSnapshot(current: MissionSnapshot, patch: Partial<Mi
     workflowRuns: patch.workflowRuns ?? current.workflowRuns, providers: patch.providers ?? current.providers,
     memory: patch.memory ?? current.memory,
     usage: patch.usage ?? current.usage,
+    sessions: patch.sessions ?? current.sessions,
     updatedAt: patch.updatedAt ?? new Date().toISOString(),
   };
 }
@@ -56,5 +58,11 @@ export function reduceMissionEvent(current: MissionSnapshot, event: MissionEvent
     case "memory.forgotten": { const value = memory(current.memory); return mergeMissionSnapshot(current, { memory: { ...value, results: value.results.filter((hit) => hit.entity.entityId !== event.entityId) } }); }
     case "memory.decay.result": return mergeMissionSnapshot(current, { memory: { ...memory(current.memory), lastDecayResult: event.result } });
     case "usage.update": return mergeMissionSnapshot(current, { usage: event.usage });
+    case "sessions.update": return mergeMissionSnapshot(current, { sessions: event.sessions });
+    case "agent.session.output": return mergeMissionSnapshot(current, {
+      sessions: (current.sessions ?? []).map((session) => session.id === event.sessionId
+        ? { ...session, buffer: (session.buffer + event.data).slice(-AGENT_SESSION_BUFFER_CHARS) }
+        : session),
+    });
   }
 }

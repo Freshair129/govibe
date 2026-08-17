@@ -8,6 +8,7 @@ import { createRuntimeSnapshot, RuntimeSnapshotStore } from "./runtime/snapshot-
 import { TemporalOverlayStore } from "./runtime/temporal-overlay-store.mjs";
 import { MissionCommandRouter } from "./runtime/mission-command-router.mjs";
 import { MemoryService } from "./runtime/memory-service.mjs";
+import { AgentSessionService } from "./runtime/agent-session-service.mjs";
 import { WorkspaceService } from "./runtime/workspace-service.mjs";
 import { TranslatorService } from "./runtime/translator-service.mjs";
 import { OrchestrationService } from "./runtime/orchestration-service.mjs";
@@ -84,6 +85,7 @@ export class GovibeRuntime {
     this.roadmapService = new RoadmapService({ snapshotStore: this.snapshotStore, temporalOverlayStore: this.temporalOverlayStore, allowedRoadmapReadRoots: this.allowedRoadmapReadRoots, allowedRoadmapWriteRoots: this.allowedRoadmapWriteRoots });
     this.orchestrationService = new OrchestrationService({ workspaceRoot, runAgent: (args) => this.runAgent(args), applyMutation: (args) => this.applyRoadmapMutation(args), appendTerminal: (type, text) => this.appendTerminal(type, text), logEvent: (name, payload) => this.sessionTracker.logEvent(name, payload), emit: (event) => this.emit(event) });
     this.memoryService = new MemoryService({ snapshotStore: this.snapshotStore, mspClient: this.mspClient });
+    this.agentSessionService = options.agentSessionService ?? new AgentSessionService({ store: this.snapshotStore, allowedRoots: this.allowedWorkspaceRoots });
     this.commandRouter = new MissionCommandRouter(this);
   }
 
@@ -247,6 +249,11 @@ export class GovibeRuntime {
   selectMemory(args = {}) { return this.memoryService.select(args); }
   async forgetMemory(args = {}) { return this.memoryService.forget(args); }
   async runMemoryDecay(args = {}) { return this.memoryService.decayRun(args); }
+
+  async startAgentSession(args = {}) { return this.agentSessionService.start(args); }
+  inputAgentSession(args = {}) { return this.agentSessionService.input(args); }
+  stopAgentSession(args = {}) { return this.agentSessionService.stop(args); }
+  resizeAgentSession(args = {}) { return this.agentSessionService.resize(args); }
 
   async handleMissionCommand(command) {
     return this.commandRouter.route(command);

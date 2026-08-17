@@ -5,6 +5,7 @@ import { CampaignLogsView } from "../features/benchmark/CampaignLogsView";
 import { Heatmap } from "../features/benchmark/Heatmap";
 import { ReactorRunTrigger } from "../features/benchmark/ReactorRunTrigger";
 import { CapabilityPlugins } from "../features/capabilities/CapabilityPlugins";
+import { AgentConsoleView } from "../features/console/AgentConsoleView";
 import { ContextOperationsView } from "../features/context/ContextOperationsView";
 import { RealTimeDashboard } from "../features/dashboard/RealTimeDashboard";
 import { DatabaseErdView } from "../features/erd/DatabaseErdView";
@@ -39,6 +40,7 @@ export function RenderView({
   if (activeView === "A5") return <AgentManagement snapshot={snapshot} send={send} />;
   if (activeView === "A6") return <ReadinessControlView snapshot={snapshot} send={send} />;
   if (activeView === "A7") return <TokenMonitorView snapshot={snapshot} />;
+  if (activeView === "A9") return <AgentConsoleView snapshot={snapshot} send={send} />;
   if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;
   if (activeView === "B2") return <BusinessSpecificationsView snapshot={snapshot} />;
   if (activeView === "B3") return <GraphStudioView snapshot={snapshot} />;

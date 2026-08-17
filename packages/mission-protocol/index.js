@@ -12,6 +12,7 @@ export const MISSION_PROTOCOL_LIMITS = Object.freeze({
   fileBytes: 262144,
   eventBytes: 1000000,
   jsonBodyBytes: 1000000,
+  sessionBufferChars: 24000,
 });
 
 const encoder = new TextEncoder();
@@ -47,6 +48,21 @@ function isBoundedRecord(value) {
 
 const orchestrationTaskStatuses = new Set(["queued", "running", "verifying", "done", "failed", "blocked"]);
 const orchestrationWaveStatuses = new Set(["pending", "active", "complete", "skipped"]);
+const agentSessionAccessScopes = new Set(["H0", "H1", "H2", "H3", "H4"]);
+const agentSessionStates = new Set(["running", "exited"]);
+
+function isAgentSessionRecord(value) {
+  return isBoundedRecord(value)
+    && hasOnlyKeys(value, ["id", "agentId", "cwd", "state", "accessScope", "startedAt", "buffer", "exitCode"])
+    && isBoundedString(value.id, MISSION_PROTOCOL_LIMITS.idChars)
+    && isBoundedString(value.agentId, MISSION_PROTOCOL_LIMITS.idChars)
+    && isBoundedString(value.cwd, MISSION_PROTOCOL_LIMITS.pathChars)
+    && agentSessionStates.has(value.state)
+    && agentSessionAccessScopes.has(value.accessScope)
+    && isBoundedString(value.startedAt, MISSION_PROTOCOL_LIMITS.idChars)
+    && isBoundedString(value.buffer, MISSION_PROTOCOL_LIMITS.sessionBufferChars, { allowEmpty: true })
+    && (value.exitCode === undefined || value.exitCode === null || Number.isInteger(value.exitCode));
+}
 
 function isMissionOrchestrationTask(value) {
   return isBoundedRecord(value)
@@ -129,6 +145,22 @@ export function isMissionCommand(value) {
     case "memory.decay.run": return hasOnlyKeys(value, ["type", "vaultId", "dryRun"])
       && isBoundedString(value.vaultId, MISSION_PROTOCOL_LIMITS.idChars)
       && (value.dryRun === undefined || typeof value.dryRun === "boolean");
+    case "agent.session.start": return hasOnlyKeys(value, ["type", "agent", "cwd", "accessScope", "approvalRef", "cols", "rows"])
+      && isBoundedString(value.agent, MISSION_PROTOCOL_LIMITS.idChars)
+      && isBoundedString(value.cwd, MISSION_PROTOCOL_LIMITS.pathChars)
+      && agentSessionAccessScopes.has(value.accessScope)
+      && (value.approvalRef === undefined || isBoundedString(value.approvalRef, MISSION_PROTOCOL_LIMITS.idChars))
+      && (value.cols === undefined || (Number.isInteger(value.cols) && value.cols > 0 && value.cols <= 500))
+      && (value.rows === undefined || (Number.isInteger(value.rows) && value.rows > 0 && value.rows <= 500));
+    case "agent.session.input": return hasOnlyKeys(value, ["type", "sessionId", "data"])
+      && isBoundedString(value.sessionId, MISSION_PROTOCOL_LIMITS.idChars)
+      && isBoundedString(value.data, MISSION_PROTOCOL_LIMITS.commandChars, { allowEmpty: true });
+    case "agent.session.stop": return hasOnlyKeys(value, ["type", "sessionId"])
+      && isBoundedString(value.sessionId, MISSION_PROTOCOL_LIMITS.idChars);
+    case "agent.session.resize": return hasOnlyKeys(value, ["type", "sessionId", "cols", "rows"])
+      && isBoundedString(value.sessionId, MISSION_PROTOCOL_LIMITS.idChars)
+      && Number.isInteger(value.cols) && value.cols > 0 && value.cols <= 500
+      && Number.isInteger(value.rows) && value.rows > 0 && value.rows <= 500;
     default: return false;
   }
 }
@@ -170,6 +202,12 @@ export function isMissionEvent(value) {
     case "memory.forgotten": return hasOnlyKeys(value, ["type", "entityId", "vaultId"]) && isBoundedString(value.entityId, MISSION_PROTOCOL_LIMITS.idChars) && (value.vaultId === null || isBoundedString(value.vaultId, MISSION_PROTOCOL_LIMITS.idChars));
     case "memory.decay.result": return hasOnlyKeys(value, ["type", "result"]) && isBoundedRecord(value.result) && isBoundedString(value.result.vaultId, MISSION_PROTOCOL_LIMITS.idChars);
     case "usage.update": return hasOnlyKeys(value, ["type", "usage"]) && isBoundedRecord(value.usage);
+    case "sessions.update": return hasOnlyKeys(value, ["type", "sessions"])
+      && isBoundedArray(value.sessions)
+      && value.sessions.every(isAgentSessionRecord);
+    case "agent.session.output": return hasOnlyKeys(value, ["type", "sessionId", "data"])
+      && isBoundedString(value.sessionId, MISSION_PROTOCOL_LIMITS.idChars)
+      && isBoundedString(value.data, MISSION_PROTOCOL_LIMITS.commandChars, { allowEmpty: true });
     case "command.ack": return hasOnlyKeys(value, ["type", "commandId", "ok", "message", "snapshot"])
       && isBoundedString(value.commandId, MISSION_PROTOCOL_LIMITS.idChars)
       && typeof value.ok === "boolean"

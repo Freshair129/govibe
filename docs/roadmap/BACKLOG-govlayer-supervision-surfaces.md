@@ -55,7 +55,7 @@ declares an `access_scope` ceiling per ADR-021.
 
 | ID | Parent ID | Type | Title | Priority | Owner | Status | Dependencies | Source Section |
 |---|---|---|---|---|---|---|---|---|
-| GLS-001 | SPR-GLS-01 | task | Agent Console MVP: sidecar PTY module, agent.session contract, A9 view | P0 | VIBE | ready | TASK-PRD-005 | Task Containers TC-GLS-001 |
+| GLS-001 | SPR-GLS-01 | task | Agent Console MVP: sidecar PTY module, agent.session contract, A9 view | P0 | VIBE | in-progress | TASK-PRD-005 | Task Containers TC-GLS-001 |
 | GLS-002 | SPR-GLS-02 | task | Mission Canvas read-only: A8 view rendering orchestration and workflow runs | P1 | VIBE | planned | GLS-001 | Task Containers TC-GLS-002 |
 | GLS-003 | SPR-GLS-02 | task | Mission Canvas governed actions: approve, rerun, assign with audit events | P2 | ARCHON | planned | GLS-002 | Task Containers TC-GLS-003 |
 | GLS-004 | SPR-GLS-01 | task | Node execution contract schema and STATE/contract generator with hook enforcement | P0 | ARCHON | planned | - | Task Containers TC-GLS-004 |
@@ -101,7 +101,7 @@ title: Agent Console MVP - sidecar PTY module, agent.session contract, A9 view
 requirement_type: FR
 complexity: C-3
 access_scope: H4
-status: ready
+status: in-progress
 version: 0.1.0+draft
 pic: VIBE
 executor: VIBE

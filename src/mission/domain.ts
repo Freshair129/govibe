@@ -1,6 +1,6 @@
 export type DomainId = "A" | "B" | "C" | "D";
 export type ViewId =
-  | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7"
+  | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7" | "A9"
   | "B1" | "B2" | "B3" | "B4"
   | "C1" | "C2" | "C3" | "C4" | "C5"
   | "D1" | "D2" | "D3";
@@ -277,6 +277,25 @@ export type MissionOrchestrationSnapshot = {
   updatedAt: string;
 };
 
+export type AgentSessionState = "running" | "exited";
+export type AgentSessionAccessScope = "H0" | "H1" | "H2" | "H3" | "H4";
+
+// Client-side cap for a session's terminal buffer. Must equal the runtime's
+// MISSION_PROTOCOL_LIMITS.sessionBufferChars so both sides converge on the
+// same ring-buffer content (parity is pinned by missionSessionContract.test).
+export const AGENT_SESSION_BUFFER_CHARS = 24000;
+
+export type AgentSessionRecord = {
+  id: string;
+  agentId: string;
+  cwd: string;
+  state: AgentSessionState;
+  accessScope: AgentSessionAccessScope;
+  startedAt: string;
+  buffer: string;
+  exitCode?: number | null;
+};
+
 export type UsageModelBreakdown = {
   percent: number;
   input_tokens: number;
@@ -331,6 +350,7 @@ export type MissionSnapshot = {
   providers?: Array<{ id: string; available: boolean; capabilities: string[] }>;
   memory?: MissionMemorySnapshot;
   usage?: UsageSnapshot;
+  sessions?: AgentSessionRecord[];
 };
 
 export type MissionEvent =
@@ -352,7 +372,9 @@ export type MissionEvent =
   | { type: "memory.selection"; entityId: string | null }
   | { type: "memory.forgotten"; entityId: string; vaultId: string | null }
   | { type: "memory.decay.result"; result: MissionMemoryDecayResult }
-  | { type: "usage.update"; usage: UsageSnapshot };
+  | { type: "usage.update"; usage: UsageSnapshot }
+  | { type: "sessions.update"; sessions: AgentSessionRecord[] }
+  | { type: "agent.session.output"; sessionId: string; data: string };
 
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
@@ -365,4 +387,8 @@ export type MissionCommand =
   | { type: "memory.search"; vaultId: string; query: string; mode?: "hybrid" | "fts" | "vector"; limit?: number }
   | { type: "memory.select"; entityId: string | null }
   | { type: "memory.forget"; entityId: string; reason: string }
-  | { type: "memory.decay.run"; vaultId: string; dryRun?: boolean };
+  | { type: "memory.decay.run"; vaultId: string; dryRun?: boolean }
+  | { type: "agent.session.start"; agent: string; cwd: string; accessScope: AgentSessionAccessScope; approvalRef?: string; cols?: number; rows?: number }
+  | { type: "agent.session.input"; sessionId: string; data: string }
+  | { type: "agent.session.stop"; sessionId: string }
+  | { type: "agent.session.resize"; sessionId: string; cols: number; rows: number };
