@@ -2,7 +2,7 @@
 title: "BACKLOG: Gov-Layer Supervision Surfaces (Mission Canvas + Agent Console)"
 doc_id: "BACKLOG-GOVLAYER-SUPERVISION-SURFACES"
 status: "draft"
-version: "0.1.2+draft"
+version: "0.1.3+draft"
 updated: "2026-08-17"
 owner: "LYRA"
 auditor: "ATHER"
@@ -58,7 +58,7 @@ declares an `access_scope` ceiling per ADR-021.
 | GLS-001 | SPR-GLS-01 | task | Agent Console MVP: sidecar PTY module, agent.session contract, A9 view | P0 | VIBE | done | TASK-PRD-005 | Task Containers TC-GLS-001 |
 | GLS-002 | SPR-GLS-02 | task | Mission Canvas read-only: A8 view rendering orchestration and workflow runs | P1 | VIBE | planned | GLS-001 | Task Containers TC-GLS-002 |
 | GLS-003 | SPR-GLS-02 | task | Mission Canvas governed actions: approve, rerun, assign with audit events | P2 | ARCHON | planned | GLS-002 | Task Containers TC-GLS-003 |
-| GLS-004 | SPR-GLS-01 | task | Node execution contract schema and STATE/contract generator with hook enforcement | P0 | ARCHON | planned | - | Task Containers TC-GLS-004 |
+| GLS-004 | SPR-GLS-01 | task | Node execution contract schema and STATE/contract generator with hook enforcement | P0 | ARCHON | done | - | Task Containers TC-GLS-004 |
 | GLS-005 | SPR-GLS-03 | task | PmAdapter contract: outbound-first plan projection to Notion and Jira class targets | P1 | ARCHON | planned | GLS-004 | Task Containers TC-GLS-005 |
 
 ## Assignments
@@ -75,8 +75,8 @@ declares an `access_scope` ceiling per ADR-021.
 
 | Task ID | From ID | To ID | Required Artifact | Note | Created At | State |
 |---|---|---|---|---|---|---|
-| GLS-001 | VIBE | Boss | ADR-029 ratification plus H4 session-authorization decision | Completed 2026-08-17: owner ratified ADR-029 to accepted (0.2.0) and authorized the H4 override for GLS-001 by explicit instruction in session | 2026-08-17T00:00:00Z | completed |
 | GLS-001 | VIBE | ATHER | Impact analysis over the changed MissionSnapshot contract | Completed 2026-08-17: `calculateWorkspaceImpact` run against #150's merge commit `1321013` on `main` (6 seeds, all mission-protocol/runtime/frontend contract surfaces GLS-001 touched) reports 9 `must_update` artifacts, all previously reviewed during implementation and re-verified unchanged post-merge; ~90 `review_and_update` artifacts, none contradicting the contract. Closed as owner-directed evidence review with Boss present in session and explicitly directing closure ("จัดการปิดงานให้หมด") — per the TASK-PRD-002 precedent, this is not an independent ATHER audit reproduction | 2026-08-17T00:00:00Z | completed |
+| GLS-004 | ARCHON | VIBE | Canvas defect-rendering for an invalid/missing node contract | GLS-004's DoD criterion "the canvas renders the node as a defect" is deferred, not fabricated: no Canvas exists yet to render anything. Whoever implements GLS-002/003 must consult scripts/docs/validate-roadmap-containers.mjs Checks 4-5 (or a live equivalent) and render a node lacking a schema-valid .govibe/node-contracts/&lt;task_id&gt;.json as a defect state | 2026-08-17T00:00:00Z | pending |
 
 ## Verification
 
@@ -85,7 +85,7 @@ declares an `access_scope` ceiling per ADR-021.
 | GLS-001 | passed | passed | n/a | 2026-08-17T00:00:00Z |
 | GLS-002 | pending | pending | n/a | 2026-08-17T00:00:00Z |
 | GLS-003 | pending | pending | n/a | 2026-08-17T00:00:00Z |
-| GLS-004 | pending | pending | n/a | 2026-08-17T00:00:00Z |
+| GLS-004 | passed | passed | n/a | 2026-08-17T00:00:00Z |
 | GLS-005 | pending | pending | n/a | 2026-08-17T00:00:00Z |
 
 ## Task Containers
@@ -241,37 +241,37 @@ title: Node execution contract schema and STATE/contract generator with hook enf
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: planned
+status: done
 pic: ARCHON
 executor: ARCHON
 approver: Boss
 auditor: ATHER
-version: 0.1.0+draft
+version: 0.2.0
 symbol_links:
-  code: scripts/docs/validate-roadmap-containers.mjs
+  code: scripts/mcp/runtime/node-contract-generator.mjs
   doc: docs/adr/ADR-029-Gov-Layer-Launcher-Console-Boundary.md
-  test: unavailable
+  test: scripts/mcp/runtime/node-contract-generator.test.mjs
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a plan source task, when the generator runs, then it materializes a node contract carrying node id, input and output edges, acceptance criteria, a deterministic exit gate command, a retry policy, and a rework policy, validated against a published schema
-      checked: false
+      checked: true
     - criterion: Given a node whose contract is missing or fails schema validation, when dispatch is attempted, then the dispatch is refused and the canvas renders the node as a defect
       checked: false
     - criterion: Given a node whose exit gate has not recorded passing evidence, when a handoff is attempted, then a hook blocks the handoff with the missing evidence named
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the retry policy fires, when the exit gate fails deterministically, then the work returns to the same executor with the tool output attached and any escalation moves exactly one tier rung per the SLM routing standard
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the composed change is complete, when npm run lint, npm test, and npm run roadmap:validate run, then all exit 0 and the generator output for one real backlog task is committed as evidence
-      checked: false
-changelog: Authored 2026-08-17 from the owner's mid-session directive that every node must carry an enforced contract (AC, exit gate, retry, rework) produced by a dedicated STATE/contract generator, applying the Execution Packet schema and tiered review cascade rather than inventing a competing schema.
+      checked: true
+changelog: Authored 2026-08-17 from the owner's mid-session directive that every node must carry an enforced contract (AC, exit gate, retry, rework) produced by a dedicated STATE/contract generator, applying the Execution Packet schema and tiered review cascade rather than inventing a competing schema. Implemented and closed the same day (schemas/Node_Execution_Contract_Schema.json; scripts/mcp/runtime/node-contract-generator.mjs; hook enforcement wired into scripts/docs/validate-roadmap-containers.mjs as Checks 4-5, scoped to this backlog only after a live-found bug showed the unscoped version hard-failing 17 already-closed masterplan tasks). Generated and committed real contracts for GLS-001, GLS-004, and GLS-005 under .govibe/node-contracts/. Criterion 2 is left unchecked on purpose: the gate-time dispatch-refusal half is implemented and verified (scripts/docs/validate-roadmap-containers.test.mjs), but "the canvas renders the node as a defect" cannot be true yet because Mission Canvas (GLS-002/003) does not exist — marking it checked now would be a fabricated claim.
 created_at: 2026-08-17T00:00:00Z,LYRA,pending
 token_telemetry:
-  model_name: claude-fable-5
+  model_name: claude-sonnet-5
   context_length: 200k
   predicted_token_usage: 30000
-  total_token_usage: 30000
+  total_token_usage: 55000
 ui_state:
   dropdown_default: expanded
   expanded: true
@@ -340,6 +340,7 @@ the command evidence the criterion names.
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.1.3+draft | 2026-08-17 | GLS-004 closed to done: schemas/Node_Execution_Contract_Schema.json authored; scripts/mcp/runtime/node-contract-generator.mjs generates and validates contracts from real Task Containers; scripts/docs/validate-roadmap-containers.mjs Checks 4-5 enforce contract validity and handoff evidence at gate time, scoped to this backlog only (an unscoped first pass hard-failed 17 already-closed masterplan tasks — fixed and pinned with a regression test before landing). Contracts for GLS-001, GLS-004, and GLS-005 generated and committed under .govibe/node-contracts/. Criterion "the canvas renders the node as a defect" stays unchecked and handed off to GLS-002/003 — Canvas does not exist yet. |
 | 0.1.2+draft | 2026-08-17 | GLS-001 closed to done on owner-directed evidence review (Boss present in session, explicit closure instruction): all DoD criteria ticked with command/test evidence, verification set to passed/passed, the ATHER impact-analysis handoff completed with a fresh calculateWorkspaceImpact run against merged main. GLS-001 shipped via PR #150 (squash commit 1321013). |
 | 0.1.1+draft | 2026-08-17 | Owner ratified ADR-029 and authorized the H4 override: the GLS-001 ratification handoff is completed and GLS-001 moves planned → ready. No DoD criterion is ticked by this change. |
 | 0.1.0+draft | 2026-08-17 | Initial backlog authored from ADR-029: five tasks (Console MVP, Canvas read-only, Canvas actions, node contract schema + generator, PmAdapter outbound projection) with containers, assignments, and the pending owner handoff gating implementation. |

@@ -10,18 +10,36 @@
 //                           as a node in the same source (external refs / file paths are skipped).
 //   3. Criteria testability (WARNING-ONLY) — acceptance/success/exit criteria that exactly match
 //                           a known generic boilerplate set trigger a warning suggesting Given/When/Then.
+//   4. Node contract required — ADR-029 §5: a task past "ready" (in-progress/assigned/review/done)
+//                           must have a schema-valid .govibe/node-contracts/<task_id>.json. This is
+//                           the gate-time analog of "dispatch is refused without a valid contract" —
+//                           the only enforcement point that exists before a live dispatcher does.
+//   5. Handoff evidence gate — ADR-029 §5: a completed handoff whose Required Artifact references
+//                           exit-gate/contract evidence must point at a contract with a recorded pass.
+//
+// Checks 4-5 apply only to NODE_CONTRACT_GOVERNED_SOURCES: ADR-029 introduced the node-contract
+// requirement for the Gov-Layer Supervision Surfaces backlog specifically. Applying it retroactively
+// to every historical roadmap source would hard-fail years of already-approved, already-closed work
+// for a rule that did not exist when that work closed — scope stays with what the ADR governs.
 
 import { readdir, readFile } from "node:fs/promises";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { parseRoadmapSource } from "../mcp/roadmap-parser.mjs";
+import { validateNodeContract } from "../mcp/runtime/node-contract-generator.mjs";
 
 const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const roadmapDir = path.join(workspaceRoot, "docs", "roadmap");
+const nodeContractsDir = path.join(workspaceRoot, ".govibe", "node-contracts");
 const roadmapFilePattern = /^(MASTERPLAN|ROADMAP|BACKLOG|SPRINT)-.+\.(md|html)$/i;
 const UNAVAILABLE = "unavailable";
+// Normalized WorkflowTaskState values (roadmap-parser.mjs mapWorkflowState output, not the raw
+// table text) meaning a task has been dispatched or finished rather than merely queued.
+export const DISPATCHED_STATUSES = new Set(["in_progress", "assigned", "qa_review", "audit_review", "done"]);
+export const EVIDENCE_ARTIFACT_PATTERN = /exit[ -]?gate|contract evidence/i;
+export const NODE_CONTRACT_GOVERNED_SOURCES = new Set(["BACKLOG-govlayer-supervision-surfaces.md"]);
 
 // Generic boilerplate criterion texts (case-insensitive exact match) flagged by the testability check.
 const BOILERPLATE_CRITERIA = new Set([
@@ -53,6 +71,18 @@ function isExternalRef(depId, sourceIdFamilies) {
   if (/[\\/]/.test(depId) || /\.[a-z0-9]+$/i.test(depId.trim())) return true;
   const family = depId.split("-")[0].toUpperCase();
   return !sourceIdFamilies.has(family);
+}
+
+// Loads and JSON-parses the generated contract for a task_id from the fixed
+// .govibe/node-contracts/ location. Never throws — callers branch on `error`.
+function loadNodeContract(taskId) {
+  const contractPath = path.join(nodeContractsDir, `${taskId}.json`);
+  if (!existsSync(contractPath)) return { contract: null, error: "missing (no .govibe/node-contracts/<task_id>.json)" };
+  try {
+    return { contract: JSON.parse(readFileSync(contractPath, "utf8")), error: null };
+  } catch (error) {
+    return { contract: null, error: `not valid JSON (${error.message})` };
+  }
 }
 
 async function validateSource(fileName) {
@@ -122,6 +152,41 @@ async function validateSource(fileName) {
           `Consider replacing with testable Given/When/Then acceptance criteria.`,
         );
       }
+
+      // Check 4 — Node contract required for a dispatched task (ADR-029 §5, scoped to the sources
+      // that ADR governs). This is the gate-time enforcement point standing in for a live dispatcher:
+      // a task the board shows as in-progress or beyond must carry a schema-valid generated contract,
+      // or it is flagged as a defect here — the same signal the Mission Canvas will eventually render
+      // inline.
+      if (NODE_CONTRACT_GOVERNED_SOURCES.has(fileName) && DISPATCHED_STATUSES.has(task.state)) {
+        const { contract, error: contractError } = loadNodeContract(task.id);
+        if (contractError) {
+          report(`${rel}: backlog task '${task.id}' is ${task.state} but its node execution contract is ${contractError} (ADR-029 §5 requires a schema-valid contract before dispatch).`);
+        } else {
+          const { valid, errors: schemaErrors } = validateNodeContract(contract);
+          if (!valid) {
+            report(`${rel}: backlog task '${task.id}' has a node execution contract that fails schema validation: ${schemaErrors.join("; ")}`);
+          }
+        }
+      }
+    }
+
+    // Check 5 — Handoff evidence gate (ADR-029 §5, same scope as Check 4). A completed handoff whose
+    // Required Artifact references exit-gate/contract evidence must point at a contract that actually
+    // recorded a pass — the hook that "blocks the handoff with the missing evidence named".
+    if (NODE_CONTRACT_GOVERNED_SOURCES.has(fileName)) {
+      for (const handoff of snapshot.handoffs ?? []) {
+        const isCompleted = String(handoff.state ?? "").trim().toLowerCase() === "completed";
+        if (!isCompleted || !EVIDENCE_ARTIFACT_PATTERN.test(handoff.requiredArtifact ?? "")) continue;
+        const { contract, error: contractError } = loadNodeContract(handoff.taskId);
+        if (contractError) {
+          report(`${rel}: handoff for '${handoff.taskId}' is completed and its Required Artifact references exit-gate evidence, but the node contract is ${contractError}.`);
+          continue;
+        }
+        if (contract.exit_gate?.evidence?.passed !== true) {
+          report(`${rel}: handoff for '${handoff.taskId}' is completed and requires exit-gate evidence, but the contract's exit_gate.evidence.passed is not true.`);
+        }
+      }
     }
   }
 
@@ -180,7 +245,13 @@ async function main() {
   console.log("PASS: all declared Task Containers are complete and link to real artifacts.");
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+// Guarded so importing this module for its exports (e.g. from a test) never
+// triggers the CLI scan / process.exit as a side effect of import.
+const isDirectRun = process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href;
+
+if (isDirectRun) {
+  main().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}

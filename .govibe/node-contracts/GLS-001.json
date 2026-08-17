@@ -1,0 +1,57 @@
+{
+  "schema": "govibe-node-contract/v1",
+  "node_id": "GLS-001",
+  "task_id": "GLS-001",
+  "source": {
+    "path": "docs/roadmap/BACKLOG-govlayer-supervision-surfaces.md",
+    "task_container_id": "TC-GLS-001"
+  },
+  "generated_at": "2026-08-17T02:26:44.331Z",
+  "inputs": [
+    {
+      "ref": "TASK-PRD-005",
+      "kind": "payload"
+    }
+  ],
+  "outputs": [],
+  "acceptance_criteria": [
+    {
+      "criterion": "Given the sidecar is running, when a start command names an allowlisted binary and a client workspace root, then a PTY session spawns, its output streams to the A9 view, and a stop command terminates the process",
+      "checked": true
+    },
+    {
+      "criterion": "Given a start command names a binary outside the allowlist, when the sidecar receives it, then the command is rejected with an explanatory error and no process is spawned",
+      "checked": true
+    },
+    {
+      "criterion": "Given a session is running, when the snapshot is read from either the TypeScript contract or the runtime, then the sessions slice reports the same fields on both sides",
+      "checked": true
+    },
+    {
+      "criterion": "Given a session declares an access_scope ceiling at start, when the A9 view renders it, then the ceiling is visible and an H4 session cannot start without a recorded owner approval",
+      "checked": true
+    },
+    {
+      "criterion": "Given the composed change is complete, when npm run lint, npm test, and npm run mcp:smoke run, then all exit 0 and the impact analysis over the changed contract paths is attached to the handoff",
+      "checked": true
+    }
+  ],
+  "exit_gate": {
+    "commands": [
+      "npm run lint",
+      "npx vitest run scripts/mcp/runtime/agent-session-service.test.mjs"
+    ],
+    "evidence": {
+      "passed": true,
+      "recorded_at": "2026-08-17T02:26:44.331Z",
+      "command_output_ref": "post-rebase re-verification 2026-08-17: npm run lint && npx vitest run scripts/mcp/runtime/agent-session-service.test.mjs -> exit 0"
+    }
+  },
+  "retry": {
+    "max_attempts": 3,
+    "escalation": "T0"
+  },
+  "rework": {
+    "policy": "return-to-executor-with-tool-output"
+  }
+}

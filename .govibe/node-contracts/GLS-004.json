@@ -1,0 +1,52 @@
+{
+  "schema": "govibe-node-contract/v1",
+  "node_id": "GLS-004",
+  "task_id": "GLS-004",
+  "source": {
+    "path": "docs/roadmap/BACKLOG-govlayer-supervision-surfaces.md",
+    "task_container_id": "TC-GLS-004"
+  },
+  "generated_at": "2026-08-17T02:26:44.336Z",
+  "inputs": [],
+  "outputs": [],
+  "acceptance_criteria": [
+    {
+      "criterion": "Given a plan source task, when the generator runs, then it materializes a node contract carrying node id, input and output edges, acceptance criteria, a deterministic exit gate command, a retry policy, and a rework policy, validated against a published schema",
+      "checked": true
+    },
+    {
+      "criterion": "Given a node whose contract is missing or fails schema validation, when dispatch is attempted, then the dispatch is refused and the canvas renders the node as a defect",
+      "checked": false
+    },
+    {
+      "criterion": "Given a node whose exit gate has not recorded passing evidence, when a handoff is attempted, then a hook blocks the handoff with the missing evidence named",
+      "checked": true
+    },
+    {
+      "criterion": "Given the retry policy fires, when the exit gate fails deterministically, then the work returns to the same executor with the tool output attached and any escalation moves exactly one tier rung per the SLM routing standard",
+      "checked": true
+    },
+    {
+      "criterion": "Given the composed change is complete, when npm run lint, npm test, and npm run roadmap:validate run, then all exit 0 and the generator output for one real backlog task is committed as evidence",
+      "checked": true
+    }
+  ],
+  "exit_gate": {
+    "commands": [
+      "npm run lint",
+      "npx vitest run scripts/mcp/runtime/node-contract-generator.test.mjs"
+    ],
+    "evidence": {
+      "passed": true,
+      "recorded_at": "2026-08-17T02:26:44.336Z",
+      "command_output_ref": "post-rebase re-verification 2026-08-17: npm run lint && npx vitest run scripts/mcp/runtime/node-contract-generator.test.mjs -> exit 0"
+    }
+  },
+  "retry": {
+    "max_attempts": 3,
+    "escalation": "T0"
+  },
+  "rework": {
+    "policy": "return-to-executor-with-tool-output"
+  }
+}
