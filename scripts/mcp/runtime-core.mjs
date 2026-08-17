@@ -10,6 +10,7 @@ import { MissionCommandRouter } from "./runtime/mission-command-router.mjs";
 import { MemoryService } from "./runtime/memory-service.mjs";
 import { AgentSessionService } from "./runtime/agent-session-service.mjs";
 import { WorkflowNodeActionService } from "./runtime/workflow-node-action-service.mjs";
+import { PmExportService } from "./runtime/pm-export-service.mjs";
 import { WorkspaceService } from "./runtime/workspace-service.mjs";
 import { TranslatorService } from "./runtime/translator-service.mjs";
 import { OrchestrationService } from "./runtime/orchestration-service.mjs";
@@ -88,6 +89,7 @@ export class GovibeRuntime {
     this.memoryService = new MemoryService({ snapshotStore: this.snapshotStore, mspClient: this.mspClient });
     this.agentSessionService = options.agentSessionService ?? new AgentSessionService({ store: this.snapshotStore, allowedRoots: this.allowedWorkspaceRoots });
     this.workflowNodeActionService = options.workflowNodeActionService ?? new WorkflowNodeActionService({ store: this.snapshotStore, applyRoadmapMutation: (args) => this.applyRoadmapMutation(args), getSnapshot: () => this.snapshot });
+    this.pmExportService = options.pmExportService ?? new PmExportService({ getSnapshot: () => this.snapshot });
     this.commandRouter = new MissionCommandRouter(this);
   }
 
@@ -258,6 +260,9 @@ export class GovibeRuntime {
   resizeAgentSession(args = {}) { return this.agentSessionService.resize(args); }
 
   async applyWorkflowNodeAction(args = {}) { return this.workflowNodeActionService.apply(args); }
+
+  async exportPmTask(args = {}) { return this.pmExportService.exportTask(args); }
+  async syncPmObserved(args = {}) { return this.pmExportService.syncObserved(args); }
 
   async handleMissionCommand(command) {
     return this.commandRouter.route(command);

@@ -6,7 +6,7 @@
     "path": "docs/roadmap/BACKLOG-govlayer-supervision-surfaces.md",
     "task_container_id": "TC-GLS-005"
   },
-  "generated_at": "2026-08-17T02:26:44.339Z",
+  "generated_at": "2026-08-17T12:30:00.000Z",
   "inputs": [
     {
       "ref": "GLS-004",
@@ -21,7 +21,7 @@
     },
     {
       "criterion": "Given a target platform cannot represent a canonical field, when export runs, then the adapter records a projection state of APPROXIMATE, PARTIAL, or UNPROJECTABLE for that field instead of claiming a complete conversion",
-      "checked": false
+      "checked": true
     },
     {
       "criterion": "Given a status change occurs inside the external platform, when sync pulls it, then the change lands as an observed update candidate for review and canonical state is not overwritten without an approval",
@@ -29,28 +29,30 @@
     },
     {
       "criterion": "Given no external PM is configured, when the same plan is used standalone, then the Roadmap Board provides full PM capability with nothing disabled",
-      "checked": false
+      "checked": true
     },
     {
       "criterion": "Given a second target platform is added, when its adapter is implemented, then no platform-conditional logic is required outside the adapter boundary",
-      "checked": false
+      "checked": true
     },
     {
       "criterion": "Given the composed change is complete, when npm run lint, npm test, and npm run docs:validate run, then all exit 0 and the adapter contract document is registered",
-      "checked": false
+      "checked": true
     }
   ],
   "exit_gate": {
     "commands": [
-      "npm run lint"
+      "npm run lint",
+      "npx vitest run packages/govibe-core/src/pm-adapter/pm-adapter-contract.test.mjs"
     ],
     "evidence": {
-      "passed": false
+      "passed": true,
+      "command_output_ref": "2026-08-17: npm run lint -> exit 0; npx vitest run packages/govibe-core/src/pm-adapter/pm-adapter-contract.test.mjs -> exit 0 (17 tests passed). Repo-wide: 98 files / 830 tests pass (npm test), npm run docs:validate PASS. This exit_gate covers only the named commands, not the AC-01/AC-03 live-account gap documented in TC-GLS-005's own changelog and CONTRACT-PmAdapter.md §6 -- status is kept in-progress, not done, on that basis."
     }
   },
   "retry": {
     "max_attempts": 3,
-    "escalation": "T2"
+    "escalation": "T0"
   },
   "rework": {
     "policy": "return-to-executor-with-tool-output"

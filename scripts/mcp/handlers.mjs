@@ -279,6 +279,39 @@ export async function handleToolCall(name, args = {}) {
         structuredContent: { ...result },
       };
     }
+    case "govibe.pm.export": {
+      const result = await govibeRuntime.exportPmTask(args);
+      return {
+        content: asTextContent(
+          [
+            "GoVibe PM export projected a canonical task outbound.",
+            "",
+            `actor: ${args.actor ?? "unknown"}`,
+            `taskId: ${args.taskId ?? "n/a"}`,
+            `platform: ${args.platform ?? "n/a"}`,
+            `externalId: ${result.externalId ?? "n/a"}`,
+            `url: ${result.url ?? "n/a"}`,
+            `fieldProjections: ${(result.fieldProjections ?? []).map((p) => `${p.field}=${p.state}`).join(", ")}`,
+          ].join("\n"),
+        ),
+        structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) },
+      };
+    }
+    case "govibe.pm.sync": {
+      const candidates = await govibeRuntime.syncPmObserved(args);
+      return {
+        content: asTextContent(
+          [
+            "GoVibe PM sync returned observed update candidates for review (canonical state not modified).",
+            "",
+            `actor: ${args.actor ?? "unknown"}`,
+            `platform: ${args.platform ?? "n/a"}`,
+            `candidates: ${candidates.length}`,
+          ].join("\n"),
+        ),
+        structuredContent: { capability: name, candidates, auditRef: buildAuditRef(name) },
+      };
+    }
     case "govibe.render": {
       const result = govibeRuntime.renderDocument(args);
       return {

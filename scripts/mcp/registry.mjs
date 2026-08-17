@@ -257,6 +257,33 @@ export const toolCatalog = [
     },
   },
   {
+    name: "govibe.pm.export",
+    description: "Project a canonical roadmap task outbound to a configured PM platform (Notion, Jira). Fails closed with pm_connector_unconfigured if no connectorConfig is supplied -- never fabricates a successful export.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+        taskId: { type: "string" },
+        platform: { type: "string", enum: ["notion", "jira"] },
+        connectorConfig: { type: "object" },
+      },
+      required: ["actor", "taskId", "platform"],
+    },
+  },
+  {
+    name: "govibe.pm.sync",
+    description: "Pull external changes from a configured PM platform as observed update candidates for review. Never overwrites canonical roadmap state.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        actor: { type: "string" },
+        platform: { type: "string", enum: ["notion", "jira"] },
+        connectorConfig: { type: "object" },
+      },
+      required: ["actor", "platform"],
+    },
+  },
+  {
     name: "govibe.render",
     description: "Render a document from governed knowledge references into a target template, gated by round-trip and semantic fidelity checks.",
     inputSchema: {
