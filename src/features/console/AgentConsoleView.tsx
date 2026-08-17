@@ -129,15 +129,18 @@ export function AgentConsoleView({ snapshot, send }: { snapshot: MissionSnapshot
   const [approvalRef, setApprovalRef] = useState("");
 
   const selected = sessions.find((session) => session.id === selectedId) ?? sessions[0];
+  // Mirrors the sidecar's own H4 gate (ADR-029 §4) so the control reflects
+  // what will actually happen instead of failing silently after the click.
+  const missingApproval = accessScope === "H4" && !approvalRef.trim();
 
   const startSession = () => {
-    if (!cwd.trim()) return;
+    if (!cwd.trim() || missingApproval) return;
     send({
       type: "agent.session.start",
       agent,
       cwd: cwd.trim(),
       accessScope,
-      ...(accessScope === "H4" && approvalRef.trim() ? { approvalRef: approvalRef.trim() } : {}),
+      ...(accessScope === "H4" ? { approvalRef: approvalRef.trim() } : {}),
     });
   };
 
@@ -169,7 +172,9 @@ export function AgentConsoleView({ snapshot, send }: { snapshot: MissionSnapshot
             style={{ flex: "1 1 200px" }}
           />
         )}
-        <button type="button" onClick={startSession} disabled={!cwd.trim()}>Start session</button>
+        <button type="button" onClick={startSession} disabled={!cwd.trim() || missingApproval} title={missingApproval ? "H4 sessions require an owner approval reference (ADR-029 §4)" : undefined}>
+          Start session
+        </button>
       </section>
       {sessions.length === 0 ? (
         <EmptyState

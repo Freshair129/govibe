@@ -2,7 +2,7 @@
 title: "BACKLOG: Gov-Layer Supervision Surfaces (Mission Canvas + Agent Console)"
 doc_id: "BACKLOG-GOVLAYER-SUPERVISION-SURFACES"
 status: "draft"
-version: "0.1.1+draft"
+version: "0.1.2+draft"
 updated: "2026-08-17"
 owner: "LYRA"
 auditor: "ATHER"
@@ -55,7 +55,7 @@ declares an `access_scope` ceiling per ADR-021.
 
 | ID | Parent ID | Type | Title | Priority | Owner | Status | Dependencies | Source Section |
 |---|---|---|---|---|---|---|---|---|
-| GLS-001 | SPR-GLS-01 | task | Agent Console MVP: sidecar PTY module, agent.session contract, A9 view | P0 | VIBE | in-progress | TASK-PRD-005 | Task Containers TC-GLS-001 |
+| GLS-001 | SPR-GLS-01 | task | Agent Console MVP: sidecar PTY module, agent.session contract, A9 view | P0 | VIBE | done | TASK-PRD-005 | Task Containers TC-GLS-001 |
 | GLS-002 | SPR-GLS-02 | task | Mission Canvas read-only: A8 view rendering orchestration and workflow runs | P1 | VIBE | planned | GLS-001 | Task Containers TC-GLS-002 |
 | GLS-003 | SPR-GLS-02 | task | Mission Canvas governed actions: approve, rerun, assign with audit events | P2 | ARCHON | planned | GLS-002 | Task Containers TC-GLS-003 |
 | GLS-004 | SPR-GLS-01 | task | Node execution contract schema and STATE/contract generator with hook enforcement | P0 | ARCHON | planned | - | Task Containers TC-GLS-004 |
@@ -76,13 +76,13 @@ declares an `access_scope` ceiling per ADR-021.
 | Task ID | From ID | To ID | Required Artifact | Note | Created At | State |
 |---|---|---|---|---|---|---|
 | GLS-001 | VIBE | Boss | ADR-029 ratification plus H4 session-authorization decision | Completed 2026-08-17: owner ratified ADR-029 to accepted (0.2.0) and authorized the H4 override for GLS-001 by explicit instruction in session | 2026-08-17T00:00:00Z | completed |
-| GLS-001 | VIBE | ATHER | Impact analysis over the changed MissionSnapshot contract | agent.session.* commands/events and the sessions slice change the shared contract; reverse-dependency impact runs before the task closes | 2026-08-17T00:00:00Z | pending |
+| GLS-001 | VIBE | ATHER | Impact analysis over the changed MissionSnapshot contract | Completed 2026-08-17: `calculateWorkspaceImpact` run against #150's merge commit `1321013` on `main` (6 seeds, all mission-protocol/runtime/frontend contract surfaces GLS-001 touched) reports 9 `must_update` artifacts, all previously reviewed during implementation and re-verified unchanged post-merge; ~90 `review_and_update` artifacts, none contradicting the contract. Closed as owner-directed evidence review with Boss present in session and explicitly directing closure ("จัดการปิดงานให้หมด") — per the TASK-PRD-002 precedent, this is not an independent ATHER audit reproduction | 2026-08-17T00:00:00Z | completed |
 
 ## Verification
 
 | Task ID | QA Status | Audit Status | Deployment Status | Updated At |
 |---|---|---|---|---|
-| GLS-001 | pending | pending | n/a | 2026-08-17T00:00:00Z |
+| GLS-001 | passed | passed | n/a | 2026-08-17T00:00:00Z |
 | GLS-002 | pending | pending | n/a | 2026-08-17T00:00:00Z |
 | GLS-003 | pending | pending | n/a | 2026-08-17T00:00:00Z |
 | GLS-004 | pending | pending | n/a | 2026-08-17T00:00:00Z |
@@ -101,37 +101,37 @@ title: Agent Console MVP - sidecar PTY module, agent.session contract, A9 view
 requirement_type: FR
 complexity: C-3
 access_scope: H4
-status: in-progress
-version: 0.1.0+draft
+status: done
+version: 0.2.0
 pic: VIBE
 executor: VIBE
 approver: Boss
 auditor: ATHER
 symbol_links:
-  code: scripts/mcp/sidecar-server.mjs
+  code: scripts/mcp/runtime/agent-session-service.mjs
   doc: docs/adr/ADR-029-Gov-Layer-Launcher-Console-Boundary.md
-  test: unavailable
+  test: scripts/mcp/runtime/agent-session-service.test.mjs
 definition_of_done:
   acceptance_criteria:
     - criterion: Given the sidecar is running, when a start command names an allowlisted binary and a client workspace root, then a PTY session spawns, its output streams to the A9 view, and a stop command terminates the process
-      checked: false
+      checked: true
     - criterion: Given a start command names a binary outside the allowlist, when the sidecar receives it, then the command is rejected with an explanatory error and no process is spawned
-      checked: false
+      checked: true
     - criterion: Given a session is running, when the snapshot is read from either the TypeScript contract or the runtime, then the sessions slice reports the same fields on both sides
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given a session declares an access_scope ceiling at start, when the A9 view renders it, then the ceiling is visible and an H4 session cannot start without a recorded owner approval
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the composed change is complete, when npm run lint, npm test, and npm run mcp:smoke run, then all exit 0 and the impact analysis over the changed contract paths is attached to the handoff
-      checked: false
-changelog: Authored 2026-08-17 from ADR-029 phase 1 (Agent Console MVP). Owner ratified ADR-029 (0.2.0 accepted) and authorized the H4 override the same day; the ratification handoff is completed and the task is ready. The impact-analysis handoff to ATHER remains open and gates task closure, not task start.
+      checked: true
+changelog: Authored 2026-08-17 from ADR-029 phase 1 (Agent Console MVP). Owner ratified ADR-029 (0.2.0 accepted) and authorized the H4 override the same day. Merged to main via PR #150 (squash commit 1321013) after live verification with the real Claude Code CLI (fit-addon geometry, headless-xterm screen serialization, chunked/paste-wrapped input, Windows cmd.exe shim spawning) and a green baseline (lint, 85 files / 710 vitest + 70 node tests, mcp:smoke, build). Closed 2026-08-17 on owner-directed evidence review (Boss present in session, explicit closure instruction) per the TASK-PRD-002 precedent, with a fresh calculateWorkspaceImpact run against the merged commit attached to the ATHER handoff above.
 created_at: 2026-08-17T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: claude-fable-5
   context_length: 200k
   predicted_token_usage: 60000
-  total_token_usage: 60000
+  total_token_usage: 95000
 ui_state:
   dropdown_default: expanded
   expanded: true
@@ -340,5 +340,6 @@ the command evidence the criterion names.
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.1.2+draft | 2026-08-17 | GLS-001 closed to done on owner-directed evidence review (Boss present in session, explicit closure instruction): all DoD criteria ticked with command/test evidence, verification set to passed/passed, the ATHER impact-analysis handoff completed with a fresh calculateWorkspaceImpact run against merged main. GLS-001 shipped via PR #150 (squash commit 1321013). |
 | 0.1.1+draft | 2026-08-17 | Owner ratified ADR-029 and authorized the H4 override: the GLS-001 ratification handoff is completed and GLS-001 moves planned → ready. No DoD criterion is ticked by this change. |
 | 0.1.0+draft | 2026-08-17 | Initial backlog authored from ADR-029: five tasks (Console MVP, Canvas read-only, Canvas actions, node contract schema + generator, PmAdapter outbound projection) with containers, assignments, and the pending owner handoff gating implementation. |
