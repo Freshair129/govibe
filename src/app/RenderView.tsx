@@ -5,6 +5,7 @@ import { CampaignLogsView } from "../features/benchmark/CampaignLogsView";
 import { Heatmap } from "../features/benchmark/Heatmap";
 import { ReactorRunTrigger } from "../features/benchmark/ReactorRunTrigger";
 import { CapabilityPlugins } from "../features/capabilities/CapabilityPlugins";
+import { MissionCanvasView } from "../features/canvas/MissionCanvasView";
 import { AgentConsoleView } from "../features/console/AgentConsoleView";
 import { ContextOperationsView } from "../features/context/ContextOperationsView";
 import { RealTimeDashboard } from "../features/dashboard/RealTimeDashboard";
@@ -26,12 +27,14 @@ export function RenderView({
   theme,
   send,
   ingest,
+  onNavigate,
 }: {
   activeView: ViewId;
   snapshot: MissionSnapshot;
   theme: ThemeMode;
   send: (command: MissionCommand) => void;
   ingest: (json: string) => void;
+  onNavigate: (view: ViewId) => void;
 }) {
   if (activeView === "A1") return <RealTimeDashboard snapshot={snapshot} theme={theme} send={send} />;
   if (activeView === "A2") return <RoadmapBoard snapshot={snapshot} send={send} />;
@@ -40,6 +43,7 @@ export function RenderView({
   if (activeView === "A5") return <AgentManagement snapshot={snapshot} send={send} />;
   if (activeView === "A6") return <ReadinessControlView snapshot={snapshot} send={send} />;
   if (activeView === "A7") return <TokenMonitorView snapshot={snapshot} />;
+  if (activeView === "A8") return <MissionCanvasView snapshot={snapshot} onNavigate={onNavigate} />;
   if (activeView === "A9") return <AgentConsoleView snapshot={snapshot} send={send} />;
   if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;
   if (activeView === "B2") return <BusinessSpecificationsView snapshot={snapshot} />;

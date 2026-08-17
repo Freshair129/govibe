@@ -97,7 +97,7 @@ export function App() {
         />
         <main onScroll={handleScroll}>
           <StatusBar connectionLabel={connectionLabel} updatedAt={snapshot.updatedAt} />
-          <RenderView activeView={activeView} snapshot={snapshot} theme={theme} send={send} ingest={ingest} />
+          <RenderView activeView={activeView} snapshot={snapshot} theme={theme} send={send} ingest={ingest} onNavigate={setActiveView} />
         </main>
       </div>
       <footer>
