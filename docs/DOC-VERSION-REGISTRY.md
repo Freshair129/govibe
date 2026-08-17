@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.48+draft"
+version: "0.3.49+draft"
 updated: "2026-08-17"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.48+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.49+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -43,6 +43,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.6.0+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
 | SRS | `SRS-CANONICAL-SEMANTIC-IR` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/srs/SRS-Canonical-Semantic-IR.md` |
 | Integration Contract | `CONTRACT-GOVIBE-GENESISBLOCKDB-ADAPTER` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/integration/CONTRACT-GenesisBlockDB-Adapter.md` |
+| Reference | `REFERENCE-NOTION-JIRA-CONNECTOR-REQUIREMENTS` | `0.1.0+draft` | draft | ARCHON | `docs/integration/REFERENCE-Notion-Jira-Connector-Requirements.md` |
 | API | `API-004-TASK-SCOPED-CONTEXT-PACKET-SCHEMA` | `0.3.0` | approved | ARCHON / ATHER | `docs/api/API-004-Task-Scoped-Context-Packet-Schema.md` |
 | API | `API-005-GOVIBE-CAPABILITY-CONTRACTS` | `3.1.0` | approved | Boss / ATHER | `docs/api/API-005-GoVibe-Capability-Contracts.md` |
 | API | `API-006-VAULT-CONTEXT-REPLAY-CONTRACTS` | `1.1.0` | approved | Boss / ATHER | `docs/api/API-006-Vault-Context-and-Replay-Contracts.md` |
@@ -229,6 +230,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.49+draft | 2026-08-17 | Claude Sonnet 5 | Registered REFERENCE-NOTION-JIRA-CONNECTOR-REQUIREMENTS (draft): OAuth/scope/rate-limit research for GLS-005's PmAdapter, authored on user request while GLS-004's CI ran. Research only, not a design decision. |
 | 0.3.48+draft | 2026-08-17 | Claude Sonnet 5 | GLS-004 closure row: BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.3+draft (node execution contract schema, generator, and gate-time hook enforcement landed and GLS-004 closed to done). Owner-directed closure (Boss present, "จัดการปิดงานให้หมด"), not an independent ATHER audit reproduction. |
 | 0.3.47+draft | 2026-08-17 | Claude Sonnet 5 | GLS-001 closure row: BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.2+draft (GLS-001 done, ATHER impact-analysis handoff completed with a fresh calculateWorkspaceImpact run against merged main). Owner-directed closure (Boss present, explicit instruction), not an independent ATHER audit reproduction. |
 | 0.3.46+draft | 2026-08-17 | Claude Fable 5 | Ratification row, by explicit owner (Boss, ratification authority) instruction in session: ADR-029-GOV-LAYER-LAUNCHER-CONSOLE-BOUNDARY 0.1.0+draft → 0.2.0 accepted, with the H4 override for GLS-001 authorized in the same decision; BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.1+draft (GLS-001 ratification handoff completed, task planned → ready). This row DOES change ADR-029 to accepted, on owner authority. |
