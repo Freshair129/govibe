@@ -115,6 +115,7 @@ export type MissionEvent =
   | { type: "graph.update"; graph: Record<string, unknown> }
   | { type: "heatmap.update"; heatmap: Record<string, unknown> }
   | { type: "roadmap.snapshot"; roadmap: Record<string, unknown> }
+  | { type: "dag.update"; dag: Record<string, unknown> }
   | { type: "roadmap.node.update"; node: Record<string, unknown> & { id: string } }
   | { type: "roadmap.assignment"; assignment: Record<string, unknown> & { taskId: string } }
   | { type: "roadmap.handoff"; handoff: Record<string, unknown> & { taskId: string } }
