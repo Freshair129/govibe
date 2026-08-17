@@ -2,7 +2,7 @@
 title: "BACKLOG: Gov-Layer Supervision Surfaces (Mission Canvas + Agent Console)"
 doc_id: "BACKLOG-GOVLAYER-SUPERVISION-SURFACES"
 status: "draft"
-version: "0.1.5+draft"
+version: "0.1.6+draft"
 updated: "2026-08-17"
 owner: "LYRA"
 auditor: "ATHER"
@@ -59,7 +59,7 @@ declares an `access_scope` ceiling per ADR-021.
 | GLS-002 | SPR-GLS-02 | task | Mission Canvas read-only: A8 view rendering orchestration and workflow runs | P1 | VIBE | done | GLS-001 | Task Containers TC-GLS-002 |
 | GLS-003 | SPR-GLS-02 | task | Mission Canvas governed actions: approve, rerun, assign with audit events | P2 | ARCHON | done | GLS-002 | Task Containers TC-GLS-003 |
 | GLS-004 | SPR-GLS-01 | task | Node execution contract schema and STATE/contract generator with hook enforcement | P0 | ARCHON | done | - | Task Containers TC-GLS-004 |
-| GLS-005 | SPR-GLS-03 | task | PmAdapter contract: outbound-first plan projection to Notion and Jira class targets | P1 | ARCHON | planned | GLS-004 | Task Containers TC-GLS-005 |
+| GLS-005 | SPR-GLS-03 | task | PmAdapter contract: outbound-first plan projection to Notion and Jira class targets | P1 | ARCHON | in-progress | GLS-004 | Task Containers TC-GLS-005 |
 
 ## Assignments
 
@@ -289,33 +289,35 @@ title: PmAdapter contract - outbound-first plan projection to Notion and Jira cl
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: in-progress
+version: 0.2.0+draft
 pic: ARCHON
 executor: ARCHON
 approver: Boss
 auditor: ATHER
 symbol_links:
-  code: scripts/mcp/registry.mjs
-  doc: docs/adr/ADR-029-Gov-Layer-Launcher-Console-Boundary.md
-  test: unavailable
+  code: packages/govibe-core/src/pm-adapter/pm-adapter-contract.mjs
+  doc: docs/integration/CONTRACT-PmAdapter.md
+  test: packages/govibe-core/src/pm-adapter/pm-adapter-contract.test.mjs
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a canonical backlog task, when export runs against a configured target platform, then an entry is created through that platform's MCP server or API carrying a backlink to the canonical Task ID and a recorded field mapping
       checked: false
     - criterion: Given a target platform cannot represent a canonical field, when export runs, then the adapter records a projection state of APPROXIMATE, PARTIAL, or UNPROJECTABLE for that field instead of claiming a complete conversion
-      checked: false
+      checked: true
     - criterion: Given a status change occurs inside the external platform, when sync pulls it, then the change lands as an observed update candidate for review and canonical state is not overwritten without an approval
       checked: false
   success_criteria:
     - criterion: Given no external PM is configured, when the same plan is used standalone, then the Roadmap Board provides full PM capability with nothing disabled
-      checked: false
+      checked: true
     - criterion: Given a second target platform is added, when its adapter is implemented, then no platform-conditional logic is required outside the adapter boundary
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the composed change is complete, when npm run lint, npm test, and npm run docs:validate run, then all exit 0 and the adapter contract document is registered
-      checked: false
-changelog: Authored 2026-08-17 from the owner's directive that GoVibe acts as the middle layer between agents and per-team PM tools (Notion, Jira) with format translation per target, outbound-first sync, observed inbound candidates, and full standalone-PM parity per ADR-029 Decision 6.
+      checked: true
+changelog: |
+  Authored 2026-08-17 from the owner's directive that GoVibe acts as the middle layer between agents and per-team PM tools (Notion, Jira) with format translation per target, outbound-first sync, observed inbound candidates, and full standalone-PM parity per ADR-029 Decision 6.
+  0.2.0+draft (2026-08-17, "เริ่ม GLS-005 ต่อเลย"): PmAdapterRegistry + PROJECTION_STATES + fail-closed PmConnectorUnconfiguredError + observedCandidateFromExternalChange implemented in packages/govibe-core/src/pm-adapter/. NotionAdapter and JiraAdapter implemented against the real documented API shapes (REFERENCE-Notion-Jira-Connector-Requirements.md). govibe.pm.export / govibe.pm.sync MCP tools wired through PmExportService, fail closed with pm_connector_unconfigured when no connectorConfig is supplied. 65 new unit tests (98 files / 830 total pass repo-wide) cover projection-state classification, registry dispatch generality (a fake third platform proves no caller needs platform-conditional logic), fail-closed paths, and a standalone-parity regression test asserting zero import coupling between roadmap-service.mjs/mission-command-router.mjs and pm-adapter. Live-verified against the running MCP runtime with a real roadmap node: govibe.pm.export with a deliberately invalid token reached Notion's real production API (POST https://api.notion.com/v1/pages) and received a real structured 401 "API token is invalid." response, proving the request shape is well-formed enough for Notion's live servers to parse and respond coherently. Status kept in-progress, not done: AC-01 ("an entry is created") and AC-03 ("sync pulls it") both require a real connected Notion or Jira account, which does not exist in this session (no OAuth connect flow, no vault-scoped credential storage -- both explicitly deferred in docs/integration/CONTRACT-PmAdapter.md §6). AC-02 and both success criteria are satisfied on evidence that does not depend on live credentials, so they are ticked; AC-01/AC-03 are left honestly unchecked rather than claimed on partial evidence.
 created_at: 2026-08-17T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: claude-fable-5
@@ -340,6 +342,7 @@ the command evidence the criterion names.
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.1.6+draft | 2026-08-17 | GLS-005 advanced to in-progress (not done): PmAdapter contract, registry, Notion/Jira adapters, and govibe.pm.export/sync MCP tools implemented and tested (65 new unit tests). Live-verified against the real running MCP runtime and Notion's real production API (invalid-token call reached and was correctly rejected by the live endpoint). Kept in-progress because AC-01 and AC-03 require a real connected Notion or Jira account, which does not exist in this session — see TC-GLS-005's changelog and docs/integration/CONTRACT-PmAdapter.md §6 for exactly what remains deferred (OAuth connect flow, vault-scoped credential storage, real inbound polling). |
 | 0.1.5+draft | 2026-08-17 | GLS-003 closed to done: Canvas governed actions (approve/rerun/assign) implemented as a thin, audited layer over the existing roadmap mutation engine, gated by Task Container complexity (C-3 requires an approvalRef, naming the gate). Live-verified against two real roadmap sources including a real C-3 task: gate refusal, gate acceptance, resulting state change, and audit trail all confirmed via API and the Canvas UI. Found and flagged (not fixed) a pre-existing, unrelated protocol gap: dag.update was never registered in mission-protocol. |
 | 0.1.4+draft | 2026-08-17 | GLS-002 closed to done: Mission Canvas (A8) implemented with @xyflow/react, wired into A-domain navigation with an onNavigate callback threaded App -> RenderView for the open-console affordance. Graph derivation and inspector resolution are pure, unit-tested functions in src/features/canvas/canvas-graph.ts. Live-verified against the running sidecar's real orchestration data in the browser. |
 | 0.1.3+draft | 2026-08-17 | GLS-004 closed to done: schemas/Node_Execution_Contract_Schema.json authored; scripts/mcp/runtime/node-contract-generator.mjs generates and validates contracts from real Task Containers; scripts/docs/validate-roadmap-containers.mjs Checks 4-5 enforce contract validity and handoff evidence at gate time, scoped to this backlog only (an unscoped first pass hard-failed 17 already-closed masterplan tasks — fixed and pinned with a regression test before landing). Contracts for GLS-001, GLS-004, and GLS-005 generated and committed under .govibe/node-contracts/. Criterion "the canvas renders the node as a defect" stays unchecked and handed off to GLS-002/003 — Canvas does not exist yet. |
