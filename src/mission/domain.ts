@@ -374,6 +374,7 @@ export type MissionEvent =
   | { type: "graph.update"; graph: MissionSnapshot["graph"] }
   | { type: "heatmap.update"; heatmap: NonNullable<MissionSnapshot["heatmap"]> }
   | { type: "roadmap.snapshot"; roadmap: RoadmapSnapshot }
+  | { type: "dag.update"; dag: Record<string, unknown> }
   | { type: "roadmap.node.update"; node: WorkflowTaskNode }
   | { type: "roadmap.assignment"; assignment: WorkflowAssignment }
   | { type: "roadmap.handoff"; handoff: WorkflowHandoff }

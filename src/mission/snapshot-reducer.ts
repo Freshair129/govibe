@@ -53,6 +53,10 @@ export function reduceMissionEvent(current: MissionSnapshot, event: MissionEvent
     case "graph.update": return mergeMissionSnapshot(current, { graph: event.graph });
     case "heatmap.update": return mergeMissionSnapshot(current, { heatmap: event.heatmap });
     case "roadmap.snapshot": return mergeMissionSnapshot(current, { roadmap: event.roadmap });
+    // No view consumes the DAG client-side today; this case exists only to
+    // satisfy exhaustiveness and pass protocol validation so the sidecar
+    // stops dropping the event on every reloadRoadmap().
+    case "dag.update": return current;
     case "roadmap.node.update": { const value = roadmap(current.roadmap); return mergeMissionSnapshot(current, { roadmap: { ...value, updatedAt: new Date().toISOString(), nodes: upsert(value.nodes, event.node, (item) => item.id === event.node.id) } }); }
     case "roadmap.assignment": { const value = roadmap(current.roadmap); return mergeMissionSnapshot(current, { roadmap: { ...value, updatedAt: new Date().toISOString(), assignments: upsert(value.assignments, event.assignment, (item) => item.taskId === event.assignment.taskId) } }); }
     case "roadmap.handoff": { const value = roadmap(current.roadmap); return mergeMissionSnapshot(current, { roadmap: { ...value, updatedAt: new Date().toISOString(), handoffs: upsert(value.handoffs, event.handoff, (item) => item.taskId === event.handoff.taskId && item.fromId === event.handoff.fromId && item.toId === event.handoff.toId) } }); }

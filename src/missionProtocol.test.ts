@@ -86,6 +86,8 @@ describe("mission protocol v2", () => {
       { type: "graph.update", graph: {} },
       { type: "heatmap.update", heatmap: {} },
       { type: "roadmap.snapshot", roadmap: {} },
+      { type: "dag.update", dag: {} },
+      { type: "dag.update", dag: { nodes: {}, edges: [] } },
       { type: "roadmap.node.update", node: { id: "node-1" } },
       { type: "roadmap.assignment", assignment: { taskId: "task-1" } },
       { type: "roadmap.handoff", handoff: { taskId: "task-1" } },
@@ -116,6 +118,11 @@ describe("mission protocol v2", () => {
     expect(isMissionEvent({ type: "orchestration.update", orchestration: { waves: [{ id: "wave-0" }], updatedAt: "2026-08-10T00:00:00.000Z" } })).toBe(false);
     expect(isMissionEvent({ type: "command.ack", commandId: 1, ok: true })).toBe(false);
     expect(isMissionEvent({ type: "unknown.event" })).toBe(false);
+    // dag.update: rejects unknown fields and a non-record dag payload,
+    // matching every other bounded-record discriminator.
+    expect(isMissionEvent({ type: "dag.update", dag: {}, trusted: true })).toBe(false);
+    expect(isMissionEvent({ type: "dag.update", dag: "not-a-record" })).toBe(false);
+    expect(isMissionEvent({ type: "dag.update" })).toBe(false);
     // WP-17: memory.* commands/events reject unknown fields, missing
     // required fields, and wrong types, matching every other discriminator.
     expect(isMissionCommand({ type: "memory.search", vaultId: "vault_a", query: "hello", admin: true })).toBe(false);
