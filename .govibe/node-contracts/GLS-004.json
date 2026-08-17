@@ -6,7 +6,7 @@
     "path": "docs/roadmap/BACKLOG-govlayer-supervision-surfaces.md",
     "task_container_id": "TC-GLS-004"
   },
-  "generated_at": "2026-08-17T02:06:33.688Z",
+  "generated_at": "2026-08-17T02:26:44.336Z",
   "inputs": [],
   "outputs": [],
   "acceptance_criteria": [
@@ -38,8 +38,8 @@
     ],
     "evidence": {
       "passed": true,
-      "recorded_at": "2026-08-17T02:06:53.126Z",
-      "command_output_ref": "session evidence 2026-08-17: npm run lint && npx vitest run scripts/mcp/runtime/node-contract-generator.test.mjs -> exit 0"
+      "recorded_at": "2026-08-17T02:26:44.336Z",
+      "command_output_ref": "post-rebase re-verification 2026-08-17: npm run lint && npx vitest run scripts/mcp/runtime/node-contract-generator.test.mjs -> exit 0"
     }
   },
   "retry": {
