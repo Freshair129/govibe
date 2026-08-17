@@ -1,11 +1,16 @@
 import { AGENT_SESSION_BUFFER_CHARS, type MissionEvent, type MissionMemorySnapshot, type MissionSnapshot, type RoadmapSnapshot } from "./domain";
 
+// Ring-buffer cap for the workflow-node audit trail, matching the pattern
+// used for the terminal and session buffers.
+export const AUDIT_LOG_MAX_ENTRIES = 200;
+
 export const emptyMissionSnapshot: MissionSnapshot = {
   connectionState: "disconnected", metrics: [], chart: { labels: [], series: [] }, reactor: [], agents: [], capabilities: [],
   terminal: [], graph: { nodes: [], edges: [] }, specs: [], symbols: [], campaignLogs: [], roadmapSources: [], workflowRuns: [], providers: [],
   orchestration: { waves: [], updatedAt: new Date().toISOString() },
   memory: { results: [], selectedEntityId: null, lastQuery: null, lastSearchedAt: null, lastDecayResult: null },
   sessions: [],
+  auditLog: [],
 };
 
 export function mergeMissionSnapshot(current: MissionSnapshot, patch: Partial<MissionSnapshot>): MissionSnapshot {
@@ -21,6 +26,7 @@ export function mergeMissionSnapshot(current: MissionSnapshot, patch: Partial<Mi
     memory: patch.memory ?? current.memory,
     usage: patch.usage ?? current.usage,
     sessions: patch.sessions ?? current.sessions,
+    auditLog: patch.auditLog ?? current.auditLog,
     updatedAt: patch.updatedAt ?? new Date().toISOString(),
   };
 }
@@ -63,6 +69,9 @@ export function reduceMissionEvent(current: MissionSnapshot, event: MissionEvent
       sessions: (current.sessions ?? []).map((session) => session.id === event.sessionId
         ? { ...session, buffer: (session.buffer + event.data).slice(-AGENT_SESSION_BUFFER_CHARS) }
         : session),
+    });
+    case "workflow.node.audit": return mergeMissionSnapshot(current, {
+      auditLog: [...(current.auditLog ?? []), event.entry].slice(-AUDIT_LOG_MAX_ENTRIES),
     });
   }
 }

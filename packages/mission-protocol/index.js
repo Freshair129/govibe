@@ -49,6 +49,18 @@ function isBoundedRecord(value) {
 const orchestrationTaskStatuses = new Set(["queued", "running", "verifying", "done", "failed", "blocked"]);
 const orchestrationWaveStatuses = new Set(["pending", "active", "complete", "skipped"]);
 const agentSessionAccessScopes = new Set(["H0", "H1", "H2", "H3", "H4"]);
+const workflowNodeActions = new Set(["approve", "rerun", "assign"]);
+
+function isWorkflowNodeAuditEntry(value) {
+  return isBoundedRecord(value)
+    && hasOnlyKeys(value, ["id", "actor", "taskId", "action", "at", "approvalRef"])
+    && isBoundedString(value.id, MISSION_PROTOCOL_LIMITS.idChars)
+    && isBoundedString(value.actor, MISSION_PROTOCOL_LIMITS.idChars)
+    && isBoundedString(value.taskId, MISSION_PROTOCOL_LIMITS.idChars)
+    && workflowNodeActions.has(value.action)
+    && isBoundedString(value.at, MISSION_PROTOCOL_LIMITS.idChars)
+    && (value.approvalRef === undefined || isBoundedString(value.approvalRef, MISSION_PROTOCOL_LIMITS.idChars));
+}
 const agentSessionStates = new Set(["running", "exited"]);
 
 function isAgentSessionRecord(value) {
@@ -161,6 +173,12 @@ export function isMissionCommand(value) {
       && isBoundedString(value.sessionId, MISSION_PROTOCOL_LIMITS.idChars)
       && Number.isInteger(value.cols) && value.cols > 0 && value.cols <= 500
       && Number.isInteger(value.rows) && value.rows > 0 && value.rows <= 500;
+    case "workflow.node.action": return hasOnlyKeys(value, ["type", "taskId", "action", "actor", "assigneeId", "approvalRef"])
+      && isBoundedString(value.taskId, MISSION_PROTOCOL_LIMITS.idChars)
+      && workflowNodeActions.has(value.action)
+      && isBoundedString(value.actor, MISSION_PROTOCOL_LIMITS.idChars)
+      && (value.assigneeId === undefined || isBoundedString(value.assigneeId, MISSION_PROTOCOL_LIMITS.idChars))
+      && (value.approvalRef === undefined || isBoundedString(value.approvalRef, MISSION_PROTOCOL_LIMITS.idChars));
     default: return false;
   }
 }
@@ -208,6 +226,7 @@ export function isMissionEvent(value) {
     case "agent.session.output": return hasOnlyKeys(value, ["type", "sessionId", "data"])
       && isBoundedString(value.sessionId, MISSION_PROTOCOL_LIMITS.idChars)
       && isBoundedString(value.data, MISSION_PROTOCOL_LIMITS.commandChars, { allowEmpty: true });
+    case "workflow.node.audit": return hasOnlyKeys(value, ["type", "entry"]) && isWorkflowNodeAuditEntry(value.entry);
     case "command.ack": return hasOnlyKeys(value, ["type", "commandId", "ok", "message", "snapshot"])
       && isBoundedString(value.commandId, MISSION_PROTOCOL_LIMITS.idChars)
       && typeof value.ok === "boolean"

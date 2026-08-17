@@ -69,6 +69,9 @@ describe("mission protocol v2", () => {
       { type: "agent.session.input", sessionId: "session-1", data: "ls\r" },
       { type: "agent.session.stop", sessionId: "session-1" },
       { type: "agent.session.resize", sessionId: "session-1", cols: 120, rows: 32 },
+      { type: "workflow.node.action", taskId: "task-1", action: "approve", actor: "Boss" },
+      { type: "workflow.node.action", taskId: "task-1", action: "assign", actor: "Boss", assigneeId: "VIBE" },
+      { type: "workflow.node.action", taskId: "task-1", action: "rerun", actor: "Boss", approvalRef: "adr-021" },
     ];
     expect(commands.every(isMissionCommand)).toBe(true);
   });
@@ -97,6 +100,8 @@ describe("mission protocol v2", () => {
       { type: "sessions.update", sessions: [] },
       { type: "sessions.update", sessions: [{ id: "session-1", agentId: "claude-code", cwd: "G:/workspace", state: "running", accessScope: "H2", startedAt: "2026-08-17T00:00:00.000Z", buffer: "" }] },
       { type: "agent.session.output", sessionId: "session-1", data: "hello" },
+      { type: "workflow.node.audit", entry: { id: "audit-1", actor: "Boss", taskId: "task-1", action: "approve", at: "2026-08-17T00:00:00.000Z" } },
+      { type: "workflow.node.audit", entry: { id: "audit-2", actor: "Boss", taskId: "task-1", action: "rerun", at: "2026-08-17T00:00:00.000Z", approvalRef: "adr-021" } },
       { type: "command.ack", commandId: "cmd-1", ok: true },
     ];
     expect(events.every(isMissionEvent)).toBe(true);
@@ -126,6 +131,13 @@ describe("mission protocol v2", () => {
     expect(isMissionCommand({ type: "agent.session.start", agent: "claude-code", cwd: "G:/workspace", accessScope: "H2", command: "rm -rf" })).toBe(false);
     expect(isMissionCommand({ type: "agent.session.input", sessionId: "session-1" })).toBe(false);
     expect(isMissionCommand({ type: "agent.session.resize", sessionId: "session-1", cols: 0, rows: 32 })).toBe(false);
+    // GLS-003: workflow.node.action enforces the approve/rerun/assign vocabulary
+    // and rejects unknown fields; workflow.node.audit requires a well-formed entry.
+    expect(isMissionCommand({ type: "workflow.node.action", taskId: "task-1", action: "delete", actor: "Boss" })).toBe(false);
+    expect(isMissionCommand({ type: "workflow.node.action", taskId: "task-1", action: "approve" })).toBe(false);
+    expect(isMissionCommand({ type: "workflow.node.action", taskId: "task-1", action: "approve", actor: "Boss", admin: true })).toBe(false);
+    expect(isMissionEvent({ type: "workflow.node.audit", entry: { actor: "Boss", taskId: "task-1", action: "approve", at: "t" } })).toBe(false);
+    expect(isMissionEvent({ type: "workflow.node.audit", entry: { id: "a1", actor: "Boss", taskId: "task-1", action: "nuke", at: "t" } })).toBe(false);
     expect(isMissionEvent({ type: "sessions.update", sessions: [{ id: "session-1" }] })).toBe(false);
     expect(isMissionEvent({ type: "agent.session.output", sessionId: "session-1", data: "x", trusted: true })).toBe(false);
     expect(isMissionEvent({ type: "agent.session.output", sessionId: "session-1", data: "x".repeat(MISSION_PROTOCOL_LIMITS.commandChars + 1) })).toBe(false);

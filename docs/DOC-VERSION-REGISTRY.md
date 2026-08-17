@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.50+draft"
+version: "0.3.51+draft"
 updated: "2026-08-17"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.50+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.51+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -98,7 +98,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Backlog | `BACKLOG-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/BACKLOG-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-PERSISTENT-MEMORY-RUNTIME` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/ROADMAP-persistent-memory-runtime.md` |
 | Backlog | `BACKLOG-PERSISTENT-MEMORY-RUNTIME` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-persistent-memory-runtime.md` |
-| Backlog | `BACKLOG-GOVLAYER-SUPERVISION-SURFACES` | `0.1.4+draft` | draft | LYRA | `docs/roadmap/BACKLOG-govlayer-supervision-surfaces.md` |
+| Backlog | `BACKLOG-GOVLAYER-SUPERVISION-SURFACES` | `0.1.5+draft` | draft | LYRA | `docs/roadmap/BACKLOG-govlayer-supervision-surfaces.md` |
 | Implementation Plan | `IMP-SYSTEM05-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.2` | approved | LYRA / ARCHON / ATHER | `docs/roadmap/IMP-SYSTEM05-Task-Scoped-Context-Injection.md` |
 | Backlog | `IMP-GVMP01P05EP01` | `n/a` | tracked-outside-registry | LYRA | `.agents/.devlog/implement/IMP-GVMP01P05EP01.md` |
 
@@ -230,6 +230,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.51+draft | 2026-08-17 | Claude Sonnet 5 | GLS-003 closure row: BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.5+draft (Mission Canvas governed actions implemented, live-verified against a real C-3 gate, and closed to done). Owner-directed closure ("เริ่ม GLS-003 ต่อเลย"), not an independent ATHER audit reproduction. |
 | 0.3.50+draft | 2026-08-17 | Claude Sonnet 5 | GLS-002 closure row: BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.4+draft (Mission Canvas / A8 implemented and closed to done). Owner-directed closure ("เริ่ม GLS-002 Canvas ต่อเลย"), not an independent ATHER audit reproduction. |
 | 0.3.49+draft | 2026-08-17 | Claude Sonnet 5 | Registered REFERENCE-NOTION-JIRA-CONNECTOR-REQUIREMENTS (draft): OAuth/scope/rate-limit research for GLS-005's PmAdapter, authored on user request while GLS-004's CI ran. Research only, not a design decision. |
 | 0.3.48+draft | 2026-08-17 | Claude Sonnet 5 | GLS-004 closure row: BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.3+draft (node execution contract schema, generator, and gate-time hook enforcement landed and GLS-004 closed to done). Owner-directed closure (Boss present, "จัดการปิดงานให้หมด"), not an independent ATHER audit reproduction. |

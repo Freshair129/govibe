@@ -43,7 +43,7 @@ export function RenderView({
   if (activeView === "A5") return <AgentManagement snapshot={snapshot} send={send} />;
   if (activeView === "A6") return <ReadinessControlView snapshot={snapshot} send={send} />;
   if (activeView === "A7") return <TokenMonitorView snapshot={snapshot} />;
-  if (activeView === "A8") return <MissionCanvasView snapshot={snapshot} onNavigate={onNavigate} />;
+  if (activeView === "A8") return <MissionCanvasView snapshot={snapshot} send={send} onNavigate={onNavigate} />;
   if (activeView === "A9") return <AgentConsoleView snapshot={snapshot} send={send} />;
   if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;
   if (activeView === "B2") return <BusinessSpecificationsView snapshot={snapshot} />;

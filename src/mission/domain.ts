@@ -296,6 +296,17 @@ export type AgentSessionRecord = {
   exitCode?: number | null;
 };
 
+export type WorkflowNodeAction = "approve" | "rerun" | "assign";
+
+export type WorkflowNodeAuditEntry = {
+  id: string;
+  actor: string;
+  taskId: string;
+  action: WorkflowNodeAction;
+  at: string;
+  approvalRef?: string;
+};
+
 export type UsageModelBreakdown = {
   percent: number;
   input_tokens: number;
@@ -351,6 +362,7 @@ export type MissionSnapshot = {
   memory?: MissionMemorySnapshot;
   usage?: UsageSnapshot;
   sessions?: AgentSessionRecord[];
+  auditLog?: WorkflowNodeAuditEntry[];
 };
 
 export type MissionEvent =
@@ -374,7 +386,8 @@ export type MissionEvent =
   | { type: "memory.decay.result"; result: MissionMemoryDecayResult }
   | { type: "usage.update"; usage: UsageSnapshot }
   | { type: "sessions.update"; sessions: AgentSessionRecord[] }
-  | { type: "agent.session.output"; sessionId: string; data: string };
+  | { type: "agent.session.output"; sessionId: string; data: string }
+  | { type: "workflow.node.audit"; entry: WorkflowNodeAuditEntry };
 
 export type MissionCommand =
   | { type: "terminal.command"; command: string }
@@ -391,4 +404,5 @@ export type MissionCommand =
   | { type: "agent.session.start"; agent: string; cwd: string; accessScope: AgentSessionAccessScope; approvalRef?: string; cols?: number; rows?: number }
   | { type: "agent.session.input"; sessionId: string; data: string }
   | { type: "agent.session.stop"; sessionId: string }
-  | { type: "agent.session.resize"; sessionId: string; cols: number; rows: number };
+  | { type: "agent.session.resize"; sessionId: string; cols: number; rows: number }
+  | { type: "workflow.node.action"; taskId: string; action: WorkflowNodeAction; actor: string; assigneeId?: string; approvalRef?: string };

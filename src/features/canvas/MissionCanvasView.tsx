@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Background, Handle, Position, ReactFlow, type Edge, type Node, type NodeProps } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import type { MissionSnapshot, ViewId } from "../../mission";
+import type { MissionCommand, MissionSnapshot, ViewId } from "../../mission";
 import { EmptyState } from "../../shared/EmptyState";
 import { ViewHeader } from "../../shared/ViewHeader";
 import { deriveCanvasGraph, resolveNodeDetails, type CanvasNodeStatus } from "./canvas-graph";
@@ -45,7 +45,60 @@ function CanvasNode({ data }: NodeProps<Node<{ label: string; status: CanvasNode
 
 const nodeTypes = { canvasNode: CanvasNode };
 
-export function MissionCanvasView({ snapshot, onNavigate }: { snapshot: MissionSnapshot; onNavigate: (view: ViewId) => void }) {
+function NodeActions({ taskId, requiresApproval, send }: { taskId: string; requiresApproval: boolean; send: (command: MissionCommand) => void }) {
+  const [actor, setActor] = useState("Boss");
+  const [assigneeId, setAssigneeId] = useState("");
+  const [approvalRef, setApprovalRef] = useState("");
+
+  const blocked = requiresApproval && !approvalRef.trim();
+  const base = { taskId, actor: actor.trim() || "Boss", ...(requiresApproval && approvalRef.trim() ? { approvalRef: approvalRef.trim() } : {}) };
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.6 }}>Governed actions</div>
+      <input value={actor} onChange={(event) => setActor(event.target.value)} placeholder="Actor" style={{ fontSize: 12 }} />
+      {requiresApproval && (
+        <input
+          value={approvalRef}
+          onChange={(event) => setApprovalRef(event.target.value)}
+          placeholder="Owner approval ref (C-3 gate)"
+          style={{ fontSize: 12 }}
+        />
+      )}
+      <div style={{ display: "flex", gap: 6 }}>
+        <button
+          type="button"
+          disabled={blocked}
+          title={blocked ? "This task is C-3: an owner approval ref is required (ADR-021)." : undefined}
+          onClick={() => send({ type: "workflow.node.action", action: "approve", ...base })}
+        >
+          Approve
+        </button>
+        <button
+          type="button"
+          disabled={blocked}
+          title={blocked ? "This task is C-3: an owner approval ref is required (ADR-021)." : undefined}
+          onClick={() => send({ type: "workflow.node.action", action: "rerun", ...base })}
+        >
+          Rerun
+        </button>
+      </div>
+      <div style={{ display: "flex", gap: 6 }}>
+        <input value={assigneeId} onChange={(event) => setAssigneeId(event.target.value)} placeholder="Assignee agent ID" style={{ flex: 1, fontSize: 12 }} />
+        <button
+          type="button"
+          disabled={blocked || !assigneeId.trim()}
+          title={blocked ? "This task is C-3: an owner approval ref is required (ADR-021)." : undefined}
+          onClick={() => send({ type: "workflow.node.action", action: "assign", assigneeId: assigneeId.trim(), ...base })}
+        >
+          Assign
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export function MissionCanvasView({ snapshot, send, onNavigate }: { snapshot: MissionSnapshot; send: (command: MissionCommand) => void; onNavigate: (view: ViewId) => void }) {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   const graph = useMemo(() => deriveCanvasGraph(snapshot), [snapshot]);
@@ -136,8 +189,23 @@ export function MissionCanvasView({ snapshot, onNavigate }: { snapshot: MissionS
                 ) : (
                   <p style={{ fontSize: 11, opacity: 0.6, margin: 0 }}>No live console session for this assignee.</p>
                 )}
+                <hr style={{ border: "none", borderTop: "1px solid var(--border)", margin: "4px 0" }} />
+                <NodeActions taskId={details.taskId} requiresApproval={details.requiresApproval} send={send} />
               </div>
             )}
+          </div>
+        </section>
+      )}
+      {(snapshot.auditLog?.length ?? 0) > 0 && (
+        <section className="panel" style={{ padding: 16 }}>
+          <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.6, marginBottom: 8 }}>Audit trail</div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 12, maxHeight: 160, overflowY: "auto" }}>
+            {[...(snapshot.auditLog ?? [])].reverse().map((entry) => (
+              <div key={entry.id}>
+                <span style={{ opacity: 0.6 }}>{entry.at}</span> — <strong>{entry.actor}</strong> {entry.action} <strong>{entry.taskId}</strong>
+                {entry.approvalRef && <span style={{ opacity: 0.6 }}> ({entry.approvalRef})</span>}
+              </div>
+            ))}
           </div>
         </section>
       )}

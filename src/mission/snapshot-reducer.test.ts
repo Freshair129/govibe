@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { AGENT_SESSION_BUFFER_CHARS, type AgentSessionRecord, type MissionMemoryHit } from "./domain";
+import { AGENT_SESSION_BUFFER_CHARS, type AgentSessionRecord, type MissionMemoryHit, type WorkflowNodeAuditEntry } from "./domain";
 import { MissionSnapshotStore } from "./snapshot-store";
-import { emptyMissionSnapshot, mergeMissionSnapshot, reduceMissionEvent } from "./snapshot-reducer";
+import { AUDIT_LOG_MAX_ENTRIES, emptyMissionSnapshot, mergeMissionSnapshot, reduceMissionEvent } from "./snapshot-reducer";
 
 describe("mission snapshot ownership", () => {
   it("reduces domain events without I/O", () => {
@@ -69,6 +69,30 @@ describe("agent session slice (GLS-001)", () => {
     const withSession = reduceMissionEvent(emptyMissionSnapshot, { type: "sessions.update", sessions: [session] });
     const next = reduceMissionEvent(withSession, { type: "agent.session.output", sessionId: "ghost", data: "boo" });
     expect(next.sessions).toEqual([session]);
+  });
+});
+
+describe("workflow node audit log slice (GLS-003)", () => {
+  const entry: WorkflowNodeAuditEntry = { id: "audit-1", actor: "Boss", taskId: "T1", action: "approve", at: "2026-08-17T00:00:00.000Z" };
+
+  it("has a real empty auditLog slice from first render", () => {
+    expect(emptyMissionSnapshot.auditLog).toEqual([]);
+  });
+
+  it("reduces workflow.node.audit by appending, and preserves the slice through unrelated patches", () => {
+    const next = reduceMissionEvent(emptyMissionSnapshot, { type: "workflow.node.audit", entry });
+    expect(next.auditLog).toEqual([entry]);
+    expect(mergeMissionSnapshot(next, { connectionState: "connected" }).auditLog).toEqual([entry]);
+  });
+
+  it("caps the audit log at the shared maximum, dropping the oldest entry first", () => {
+    let snapshot = emptyMissionSnapshot;
+    for (let i = 0; i < AUDIT_LOG_MAX_ENTRIES + 5; i += 1) {
+      snapshot = reduceMissionEvent(snapshot, { type: "workflow.node.audit", entry: { ...entry, id: `audit-${i}` } });
+    }
+    expect(snapshot.auditLog).toHaveLength(AUDIT_LOG_MAX_ENTRIES);
+    expect(snapshot.auditLog?.[0]?.id).toBe("audit-5");
+    expect(snapshot.auditLog?.[snapshot.auditLog.length - 1]?.id).toBe(`audit-${AUDIT_LOG_MAX_ENTRIES + 4}`);
   });
 });
 

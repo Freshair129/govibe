@@ -78,6 +78,11 @@ export class MissionCommandRouter {
       service.appendTerminal("sys", `Agent session stop requested: ${command.sessionId}`);
       return { ok: true, action: "agent.session.stop", session, snapshot: service.getSnapshot() };
     }
+    if (command.type === "workflow.node.action") {
+      const result = await service.applyWorkflowNodeAction({ taskId: command.taskId, action: command.action, actor: command.actor, assigneeId: command.assigneeId, approvalRef: command.approvalRef });
+      service.appendTerminal("sys", `Workflow node action "${command.action}" applied to ${command.taskId} by ${command.actor}.`);
+      return { ok: true, action: "workflow.node.action", result, snapshot: service.getSnapshot() };
+    }
     if (command.type === "memory.decay.run") {
       const result = await service.runMemoryDecay({ vault_id: command.vaultId, dry_run: command.dryRun });
       service.appendTerminal("sys", `Memory decay tick (${command.dryRun ? "dry run" : "applied"}): ${result.evaluated} evaluated, ${result.transitioned.length} transitioned.`);

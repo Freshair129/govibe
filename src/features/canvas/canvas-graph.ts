@@ -113,12 +113,22 @@ export type CanvasNodeDetails = {
   evidenceLinks: string[];
   agentName?: string;
   consoleSessionId?: string;
+  complexity?: string;
+  requiresApproval: boolean;
 };
+
+// Mirrors the sidecar's accessScopeGateFor (scripts/mcp/runtime/workflow-node-action-service.mjs)
+// so the Canvas can show the gate before a command round-trip. The server
+// remains the enforcing authority regardless of what this returns.
+export function requiresApprovalGate(complexity: string | undefined): boolean {
+  return complexity === "C-3";
+}
 
 // Resolves everything the inspector shows for a selected node, strictly from
 // data already in the snapshot — never invented to fill a gap.
 export function resolveNodeDetails(snapshot: MissionSnapshot, taskId: string): CanvasNodeDetails {
   const roadmapNode = (snapshot.roadmap?.nodes ?? []).find((node) => node.id === taskId);
+  const complexity = (snapshot.roadmap?.taskContainers ?? []).find((container) => container.task_id === taskId)?.complexity;
   const evidenceLinks = [
     ...(roadmapNode?.artifactLinks ?? []),
     ...(roadmapNode?.reviewLinks ?? []),
@@ -146,5 +156,7 @@ export function resolveNodeDetails(snapshot: MissionSnapshot, taskId: string): C
     evidenceLinks,
     agentName,
     consoleSessionId: consoleSession?.id,
+    complexity,
+    requiresApproval: requiresApprovalGate(complexity),
   };
 }
