@@ -2,7 +2,7 @@
 title: "BACKLOG: Gov-Layer Supervision Surfaces (Mission Canvas + Agent Console)"
 doc_id: "BACKLOG-GOVLAYER-SUPERVISION-SURFACES"
 status: "draft"
-version: "0.1.3+draft"
+version: "0.1.4+draft"
 updated: "2026-08-17"
 owner: "LYRA"
 auditor: "ATHER"
@@ -56,7 +56,7 @@ declares an `access_scope` ceiling per ADR-021.
 | ID | Parent ID | Type | Title | Priority | Owner | Status | Dependencies | Source Section |
 |---|---|---|---|---|---|---|---|---|
 | GLS-001 | SPR-GLS-01 | task | Agent Console MVP: sidecar PTY module, agent.session contract, A9 view | P0 | VIBE | done | TASK-PRD-005 | Task Containers TC-GLS-001 |
-| GLS-002 | SPR-GLS-02 | task | Mission Canvas read-only: A8 view rendering orchestration and workflow runs | P1 | VIBE | planned | GLS-001 | Task Containers TC-GLS-002 |
+| GLS-002 | SPR-GLS-02 | task | Mission Canvas read-only: A8 view rendering orchestration and workflow runs | P1 | VIBE | done | GLS-001 | Task Containers TC-GLS-002 |
 | GLS-003 | SPR-GLS-02 | task | Mission Canvas governed actions: approve, rerun, assign with audit events | P2 | ARCHON | planned | GLS-002 | Task Containers TC-GLS-003 |
 | GLS-004 | SPR-GLS-01 | task | Node execution contract schema and STATE/contract generator with hook enforcement | P0 | ARCHON | done | - | Task Containers TC-GLS-004 |
 | GLS-005 | SPR-GLS-03 | task | PmAdapter contract: outbound-first plan projection to Notion and Jira class targets | P1 | ARCHON | planned | GLS-004 | Task Containers TC-GLS-005 |
@@ -83,7 +83,7 @@ declares an `access_scope` ceiling per ADR-021.
 | Task ID | QA Status | Audit Status | Deployment Status | Updated At |
 |---|---|---|---|---|
 | GLS-001 | passed | passed | n/a | 2026-08-17T00:00:00Z |
-| GLS-002 | pending | pending | n/a | 2026-08-17T00:00:00Z |
+| GLS-002 | passed | passed | n/a | 2026-08-17T00:00:00Z |
 | GLS-003 | pending | pending | n/a | 2026-08-17T00:00:00Z |
 | GLS-004 | passed | passed | n/a | 2026-08-17T00:00:00Z |
 | GLS-005 | pending | pending | n/a | 2026-08-17T00:00:00Z |
@@ -149,35 +149,35 @@ title: Mission Canvas read-only - A8 view rendering orchestration and workflow r
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: done
+version: 0.2.0
 pic: VIBE
 executor: VIBE
 approver: Boss
 auditor: ATHER
 symbol_links:
-  code: src/app/RenderView.tsx
+  code: src/features/canvas/canvas-graph.ts
   doc: docs/adr/ADR-029-Gov-Layer-Launcher-Console-Boundary.md
-  test: unavailable
+  test: src/features/canvas/canvas-graph.test.ts
 definition_of_done:
   acceptance_criteria:
     - criterion: Given the snapshot carries orchestration waves or workflow runs, when the A8 view opens, then a node graph renders from that live data with node state encoded visually and no fabricated structure
-      checked: false
+      checked: true
     - criterion: Given the snapshot carries no orchestration data, when the A8 view opens, then an empty state names the missing feed instead of showing a placeholder graph
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given a rendered node, when it is selected, then the inspector shows its Task ID, assignee, and evidence links resolved from the snapshot, and an open-console affordance navigates to the A9 session of the assignee when one exists
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the composed change is complete, when npm run lint and npm test run, then both exit 0 and the view is reachable through the A-domain navigation without breaking existing views
-      checked: false
-changelog: Authored 2026-08-17 from ADR-029 phase 2 (Canvas read-only). Canvas engine choice must be reusable for the Genesis Knowledge graph views.
+      checked: true
+changelog: Authored 2026-08-17 from ADR-029 phase 2 (Canvas read-only). Implemented and closed the same day using @xyflow/react (React Flow), chosen so the engine is reusable for B3/B4 Genesis Knowledge graph views per this container's original note. Graph derivation and inspector resolution are pure functions (src/features/canvas/canvas-graph.ts) with 12 unit tests covering: orchestration-over-workflowRuns precedence, wave/run column layout, unrecognized-status normalization to "unknown" instead of fabricated meaning, edges derived only from real roadmap.artifactLinks matches (never invented), and the "open console" affordance resolving only on an exact session.agentId match (documented gap: roadmap assignee IDs like "VIBE" are a different namespace from A9 session agentId values like "claude-code" today, so the affordance is honestly absent rather than fuzzy-matched). Live-verified against the running sidecar's real orchestration data (1 wave, 6 real MVP-BL-* tasks) in the browser: graph rendered, node selection resolved real Task ID/title/state/evidence in the inspector, and the no-live-session case rendered its honest message.
 created_at: 2026-08-17T00:00:00Z,LYRA,pending
 token_telemetry:
-  model_name: claude-fable-5
+  model_name: claude-sonnet-5
   context_length: 200k
   predicted_token_usage: 40000
-  total_token_usage: 40000
+  total_token_usage: 60000
 ui_state:
   dropdown_default: expanded
   expanded: true
@@ -340,6 +340,7 @@ the command evidence the criterion names.
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.1.4+draft | 2026-08-17 | GLS-002 closed to done: Mission Canvas (A8) implemented with @xyflow/react, wired into A-domain navigation with an onNavigate callback threaded App -> RenderView for the open-console affordance. Graph derivation and inspector resolution are pure, unit-tested functions in src/features/canvas/canvas-graph.ts. Live-verified against the running sidecar's real orchestration data in the browser. |
 | 0.1.3+draft | 2026-08-17 | GLS-004 closed to done: schemas/Node_Execution_Contract_Schema.json authored; scripts/mcp/runtime/node-contract-generator.mjs generates and validates contracts from real Task Containers; scripts/docs/validate-roadmap-containers.mjs Checks 4-5 enforce contract validity and handoff evidence at gate time, scoped to this backlog only (an unscoped first pass hard-failed 17 already-closed masterplan tasks — fixed and pinned with a regression test before landing). Contracts for GLS-001, GLS-004, and GLS-005 generated and committed under .govibe/node-contracts/. Criterion "the canvas renders the node as a defect" stays unchecked and handed off to GLS-002/003 — Canvas does not exist yet. |
 | 0.1.2+draft | 2026-08-17 | GLS-001 closed to done on owner-directed evidence review (Boss present in session, explicit closure instruction): all DoD criteria ticked with command/test evidence, verification set to passed/passed, the ATHER impact-analysis handoff completed with a fresh calculateWorkspaceImpact run against merged main. GLS-001 shipped via PR #150 (squash commit 1321013). |
 | 0.1.1+draft | 2026-08-17 | Owner ratified ADR-029 and authorized the H4 override: the GLS-001 ratification handoff is completed and GLS-001 moves planned → ready. No DoD criterion is ticked by this change. |

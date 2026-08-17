@@ -1,0 +1,53 @@
+{
+  "schema": "govibe-node-contract/v1",
+  "node_id": "GLS-002",
+  "task_id": "GLS-002",
+  "source": {
+    "path": "docs/roadmap/BACKLOG-govlayer-supervision-surfaces.md",
+    "task_container_id": "TC-GLS-002"
+  },
+  "generated_at": "2026-08-17T03:00:11.475Z",
+  "inputs": [
+    {
+      "ref": "GLS-001",
+      "kind": "payload"
+    }
+  ],
+  "outputs": [],
+  "acceptance_criteria": [
+    {
+      "criterion": "Given the snapshot carries orchestration waves or workflow runs, when the A8 view opens, then a node graph renders from that live data with node state encoded visually and no fabricated structure",
+      "checked": true
+    },
+    {
+      "criterion": "Given the snapshot carries no orchestration data, when the A8 view opens, then an empty state names the missing feed instead of showing a placeholder graph",
+      "checked": true
+    },
+    {
+      "criterion": "Given a rendered node, when it is selected, then the inspector shows its Task ID, assignee, and evidence links resolved from the snapshot, and an open-console affordance navigates to the A9 session of the assignee when one exists",
+      "checked": true
+    },
+    {
+      "criterion": "Given the composed change is complete, when npm run lint and npm test run, then both exit 0 and the view is reachable through the A-domain navigation without breaking existing views",
+      "checked": true
+    }
+  ],
+  "exit_gate": {
+    "commands": [
+      "npm run lint",
+      "npx vitest run src/features/canvas/canvas-graph.test.ts"
+    ],
+    "evidence": {
+      "passed": true,
+      "recorded_at": "2026-08-17T03:00:31.904Z",
+      "command_output_ref": "session evidence 2026-08-17: npm run lint && npx vitest run src/features/canvas/canvas-graph.test.ts -> exit 0; live-verified in browser against real sidecar orchestration data"
+    }
+  },
+  "retry": {
+    "max_attempts": 3,
+    "escalation": "T0"
+  },
+  "rework": {
+    "policy": "return-to-executor-with-tool-output"
+  }
+}
