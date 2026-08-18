@@ -2,8 +2,8 @@
 title: "RUNBOOK: Persistent-Memory MSP Runtime"
 doc_id: "RUNBOOK-PERSISTENT-MEMORY-RUNTIME"
 status: "draft"
-version: "0.2.0+draft"
-updated: "2026-08-16"
+version: "0.2.1+draft"
+updated: "2026-08-19"
 owner: "Boss (CEO)"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -209,6 +209,25 @@ The provider must re-apply authorized source constraints during storage retrieva
 
 ## 7. CI and E2E verification
 
+### 7.1 Promotion smoke gate (TASK-PRD-023)
+
+`npm run msp:smoke` (`scripts/mcp/msp-promotion-smoke.mjs`) proves the launch
+contract of §3-§5 end to end on every pull request: it boots this runtime
+through the same `GOVIBE_MSP_COMMAND` / `GOVIBE_MSP_ARGS` environment path the
+MCP server uses, requires `health_state` other than `unavailable`, runs a full
+12-stage deep scan on a disposable fixture workspace, and fails unless the scan
+completes with at least one promoted `gks:` knowledge reference. The
+baseline-check workflow runs it after `baseline:check`; a failed MSP boot fails
+the required status check instead of degrading to the unavailable client.
+
+For local development, `npm run mcp:dev` now loads `.env` via
+`--env-file-if-exists` (shell-set values still win), so the MSP block documented
+in `.env.example` is sufficient to give the local server a live MSP parent.
+`MSP_DB_PATH` must point into an existing directory; the repository convention
+is `.govibe/msp/` (gitignored).
+
+### 7.2 Fresh-process persistence E2E
+
 Run the normal repository test suite used by CI. The fresh-process test is:
 
 ```text
@@ -343,5 +362,6 @@ The runbook is complete for the #74/#77 first slice when:
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.2.1+draft | 2026-08-19 | TASK-PRD-023: added §7.1 promotion smoke gate (`npm run msp:smoke` wired into baseline-check CI) and documented the `.env` / `--env-file-if-exists` local launch path with the `.govibe/msp/` database convention. |
 | 0.2.0+draft | 2026-08-16 | Finalized #78 against merged #144/#145 evidence; documented provider modes, fresh-process persistence/retrieval, evidence correlation, recovery, CI semantics, and removed the accidental duplicate proposed ADR-028 reference. |
 | 0.1.0+draft | 2026-08-04 | Initial persistent-memory MSP runtime operating guidance. |

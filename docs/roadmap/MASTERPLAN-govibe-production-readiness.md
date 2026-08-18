@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.3.1"
+version: "0.3.4"
 updated: "2026-08-19"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -227,7 +227,7 @@ any production claim that involves a network-reachable deployment.
 | PHASE-PRD-04 | Remove abolished H-axis semantics from active documents | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | GATE-SEMANTIC is met | planned | 0 |
 | PHASE-PRD-05 | Package a repeatable clean-checkout developer trial | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` | GATE-BOOTSTRAP is met | planned | 0 |
 | PHASE-PRD-06 | Bring the runtime into verified conformance with the Workspace System spec | `docs/specs/SPEC-Workspace-System.md` | Spec acceptance criteria AC-01 through AC-08 hold with recorded command evidence | done | 100 |
-| PHASE-PRD-07 | Activate the governed semantic pipeline (MSP parent and context authority) | `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md` | A real candidate promotion round-trips through a configured MSP and a live-surface workflow.continue succeeds with validated context authority, both with recorded command evidence | planned | 0 |
+| PHASE-PRD-07 | Activate the governed semantic pipeline (MSP parent and context authority) | `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md` | A real candidate promotion round-trips through a configured MSP and a live-surface workflow.continue succeeds with validated context authority, both with recorded command evidence | in-progress | 70 |
 | PHASE-PRD-08 | Enforce runtime authority uniformly across transports and close credential exposures | `docs/specs/SPEC-Workspace-System.md` | No mutating surface bypasses the RBAC decision point and approval references verify against recorded approvals | planned | 0 |
 | PHASE-PRD-09 | Make completion states trustworthy | `docs/STD-Execution-Governance.md` | No path reaches done without a non-vacuous verification pass and runtime mutations survive a server restart | planned | 0 |
 
@@ -242,7 +242,7 @@ any production claim that involves a network-reachable deployment.
 | SPR-PRD-04 | PHASE-PRD-04 | Correct the H-axis vocabulary in architecture documents | A repository scan finds no active `H5`/`H6` access semantics | planned | 0 |
 | SPR-PRD-05 | PHASE-PRD-05 | Author and verify the clean-checkout quickstart | A reviewer reaches a running Mission Control from the document alone | planned | 0 |
 | SPR-PRD-06 | PHASE-PRD-06 | Pin workspace-spec conformance and land the personnel identity and RBAC contracts | AC-01 through AC-06 are pinned by automated tests; the personnel and RBAC suites demonstrate AC-07 and AC-08 | done | 100 |
-| SPR-PRD-07 | PHASE-PRD-07 | Wire the MSP parent and repair the context-authority path | Deep scan promotes one real candidate end-to-end and workflow.continue succeeds on the live tool surface with validated context authority | planned | 0 |
+| SPR-PRD-07 | PHASE-PRD-07 | Wire the MSP parent and repair the context-authority path | Deep scan promotes one real candidate end-to-end and workflow.continue succeeds on the live tool surface with validated context authority | in-progress | 70 |
 | SPR-PRD-08 | PHASE-PRD-08 | Close the transport authority bypasses and credential exposures | Sidecar and stdio enforce the same authority decision point; secrets no longer transit tool args, child env, or URLs | planned | 0 |
 | SPR-PRD-09 | PHASE-PRD-09 | Close the false-success paths and persist runtime truth | Each false-success path has a failing regression test, the roadmap overlay survives restart, and mutating mission commands are idempotent | planned | 0 |
 
@@ -272,9 +272,9 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-020 | SPR-PRD-03 | task | Remove fabricated telemetry from the D1 Reactor Run Trigger | P0 | VIBE | planned | - | Section 3.3 AUD-07 |
 | TASK-PRD-021 | SPR-PRD-03 | task | Distinguish disconnected, stale, and empty states per panel | P2 | VIBE | planned | - | Section 3.3 AUD-24 |
 | TASK-PRD-022 | SPR-PRD-04 | task | Extend H-axis remediation to the full leak sweep, fix the doc-generation template, and add a validator backstop | P1 | ATHER | planned | TASK-PRD-009 | Section 3.3 AUD-14 |
-| TASK-PRD-023 | SPR-PRD-07 | task | Configure and launch the in-repo MSP runtime with a promotion smoke test | P0 | VIBE | planned | - | Section 3.3 AUD-01 |
-| TASK-PRD-024 | SPR-PRD-07 | task | Forward contextAuthority through the hardened workflow.continue surface | P0 | VIBE | planned | TASK-PRD-023 | Section 3.3 AUD-02 |
-| TASK-PRD-025 | SPR-PRD-07 | task | Prepare the owner decision: integrate or descope the entitlement execution and credential stack | P1 | ARCHON | planned | - | Section 3.3 AUD-03 |
+| TASK-PRD-023 | SPR-PRD-07 | task | Configure and launch the in-repo MSP runtime with a promotion smoke test | P0 | VIBE | review | - | Section 3.3 AUD-01 |
+| TASK-PRD-024 | SPR-PRD-07 | task | Forward contextAuthority through the hardened workflow.continue surface | P0 | VIBE | review | TASK-PRD-023 | Section 3.3 AUD-02 |
+| TASK-PRD-025 | SPR-PRD-07 | task | Prepare the owner decision: integrate or descope the entitlement execution and credential stack | P1 | ARCHON | review | - | Section 3.3 AUD-03 |
 | TASK-PRD-026 | SPR-PRD-08 | task | Route sidecar mission commands through the RBAC decision point | P0 | ARCHON | planned | - | Section 3.3 AUD-04 |
 | TASK-PRD-027 | SPR-PRD-08 | task | Contain and govern docs.resolve and ingest.code file access | P0 | VIBE | planned | - | Section 3.3 AUD-05 |
 | TASK-PRD-028 | SPR-PRD-08 | task | Close credential exposures: child-env allowlist, WS token placement, log redaction, connector-token storage | P1 | VIBE | planned | - | Section 3.3 AUD-10 |
@@ -306,6 +306,9 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-015 | VIBE | agent | ABAC | 2026-08-09T00:00:00Z | Boss |
 | TASK-PRD-016 | ARCHON | agent | ABAC | 2026-08-09T00:00:00Z | Boss |
 | TASK-PRD-017 | VIBE | agent | ABAC | 2026-08-09T00:00:00Z | Boss |
+| TASK-PRD-023 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
+| TASK-PRD-024 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
+| TASK-PRD-025 | ARCHON | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 
 ## Handoffs
 
@@ -1337,8 +1340,8 @@ title: Configure and launch the in-repo MSP runtime with a promotion smoke test
 requirement_type: FR
 complexity: C-3
 access_scope: H3
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
 approver: Boss
@@ -1350,14 +1353,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a documented launch contract (environment plus supervision), when the MCP server starts with GOVIBE_MSP_COMMAND pointing at packages/msp-runtime, then probeHealth reports a healthy MSP parent and the vault, context, and memory tools stop failing with MspUnavailableError
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given a deep scan on a fixture workspace, when it runs against the configured MSP, then at least one candidate promotes end-to-end returning a validated gks reference and the scan reports complete rather than incomplete
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the promotion smoke test, when CI runs it, then the round-trip is proven by recorded command output and a failed MSP boot fails the check rather than silently degrading
       checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-01 (Section 3.3) — the audit's first blocker; the governed pipeline is fail-closed but dormant without a configured MSP parent. C-3 with H3 per the launch-contract and process-supervision scope; owner approval required before implementation per the C-3 rule.
+changelog: Opened 2026-08-19 from audit finding AUD-01 (Section 3.3) — the audit's first blocker; the governed pipeline is fail-closed but dormant without a configured MSP parent. C-3/H3 owner approval recorded 2026-08-19 - explicit Boss instruction in session ("เริ่ม TASK-PRD-023 เลย ขอ approve C-3"). Executed to review 2026-08-19 doc-first per §11.2 - launch contract already owned by RUNBOOK-Persistent-Memory-Runtime §3-§5 (extended with §7.1, 0.2.1+draft) rather than a new document. Landed - scripts/mcp/msp-promotion-smoke.mjs (npm run msp:smoke; env-contract boot, health probe with bounded cold-boot retry, 12-stage deep scan on a disposable fixture, requires status complete plus at least one promoted gks ref, Windows-safe cleanup); .env/.env.example MSP block; mcp:dev and mission:dev load .env via --env-file-if-exists (shell env wins); .govibe/msp/ gitignored db convention; baseline-check workflow runs msp:smoke after baseline:check. Evidence - msp:smoke PASS twice locally (health_state ready; stages 01-12 complete or not_applicable with proofs; 8 candidates promoted, e.g. gks:knowledge/c1f90ae2296cda9d5ede78d740fca7a6337ee21d4b721714830b66f8356eafcf); live server booted with the mcp:dev command path answered govibe.vault.status through the typed MSP contract with real vault refs (not MspUnavailableError). Acceptance and success criteria ticked on that evidence; the exit criterion stays open until the CI run on this change proves the gate, then ticks citing the run id.
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1381,8 +1384,8 @@ title: Forward contextAuthority through the hardened workflow.continue surface
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
 approver: Boss
@@ -1394,14 +1397,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a govibe.workflow.continue call carrying a valid contextAuthority and knowledgeRefs, when it arrives through the live MCP tool surface, then the hardening wrapper forwards both fields and the call reaches MSP context resolution instead of blocking with missing_runtime_authority
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the two wrapper layers (argument hardening and the workspace service), when either forwards a continue call, then a shared forwarding contract prevents the field-drop drift from recurring
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given an integration test against the live tool surface with a configured MSP, when a valid continue is issued, then it returns a non-blocked status with a persisted context packet and lineage identifiers
-      checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-02 (Section 3.3) — the WP-05 hardening wrapper shadows the newer authority-forwarding path, making the approved context contract unreachable.
+      checked: true
+changelog: Opened 2026-08-19 from audit finding AUD-02 (Section 3.3) — the WP-05 hardening wrapper shadows the newer authority-forwarding path, making the approved context contract unreachable. Executed to review 2026-08-19 - extracted the single forwarding contract to scripts/mcp/runtime/continue-forwarding.mjs (now carrying contextAuthority); both wrapper layers (runtime-argument-hardening override, which re-exports it for compatibility, and WorkspaceService.continue) build their core call through it; the govibe.workflow.continue inputSchema now advertises contextAuthority/knowledgeRefs/workspaceId. Evidence - scripts/mcp/runtime/continue-forwarding.test.mjs pins the contract (drift guard), and scripts/mcp/workflow-continue-live.test.mjs boots the real msp-runtime and drives the real handlers+hardened-runtime composition: a valid continue returns status ready with packet, msp:context-injection ref, and an on-disk cachePath, while a stripped authority still blocks with missing_runtime_authority. Local run 4/4 passed (vitest 9.8s). All three criteria ticked on that evidence; ATHER audit and Boss approval pending at review.
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1425,8 +1428,8 @@ title: Prepare the owner decision to integrate or descope the entitlement execut
 requirement_type: NFR
 complexity: C-2
 access_scope: H1
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: ARCHON
 executor: ARCHON
 approver: Boss
@@ -1438,14 +1441,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given the roughly fifteen test-only modules (execution router, binding service, capability planner, provider adapters and registries, usage ledger, credential vault and handoff, replay provider, canonical materialization, mode2), when the decision brief is delivered, then each module carries an integrate, descope, or defer recommendation with its dependency cost and the ADR-024/ADR-028 ratification implications stated
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the live agent execution path (PowerShell launcher and PTY sessions), when the integrate option is evaluated, then the brief specifies exactly where the binding and dispatch gates would attach and what breaks without them
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the Boss handoff recorded for this task, when the owner decision lands, then follow-up implementation tasks are opened for the chosen option and no module remains ambient without a recorded disposition
       checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-03 (Section 3.3); also carries the AUD-21/AUD-22 disconnected-tool dispositions and the AUD-23 enforcement-model question into the same decision brief.
+changelog: Opened 2026-08-19 from audit finding AUD-03 (Section 3.3); also carries the AUD-21/AUD-22 disconnected-tool dispositions and the AUD-23 enforcement-model question into the same decision brief. Executed to review 2026-08-19 - decision brief authored as docs/change-control/change-requests/CR-2026-08-19-Entitlement-Execution-Stack-Disposition.md (draft, registered): 17-module disposition table with dependency cost and ratification implications, exact integrate attach points (runAgent runtime-core.mjs:192-233 via a subscription-CLI adapter wrapping invoke-agent.ps1, StEP dispatch on the router rebind path, A9 PTY phase-2), what-breaks-today analysis, and a phased D-01..D-05 selection honoring the 2026-08-03 owner deferral of API-008/ADR-024 promotion. Acceptance and success criteria ticked on the delivered brief; the exit criterion stays open until Boss records selections in the CR §6 and follow-up tasks are opened.
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1938,6 +1941,9 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.3.4 | 2026-08-19 | approved | Executed TASK-PRD-025 to review (Boss instruction in session): authored and registered CR-2026-08-19-Entitlement-Execution-Stack-Disposition (draft) — the AUD-03 decision brief with a 17-module disposition table, exact phase-1 attach points at runAgent/StEP, and phased selections D-01..D-05 for the owner, consistent with the 2026-08-03 deferral of API-008/ADR-024 promotion. The pending Boss handoff on this task now points at CR §6. TASK-PRD-025 assignment recorded (Boss). SPR-PRD-07 execution work is complete pending the owner decision; sprint progress stays 70 until the handoff resolves. | pending | Claude Fable 5 |
+| 0.3.3 | 2026-08-19 | approved | Executed TASK-PRD-024 to review (Boss instruction in session; depends-on TASK-PRD-023 satisfied by the live MSP wiring in 0.3.2). The AUD-02 contextAuthority drop is fixed via a single shared forwarding contract (scripts/mcp/runtime/continue-forwarding.mjs) consumed by both wrapper layers, with the tool inputSchema updated to advertise the governed fields. Evidence: new drift-guard unit test plus a live-surface integration test (real msp-runtime + handlers + hardened runtime) proving ready status with persisted packet/lineage and preserved fail-closed missing_runtime_authority when authority is absent — 4/4 locally. SPR-PRD-07/PHASE-PRD-07 progress 30 → 70; TASK-PRD-024 assignment recorded (Boss). Remaining in sprint: TASK-PRD-025 owner decision brief. | pending | Claude Fable 5 |
+| 0.3.2 | 2026-08-19 | approved | Started and executed TASK-PRD-023 to review on recorded owner C-3 approval (Boss, in session, 2026-08-19). The MSP launch contract goes live: msp:smoke promotion gate (scripts/mcp/msp-promotion-smoke.mjs) wired into baseline-check CI, .env/.env.example MSP block with mcp:dev/mission:dev loading .env via --env-file-if-exists, .govibe/msp/ database convention, and RUNBOOK-Persistent-Memory-Runtime extended to 0.2.1+draft with §7.1. Local evidence: msp:smoke PASS twice (health ready, 12 stages, 8 promoted gks refs); live server via the mcp:dev command path completes govibe.vault.status through the typed MSP contract. PHASE-PRD-07/SPR-PRD-07 to in-progress 30; assignment row recorded (Boss). Exit criterion (CI-run proof) intentionally left unticked until the baseline-check run on this change is green. | pending | Claude Fable 5 |
 | 0.3.1 | 2026-08-19 | approved | Opened AUD-34 (mission protocol spec stale at 1.0.0 vs runtime 2.0.0/compat 2, two of six sidecar endpoints formally defined, no registry row) from the owner's endpoint-spec review, and bound it to new task TASK-PRD-034 under SPR-PRD-02 with a complete Task Container per §11.3. All statuses unchanged; the new task enters as planned. | pending | Claude Fable 5 |
 | 0.3.0 | 2026-08-19 | approved | Registered the 2026-08-19 repository-wide contract-to-runtime audit (commit b60618e) as Section 3.3: 33 findings (AUD-01..AUD-33) with severity, gap type, file evidence, and dispositions. Opened three phases for findings with no existing home — PHASE-PRD-07 governed-pipeline activation (SoT ADR-027), PHASE-PRD-08 uniform runtime authority and credential boundaries (SoT SPEC-Workspace-System), PHASE-PRD-09 completion-state integrity (SoT STD-Execution-Governance) — with sprints SPR-PRD-07..09 and sixteen new tasks TASK-PRD-018..033, every one landing with a complete Task Container per §11.3. Findings whose next step is owner-only authority (BRD/PRD/ADR-002 ratification, ADR-021/ADR-014-vs-027 amendments, engine/ and orphan-doc disposition, node-contract scope extension) are registered as `recorded` dispositions in §3.3 rather than self-tasked, and the integrate-or-descope decision on the dormant entitlement/credential stack is opened as TASK-PRD-025 with a pending Boss handoff. No gate status, DoD tick, phase/sprint/task status, or document status changed in this edit; all new work enters as `planned`. Doc status remains approved (structural additions under the live-document protocol; no draft/approved transition). | pending | Claude Fable 5 |
 | 0.2.5 | 2026-08-10 | approved | TASK-PRD-005 moved to review after the owner-approved orchestration contract landed: `MissionSnapshot.orchestration` is required with typed waves/tasks, runtime event validation is fail-closed, the reducer materializes updates, and protocol moves to 2.0.0 / compatibility 2. QA evidence is local targeted tests (23), lint, and production build; ATHER audit remains pending. | pending | ATHER |

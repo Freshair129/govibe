@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.54+draft"
+version: "0.3.57+draft"
 updated: "2026-08-19"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.54+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.57+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -58,6 +58,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Change Request | `CR-2026-08-04-PERSISTENT-MEMORY-MSP-RUNTIME` | `0.2.1+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Persistent-Memory-MSP-Runtime.md` |
 | Change Request | `CR-2026-08-10-MISSIONSNAPSHOT-ORCHESTRATION-CONTRACT` | `1.0.0` | approved | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-10-MissionSnapshot-Orchestration-Contract.md` |
 | Change Request | `CR-2026-08-15-MULTI-TENANT-PRINCIPAL-SCOPED-VAULT-BINDING` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-15-Multi-Tenant-Principal-Scoped-Vault-Binding.md` |
+| Change Request | `CR-2026-08-19-ENTITLEMENT-EXECUTION-STACK-DISPOSITION` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-19-Entitlement-Execution-Stack-Disposition.md` |
 | Work Packet | `WP-12-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-0-1` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-12-Persistent-Memory-MSP-Runtime-Phase-0-1.md` |
 | Work Packet | `WP-13-PERSISTENT-MEMORY-MSP-RUNTIME-PHASE-2` | `0.1.2+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-13-Persistent-Memory-MSP-Runtime-Phase-2.md` |
 | Work Packet | `WP-14-VAULT-SCOPING-MSP-RUNTIME-ENTITIES` | `0.1.3+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/work-packets/WP-14-Vault-Scoping-Msp-Runtime-Entities.md` |
@@ -89,7 +90,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.1` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.4` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -184,7 +185,7 @@ These files map historical or cross-document terminology into canonical owners. 
 | Runbook | `RUNBOOK-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.0+draft` | draft | JANUS / KIN | `docs/operations/runbooks/RUNBOOK-MSP-Validate-Evidence-Adapter.md` |
 | Runbook | `RUNBOOK-GOVIBE-FIRST-USE` | `0.1.3+draft` | draft | GoVibe | `docs/operations/runbooks/RUNBOOK-GoVibe-First-Use.md` |
 | Runbook | `RUNBOOK-GOVIBE-MULTI-AGENT` | `0.2.0+draft` | draft | GoVibe | `docs/operations/runbooks/RUNBOOK-GoVibe-Multi-Agent.md` |
-| Runbook | `RUNBOOK-PERSISTENT-MEMORY-RUNTIME` | `0.2.0+draft` | draft | Boss (CEO) | `docs/operations/runbooks/RUNBOOK-Persistent-Memory-Runtime.md` |
+| Runbook | `RUNBOOK-PERSISTENT-MEMORY-RUNTIME` | `0.2.1+draft` | draft | Boss (CEO) | `docs/operations/runbooks/RUNBOOK-Persistent-Memory-Runtime.md` |
 | Handover | `GVDOC-1004` | `2.3.0+draft` | draft | THESEUS | `docs/handover/GVDOC-1004-Handover Specification.md` |
 | SRS | `SRS-GOVIBE-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | ARCHON / ATHER | `docs/srs/SRS-GoVibe-Task-Scoped-Context-Injection.md` |
 | SRS | `SRS-GOVIBE-MCP-SERVER` | `0.2.1` | approved | GoVibe | `docs/srs/SRS-GoVibe-MCP-Server.md` |
@@ -231,6 +232,9 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.57+draft | 2026-08-19 | Claude Fable 5 | TASK-PRD-025 execution sync: registered CR-2026-08-19-ENTITLEMENT-EXECUTION-STACK-DISPOSITION (draft, Boss decision pending in its §6) and MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.4 (task to review). No document status changed by this row. |
+| 0.3.56+draft | 2026-08-19 | Claude Fable 5 | TASK-PRD-024 execution sync: MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.3 (contextAuthority forwarding fixed via shared contract; live-surface integration test green; task to review). No document status changed by this row. |
+| 0.3.55+draft | 2026-08-19 | Claude Fable 5 | TASK-PRD-023 execution sync: MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.2 (task to review on recorded owner C-3 approval; MSP launch contract wired with msp:smoke CI gate) and RUNBOOK-PERSISTENT-MEMORY-RUNTIME to 0.2.1+draft (§7.1 promotion smoke gate and local .env launch path). No document status changed by this row. |
 | 0.3.54+draft | 2026-08-19 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.1: AUD-34 opened (mission protocol spec stale/incomplete/unregistered) and bound to TASK-PRD-034 with a complete Task Container. No document status changed by this row. |
 | 0.3.53+draft | 2026-08-19 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.0: the 2026-08-19 contract-to-runtime audit register (§3.3, AUD-01..AUD-33) landed with three new phases (PHASE-PRD-07..09), sprints SPR-PRD-07..09, and sixteen new tasks TASK-PRD-018..033, each with a complete Task Container per the plan's §11.3 promotion rule. All new work enters as planned; no document status changed by this row. |
 | 0.3.52+draft | 2026-08-17 | Claude Sonnet 5 | Registered CONTRACT-GOVIBE-PMADAPTER (draft) and GLS-005 closure row: BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.6+draft (PmAdapter contract, registry, Notion/Jira adapters, and the govibe.pm.export/sync MCP tools implemented and closed to done). Owner-directed ("เริ่ม GLS-005 ต่อเลย"), not an independent ATHER audit reproduction. AC-01 is ticked on contract-level evidence (real request shape confirmed against Notion's live API with an invalid token) -- no live Notion or Jira account exists in this session, so a full successful export against a connected account remains unverified and is explicitly noted as such in both the contract doc and the Task Container changelog. |
