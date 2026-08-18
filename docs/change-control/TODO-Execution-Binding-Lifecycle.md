@@ -2,8 +2,8 @@
 title: "TODO: Execution-Binding Lifecycle"
 doc_id: "TODO-EXECUTION-BINDING-LIFECYCLE"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-08-03"
+version: "0.1.1+draft"
+updated: "2026-08-19"
 owner: "Boss (CEO) / ATHER"
 source_of_truth: true
 parent_change_request: "CR-2026-08-02-MULTI-PROVIDER-ENTITLEMENT-ROUTING"
@@ -192,8 +192,31 @@ T-05 rollback monitoring ----> ongoing evidence and rollback readiness
 4. After receiving that evidence, what single bundled lifecycle decision should
    govern the parent CR, ADR-024, API-007, and API-008?
 
+## Deferred dispositions (CR-2026-08-19, owner decision D-03)
+
+Recorded from `docs/change-control/change-requests/CR-2026-08-19-Entitlement-Execution-Stack-Disposition.md`
+(Boss approved D-01..D-05, 2026-08-19). Each module below is **deferred** — a
+recorded disposition, not an ambient capability — and stays excluded from any
+completeness claim until its revisit trigger fires.
+
+| Module | Disposition | Revisit trigger |
+|---|---|---|
+| `packages/govibe-core/src/provider-entitlement-registry.mjs` | deferred | a second live provider requiring entitlement arbitration; API-008 promotion |
+| `packages/govibe-core/src/provider-compatibility-registry.mjs` | deferred | same |
+| `packages/govibe-core/src/provider-session-registry.mjs` | deferred | A9 multi-session governance need |
+| `packages/govibe-core/src/entitlement-usage-ledger.mjs` | deferred | a durable-persistence design for the ledger |
+| `packages/govibe-core/src/mode2/` | deferred | Mode 2 scope entering governance (the driving draft is currently untracked/ungoverned) |
+| `packages/govibe-core/src/canonical-materialization.mjs` | deferred | a batch-materialization consumer beyond the live per-stage deep-scan path |
+
+Integrated per the same decision: planner/router/binding/adapter host + one
+subscription-CLI adapter (D-01 → TASK-PRD-035); credential stack (D-02 →
+TASK-PRD-028). `replay-provider` gets a pinned test with consumption deferred
+(D-04 → TASK-PRD-036). `poc/` remains the isolated reference implementation
+(D-05).
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-19 | ARCHON / Boss | Recorded the CR-2026-08-19 owner-approved D-03 deferred dispositions (entitlement/compatibility/session registries, usage ledger, mode2, canonical-materialization) with revisit triggers, and the D-01/D-02/D-04/D-05 execution pointers. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Registered only remaining execution-binding lifecycle work after WP-06, WP-10, and WP-11 closure; retained unknown external, provider, graph, rollback, and bundled lifecycle gates without inferring promotion or safety. |

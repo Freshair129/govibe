@@ -28,10 +28,11 @@
     "preview": "vite preview",
     "env:validate": "node scripts/docs/validate-env.mjs",
     "mcp:smoke": "node scripts/mcp/smoke-test.mjs",
+    "msp:smoke": "node scripts/mcp/msp-promotion-smoke.mjs",
     "roadmap:validate": "node scripts/docs/validate-roadmap-containers.mjs",
     "roadmap:export": "node scripts/mcp/export-roadmap.mjs",
-    "mcp:dev": "node scripts/mcp/govibe-mcp-server.mjs",
-    "mission:dev": "node scripts/mcp/govibe-mcp-server.mjs"
+    "mcp:dev": "node --env-file-if-exists=.env scripts/mcp/govibe-mcp-server.mjs",
+    "mission:dev": "node --env-file-if-exists=.env scripts/mcp/govibe-mcp-server.mjs"
   },
   "dependencies": {
     "@lydell/node-pty": "^1.2.0-beta.15",

@@ -22,6 +22,7 @@ Thumbs.db
 .govibe/project-state.json
 .govibe/skill-lock.json
 .govibe/runs/
+.govibe/msp/
 .agents/*/session_logs/
 
 # GoVibe inbound governance

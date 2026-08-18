@@ -25,3 +25,7 @@ jobs:
       - run: npm ci
       - run: npm ci --prefix packages/msp-runtime
       - run: npm run baseline:check
+      # TASK-PRD-023: prove the MSP launch contract on every PR — boots the
+      # in-repo msp-runtime via GOVIBE_MSP_COMMAND and round-trips one real
+      # candidate promotion. A failed MSP boot fails this check.
+      - run: npm run msp:smoke

@@ -24,22 +24,9 @@ async function resolveBoundedWorkspace(requestedPath, allowedRoots = []) {
   return target;
 }
 
-export function buildContinueForwardingArgs(args, workspacePath, mspClient, trustedWorkspaceHashes = []) {
-  return {
-    workspacePath,
-    mspClient,
-    actor: args.actor ?? "unknown",
-    executor: args.executor ?? "codex",
-    agentId: args.agentId ?? "default-agent",
-    contextProfile: args.contextProfile ?? "V-ctx",
-    workflowRef: args.workflowRef ?? args.workflowId ?? null,
-    parentContextId: args.parentContextId ?? null,
-    sessionId: args.sessionId ?? null,
-    runId: args.runId,
-    turnId: args.turnId,
-    trustedWorkspaceHashes,
-  };
-}
+import { buildContinueForwardingArgs } from "./runtime/continue-forwarding.mjs";
+
+export { buildContinueForwardingArgs };
 
 export function buildImpactForwardingArgs(args, workspacePath) {
   return {

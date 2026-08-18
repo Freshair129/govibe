@@ -1,5 +1,7 @@
 import { realpath } from "node:fs/promises";
 import path from "node:path";
+
+import { buildContinueForwardingArgs } from "./continue-forwarding.mjs";
 import {
   assertPolicyAllows, continueWorkflow, createPolicyEnvelope, createWorkflowPlan, docsVersion, getWorkflowStatus, validateContextAuthorityCorrelation,
   initializeWorkspace, optimizeMeasured, readSkillDefinition, reviewWorkspace, scanWorkspace, transitionWorkflow, workspaceImpact,
@@ -39,7 +41,7 @@ export class WorkspaceService {
     }
     validateContextAuthorityCorrelation(args.contextAuthority, { workspaceId: args.workspaceId, agentId: args.agentId, runId: args.runId, sessionId: args.sessionId, turnId: args.turnId, parentContextId: args.parentContextId, knowledgeRefs: args.knowledgeRefs });
     const builtInSkill = await readSkillDefinition(path.join(this.workspaceRoot, ".govibe", "skills", "block-decomposition", "1.0.0", "SKILL.md"));
-    const result = await continueWorkflow({ workspacePath: target, mspClient: this.mspClient, actor: args.actor ?? "unknown", executor: args.executor ?? "codex", agentId: args.agentId, runId: args.runId, sessionId: args.sessionId, turnId: args.turnId, parentContextId: args.parentContextId, contextAuthority: args.contextAuthority, trustedWorkspaceHashes: [builtInSkill.contentHash] });
+    const result = await continueWorkflow(buildContinueForwardingArgs(args, target, this.mspClient, [builtInSkill.contentHash]));
     this.snapshotStore.appendTerminal(result.status === "ready" ? "sys" : "warn", `GoVibe continue ${result.status}.`); return result;
   }
   async createPlan(args = {}) { const result = await createWorkflowPlan({ workspacePath: await this.target(args.workspacePath), runId: args.runId, tasks: args.tasks, policyEnvelope: createPolicyEnvelope(args.mode ?? "codev", args.actor ?? "unknown") }); this.publishRun(result); return result; }
