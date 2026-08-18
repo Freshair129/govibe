@@ -2,8 +2,8 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.2.5"
-updated: "2026-08-10"
+version: "0.3.0"
+updated: "2026-08-19"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
 auditor: "ATHER"
@@ -150,6 +150,53 @@ Recorded from the live snapshot. This table is the acceptance surface for PHASE-
 | D2 Cyber Reactor Heatmap | heatmap | field absent | unwired |
 | D3 EABS-01 Campaign Logs | campaignLogs | 0 | unwired |
 
+### 3.3 Contract-to-Runtime Audit Findings (2026-08-19)
+
+Recorded from a repository-wide read-only contract-to-runtime gap analysis performed 2026-08-19 on
+commit `b60618e` (six parallel domain audits: documents/contracts, MCP runtime and protocol,
+govibe-core pipeline, Mission Control frontend, tests/CI/evidence, governance enforcement). Every
+row carries direct file evidence. Dispositions: a `TASK-PRD-0xx` value means the finding is bound
+to a backlog task in this plan; `existing` names the task that already covers it; `recorded` means
+the finding is registered here and its next step is an owner decision or lies outside this plan's
+readiness scope — recorded findings are not silently dropped and must be dispositioned by the
+owner before any end-to-end completeness claim.
+
+| Audit ID | Severity | Type | Finding | Evidence | Disposition |
+|---|---|---|---|---|---|
+| AUD-01 | BLOCKER | MISSING_EDGE | No MSP process is ever configured; every governed path (deep-scan promotion, context resolution, memory/vault tools) fails closed permanently | `packages/govibe-core/src/msp-client.mjs:196-200`; no `GOVIBE_MSP_COMMAND` anywhere; WP-12/WP-13 confirm unwired | TASK-PRD-023 |
+| AUD-02 | BLOCKER | MISSING_EDGE | The hardening wrapper drops `contextAuthority`/`knowledgeRefs`, so the context branch of `govibe.workflow.continue` always blocks with `missing_runtime_authority` | `scripts/mcp/runtime-argument-hardening.mjs:27-42` vs `scripts/mcp/runtime/workspace-service.mjs:40-42` | TASK-PRD-024 |
+| AUD-03 | BLOCKER | DISCONNECTED | The execution/provider/credential stack (~15 modules) has no runtime consumer; `govibe.agent.run` dispatches via the PowerShell launcher with no binding, budget, or tier decision | `scripts/mcp/runtime-core.mjs:80,84,192-233`; only `.inspect()` is called | TASK-PRD-025 (owner decision) |
+| AUD-04 | CRITICAL | AUTHORITY_BYPASS | Sidecar mission commands bypass `enforceToolRbac` with a hardcoded `actor: "mission-control"`; the bearer token is the only gate | `scripts/mcp/runtime/mission-command-router.mjs:34` vs `scripts/mcp/handlers.mjs:40` | TASK-PRD-026 |
+| AUD-05 | CRITICAL | UNENFORCED_CONTRACT | `govibe.docs.resolve` and `govibe.ingest.code` are ungoverned arbitrary file reads (absolute paths honored, no containment, outside the RBAC matrix) | `scripts/mcp/runtime-core.mjs:179-190`; `scripts/mcp/runtime/translator-service.mjs:18` | TASK-PRD-027 |
+| AUD-06 | CRITICAL | UNENFORCED_CONTRACT | Three false-success paths to `done`: empty DoD passes vacuously; `node.update` accepts `state: done` unguarded; workflow-engine accepts caller-asserted `{passed: true}` | `scripts/mcp/verify-gate.mjs:60-61` + `orchestration-service.mjs:12`; `roadmap-service.mjs:378-395`; `workflow-engine.mjs:86` | TASK-PRD-030 |
+| AUD-07 | CRITICAL | MOCKED_REALITY | D1 Reactor Run Trigger fabricates hardware telemetry, benchmark results, and replay logs presented as real-time state — the sole live-data-rule violation | `src/features/benchmark/ReactorRunTrigger.tsx:113-309,505-576,599-605` | TASK-PRD-020 |
+| AUD-08 | CRITICAL | UNENFORCED_CONTRACT | C-3/H4 approval gates accept any non-empty `approvalRef`; `actor` is free text; no principal identity on the shared-token sidecar — ceremony, not verified authority | `workflow-node-action-service.mjs:57-61`; `agent-session-service.mjs:162-164` | TASK-PRD-029 |
+| AUD-09 | CRITICAL | SPEC_ONLY | Identity resolution, conflict detection, and reverse semantic delta exist only in isolated `poc/` (zero production imports); governing SRS-Canonical-Semantic-IR is draft | `packages/govibe-core/src/poc/` isolation verified by grep | recorded — blocked on AUD-01/02 and owner ratification of the CSIR spec; product surface beyond this plan's scope |
+| AUD-10 | CRITICAL | CONTEXT_LEAK | PM connector tokens travel plaintext in tool args bypassing the built credential vault; spawned agent PTYs inherit full `process.env` incl. server tokens; WS token rides in the URL; session logs persist full args | `pm-export-service.mjs:33-46`; `agent-session-service.mjs:176`; `sidecar-server.mjs:251`; `runtime-core.mjs:226` | TASK-PRD-028 |
+| AUD-11 | CRITICAL | RECOVERY_GAP | All runtime roadmap mutations (approvals, done-states, assignments) live in an in-memory overlay and evaporate on server restart; docs are never written back | `scripts/mcp/runtime/temporal-overlay-store.mjs` (plain Maps, no fs) | TASK-PRD-031 |
+| AUD-12 | HIGH | TRACEABILITY_BREAK | Approved plans bind to draft BRD/PRD as governing SoT; ADR-002 — the foundational MCP decision — is still `proposed` beneath an approved SRS | §2.1 of this plan; `docs/adr/ADR-002-MCP-As-Primary-Orchestration-Interface.md` | recorded — owner ratification package (BRD/PRD/ADR-002); draft→approved is owner-only |
+| AUD-13 | HIGH | CONTRADICTION | ADR-021 still names RWANG-PROMAX as canonical Execution Governance home (stale, inverted vs STD 2.4.0+ga and AGENTS.md §1.1) and is absent from the version registry; ADR-014's external-validator MSP vs ADR-027's in-repo memory MSP were never reconciled | `ADR-021:36` + frontmatter; registry grep (no ADR-021 row) | recorded — ADR amendments require owner acceptance |
+| AUD-14 | HIGH | LEGACY_LEAK | Abolished H5/H6/`context_scaling_tier` semantics are active in ~20 documents (GAP-08 names 4), including both PRDs, the approved MVP masterplan frontmatter, and the doc-generation template that re-seeds the leak; no validator bans them | audit sweep incl. `docs/PRD-GoVibe-Platform-Overview.md:15`, `MASTERPLAN-govibe-mvp-developer-trial.md:10,107`, `.agents/doc_writer/template/GENESIS-BLOCK-TEMPLATE.md:28-75` | TASK-PRD-022 |
+| AUD-15 | HIGH | UNENFORCED_CONTRACT | Impact-before-completion and docs-first are document-only: nothing requires `govibe.workspace.impact` before closure and `diff:check` is wired into no hook or CI workflow | `scripts/docs/diff-check.mjs` (manual-only); no gate consumes impact output | TASK-PRD-032 |
+| AUD-16 | HIGH | MISSING_EDGE | Zero cross-runtime MissionSnapshot parity tests (GATE-CONTRACT unmet); 7 slices producer-less, `heatmap` frontend-only, `roadmap.dag` rides untyped | `src/mission/domain.ts` vs `scripts/mcp/runtime/snapshot-store.mjs` | TASK-PRD-019 |
+| AUD-17 | HIGH | MOCKED_REALITY | App-level E2E is zero: the only Playwright spec exercises a static mockup fixture; June root docs claim "COMPLETE and production ready" with estimated pass rates; JULES_REPORT.md reports on a foreign repository | `playwright.config.ts:16`; `e2e/landing-page.spec.ts`; root E2E/summary docs | existing — TASK-PRD-004 (E2E); orphan-doc cleanup recorded under AUD-31 |
+| AUD-18 | HIGH | FAILURE_GAP | No command idempotency (`commandId` echoed, never deduplicated — retried mutations double-apply), no event sequence numbers, no protocol version negotiation | `sidecar-server.mjs:99-103`; `packages/mission-protocol/index.js` | TASK-PRD-033 |
+| AUD-19 | HIGH | SPEC_ONLY | Wave execution is planning-only: `AutonomyController` named in comments exists nowhere; multi-agent orchestration is a single StEP loop | `scripts/mcp/wave.mjs:5`; no caller of `nextRunnableWave` | recorded — product surface owned by the MVP developer-trial plan |
+| AUD-20 | HIGH | MISSING_NODE | `governance-rules.mjs` does not exist anywhere in the repo; governance logic is spread across four scripts | repo-wide grep, zero hits | recorded — external stale claim; no repo artifact to fix |
+| AUD-21 | HIGH | DISCONNECTED | `replay-provider.mjs` has zero consumers and zero tests; `mode2/` (full pipeline) and `canonical-materialization.mjs` have no runtime caller | `packages/govibe-core/src/` import graph | recorded — consume or descope with the TASK-PRD-025 decision |
+| AUD-22 | HIGH | DISCONNECTED | `govibe.doc.create` is advertised in the catalog but has no handler case (uncallable); `govibe.deploy.vercel` is a placeholder; `file.save` is a no-op on both ends | `registry.mjs:230-243` vs `handlers.mjs:332-333`; `handlers.mjs:166-185` | recorded — fix or retire with the tool-surface decision (TASK-PRD-025) |
+| AUD-23 | HIGH | PARTIAL | H is a declared ceiling, not a sandbox: spawned PTYs get full env and filesystem regardless of declared scope; C-0→H2 defaults are uncoded; RBAC executor scope defaults permissive H4 | `agent-session-service.mjs:176`; `rbac-enforcement.mjs:126` | recorded — enforcement-model decision, linked to TASK-PRD-025/029 |
+| AUD-24 | HIGH | OBSERVABILITY_GAP | No per-panel disconnected/stale/unauthorized distinction — a WS drop leaves every view showing the last snapshot with only a global StatusBar hint; ingested debug events carry no provenance marker | `src/StatusBar.tsx:4-5`; `gateway.ts` | TASK-PRD-021 |
+| AUD-25 | MEDIUM | PARTIAL | `mcp:smoke` and `diff:check` never run in CI; `env:validate` self-disables under `CI`; `enforce_admins: false` lets pushes bypass the required check | `scripts/docs/validate-env.mjs`; workflows grep; branch protection query | TASK-PRD-018 |
+| AUD-26 | MEDIUM | TEST_ONLY | Five dead test files in `tests/` (no runner collects them); `credential-session-boundary.security.test.mjs` runs in the unit lane, not the security lane | `vitest.config.ts:16-33`; `package.json:16` | TASK-PRD-018 |
+| AUD-27 | MEDIUM | FAILURE_GAP | `workspace.initialize` writes all local materialization before the MSP registration call, leaving partial `.govibe/`/`.brain/` state on failed init | `packages/govibe-core/src/workspace.mjs:47-104` | recorded — fix within SPR-PRD-07 scope when the MSP path goes live |
+| AUD-28 | MEDIUM | CONTRADICTION | CLAUDE.md is stale on ≥6 material points (CI gating, plan status, view count, gateway ingress surface, `vaults.json`, governance-rules framing) | CLAUDE.md vs this plan §4 and live code | recorded — contract refresh recommended alongside the AUD-12 owner package |
+| AUD-29 | MEDIUM | PARTIAL | Node-contract enforcement is gate-time only and scoped to a single backlog source | `validate-roadmap-containers.mjs:42` | recorded — scope extension is an owner governance decision |
+| AUD-30 | MEDIUM | DISCONNECTED | `engine/` has zero tracked files; its gitignore comment ("Engine source stays tracked") is false; only island runtime artifacts remain | `git ls-files engine` = 0; `.gitignore:33-38` | recorded — delete or integrate is an owner decision |
+| AUD-31 | LOW | LEGACY_LEAK | Nine-plus ungoverned root-level orphan docs (June E2E celebration set, stale Tauri plan, foreign JULES_REPORT.md); registry omissions (ADR-021 among them); untracked Mode 2 draft carries product direction outside governance | root listing; registry grep | recorded — cleanup batch for owner triage |
+| AUD-32 | LOW | PARTIAL | Cosmetic affordances imply state changes that never happen (A2 drag-assign animation sends nothing; placebo Configure/Re-align buttons); A9 mojibake separators; WS token in URL query | `RoadmapBoard.tsx:122-137`; `AgentConsoleView.tsx:194,203` | recorded — candidates for SPR-PRD-03 hygiene; WS token covered by TASK-PRD-028 |
+| AUD-33 | LOW | LEGACY_LEAK | Legacy `contextTier` still accepted as a step argument; a third H-meaning (H = model tier) lives in `docs/alignment/small-model-prompting.md:131` | `orchestration-service.mjs:12` | recorded — fold into TASK-PRD-022 sweep scope |
+
 ## 4. Readiness Gates
 
 Production is claimable only when every gate below is green. A gate is never satisfied by lowering
@@ -179,6 +226,9 @@ any production claim that involves a network-reachable deployment.
 | PHASE-PRD-04 | Remove abolished H-axis semantics from active documents | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | GATE-SEMANTIC is met | planned | 0 |
 | PHASE-PRD-05 | Package a repeatable clean-checkout developer trial | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` | GATE-BOOTSTRAP is met | planned | 0 |
 | PHASE-PRD-06 | Bring the runtime into verified conformance with the Workspace System spec | `docs/specs/SPEC-Workspace-System.md` | Spec acceptance criteria AC-01 through AC-08 hold with recorded command evidence | done | 100 |
+| PHASE-PRD-07 | Activate the governed semantic pipeline (MSP parent and context authority) | `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md` | A real candidate promotion round-trips through a configured MSP and a live-surface workflow.continue succeeds with validated context authority, both with recorded command evidence | planned | 0 |
+| PHASE-PRD-08 | Enforce runtime authority uniformly across transports and close credential exposures | `docs/specs/SPEC-Workspace-System.md` | No mutating surface bypasses the RBAC decision point and approval references verify against recorded approvals | planned | 0 |
+| PHASE-PRD-09 | Make completion states trustworthy | `docs/STD-Execution-Governance.md` | No path reaches done without a non-vacuous verification pass and runtime mutations survive a server restart | planned | 0 |
 
 ## Sprints
 
@@ -191,6 +241,9 @@ any production claim that involves a network-reachable deployment.
 | SPR-PRD-04 | PHASE-PRD-04 | Correct the H-axis vocabulary in architecture documents | A repository scan finds no active `H5`/`H6` access semantics | planned | 0 |
 | SPR-PRD-05 | PHASE-PRD-05 | Author and verify the clean-checkout quickstart | A reviewer reaches a running Mission Control from the document alone | planned | 0 |
 | SPR-PRD-06 | PHASE-PRD-06 | Pin workspace-spec conformance and land the personnel identity and RBAC contracts | AC-01 through AC-06 are pinned by automated tests; the personnel and RBAC suites demonstrate AC-07 and AC-08 | done | 100 |
+| SPR-PRD-07 | PHASE-PRD-07 | Wire the MSP parent and repair the context-authority path | Deep scan promotes one real candidate end-to-end and workflow.continue succeeds on the live tool surface with validated context authority | planned | 0 |
+| SPR-PRD-08 | PHASE-PRD-08 | Close the transport authority bypasses and credential exposures | Sidecar and stdio enforce the same authority decision point; secrets no longer transit tool args, child env, or URLs | planned | 0 |
+| SPR-PRD-09 | PHASE-PRD-09 | Close the false-success paths and persist runtime truth | Each false-success path has a failing regression test, the roadmap overlay survives restart, and mutating mission commands are idempotent | planned | 0 |
 
 ## Backlog Items
 
@@ -213,6 +266,22 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-015 | SPR-PRD-06 | task | Implement RBAC core: scoped roles, deny-by-default decisions, allow/deny audit | P1 | VIBE | done | TASK-PRD-014 | SPEC-Workspace-System §6 |
 | TASK-PRD-016 | SPR-PRD-06 | task | Enforce RBAC across the govibe.workspace.* tool surface | P2 | ARCHON | done | TASK-PRD-015 | SPEC-Workspace-System §6.2 |
 | TASK-PRD-017 | SPR-PRD-06 | task | Validate active personnel identity at the RBAC enforcement boundary | P2 | VIBE | done | TASK-PRD-016 | SPEC-Workspace-System §3.3 |
+| TASK-PRD-018 | SPR-PRD-01 | task | Close the CI coverage gaps: run mcp:smoke in CI, stop env:validate self-skipping, recover the dead and mis-laned tests | P1 | ATHER | planned | TASK-PRD-003 | Section 3.3 AUD-25, AUD-26 |
+| TASK-PRD-019 | SPR-PRD-02 | task | Add the cross-runtime MissionSnapshot parity contract test | P0 | ARCHON | planned | TASK-PRD-005 | Section 3.3 AUD-16 |
+| TASK-PRD-020 | SPR-PRD-03 | task | Remove fabricated telemetry from the D1 Reactor Run Trigger | P0 | VIBE | planned | - | Section 3.3 AUD-07 |
+| TASK-PRD-021 | SPR-PRD-03 | task | Distinguish disconnected, stale, and empty states per panel | P2 | VIBE | planned | - | Section 3.3 AUD-24 |
+| TASK-PRD-022 | SPR-PRD-04 | task | Extend H-axis remediation to the full leak sweep, fix the doc-generation template, and add a validator backstop | P1 | ATHER | planned | TASK-PRD-009 | Section 3.3 AUD-14 |
+| TASK-PRD-023 | SPR-PRD-07 | task | Configure and launch the in-repo MSP runtime with a promotion smoke test | P0 | VIBE | planned | - | Section 3.3 AUD-01 |
+| TASK-PRD-024 | SPR-PRD-07 | task | Forward contextAuthority through the hardened workflow.continue surface | P0 | VIBE | planned | TASK-PRD-023 | Section 3.3 AUD-02 |
+| TASK-PRD-025 | SPR-PRD-07 | task | Prepare the owner decision: integrate or descope the entitlement execution and credential stack | P1 | ARCHON | planned | - | Section 3.3 AUD-03 |
+| TASK-PRD-026 | SPR-PRD-08 | task | Route sidecar mission commands through the RBAC decision point | P0 | ARCHON | planned | - | Section 3.3 AUD-04 |
+| TASK-PRD-027 | SPR-PRD-08 | task | Contain and govern docs.resolve and ingest.code file access | P0 | VIBE | planned | - | Section 3.3 AUD-05 |
+| TASK-PRD-028 | SPR-PRD-08 | task | Close credential exposures: child-env allowlist, WS token placement, log redaction, connector-token storage | P1 | VIBE | planned | - | Section 3.3 AUD-10 |
+| TASK-PRD-029 | SPR-PRD-08 | task | Verify approval references against recorded approvals with principal identity | P1 | ARCHON | planned | TASK-PRD-026 | Section 3.3 AUD-08 |
+| TASK-PRD-030 | SPR-PRD-09 | task | Close the three false-success paths to done | P0 | VIBE | planned | - | Section 3.3 AUD-06 |
+| TASK-PRD-031 | SPR-PRD-09 | task | Persist runtime roadmap mutations across restart | P1 | VIBE | planned | - | Section 3.3 AUD-11 |
+| TASK-PRD-032 | SPR-PRD-09 | task | Gate completion of semantic changes on recorded impact evidence and wire diff:check into a gate | P1 | ATHER | planned | TASK-PRD-030 | Section 3.3 AUD-15 |
+| TASK-PRD-033 | SPR-PRD-09 | task | Add idempotency to mutating mission commands | P2 | ARCHON | planned | - | Section 3.3 AUD-18 |
 
 ## Assignments
 
@@ -244,6 +313,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-003 | ATHER | Boss | Green pull-request run of the full baseline gate | Confirms GATE-CI before further phases start | 2026-08-06T00:00:00Z | completed |
 | TASK-PRD-006 | ARCHON | Boss | Contract decision on the two orphan fields | Produce or retire is a product decision, not an implementation choice | 2026-08-06T00:00:00Z | pending |
 | TASK-PRD-007 | VIBE | ATHER | Impact analysis over the changed snapshot contract | Required before the wiring change closes | 2026-08-06T00:00:00Z | pending |
+| TASK-PRD-025 | ARCHON | Boss | Integrate-or-descope decision on the entitlement execution and credential stack | The ~15 test-only modules (execution router, bindings, provider adapters, credential vault) either enter the live dispatch path or are formally descoped with ADR-024/028 dispositioned; leaving them ambient is not an option | 2026-08-19T00:00:00Z | pending |
 
 ## Verification
 
@@ -266,6 +336,22 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-015 | passed | passed | n/a | 2026-08-09T19:45:00Z |
 | TASK-PRD-016 | passed | passed | n/a | 2026-08-09T19:45:00Z |
 | TASK-PRD-017 | passed | passed | n/a | 2026-08-09T19:45:00Z |
+| TASK-PRD-018 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-019 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-020 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-021 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-022 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-023 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-024 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-025 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-026 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-027 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-028 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-029 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-030 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-031 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-032 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-033 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 
 ## Task Containers
 
@@ -1017,6 +1103,710 @@ ui_state:
   disabled_reason: ""
 ```
 
+### TC-TASK-PRD-018
+
+```yaml
+task_container_id: TC-TASK-PRD-018
+task_id: TASK-PRD-018
+parent_phase_id: PHASE-PRD-01
+parent_sprint_id: SPR-PRD-01
+title: Close the CI coverage gaps and recover dead or mis-laned tests
+requirement_type: NFR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: ATHER
+executor: VIBE
+approver: Boss
+auditor: ARCHON
+symbol_links:
+  code: scripts/docs/validate-env.mjs
+  doc: docs/STD-Execution-Governance.md
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given a pull request, when continuous integration runs, then mcp:smoke executes and env:validate performs its checks instead of printing a CI skip message
+      checked: false
+  success_criteria:
+    - criterion: Given the five test files currently stranded under tests/ and the security-named test running in the unit lane, when the suite runs, then each is either collected by the correct lane or deleted with a recorded reason
+      checked: false
+  exit_criteria:
+    - criterion: Given branch protection is inspected, when the required checks are listed, then the closed gaps are reflected there and the enforce_admins posture is recorded as an explicit owner decision in this container's changelog
+      checked: false
+changelog: Opened 2026-08-19 from audit findings AUD-25 and AUD-26 (Section 3.3).
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 6000
+  total_token_usage: 6000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-019
+
+```yaml
+task_container_id: TC-TASK-PRD-019
+task_id: TASK-PRD-019
+parent_phase_id: PHASE-PRD-02
+parent_sprint_id: SPR-PRD-02
+title: Add the cross-runtime MissionSnapshot parity contract test
+requirement_type: FR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: ARCHON
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: scripts/mcp/runtime/snapshot-store.mjs
+  doc: docs/PRD-GoVibe-Platform-Overview.md
+  test: src/missionContract.test.ts
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given the TypeScript MissionSnapshot type and the runtime snapshot producer, when either side adds, removes, or renames a field the other side does not carry, then a collected test fails naming the mismatched field
+      checked: false
+  success_criteria:
+    - criterion: Given the currently known drift (seven producer-less slices, the frontend-only heatmap field, the untyped roadmap.dag rider), when the parity test first runs, then each item is either reconciled or covered by an explicitly recorded allowlist entry citing the owning product decision
+      checked: false
+  exit_criteria:
+    - criterion: Given the parity test is green in CI, when GATE-CONTRACT in Section 4 is re-evaluated, then it can be marked met citing the run that proves it
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-16 (Section 3.3); realizes the SPR-PRD-02 exit criterion.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 8000
+  total_token_usage: 8000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-020
+
+```yaml
+task_container_id: TC-TASK-PRD-020
+task_id: TASK-PRD-020
+parent_phase_id: PHASE-PRD-03
+parent_sprint_id: SPR-PRD-03
+title: Remove fabricated telemetry from the D1 Reactor Run Trigger
+requirement_type: FR
+complexity: C-1
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: src/features/benchmark/ReactorRunTrigger.tsx
+  doc: PRODUCT.md
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given the D1 view renders with no live benchmark feed, when a user inspects it, then no fabricated model results, Math.random hardware telemetry, simulated run lifecycle, or invented download progress is shown and the view presents an honest empty or unsupported state naming the missing feed
+      checked: false
+  success_criteria:
+    - criterion: Given the reactor.run command remains a backend no-op, when the user triggers it, then the UI reports the acknowledged-but-unimplemented status instead of simulating a successful benchmark run
+      checked: false
+  exit_criteria:
+    - criterion: Given a guard test over src/features, when any component presents randomly generated values as live telemetry, then the test fails
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-07 (Section 3.3) — the sole live-data-rule violation found by the audit.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 6000
+  total_token_usage: 6000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-021
+
+```yaml
+task_container_id: TC-TASK-PRD-021
+task_id: TASK-PRD-021
+parent_phase_id: PHASE-PRD-03
+parent_sprint_id: SPR-PRD-03
+title: Distinguish disconnected, stale, and empty states per panel
+requirement_type: FR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: src/mission/gateway.ts
+  doc: docs/PRD-GoVibe-Platform-Overview.md
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given the WebSocket transport drops, when a user views any panel, then the panel visibly distinguishes a lost connection with last-known data from a healthy connection with an empty feed
+      checked: false
+  success_criteria:
+    - criterion: Given an unauthorized (401) bootstrap, when the app loads, then the user sees a dedicated unauthorized state rather than a generic error connection label
+      checked: false
+  exit_criteria:
+    - criterion: Given events ingested through the C3 debug ingress, when they merge into the snapshot, then they carry a provenance marker distinguishing them from sidecar-delivered state
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-24 (Section 3.3).
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 8000
+  total_token_usage: 8000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-022
+
+```yaml
+task_container_id: TC-TASK-PRD-022
+task_id: TASK-PRD-022
+parent_phase_id: PHASE-PRD-04
+parent_sprint_id: SPR-PRD-04
+title: Extend H-axis remediation to the full leak sweep with a template fix and validator backstop
+requirement_type: NFR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: ATHER
+executor: THESEUS
+approver: Boss
+auditor: ARCHON
+symbol_links:
+  code: scripts/docs/validate-docs.mjs
+  doc: docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given the roughly twenty active documents the 2026-08-19 audit found carrying H5/H6 or context_scaling_tier semantics (including both PRDs, the approved MVP masterplan frontmatter, and the agent assets), when each is remediated or overlay-corrected, then a repository scan finds no active abolished-tier semantics outside clearly historical changelog text
+      checked: false
+  success_criteria:
+    - criterion: Given the doc-generation template .agents/doc_writer/template/GENESIS-BLOCK-TEMPLATE.md, when a new document is generated from it, then the output carries access_scope vocabulary and no context_scaling_tier field
+      checked: false
+  exit_criteria:
+    - criterion: Given docs:validate runs, when an active document introduces H5, H6, or context_scaling_tier as live semantics, then validation fails, preventing regression
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-14 (Section 3.3), which found GAP-08's four-file scope materially understated; also absorbs the AUD-33 legacy contextTier sweep note.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 12000
+  total_token_usage: 12000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-023
+
+```yaml
+task_container_id: TC-TASK-PRD-023
+task_id: TASK-PRD-023
+parent_phase_id: PHASE-PRD-07
+parent_sprint_id: SPR-PRD-07
+title: Configure and launch the in-repo MSP runtime with a promotion smoke test
+requirement_type: FR
+complexity: C-3
+access_scope: H3
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: packages/govibe-core/src/msp-client.mjs
+  doc: docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md
+  test: packages/govibe-core/src/msp-client.test.mjs
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given a documented launch contract (environment plus supervision), when the MCP server starts with GOVIBE_MSP_COMMAND pointing at packages/msp-runtime, then probeHealth reports a healthy MSP parent and the vault, context, and memory tools stop failing with MspUnavailableError
+      checked: false
+  success_criteria:
+    - criterion: Given a deep scan on a fixture workspace, when it runs against the configured MSP, then at least one candidate promotes end-to-end returning a validated gks reference and the scan reports complete rather than incomplete
+      checked: false
+  exit_criteria:
+    - criterion: Given the promotion smoke test, when CI runs it, then the round-trip is proven by recorded command output and a failed MSP boot fails the check rather than silently degrading
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-01 (Section 3.3) — the audit's first blocker; the governed pipeline is fail-closed but dormant without a configured MSP parent. C-3 with H3 per the launch-contract and process-supervision scope; owner approval required before implementation per the C-3 rule.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 15000
+  total_token_usage: 15000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-024
+
+```yaml
+task_container_id: TC-TASK-PRD-024
+task_id: TASK-PRD-024
+parent_phase_id: PHASE-PRD-07
+parent_sprint_id: SPR-PRD-07
+title: Forward contextAuthority through the hardened workflow.continue surface
+requirement_type: FR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: scripts/mcp/runtime-argument-hardening.mjs
+  doc: docs/architecture/ARCH-Vault-and-Context-Model.md
+  test: scripts/mcp/context-authority.security.mjs
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given a govibe.workflow.continue call carrying a valid contextAuthority and knowledgeRefs, when it arrives through the live MCP tool surface, then the hardening wrapper forwards both fields and the call reaches MSP context resolution instead of blocking with missing_runtime_authority
+      checked: false
+  success_criteria:
+    - criterion: Given the two wrapper layers (argument hardening and the workspace service), when either forwards a continue call, then a shared forwarding contract prevents the field-drop drift from recurring
+      checked: false
+  exit_criteria:
+    - criterion: Given an integration test against the live tool surface with a configured MSP, when a valid continue is issued, then it returns a non-blocked status with a persisted context packet and lineage identifiers
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-02 (Section 3.3) — the WP-05 hardening wrapper shadows the newer authority-forwarding path, making the approved context contract unreachable.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 8000
+  total_token_usage: 8000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-025
+
+```yaml
+task_container_id: TC-TASK-PRD-025
+task_id: TASK-PRD-025
+parent_phase_id: PHASE-PRD-07
+parent_sprint_id: SPR-PRD-07
+title: Prepare the owner decision to integrate or descope the entitlement execution and credential stack
+requirement_type: NFR
+complexity: C-2
+access_scope: H1
+status: planned
+version: 0.1.0+draft
+pic: ARCHON
+executor: ARCHON
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: packages/govibe-core/src/executor-adapter.mjs
+  doc: docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md
+  test: packages/govibe-core/src/executor-adapter.test.mjs
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given the roughly fifteen test-only modules (execution router, binding service, capability planner, provider adapters and registries, usage ledger, credential vault and handoff, replay provider, canonical materialization, mode2), when the decision brief is delivered, then each module carries an integrate, descope, or defer recommendation with its dependency cost and the ADR-024/ADR-028 ratification implications stated
+      checked: false
+  success_criteria:
+    - criterion: Given the live agent execution path (PowerShell launcher and PTY sessions), when the integrate option is evaluated, then the brief specifies exactly where the binding and dispatch gates would attach and what breaks without them
+      checked: false
+  exit_criteria:
+    - criterion: Given the Boss handoff recorded for this task, when the owner decision lands, then follow-up implementation tasks are opened for the chosen option and no module remains ambient without a recorded disposition
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-03 (Section 3.3); also carries the AUD-21/AUD-22 disconnected-tool dispositions and the AUD-23 enforcement-model question into the same decision brief.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 10000
+  total_token_usage: 10000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-026
+
+```yaml
+task_container_id: TC-TASK-PRD-026
+task_id: TASK-PRD-026
+parent_phase_id: PHASE-PRD-08
+parent_sprint_id: SPR-PRD-08
+title: Route sidecar mission commands through the RBAC decision point
+requirement_type: FR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: ARCHON
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: scripts/mcp/runtime/mission-command-router.mjs
+  doc: docs/specs/SPEC-Workspace-System.md
+  test: scripts/mcp/rbac-enforcement.test.mjs
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given an RBAC-enabled workspace, when a mission command that maps to a governed operation (workspace.scan among them) arrives via the sidecar, then it passes the same enforceToolRbac decision point as the stdio surface and a denial is audited identically
+      checked: false
+  success_criteria:
+    - criterion: Given the mission command router, when it attributes an actor, then the attribution comes from the authenticated request context rather than a hardcoded mission-control constant
+      checked: false
+  exit_criteria:
+    - criterion: Given a security test mirroring the stdio RBAC suite, when an unauthorized actor issues a governed mission command over HTTP and WebSocket, then both are denied with audit entries and the suite runs in the security lane
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-04 (Section 3.3).
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 8000
+  total_token_usage: 8000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-027
+
+```yaml
+task_container_id: TC-TASK-PRD-027
+task_id: TASK-PRD-027
+parent_phase_id: PHASE-PRD-08
+parent_sprint_id: SPR-PRD-08
+title: Contain and govern docs.resolve and ingest.code file access
+requirement_type: FR
+complexity: C-1
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: scripts/mcp/path-security.mjs
+  doc: docs/specs/SPEC-Workspace-System.md
+  test: scripts/mcp/path-security.test.mjs
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given a govibe.docs.resolve or govibe.ingest.code call with an absolute path or traversal sequence escaping the allowed roots, when the tool executes, then the path is rejected before any file read using the existing path-security containment
+      checked: false
+  success_criteria:
+    - criterion: Given the RBAC operation matrix, when either tool is invoked in an RBAC-enabled workspace, then the call is subject to a governed operation entry rather than falling through as operation_not_governed
+      checked: false
+  exit_criteria:
+    - criterion: Given security tests with traversal and absolute-path escape attempts on both tools, when the security lane runs, then every escape attempt fails closed
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-05 (Section 3.3) — both tools skipped the path-security module that already exists in the same directory.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 6000
+  total_token_usage: 6000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-028
+
+```yaml
+task_container_id: TC-TASK-PRD-028
+task_id: TASK-PRD-028
+parent_phase_id: PHASE-PRD-08
+parent_sprint_id: SPR-PRD-08
+title: Close credential exposures across child processes, transport, logs, and connector storage
+requirement_type: NFR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ARCHON
+symbol_links:
+  code: scripts/mcp/runtime/agent-session-service.mjs
+  doc: docs/adr/ADR-028-Multi-Tenant-Principal-Scoped-Vault-Binding.md
+  test: packages/govibe-core/src/credential-session-boundary.security.test.mjs
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given a spawned agent process or PTY session, when its environment is inspected, then it receives an explicit allowlist and server secrets (GOVIBE_MCP_TOKEN, GOVIBE_MSP_*) are absent
+      checked: false
+  success_criteria:
+    - criterion: Given WebSocket authentication and session logging, when a connection is established and tool calls are logged, then the token is carried outside the URL query string and persisted logs redact credential-bearing argument fields
+      checked: false
+  exit_criteria:
+    - criterion: Given PM connector operations, when govibe.pm.export or pm.sync runs, then connector tokens resolve from governed credential storage instead of arriving as plaintext per-call tool arguments, or the owner has recorded an explicit interim acceptance with an expiry
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-10 (Section 3.3); also covers the AUD-32 WS-token-in-URL note. The credential vault and handoff modules already exist with strong security tests — this task is the wiring, not new machinery.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 10000
+  total_token_usage: 10000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-029
+
+```yaml
+task_container_id: TC-TASK-PRD-029
+task_id: TASK-PRD-029
+parent_phase_id: PHASE-PRD-08
+parent_sprint_id: SPR-PRD-08
+title: Verify approval references against recorded approvals with principal identity
+requirement_type: FR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: ARCHON
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: scripts/mcp/runtime/workflow-node-action-service.mjs
+  doc: docs/STD-Execution-Governance.md
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given a C-3 canvas action or an H4 session start, when an approvalRef is presented, then it is verified against a recorded approval (approver identity, scope, timestamp) and an unverifiable reference is refused rather than accepted as any non-empty string
+      checked: false
+  success_criteria:
+    - criterion: Given a governed action, when the actor is attributed, then the attribution derives from an authenticated principal rather than free-text input defaulting to Boss
+      checked: false
+  exit_criteria:
+    - criterion: Given the audit log, when a verified governed action lands, then the entry links the action to the verified approval record so the chain is reconstructable
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-08 (Section 3.3) — the existing gates enforce ceremony, not verified authority. Depends on the TASK-PRD-026 authenticated-principal plumbing.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 10000
+  total_token_usage: 10000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-030
+
+```yaml
+task_container_id: TC-TASK-PRD-030
+task_id: TASK-PRD-030
+parent_phase_id: PHASE-PRD-09
+parent_sprint_id: SPR-PRD-09
+title: Close the three false-success paths to done
+requirement_type: FR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: scripts/mcp/verify-gate.mjs
+  doc: docs/STD-Execution-Governance.md
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given a StEP invocation whose definition of done declares zero checks, when the step runs, then it refuses to mark the task done on executor exit-code alone and reports the vacuous DoD instead of passing it
+      checked: false
+  success_criteria:
+    - criterion: Given a node.update mutation setting state to done, when no passing verification exists for the task, then the transition is refused or downgraded with an audited reason rather than applied silently
+      checked: false
+  exit_criteria:
+    - criterion: Given the workflow engine completion path, when a caller supplies a verification object, then completion requires evidence references that resolve, and three regression tests (one per former false-success path) fail on any reintroduction
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-06 (Section 3.3) — vacuous DoD pass, unguarded node.update, and caller-asserted verification each allowed done without proof.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 10000
+  total_token_usage: 10000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-031
+
+```yaml
+task_container_id: TC-TASK-PRD-031
+task_id: TASK-PRD-031
+parent_phase_id: PHASE-PRD-09
+parent_sprint_id: SPR-PRD-09
+title: Persist runtime roadmap mutations across restart
+requirement_type: FR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: scripts/mcp/runtime/temporal-overlay-store.mjs
+  doc: docs/PRD-GoVibe-Platform-Overview.md
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given runtime roadmap mutations (state changes, assignments, verifications, canvas approvals), when the MCP server restarts, then the mutations are restored from a durable journal instead of silently reverting to the markdown baseline
+      checked: false
+  success_criteria:
+    - criterion: Given the audit log references a mutation, when the referenced overlay entry is loaded after restart, then it exists — the audit trail's referents no longer evaporate
+      checked: false
+  exit_criteria:
+    - criterion: Given a restart test that mutates, restarts, and re-reads the snapshot, when it runs in the suite, then the mutation survives; any surface where volatility is deliberately retained is labeled as volatile in the UI and documented
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-11 (Section 3.3).
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 10000
+  total_token_usage: 10000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-032
+
+```yaml
+task_container_id: TC-TASK-PRD-032
+task_id: TASK-PRD-032
+parent_phase_id: PHASE-PRD-09
+parent_sprint_id: SPR-PRD-09
+title: Gate completion of semantic changes on recorded impact evidence and wire diff:check into a gate
+requirement_type: NFR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: ATHER
+executor: VIBE
+approver: Boss
+auditor: ARCHON
+symbol_links:
+  code: packages/govibe-core/src/impact/impact-engine.mjs
+  doc: docs/STD-Execution-Governance.md
+  test: packages/govibe-core/impact-engine.test.mjs
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given a task whose change touches semantic, schema, or authority-boundary surfaces, when it is moved to done, then the gate requires an attached govibe.workspace.impact result reference and refuses closure without one
+      checked: false
+  success_criteria:
+    - criterion: Given diff:check exists today as a manual-only script, when the gate design lands, then diff:check runs in a commit hook or CI workflow and a code change without a docs or masterplan change fails visibly
+      checked: false
+  exit_criteria:
+    - criterion: Given the impact gate is active, when a change closes with must_update items unaddressed, then the closure is blocked and the unresolved items are listed in the refusal
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-15 (Section 3.3) — impact-before-completion and docs-first exist only as prose today.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 10000
+  total_token_usage: 10000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-033
+
+```yaml
+task_container_id: TC-TASK-PRD-033
+task_id: TASK-PRD-033
+parent_phase_id: PHASE-PRD-09
+parent_sprint_id: SPR-PRD-09
+title: Add idempotency to mutating mission commands
+requirement_type: FR
+complexity: C-2
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: ARCHON
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: scripts/mcp/sidecar-server.mjs
+  doc: docs/PRD-GoVibe-MCP-Orchestration.md
+  test: scripts/mcp/sidecar-server.security.mjs
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given a mutating mission command carrying a commandId, when the same commandId is delivered twice (client retry or reconnect replay), then the mutation applies exactly once and the duplicate receives the original acknowledgement
+      checked: false
+  success_criteria:
+    - criterion: Given the gateway's idempotent-retry whitelist, when it is reconciled with the server dedup window, then retry-safe and retry-unsafe commands are classified consistently on both sides
+      checked: false
+  exit_criteria:
+    - criterion: Given a test that replays a workflow.node.action and a roadmap.update with identical commandIds, when the suite runs, then state reflects a single application of each
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-18 (Section 3.3).
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 8000
+  total_token_usage: 8000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
 ## 11. Live Status Protocol
 
 This document is the status store. There is no second tracker to reconcile.
@@ -1101,6 +1891,7 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.3.0 | 2026-08-19 | approved | Registered the 2026-08-19 repository-wide contract-to-runtime audit (commit b60618e) as Section 3.3: 33 findings (AUD-01..AUD-33) with severity, gap type, file evidence, and dispositions. Opened three phases for findings with no existing home — PHASE-PRD-07 governed-pipeline activation (SoT ADR-027), PHASE-PRD-08 uniform runtime authority and credential boundaries (SoT SPEC-Workspace-System), PHASE-PRD-09 completion-state integrity (SoT STD-Execution-Governance) — with sprints SPR-PRD-07..09 and sixteen new tasks TASK-PRD-018..033, every one landing with a complete Task Container per §11.3. Findings whose next step is owner-only authority (BRD/PRD/ADR-002 ratification, ADR-021/ADR-014-vs-027 amendments, engine/ and orphan-doc disposition, node-contract scope extension) are registered as `recorded` dispositions in §3.3 rather than self-tasked, and the integrate-or-descope decision on the dormant entitlement/credential stack is opened as TASK-PRD-025 with a pending Boss handoff. No gate status, DoD tick, phase/sprint/task status, or document status changed in this edit; all new work enters as `planned`. Doc status remains approved (structural additions under the live-document protocol; no draft/approved transition). | pending | Claude Fable 5 |
 | 0.2.5 | 2026-08-10 | approved | TASK-PRD-005 moved to review after the owner-approved orchestration contract landed: `MissionSnapshot.orchestration` is required with typed waves/tasks, runtime event validation is fail-closed, the reducer materializes updates, and protocol moves to 2.0.0 / compatibility 2. QA evidence is local targeted tests (23), lint, and production build; ATHER audit remains pending. | pending | ATHER |
 | 0.2.1 | 2026-08-09 | approved | Closed the three remaining SPR-PRD-00/03 tasks to done in one owner-directed session (Boss instruction, following the WP-16/17 precedent — recorded as such, not as an independent ATHER audit reproduction). TASK-PRD-002: verified AGENTS.md §11 and CLAUDE.md already bind readiness work to this plan by path with a live-status rule, confirmed by a clean `docs:validate` run; no code change needed. TASK-PRD-011: re-verified the readiness view's DoD with fresh evidence (`npm run lint` clean, `readinessPlan.test.ts` 5/5) and picked up TASK-PRD-012's honest-empty-state fix. TASK-PRD-012 (GAP-10): fixed the recency scorer bug in `scripts/mcp/roadmap-parser.mjs` — an unauthored source's `updatedAt` fell back to parse time (now) instead of staying absent, letting it masquerade as the newest source; both the markdown and HTML parse paths now use `|| undefined`, and `scoreApprovedSources` (exported from `scripts/mcp/runtime/roadmap-service.mjs` for testability) already zeroes the recency bonus for a non-finite date. `ReadinessControlView.tsx` now renders "unknown (no authored update date)" instead of a blank field. Added regression tests in `scripts/mcp/runtime/roadmap-service.test.mjs` and `src/roadmapParser.test.ts` (new fixture `BACKLOG-parser-fixture-no-updated.md`) pinning the fix. SPR-PRD-00 and PHASE-PRD-00 closed to done (all constituent tasks complete); SPR-PRD-03/PHASE-PRD-03 progress moved 10 → 20 (TASK-PRD-007/008 remain open). Evidence: full suite 74 files / 618 passed / 1 skipped plus 65 security tests, `npm run lint` clean, `npm run docs:validate` PASS. | pending | Claude Sonnet 5 |
 | 0.2.0 | 2026-08-09 | approved | Ratified draft → approved by owner decision (Boss). All Task Containers were authored to complete-container standard before ratification, so the roadmap Definition-of-Ready gate reports zero errors for this source with hard enforcement now active. Closes TASK-PRD-001 (its exit criterion is exactly this change: status flip and registry synchronization together) and completes its Boss handoff. Registry updated to the same version/status in this change. | pending | Claude Fable 5 |

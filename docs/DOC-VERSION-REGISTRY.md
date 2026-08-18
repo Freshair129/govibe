@@ -2,8 +2,8 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.52+draft"
-updated: "2026-08-17"
+version: "0.3.53+draft"
+updated: "2026-08-19"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 related_docs:
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.52+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.53+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -89,7 +89,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.2.5` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -231,6 +231,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.53+draft | 2026-08-19 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.0: the 2026-08-19 contract-to-runtime audit register (§3.3, AUD-01..AUD-33) landed with three new phases (PHASE-PRD-07..09), sprints SPR-PRD-07..09, and sixteen new tasks TASK-PRD-018..033, each with a complete Task Container per the plan's §11.3 promotion rule. All new work enters as planned; no document status changed by this row. |
 | 0.3.52+draft | 2026-08-17 | Claude Sonnet 5 | Registered CONTRACT-GOVIBE-PMADAPTER (draft) and GLS-005 closure row: BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.6+draft (PmAdapter contract, registry, Notion/Jira adapters, and the govibe.pm.export/sync MCP tools implemented and closed to done). Owner-directed ("เริ่ม GLS-005 ต่อเลย"), not an independent ATHER audit reproduction. AC-01 is ticked on contract-level evidence (real request shape confirmed against Notion's live API with an invalid token) -- no live Notion or Jira account exists in this session, so a full successful export against a connected account remains unverified and is explicitly noted as such in both the contract doc and the Task Container changelog. |
 | 0.3.51+draft | 2026-08-17 | Claude Sonnet 5 | GLS-003 closure row: BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.5+draft (Mission Canvas governed actions implemented, live-verified against a real C-3 gate, and closed to done). Owner-directed closure ("เริ่ม GLS-003 ต่อเลย"), not an independent ATHER audit reproduction. |
 | 0.3.50+draft | 2026-08-17 | Claude Sonnet 5 | GLS-002 closure row: BACKLOG-GOVLAYER-SUPERVISION-SURFACES synchronized to 0.1.4+draft (Mission Canvas / A8 implemented and closed to done). Owner-directed closure ("เริ่ม GLS-002 Canvas ต่อเลย"), not an independent ATHER audit reproduction. |
