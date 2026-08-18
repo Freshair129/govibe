@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.3.0"
+version: "0.3.1"
 updated: "2026-08-19"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -196,6 +196,7 @@ owner before any end-to-end completeness claim.
 | AUD-31 | LOW | LEGACY_LEAK | Nine-plus ungoverned root-level orphan docs (June E2E celebration set, stale Tauri plan, foreign JULES_REPORT.md); registry omissions (ADR-021 among them); untracked Mode 2 draft carries product direction outside governance | root listing; registry grep | recorded — cleanup batch for owner triage |
 | AUD-32 | LOW | PARTIAL | Cosmetic affordances imply state changes that never happen (A2 drag-assign animation sends nothing; placebo Configure/Re-align buttons); A9 mojibake separators; WS token in URL query | `RoadmapBoard.tsx:122-137`; `AgentConsoleView.tsx:194,203` | recorded — candidates for SPR-PRD-03 hygiene; WS token covered by TASK-PRD-028 |
 | AUD-33 | LOW | LEGACY_LEAK | Legacy `contextTier` still accepted as a step argument; a third H-meaning (H = model tier) lives in `docs/alignment/small-model-prompting.md:131` | `orchestration-service.mjs:12` | recorded — fold into TASK-PRD-022 sweep scope |
+| AUD-34 | MEDIUM | STALE_VIEW | The mission protocol spec is stale and incomplete: `docs/api/MISSION-PROTOCOL-v1.md` declares protocol 1.0.0 / compatibility 1 while the runtime ships 2.0.0 / compatibility 2 (per the 0.2.5 orchestration-contract change), formally defines only 2 of the 6 live sidecar endpoints (`/mission/commands`, `/mission/files` — not `/mission/snapshot`, `/mission/ws`, `/usage/ingest`, `/roadmap/sources`), and has no DOC-VERSION-REGISTRY row | `docs/api/MISSION-PROTOCOL-v1.md:5-6` vs `packages/mission-protocol/index.js`; registry grep (no row) | TASK-PRD-034 |
 
 ## 4. Readiness Gates
 
@@ -282,6 +283,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-031 | SPR-PRD-09 | task | Persist runtime roadmap mutations across restart | P1 | VIBE | planned | - | Section 3.3 AUD-11 |
 | TASK-PRD-032 | SPR-PRD-09 | task | Gate completion of semantic changes on recorded impact evidence and wire diff:check into a gate | P1 | ATHER | planned | TASK-PRD-030 | Section 3.3 AUD-15 |
 | TASK-PRD-033 | SPR-PRD-09 | task | Add idempotency to mutating mission commands | P2 | ARCHON | planned | - | Section 3.3 AUD-18 |
+| TASK-PRD-034 | SPR-PRD-02 | task | Bring the mission protocol spec to v2, cover all live sidecar endpoints, and register it | P1 | ATHER | planned | - | Section 3.3 AUD-34 |
 
 ## Assignments
 
@@ -352,6 +354,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-031 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-032 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-033 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-034 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 
 ## Task Containers
 
@@ -1807,6 +1810,50 @@ ui_state:
   disabled_reason: ""
 ```
 
+### TC-TASK-PRD-034
+
+```yaml
+task_container_id: TC-TASK-PRD-034
+task_id: TASK-PRD-034
+parent_phase_id: PHASE-PRD-02
+parent_sprint_id: SPR-PRD-02
+title: Bring the mission protocol spec to v2, cover all live sidecar endpoints, and register it
+requirement_type: NFR
+complexity: C-1
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: ATHER
+executor: THESEUS
+approver: Boss
+auditor: ARCHON
+symbol_links:
+  code: packages/mission-protocol/index.js
+  doc: docs/api/MISSION-PROTOCOL-v1.md
+  test: src/missionProtocol.test.ts
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given the protocol spec document, when its declared semantic and compatibility versions are compared with the runtime source packages/mission-protocol/index.js, then they match the shipped 2.x / compatibility-2 values and every command, event, and envelope shape the runtime validates is specified
+      checked: false
+  success_criteria:
+    - criterion: Given the six live sidecar surfaces (GET /mission/snapshot, GET /roadmap/sources, POST /mission/commands, WS /mission/ws, POST /usage/ingest, POST /mission/files), when a reader consults the spec, then each has a formal definition covering method, auth requirement, request and response shape, and error behavior
+      checked: false
+  exit_criteria:
+    - criterion: Given DOC-VERSION-REGISTRY, when docs:validate runs after this task lands, then the protocol spec has a registry row whose doc_id, version, and status match its frontmatter and future version drift between spec and runtime is caught by a recorded check
+      checked: false
+changelog: Opened 2026-08-19 from audit finding AUD-34 (Section 3.3), surfaced during the owner's endpoint-spec review after the AUD register merge — the spec lags the runtime by a major protocol version, formally defines two of six endpoints, and sits outside the registry.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 6000
+  total_token_usage: 6000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
 ## 11. Live Status Protocol
 
 This document is the status store. There is no second tracker to reconcile.
@@ -1891,6 +1938,7 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.3.1 | 2026-08-19 | approved | Opened AUD-34 (mission protocol spec stale at 1.0.0 vs runtime 2.0.0/compat 2, two of six sidecar endpoints formally defined, no registry row) from the owner's endpoint-spec review, and bound it to new task TASK-PRD-034 under SPR-PRD-02 with a complete Task Container per §11.3. All statuses unchanged; the new task enters as planned. | pending | Claude Fable 5 |
 | 0.3.0 | 2026-08-19 | approved | Registered the 2026-08-19 repository-wide contract-to-runtime audit (commit b60618e) as Section 3.3: 33 findings (AUD-01..AUD-33) with severity, gap type, file evidence, and dispositions. Opened three phases for findings with no existing home — PHASE-PRD-07 governed-pipeline activation (SoT ADR-027), PHASE-PRD-08 uniform runtime authority and credential boundaries (SoT SPEC-Workspace-System), PHASE-PRD-09 completion-state integrity (SoT STD-Execution-Governance) — with sprints SPR-PRD-07..09 and sixteen new tasks TASK-PRD-018..033, every one landing with a complete Task Container per §11.3. Findings whose next step is owner-only authority (BRD/PRD/ADR-002 ratification, ADR-021/ADR-014-vs-027 amendments, engine/ and orphan-doc disposition, node-contract scope extension) are registered as `recorded` dispositions in §3.3 rather than self-tasked, and the integrate-or-descope decision on the dormant entitlement/credential stack is opened as TASK-PRD-025 with a pending Boss handoff. No gate status, DoD tick, phase/sprint/task status, or document status changed in this edit; all new work enters as `planned`. Doc status remains approved (structural additions under the live-document protocol; no draft/approved transition). | pending | Claude Fable 5 |
 | 0.2.5 | 2026-08-10 | approved | TASK-PRD-005 moved to review after the owner-approved orchestration contract landed: `MissionSnapshot.orchestration` is required with typed waves/tasks, runtime event validation is fail-closed, the reducer materializes updates, and protocol moves to 2.0.0 / compatibility 2. QA evidence is local targeted tests (23), lint, and production build; ATHER audit remains pending. | pending | ATHER |
 | 0.2.1 | 2026-08-09 | approved | Closed the three remaining SPR-PRD-00/03 tasks to done in one owner-directed session (Boss instruction, following the WP-16/17 precedent — recorded as such, not as an independent ATHER audit reproduction). TASK-PRD-002: verified AGENTS.md §11 and CLAUDE.md already bind readiness work to this plan by path with a live-status rule, confirmed by a clean `docs:validate` run; no code change needed. TASK-PRD-011: re-verified the readiness view's DoD with fresh evidence (`npm run lint` clean, `readinessPlan.test.ts` 5/5) and picked up TASK-PRD-012's honest-empty-state fix. TASK-PRD-012 (GAP-10): fixed the recency scorer bug in `scripts/mcp/roadmap-parser.mjs` — an unauthored source's `updatedAt` fell back to parse time (now) instead of staying absent, letting it masquerade as the newest source; both the markdown and HTML parse paths now use `|| undefined`, and `scoreApprovedSources` (exported from `scripts/mcp/runtime/roadmap-service.mjs` for testability) already zeroes the recency bonus for a non-finite date. `ReadinessControlView.tsx` now renders "unknown (no authored update date)" instead of a blank field. Added regression tests in `scripts/mcp/runtime/roadmap-service.test.mjs` and `src/roadmapParser.test.ts` (new fixture `BACKLOG-parser-fixture-no-updated.md`) pinning the fix. SPR-PRD-00 and PHASE-PRD-00 closed to done (all constituent tasks complete); SPR-PRD-03/PHASE-PRD-03 progress moved 10 → 20 (TASK-PRD-007/008 remain open). Evidence: full suite 74 files / 618 passed / 1 skipped plus 65 security tests, `npm run lint` clean, `npm run docs:validate` PASS. | pending | Claude Sonnet 5 |
