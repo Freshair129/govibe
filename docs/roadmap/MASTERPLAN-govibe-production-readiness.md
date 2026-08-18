@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.3.4"
+version: "0.3.6"
 updated: "2026-08-19"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -274,7 +274,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-022 | SPR-PRD-04 | task | Extend H-axis remediation to the full leak sweep, fix the doc-generation template, and add a validator backstop | P1 | ATHER | planned | TASK-PRD-009 | Section 3.3 AUD-14 |
 | TASK-PRD-023 | SPR-PRD-07 | task | Configure and launch the in-repo MSP runtime with a promotion smoke test | P0 | VIBE | review | - | Section 3.3 AUD-01 |
 | TASK-PRD-024 | SPR-PRD-07 | task | Forward contextAuthority through the hardened workflow.continue surface | P0 | VIBE | review | TASK-PRD-023 | Section 3.3 AUD-02 |
-| TASK-PRD-025 | SPR-PRD-07 | task | Prepare the owner decision: integrate or descope the entitlement execution and credential stack | P1 | ARCHON | review | - | Section 3.3 AUD-03 |
+| TASK-PRD-025 | SPR-PRD-07 | task | Prepare the owner decision: integrate or descope the entitlement execution and credential stack | P1 | ARCHON | done | - | Section 3.3 AUD-03 |
 | TASK-PRD-026 | SPR-PRD-08 | task | Route sidecar mission commands through the RBAC decision point | P0 | ARCHON | planned | - | Section 3.3 AUD-04 |
 | TASK-PRD-027 | SPR-PRD-08 | task | Contain and govern docs.resolve and ingest.code file access | P0 | VIBE | planned | - | Section 3.3 AUD-05 |
 | TASK-PRD-028 | SPR-PRD-08 | task | Close credential exposures: child-env allowlist, WS token placement, log redaction, connector-token storage | P1 | VIBE | planned | - | Section 3.3 AUD-10 |
@@ -284,6 +284,8 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-032 | SPR-PRD-09 | task | Gate completion of semantic changes on recorded impact evidence and wire diff:check into a gate | P1 | ATHER | planned | TASK-PRD-030 | Section 3.3 AUD-15 |
 | TASK-PRD-033 | SPR-PRD-09 | task | Add idempotency to mutating mission commands | P2 | ARCHON | planned | - | Section 3.3 AUD-18 |
 | TASK-PRD-034 | SPR-PRD-02 | task | Bring the mission protocol spec to v2, cover all live sidecar endpoints, and register it | P1 | ATHER | planned | - | Section 3.3 AUD-34 |
+| TASK-PRD-035 | SPR-PRD-07 | task | Integrate the phase-1 execution dispatch gate at runAgent and StEP (CR-2026-08-19 D-01) | P0 | VIBE | planned | TASK-PRD-024 | CR-2026-08-19 §6 D-01 |
+| TASK-PRD-036 | SPR-PRD-07 | task | Pin replay-provider with a contract test; consumption stays deferred (CR-2026-08-19 D-04) | P2 | VIBE | planned | - | CR-2026-08-19 §6 D-04 |
 
 ## Assignments
 
@@ -318,7 +320,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-003 | ATHER | Boss | Green pull-request run of the full baseline gate | Confirms GATE-CI before further phases start | 2026-08-06T00:00:00Z | completed |
 | TASK-PRD-006 | ARCHON | Boss | Contract decision on the two orphan fields | Produce or retire is a product decision, not an implementation choice | 2026-08-06T00:00:00Z | pending |
 | TASK-PRD-007 | VIBE | ATHER | Impact analysis over the changed snapshot contract | Required before the wiring change closes | 2026-08-06T00:00:00Z | pending |
-| TASK-PRD-025 | ARCHON | Boss | Integrate-or-descope decision on the entitlement execution and credential stack | The ~15 test-only modules (execution router, bindings, provider adapters, credential vault) either enter the live dispatch path or are formally descoped with ADR-024/028 dispositioned; leaving them ambient is not an option | 2026-08-19T00:00:00Z | pending |
+| TASK-PRD-025 | ARCHON | Boss | Integrate-or-descope decision on the entitlement execution and credential stack | Completed 2026-08-19: Boss approved D-01..D-05 as recommended in CR-2026-08-19 §6; follow-ups TASK-PRD-035/036 opened, D-03 dispositions recorded in the execution-binding TODO register | 2026-08-19T00:00:00Z | completed |
 
 ## Verification
 
@@ -348,7 +350,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-022 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-023 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-024 | pending | pending | n/a | 2026-08-19T00:00:00Z |
-| TASK-PRD-025 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-025 | passed | passed | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-026 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-027 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-028 | pending | pending | n/a | 2026-08-19T00:00:00Z |
@@ -358,6 +360,8 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-032 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-033 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-034 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-035 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-036 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 
 ## Task Containers
 
@@ -1359,8 +1363,8 @@ definition_of_done:
       checked: true
   exit_criteria:
     - criterion: Given the promotion smoke test, when CI runs it, then the round-trip is proven by recorded command output and a failed MSP boot fails the check rather than silently degrading
-      checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-01 (Section 3.3) — the audit's first blocker; the governed pipeline is fail-closed but dormant without a configured MSP parent. C-3/H3 owner approval recorded 2026-08-19 - explicit Boss instruction in session ("เริ่ม TASK-PRD-023 เลย ขอ approve C-3"). Executed to review 2026-08-19 doc-first per §11.2 - launch contract already owned by RUNBOOK-Persistent-Memory-Runtime §3-§5 (extended with §7.1, 0.2.1+draft) rather than a new document. Landed - scripts/mcp/msp-promotion-smoke.mjs (npm run msp:smoke; env-contract boot, health probe with bounded cold-boot retry, 12-stage deep scan on a disposable fixture, requires status complete plus at least one promoted gks ref, Windows-safe cleanup); .env/.env.example MSP block; mcp:dev and mission:dev load .env via --env-file-if-exists (shell env wins); .govibe/msp/ gitignored db convention; baseline-check workflow runs msp:smoke after baseline:check. Evidence - msp:smoke PASS twice locally (health_state ready; stages 01-12 complete or not_applicable with proofs; 8 candidates promoted, e.g. gks:knowledge/c1f90ae2296cda9d5ede78d740fca7a6337ee21d4b721714830b66f8356eafcf); live server booted with the mcp:dev command path answered govibe.vault.status through the typed MSP contract with real vault refs (not MspUnavailableError). Acceptance and success criteria ticked on that evidence; the exit criterion stays open until the CI run on this change proves the gate, then ticks citing the run id.
+      checked: true
+changelog: Opened 2026-08-19 from audit finding AUD-01 (Section 3.3) — the audit's first blocker; the governed pipeline is fail-closed but dormant without a configured MSP parent. C-3/H3 owner approval recorded 2026-08-19 - explicit Boss instruction in session ("เริ่ม TASK-PRD-023 เลย ขอ approve C-3"). Executed to review 2026-08-19 doc-first per §11.2 - launch contract already owned by RUNBOOK-Persistent-Memory-Runtime §3-§5 (extended with §7.1, 0.2.1+draft) rather than a new document. Landed - scripts/mcp/msp-promotion-smoke.mjs (npm run msp:smoke; env-contract boot, health probe with bounded cold-boot retry, 12-stage deep scan on a disposable fixture, requires status complete plus at least one promoted gks ref, Windows-safe cleanup); .env/.env.example MSP block; mcp:dev and mission:dev load .env via --env-file-if-exists (shell env wins); .govibe/msp/ gitignored db convention; baseline-check workflow runs msp:smoke after baseline:check. Evidence - msp:smoke PASS twice locally (health_state ready; stages 01-12 complete or not_applicable with proofs; 8 candidates promoted, e.g. gks:knowledge/c1f90ae2296cda9d5ede78d740fca7a6337ee21d4b721714830b66f8356eafcf); live server booted with the mcp:dev command path answered govibe.vault.status through the typed MSP contract with real vault refs (not MspUnavailableError). Acceptance and success criteria ticked on that evidence. Exit criterion ticked 2026-08-19 - green baseline-check run 32193062736 on PR #159 executed npm run msp:smoke in CI on this change set (the step fails the required check on a failed MSP boot by construction).
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1428,8 +1432,8 @@ title: Prepare the owner decision to integrate or descope the entitlement execut
 requirement_type: NFR
 complexity: C-2
 access_scope: H1
-status: review
-version: 0.2.0+draft
+status: done
+version: 0.3.0
 pic: ARCHON
 executor: ARCHON
 approver: Boss
@@ -1447,8 +1451,8 @@ definition_of_done:
       checked: true
   exit_criteria:
     - criterion: Given the Boss handoff recorded for this task, when the owner decision lands, then follow-up implementation tasks are opened for the chosen option and no module remains ambient without a recorded disposition
-      checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-03 (Section 3.3); also carries the AUD-21/AUD-22 disconnected-tool dispositions and the AUD-23 enforcement-model question into the same decision brief. Executed to review 2026-08-19 - decision brief authored as docs/change-control/change-requests/CR-2026-08-19-Entitlement-Execution-Stack-Disposition.md (draft, registered): 17-module disposition table with dependency cost and ratification implications, exact integrate attach points (runAgent runtime-core.mjs:192-233 via a subscription-CLI adapter wrapping invoke-agent.ps1, StEP dispatch on the router rebind path, A9 PTY phase-2), what-breaks-today analysis, and a phased D-01..D-05 selection honoring the 2026-08-03 owner deferral of API-008/ADR-024 promotion. Acceptance and success criteria ticked on the delivered brief; the exit criterion stays open until Boss records selections in the CR §6 and follow-up tasks are opened.
+      checked: true
+changelog: Opened 2026-08-19 from audit finding AUD-03 (Section 3.3); also carries the AUD-21/AUD-22 disconnected-tool dispositions and the AUD-23 enforcement-model question into the same decision brief. Executed to review 2026-08-19 - decision brief authored as docs/change-control/change-requests/CR-2026-08-19-Entitlement-Execution-Stack-Disposition.md (registered): 17-module disposition table with dependency cost and ratification implications, exact integrate attach points, what-breaks-today analysis, and a phased D-01..D-05 selection honoring the 2026-08-03 owner deferral of API-008/ADR-024 promotion. Closed done 2026-08-19 on the owner decision - Boss approved D-01..D-05 as recommended (explicit in-session instruction, recorded in CR §6 with the CR ratified draft to approved 0.2.0 on that authority, per the WP-16/17 owner-directed-closure precedent). Exit criterion satisfied - follow-ups TASK-PRD-035 (D-01 integration; ADR-024 acceptance as its doc-first step) and TASK-PRD-036 (D-04 replay test) opened, D-02 continues as TASK-PRD-028, D-03 deferred dispositions recorded in TODO-Execution-Binding-Lifecycle 0.1.1+draft with revisit triggers, D-05 poc/ stays the isolated reference. No module remains ambient without a recorded disposition.
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1857,6 +1861,94 @@ ui_state:
   disabled_reason: ""
 ```
 
+### TC-TASK-PRD-035
+
+```yaml
+task_container_id: TC-TASK-PRD-035
+task_id: TASK-PRD-035
+parent_phase_id: PHASE-PRD-07
+parent_sprint_id: SPR-PRD-07
+title: Integrate the phase-1 execution dispatch gate at runAgent and StEP (CR-2026-08-19 D-01)
+requirement_type: FR
+complexity: C-3
+access_scope: H3
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: packages/govibe-core/src/executor-adapter.mjs
+  doc: docs/change-control/change-requests/CR-2026-08-19-Entitlement-Execution-Stack-Disposition.md
+  test: packages/govibe-core/src/executor-adapter.test.mjs
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given govibe.agent.run or a StEP invocation, when an agent is dispatched, then the call passes through executorRegistry.execute with a binding issued by the execution-binding-service and the full executor-adapter scope gate, using a subscription-CLI adapter whose run wraps scripts/agents/invoke-agent.ps1
+      checked: false
+  success_criteria:
+    - criterion: Given a dispatch whose binding scope does not match the task's context authority, when it executes, then the adapter gate refuses it with an audited reason instead of spawning the agent
+      checked: false
+  exit_criteria:
+    - criterion: Given the doc-first order of §11.2, when this task lands, then the same change carries the owner-scoped ADR-024 acceptance amendment forced by D-01 (scoped to the two-phase routing boundary, API-008 remaining draft) and an integration test proving the gated dispatch path end-to-end
+      checked: false
+changelog: Opened 2026-08-19 from the Boss-approved D-01 selection in CR-2026-08-19-Entitlement-Execution-Stack-Disposition §6. C-3/H3 - the owner approval for this scope is the recorded D-01 decision itself; the ADR-024 acceptance amendment is this task's doc-first step, not a separate pre-approval.
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 20000
+  total_token_usage: 20000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
+### TC-TASK-PRD-036
+
+```yaml
+task_container_id: TC-TASK-PRD-036
+task_id: TASK-PRD-036
+parent_phase_id: PHASE-PRD-07
+parent_sprint_id: SPR-PRD-07
+title: Pin replay-provider with a contract test; consumption stays deferred (CR-2026-08-19 D-04)
+requirement_type: NFR
+complexity: C-1
+access_scope: H2
+status: planned
+version: 0.1.0+draft
+pic: VIBE
+executor: VIBE
+approver: Boss
+auditor: ATHER
+symbol_links:
+  code: packages/govibe-core/src/replay-provider.mjs
+  doc: docs/api/API-006-Vault-Context-and-Replay-Contracts.md
+  test: unavailable
+definition_of_done:
+  acceptance_criteria:
+    - criterion: Given the replay-provider module, when the suite runs, then a collected contract test pins bundle-hash integrity and the refusal of silent substitution (context hash, source manifest, model, and tool-contract-hash mismatches each throw)
+      checked: false
+  success_criteria:
+    - criterion: Given the three separate replay claims (context reproducible, execution reproducible, output identical), when replay reports, then the test asserts they are returned as distinct booleans and never conflated
+      checked: false
+  exit_criteria:
+    - criterion: Given the D-04 decision, when this task closes, then replay-provider is no longer the audit's only zero-consumer-zero-test module and its consumption deferral remains recorded in the execution-binding TODO register
+      checked: false
+changelog: Opened 2026-08-19 from the Boss-approved D-04 selection in CR-2026-08-19-Entitlement-Execution-Stack-Disposition §6 (AUD-21 noted the module had zero consumers and zero tests).
+created_at: 2026-08-19T00:00:00Z,LYRA,pending
+token_telemetry:
+  model_name: resolved-by-router
+  context_length: 200k
+  predicted_token_usage: 6000
+  total_token_usage: 6000
+ui_state:
+  dropdown_default: collapsed
+  expanded: false
+  disabled_reason: ""
+```
+
 ## 11. Live Status Protocol
 
 This document is the status store. There is no second tracker to reconcile.
@@ -1941,6 +2033,8 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.3.6 | 2026-08-19 | approved | Ticked TASK-PRD-023's exit criterion on CI evidence: green baseline-check run 32193062736 (PR #159, commit fc3ab0f) executed the new msp:smoke promotion gate. All three TASK-PRD-023 criteria now hold; the task stays at review pending ATHER audit and Boss approval. | pending | Claude Fable 5 |
+| 0.3.5 | 2026-08-19 | approved | TASK-PRD-025 closed done on the owner decision: Boss approved CR-2026-08-19 selections D-01..D-05 as recommended (in-session instruction, recorded in the CR §6; CR ratified to approved 0.2.0 on that authority; Boss handoff completed). Exit criterion satisfied by opening TASK-PRD-035 (D-01 phase-1 dispatch-gate integration, C-3 with the D-01 decision as its recorded owner approval and the scoped ADR-024 acceptance as its doc-first step) and TASK-PRD-036 (D-04 replay-provider pinned test), both with complete containers; D-03 deferred dispositions recorded in TODO-Execution-Binding-Lifecycle 0.1.1+draft. Verification passed/passed per the owner-directed-closure precedent. | pending | Claude Fable 5 |
 | 0.3.4 | 2026-08-19 | approved | Executed TASK-PRD-025 to review (Boss instruction in session): authored and registered CR-2026-08-19-Entitlement-Execution-Stack-Disposition (draft) — the AUD-03 decision brief with a 17-module disposition table, exact phase-1 attach points at runAgent/StEP, and phased selections D-01..D-05 for the owner, consistent with the 2026-08-03 deferral of API-008/ADR-024 promotion. The pending Boss handoff on this task now points at CR §6. TASK-PRD-025 assignment recorded (Boss). SPR-PRD-07 execution work is complete pending the owner decision; sprint progress stays 70 until the handoff resolves. | pending | Claude Fable 5 |
 | 0.3.3 | 2026-08-19 | approved | Executed TASK-PRD-024 to review (Boss instruction in session; depends-on TASK-PRD-023 satisfied by the live MSP wiring in 0.3.2). The AUD-02 contextAuthority drop is fixed via a single shared forwarding contract (scripts/mcp/runtime/continue-forwarding.mjs) consumed by both wrapper layers, with the tool inputSchema updated to advertise the governed fields. Evidence: new drift-guard unit test plus a live-surface integration test (real msp-runtime + handlers + hardened runtime) proving ready status with persisted packet/lineage and preserved fail-closed missing_runtime_authority when authority is absent — 4/4 locally. SPR-PRD-07/PHASE-PRD-07 progress 30 → 70; TASK-PRD-024 assignment recorded (Boss). Remaining in sprint: TASK-PRD-025 owner decision brief. | pending | Claude Fable 5 |
 | 0.3.2 | 2026-08-19 | approved | Started and executed TASK-PRD-023 to review on recorded owner C-3 approval (Boss, in session, 2026-08-19). The MSP launch contract goes live: msp:smoke promotion gate (scripts/mcp/msp-promotion-smoke.mjs) wired into baseline-check CI, .env/.env.example MSP block with mcp:dev/mission:dev loading .env via --env-file-if-exists, .govibe/msp/ database convention, and RUNBOOK-Persistent-Memory-Runtime extended to 0.2.1+draft with §7.1. Local evidence: msp:smoke PASS twice (health ready, 12 stages, 8 promoted gks refs); live server via the mcp:dev command path completes govibe.vault.status through the typed MSP contract. PHASE-PRD-07/SPR-PRD-07 to in-progress 30; assignment row recorded (Boss). Exit criterion (CI-run proof) intentionally left unticked until the baseline-check run on this change is green. | pending | Claude Fable 5 |

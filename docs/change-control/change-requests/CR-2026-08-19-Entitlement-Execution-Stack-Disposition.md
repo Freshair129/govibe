@@ -1,12 +1,15 @@
 ---
 title: "CR: Entitlement Execution and Credential Stack Disposition"
 doc_id: "CR-2026-08-19-ENTITLEMENT-EXECUTION-STACK-DISPOSITION"
-status: "draft"
-version: "0.1.0+draft"
+status: "approved"
+version: "0.2.0"
 updated: "2026-08-19"
 owner: "Boss (CEO)"
 proposal_author: "ARCHON"
 decision_owner: "Boss (CEO)"
+approval_owner: "Boss (CEO)"
+approval_recorded_at: "2026-08-19"
+decision_authorized: true
 source_of_truth: true
 complexity: "C-2"
 access_scope: "H1"
@@ -117,18 +120,25 @@ govern live execution.
 
 | ID | Selection | Decision (Boss) | Recorded at |
 |---|---|---|---|
-| D-01 | Integrate phase-1 dispatch gate at runAgent + StEP | pending | - |
-| D-02 | Credential boundary via TASK-PRD-028 | pending | - |
-| D-03 | Defer entitlement registries, ledger, mode2, canonical-materialization with recorded dispositions | pending | - |
-| D-04 | Pin replay-provider with a test; defer consumption | pending | - |
-| D-05 | Keep poc/ as isolated reference | pending | - |
+| D-01 | Integrate phase-1 dispatch gate at runAgent + StEP | approved as recommended | 2026-08-19 |
+| D-02 | Credential boundary via TASK-PRD-028 | approved as recommended | 2026-08-19 |
+| D-03 | Defer entitlement registries, ledger, mode2, canonical-materialization with recorded dispositions | approved as recommended | 2026-08-19 |
+| D-04 | Pin replay-provider with a test; defer consumption | approved as recommended | 2026-08-19 |
+| D-05 | Keep poc/ as isolated reference | approved as recommended | 2026-08-19 |
 
-On selection, follow-up implementation tasks are opened in the readiness
-masterplan under SPR-PRD-07 (or a new sprint if Boss prefers), and the §3.3
-AUD-03/AUD-21/AUD-23 dispositions are updated to cite this CR.
+Boss approved all five selections as recommended on 2026-08-19 (explicit
+instruction in session: "approve D-01 ถึง D-05 ตามที่แนะนำเลย"). Follow-up
+execution: **TASK-PRD-035** (D-01 phase-1 integration; its doc-first step per
+masterplan §11.2 is the owner-scoped ADR-024 acceptance amendment this
+selection forces) and **TASK-PRD-036** (D-04 replay-provider pinned test)
+opened in the readiness masterplan under SPR-PRD-07; D-02 continues as
+TASK-PRD-028; D-03 dispositions recorded in
+`docs/change-control/TODO-Execution-Binding-Lifecycle.md`; D-05 requires no
+change. No module remains ambient without a recorded disposition.
 
 ## Changelog
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.2.0 | 2026-08-19 | Boss approved D-01..D-05 as recommended (owner decision recorded in §6); status draft → approved on that owner authority. Follow-up tasks TASK-PRD-035/036 opened; D-03 dispositions recorded in the execution-binding TODO register. ADR-024 acceptance executes doc-first under TASK-PRD-035, scoped per D-01. |
 | 0.1.0+draft | 2026-08-19 | Initial disposition brief authored for TASK-PRD-025 from the 2026-08-19 audit's AUD-03 finding, honoring the 2026-08-03 owner deferral of API-008/ADR-024 promotion. |
