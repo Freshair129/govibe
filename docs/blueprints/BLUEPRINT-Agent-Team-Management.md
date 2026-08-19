@@ -3,8 +3,8 @@ title: "Unified Blueprint: Multi-Agent Team Orchestration"
 summary: "ระบบบริหารจัดการทีม Agent แบบไฮบริด (Human-Agent Collaboration) และการควบคุมวงจรการส่งต่องาน (Orchestration)"
 doc_id: "UGB-SYSTEM-05-001"
 created: "2026-06-13T13:00:00+07:00,THESEUS"
-updated: "2026-06-13T13:15:00+07:00,THESEUS"
-version: "1.0.0"
+updated: "2026-08-19T00:00:00+07:00,ATHER"
+version: "1.0.1"
 status: "candidate"
 state: candidate
 type: genesis
@@ -21,7 +21,7 @@ block_manifest:
     epic: "EPIC::Multi-Agent-Framework"
     domain: "Agent-Management"
     cluster: "Governance-Cluster"
-    context_scaling_tier: "H4" # System-wide Orchestration
+    access_scope: "H4" # System-wide Orchestration
     status: "ACTIVE"
 ---
 
@@ -40,10 +40,12 @@ block_manifest:
 ### MISSION Statement
 เปลี่ยน "การสั่งงาน Agent แบบสุ่ม" ให้เป็น "กระบวนการทางวิศวกรรมที่ควบคุมได้" ผ่านระบบ Governance ที่เข้มงวดและการจำกัดขอบเขต Context
 
+> **2026-08-19 correction (ADR-021/AUD-14, TASK-PRD-022):** corrected abolished H-axis semantics — `block_manifest.core.context_scaling_tier` and the Agent Contract Schema's `context_scaling_tier` both renamed `access_scope`; "Zero-Trust Context Scaling... H-Tier" renamed "Zero-Trust Access Scope... Access Scope (H0-H4)". No status change.
+
 ### CORE PRINCIPLES
 - **Contract-Based Operation:** Agent ทุกตัวต้องทำงานภายใต้บทบาท (Role) และ SSOT ที่กำหนดไว้ใน AGENTS.md
 - **Human-in-the-Loop:** มนุษย์เป็นผู้ตัดสินใจหลักในจุดวิกฤต (Approval Gates)
-- **Zero-Trust Context Scaling:** Agent จะได้รับเฉพาะข้อมูลที่จำเป็นตามระดับ H-Tier ของงานเท่านั้น
+- **Zero-Trust Access Scope:** Agent จะได้รับเฉพาะข้อมูลที่จำเป็นตามระดับ Access Scope (H0-H4) ของงานเท่านั้น
 
 ---
 
@@ -91,7 +93,7 @@ flowchart LR
 id: "[[AGENT::{{AGENT_NAME}}]]"
 block_id: "[[UGB::AGENT_TEAM_SYSTEM]]"
 role: "orchestrator | planner | worker | validator"
-context_scaling_tier: "H0-H4"
+access_scope: "H0-H4"
 status: "active"
 ```
 

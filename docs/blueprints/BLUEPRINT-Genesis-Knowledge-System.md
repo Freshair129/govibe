@@ -3,8 +3,8 @@ title: "Unified Blueprint: Genesis Knowledge System"
 summary: "ระบบบริหารจัดการองค์ความรู้เชิงปัญญาและโครงสร้างกราฟบริบทสำหรับ AI Agents"
 doc_id: "UGB-GKS-001"
 created: "2026-06-13T12:00:00+07:00,THESEUS"
-updated: "2026-06-13T12:30:00+07:00,THESEUS"
-version: "1.3.0"
+updated: "2026-08-19T00:00:00+07:00,ATHER"
+version: "1.3.1"
 status: "candidate"
 state: candidate
 type: genesis
@@ -21,7 +21,7 @@ block_manifest:
     epic: "EPIC::Axiomatic-Knowledge-Base"
     domain: "Knowledge-Governance"
     cluster: "Cognitive-Engine-Cluster"
-    context_scaling_tier: "H4" # System-wide Architecture
+    access_scope: "H4" # System-wide Architecture
     status: "ACTIVE"
 ---
 
@@ -40,9 +40,11 @@ block_manifest:
 ### MISSION Statement
 สร้าง SSOT ที่เชื่อมโยงระหว่าง "เนื้องานทางธุรกิจ" (WBS) และ "โค้ดจริง" (Physical Implementation) ผ่านระบบกราฟที่มีความหน่วงต่ำและความแม่นยำสูง
 
+> **2026-08-19 correction (ADR-021/AUD-14, TASK-PRD-022):** corrected abolished H-axis semantics — `block_manifest.core.context_scaling_tier` renamed `access_scope`; the "Context Scaling (H0-H6)" core principle renamed "Retrieval Radius (R0-R6)"; FR-2's "Tier Enforcement... H0-H6" renamed "Access Scope Enforcement... H0-H4". No status change.
+
 ### CORE PRINCIPLES
 - **Axiomatic SSOT:** ความจริงสูงสุดเพียงหนึ่งเดียว
-- **Context Scaling (H0-H6):** การจำกัดวงความรู้ตามความเหมาะสมของงาน
+- **Retrieval Radius (R0-R6):** การจำกัดวงความรู้ตามความเหมาะสมของงาน (แยกอิสระจาก Access Scope H0-H4 ตาม ADR-021)
 - **Metadata Hub-and-Spoke:** การสืบทอด Metadata เพื่อลด Token Noise
 
 ---
@@ -53,7 +55,7 @@ block_manifest:
 
 ### Functional Requirements
 - **FR-1 (Atom Parsing):** ต้องสามารถแยก Atoms ออกจากไฟล์กายภาพเดียวผ่าน Regex
-- **FR-2 (Tier Enforcement):** ต้องจำกัดการเข้าถึงไฟล์ (File System Scoping) ตามค่า Tier H0-H6
+- **FR-2 (Access Scope Enforcement):** ต้องจำกัดการเข้าถึงไฟล์ (File System Scoping) ตามค่า Access Scope H0-H4
 - **FR-3 (Inheritance):** ต้องรองรับการดึงค่า Metadata จาก `block_id` มาฉีดลงในอะตอมย่อย
 
 ---

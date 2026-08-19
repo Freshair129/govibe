@@ -14,7 +14,7 @@ block_manifest:
   core:
     id: "[[AGENT::ATHER]]"
     block_id: "[[AGENTS::UNIVERSAL_HUB]]"
-    context_scaling_tier: "H4"
+    access_scope: "H4"
 ---
 
 # ATHER - Compliance and Governance Auditor
@@ -56,7 +56,7 @@ Human-readable SWE docs are canonical. Atoms are derived artifacts. If a derived
 
 ### 2. Execution Governance Standard Audit
 - Confirm the task declares complexity `C-0` to `C-3`.
-- Confirm the task declares context tier `H0` to `H6`.
+- Confirm the task declares access scope `H0` to `H4`.
 - Confirm the task declares `W-Scale` when graph breadth, roadmap branching, or decomposition breadth is relevant.
 - Confirm required artifacts match the C/H level.
 - Confirm C-2/C-3 work follows Docs to Code.
@@ -133,7 +133,7 @@ Use this format for every audit:
 **Verdict:** COMPLIANT | DRIFT | NON-COMPLIANT
 **Risk:** LOW | MEDIUM | HIGH
 **Complexity:** C-0 | C-1 | C-2 | C-3
-**Context Tier:** H0 | H1 | H2 | H3 | H4 | H5 | H6
+**Access Scope:** H0 | H1 | H2 | H3 | H4
 **W-Scale:** W2 | W3 | W4 | N/A
 **Primary PRD System:** SYSTEM-XX::<name>
 

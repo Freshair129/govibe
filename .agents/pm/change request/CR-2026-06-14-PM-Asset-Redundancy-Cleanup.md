@@ -2,8 +2,8 @@
 title: "CR: PM Asset Redundancy Cleanup and Telemetry Alignment"
 doc_id: "CR-2026-06-14-pm-asset-redundancy-cleanup"
 status: "approve_with_conditions"
-version: "0.1.1"
-updated: "2026-06-14"
+version: "0.1.2"
+updated: "2026-08-19"
 owner: "LYRA"
 decision_owner: "ARCHON"
 auditor: "ATHER"
@@ -18,12 +18,14 @@ related_docs:
 
 # CR: PM Asset Redundancy Cleanup and Telemetry Alignment
 
+> **2026-08-19 correction (ADR-021/AUD-14, TASK-PRD-022):** corrected abolished H-axis semantics — `business_value`'s "(H5-H0)" tier range, the template-mapping table's "H5-H4" row, and the §4 heading's "H0-H6 Governance" are all corrected to the `H0-H4` Access Scope ceiling. No status change.
+
 ## 1. Change Request
 
 ```yaml
 change_requested: "Consolidate and normalize PM asset templates in `.agents/pm/asset/` to remove redundancy and align with H4 Tier telemetry standards (Model Name, Context Length, Token Telemetry)."
 reason: "Existing templates overlap in scope, and Implementation-Plan-Template.md contains execution data that should reside in `docs/roadmap/`. Current templates lack mandatory token telemetry columns required for GoVibe execution governance."
-business_value: "Reduce documentation maintenance overhead, ensure planning consistency across all tiers (H5-H0), and enable accurate token usage prediction vs. actual auditing."
+business_value: "Reduce documentation maintenance overhead, ensure planning consistency across all tiers (H4-H0), and enable accurate token usage prediction vs. actual auditing."
 affected_requirement:
   - "STD-Execution-Governance"
   - "Documentation-Requirements"
@@ -43,7 +45,7 @@ decision: "approve_with_conditions"
 
 | Current File | New Status | Target Role | Telemetry Requirements |
 |---|---|---|---|
-| `Roadmap-Template.md` | **Retain (Updated)** | H5-H4: Strategic Themes & Phases | High-level milestones |
+| `Roadmap-Template.md` | **Retain (Updated)** | H4: Strategic Themes & Phases | High-level milestones |
 | `Backlog-Template.md` | **Retain (Updated)** | H3-H2: Feature Slicing & Sprint Backlog | Model, Context, Predicted Tokens |
 | PLAN_Template.md | **Rename to Implementation-Plan-Template.md** | H1-H0: Task Execution | Full Telemetry + Verification Link |
 
@@ -61,7 +63,7 @@ decision: "approve_with_conditions"
 - [x] Update `Backlog-Template.md` to reference Implementation-Plan-Template.md for execution detail.
 - [x] Ensure all templates include a header referencing `Planning-Decomposition-Standard.md` as the SSOT.
 
-## 4. Decision Log (H0-H6 Governance)
+## 4. Decision Log (H0-H4 Governance)
 - **User (ARCHON):** Approve with Conditions. (2026-06-14)
 - **Conditions:** 
     1. Risk impact must be MEDIUM.

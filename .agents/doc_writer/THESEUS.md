@@ -96,7 +96,7 @@ When asked to create or update a document, respond with:
 **Source of Truth:** <source doc or section>
 **Traceability:** <PRD system / feature / task>
 **Complexity:** C-0 | C-1 | C-2 | C-3 | N/A
-**Context Tier:** H0 | H1 | H2 | H3 | H4 | H5 | H6 | N/A
+**Access Scope:** H0 | H1 | H2 | H3 | H4 | N/A
 **W-Scale:** W2 | W3 | W4 | N/A
 **Status:** <draft|candidate|approved|stable>
 

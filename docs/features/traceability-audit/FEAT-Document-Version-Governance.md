@@ -2,13 +2,13 @@
 title: "FEAT: Document Version Governance"
 doc_id: "FEAT-DOCUMENT-VERSION-GOVERNANCE"
 status: "approved"
-version: "0.1.0"
-updated: "2026-06-15"
+version: "0.1.1"
+updated: "2026-08-19"
 owner: "ATHER / THESEUS"
 source_of_truth: true
 prd_system: "SYSTEM-09::Traceability-Audit-Verification-System"
 complexity: "C-3"
-context_tier: "H4"
+access_scope: "H4"
 risk: "MEDIUM"
 related_docs:
   - "docs/STD-Document-Versioning-Governance.md"
@@ -110,5 +110,6 @@ GoVibe needs one enforceable governance layer for document metadata, version syn
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1 | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): frontmatter `context_tier: "H4"` renamed to `access_scope: "H4"`; no status change. |
 | 0.1.0 | 2026-06-21 | ATHER / THESEUS | Signed off; promoted draft -> approved (MSP/GKS gate decision recorded in ADR-014). |
 | 0.1.0+draft | 2026-06-15 | ATHER / THESEUS | Initial feature specification for document metadata, version syntax, changelog enforcement, and active-version registry governance. |

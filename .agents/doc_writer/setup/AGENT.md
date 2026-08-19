@@ -13,6 +13,6 @@ Agent ทุกตัวมีหน้าที่รักษาความ�
 - ใช้ `.agents/devops/handoff/log.jsonl` ในการส่งต่องานเสมอ
 - งานที่ยังไม่เสร็จ (Revoke) ต้องระบุ Blocker ไว้ใน log ชัดเจน
 
-## 4. Execution Governance (H0-H6)
+## 4. Execution Governance (H0-H4)
 - **Atomic (H0-H1):** Single-file edit, ต้องผ่าน Validator ก่อน Commit
 - **System-Wide:** การแก้ไขข้ามโมดูลต้องมี ADR อ้างอิงเสมอ

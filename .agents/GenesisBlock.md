@@ -3,8 +3,8 @@ title: Genesis Block Reference Example
 summary: A concrete example of atom composition within a Genesis Block, using a stock control system as a case study.
 doc_id: GVDOC-1005
 created: "2026-06-02T19:40:00+07:00,Boss(CEO)"
-updated: "2026-06-13T10:15:00+07:00,Rwang (อาหวัง)"
-version: "1.3.1"
+updated: "2026-08-19T00:00:00+07:00,ATHER"
+version: "1.3.2"
 state: active
 status: active
 type: example
@@ -23,6 +23,8 @@ tags:
 
 **NOTE:** This file is a reference example following the standards defined in `docs/specs/SPEC-Genesis-Block.md`.
 
+**2026-08-19 correction (ADR-021/AUD-14, TASK-PRD-022):** every occurrence of the field previously named `context_scaling_tier` in this walkthrough is renamed `retrieval_radius` (values `H0-H5` renamed `R0-R5`), not `access_scope` — the inline comments throughout this file (e.g. "ต้องการ 3 Hops") show the field always meant graph-traversal hop reach, not the executor tool-permission ceiling. This example never declared a separate Access Scope value; if this worked example is used as a template going forward, an independent `access_scope: "H0"-"H4"` field should be added alongside `retrieval_radius` per ADR-021's axis separation.
+
 ตัวอย่างการประกอบร่างเป็น Genesis Block ที่ผูกกับระบบการจัดการสต็อก
 ```yaml
   core:
@@ -35,7 +37,7 @@ tags:
     epic: "EPIC::Automated-Fulfillment-System"
     sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
     task: "TASK-402-CORE-BLUEPRINT-SETUP"
-    context_scaling_tier: "H3" # [Epic / Module Integration: ต้องการ 3 Hops ในการคำนวณเชื่อมโยงข้ามโมดูล]
+    retrieval_radius: "R3" # [Epic / Module Integration: ต้องการ 3 Hops ในการคำนวณเชื่อมโยงข้ามโมดูล]
     cluster: "Supply-Chain-Core-Cluster"
     domain: "Inventory"
     layer: "Module"
@@ -51,7 +53,7 @@ tags:
     epic: "EPIC::Automated-Fulfillment-System"
     sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
     task: "TASK-403-WORKER-IMPLEMENTATION"
-    context_scaling_tier: "H3"
+    retrieval_radius: "R3"
     cluster: "Supply-Chain-Core-Cluster"
     domain: "Inventory"
     layer: "Feature"
@@ -67,7 +69,7 @@ tags:
       epic: "EPIC::Automated-Fulfillment-System"
       sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
       task: "TASK-404-ROUTER-LOGIC"
-      context_scaling_tier: "H1" # [Task / Component Assembly: ต้องการเพียง 1 Hop เพื่อดู Imports/Exports รอบตัว]
+      retrieval_radius: "R1" # [Task / Component Assembly: ต้องการเพียง 1 Hop เพื่อดู Imports/Exports รอบตัว]
       cluster: "Supply-Chain-Core-Cluster"
       domain: "Inventory"
       layer: "Logic"
@@ -81,7 +83,7 @@ tags:
       epic: "EPIC::Automated-Fulfillment-System"
       sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
       task: "TASK-405-CALCULATOR-FEFO"
-      context_scaling_tier: "H1"
+      retrieval_radius: "R1"
       cluster: "Supply-Chain-Core-Cluster"
       domain: "Inventory"
       layer: "Logic"
@@ -95,7 +97,7 @@ tags:
       epic: "EPIC::Automated-Fulfillment-System"
       sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
       task: "TASK-406-PROCESSOR-FIFO"
-      context_scaling_tier: "H1"
+      retrieval_radius: "R1"
       cluster: "Supply-Chain-Core-Cluster"
       domain: "Inventory"
       layer: "Logic"
@@ -111,7 +113,7 @@ tags:
     epic: "EPIC::System-Standardization"
     sprint: "SPRINT-01-FRAMEWORK-BASELINE"
     task: "TASK-101-VALIDATOR-SETUP"
-    context_scaling_tier: "H4" # [Phase / System Architecture: ต้องการ 4 Hops สแกนเช็คโครงสร้างสถาปัตยกรรมรากฐาน]
+    retrieval_radius: "R4" # [Phase / System Architecture: ต้องการ 4 Hops สแกนเช็คโครงสร้างสถาปัตยกรรมรากฐาน]
     cluster: "Enterprise-Architecture-Office"
     domain: "Architecture-Governance"
     layer: "Standard"
@@ -127,7 +129,7 @@ tags:
     epic: "EPIC::Automated-Fulfillment-System"
     sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
     task: "TASK-407-RUNBOOK-GUIDE"
-    context_scaling_tier: "H2" # [Stories / Specs: ต้องการ 2 Hops สแกนโฟลเดอร์ฟีเจอร์และ Types/API แวดล้อม]
+    retrieval_radius: "R2" # [Stories / Specs: ต้องการ 2 Hops สแกนโฟลเดอร์ฟีเจอร์และ Types/API แวดล้อม]
     cluster: "Supply-Chain-Core-Cluster"
     domain: "Inventory"
     layer: "Process"
@@ -143,7 +145,7 @@ tags:
     epic: "EPIC::Automated-Fulfillment-System"
     sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
     task: "TASK-408-CONCEPT-OBJECTIVE"
-    context_scaling_tier: "H2"
+    retrieval_radius: "R2"
     cluster: "Supply-Chain-Core-Cluster"
     domain: "Inventory"
     layer: "Strategy"
@@ -159,7 +161,7 @@ tags:
     epic: "EPIC::Automated-Fulfillment-System"
     sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
     task: "TASK-409-MESSENGER-PACKET"
-    context_scaling_tier: "H0" # [Subtasks / Pull Requests: 0 Hop มองเห็นเฉพาะตัวมันเอง ไม่โหลด Context รอบข้างเพื่อลด Disk I/O]
+    retrieval_radius: "R0" # [Subtasks / Pull Requests: 0 Hop มองเห็นเฉพาะตัวมันเอง ไม่โหลด Context รอบข้างเพื่อลด Disk I/O]
     cluster: "Supply-Chain-Core-Cluster"
     domain: "Inventory"
     layer: "Data Packet"
@@ -175,7 +177,7 @@ tags:
     epic: "EPIC::Automated-Fulfillment-System"
     sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
     task: "TASK-410-REPOSITORY-SCHEMA"
-    context_scaling_tier: "H2"
+    retrieval_radius: "R2"
     cluster: "Supply-Chain-Core-Cluster"
     domain: "Inventory"
     layer: "Storage"
@@ -191,7 +193,7 @@ tags:
     epic: "EPIC::Automated-Fulfillment-System"
     sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
     task: "TASK-411-PIPELINE-FLOW"
-    context_scaling_tier: "H3"
+    retrieval_radius: "R3"
     cluster: "Supply-Chain-Core-Cluster"
     domain: "Inventory"
     layer: "Execution"
@@ -207,7 +209,7 @@ tags:
     epic: "EPIC::Automated-Fulfillment-System"
     sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
     task: "TASK-412-GUARDIAN-LOCK"
-    context_scaling_tier: "H1"
+    retrieval_radius: "R1"
     cluster: "Supply-Chain-Core-Cluster"
     domain: "Inventory"
     layer: "Concurrency"
@@ -223,7 +225,7 @@ tags:
       epic: "EPIC::Zero-Trust-Access-Control"
       sprint: "SPRINT-03-RBAC-VALIDATION"
       task: "TASK-201-AUTHORIZER-GUARD"
-      context_scaling_tier: "H2"
+      retrieval_radius: "R2"
       cluster: "Cybersecurity-And-Compliance-Cluster"
       domain: "Security"
       layer: "Exception & Access Control"
@@ -237,7 +239,7 @@ tags:
       epic: "EPIC::Automated-Fulfillment-System"
       sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
       task: "TASK-413-INSPECTOR-GUARD"
-      context_scaling_tier: "H2"
+      retrieval_radius: "R2"
       cluster: "Supply-Chain-Core-Cluster"
       domain: "Inventory"
       layer: "Exception & Access Control"
@@ -253,7 +255,7 @@ tags:
       epic: "EPIC::Automated-Financial-Compliance"
       sprint: "SPRINT-08-IMMUTABLE-LOGS"
       task: "TASK-305-AUDITOR-LOG"
-      context_scaling_tier: "H1"
+      retrieval_radius: "R1"
       cluster: "Finance-And-Accounting-Cluster"
       domain: "Finance-Audit"
       layer: "Exception & Access Control"
@@ -269,7 +271,7 @@ tags:
     epic: "EPIC::Omnichannel-Order-Processing"
     sprint: "SPRINT-20-PAYMENT-HOOKS"
     task: "TASK-501-LISTENER-HOOK"
-    context_scaling_tier: "H0"
+    retrieval_radius: "R0"
     cluster: "Customer-Experience-Cluster"
     domain: "Sales"
     layer: "Trigger"
@@ -285,7 +287,7 @@ tags:
     epic: "EPIC::Database-High-Availability"
     sprint: "SPRINT-11-POSTGRES-TUNING"
     task: "TASK-601-FOUNDATION-STACK"
-    context_scaling_tier: "H4"
+    retrieval_radius: "R4"
     cluster: "Cloud-Infrastructure-Operations"
     domain: "Infrastructure"
     layer: "Infrastructure"
@@ -301,7 +303,7 @@ tags:
     epic: "EPIC::Event-Driven-Architecture-Setup"
     sprint: "SPRINT-05-RABBITMQ-CLUSTERING"
     task: "TASK-650-TRANSPORT-PROTOCOL"
-    context_scaling_tier: "H1"
+    retrieval_radius: "R1"
     cluster: "Cloud-Infrastructure-Operations"
     domain: "Infrastructure"
     layer: "Communication"
@@ -317,7 +319,7 @@ tags:
     epic: "EPIC::Automated-Fulfillment-System"
     sprint: "SPRINT-14-STOCK-DEDUCTION-STABILITY"
     task: "TASK-414-INTERFACE-API"
-    context_scaling_tier: "H1"
+    retrieval_radius: "R1"
     cluster: "Supply-Chain-Core-Cluster"
     domain: "Inventory"
     layer: "Interface"
@@ -333,7 +335,7 @@ tags:
     epic: "EPIC::Autonomous-Inventory-Management"
     sprint: "SPRINT-02-MCP-SERVER-SETUP"
     task: "TASK-701-BRIDGE-MCP"
-    context_scaling_tier: "H5" # [Masterplan / Enterprise Vision: ต้องการ 5 Hops ดึงข้อมูลคลังความรู้ภาพรวม GKS เพื่อวิเคราะห์ระบบ]
+    retrieval_radius: "R5" # [Masterplan / Enterprise Vision: ต้องการ 5 Hops ในการดึงข้อมูลคลังความรู้ภาพรวม GKS เพื่อวิเคราะห์ระบบ]
     cluster: "Artificial-Intelligence-Operations"
     domain: "AI-Operations"
     layer: "AI Bridge"
@@ -435,55 +437,55 @@ tags:
 
 ### 🔄 2. PRODUCTION EXECUTION FLOW WITH LOCAL GRAPH HOPS LIMITATION
 
-นี่คือผังการไหลของข้อมูลที่ระบุจุดการจำกัดวง Context ข้อมูล (Local Graph Mode) ด้วยค่า **H0 ถึง H5** อย่างชัดเจน เพื่อควบคุมไม่ให้เกิดการโหลดไฟล์ส่วนเกินมาประมวลผลบนเซิร์ฟเวอร์หรือ AI Client ครับ
+นี่คือผังการไหลของข้อมูลที่ระบุจุดการจำกัดวง Context ข้อมูล (Local Graph Mode) ด้วยค่า **Retrieval Radius R0 ถึง R5** อย่างชัดเจน เพื่อควบคุมไม่ให้เกิดการโหลดไฟล์ส่วนเกินมาประมวลผลบนเซิร์ฟเวอร์หรือ AI Client ครับ
 ```
 [ HOOK::Order-State-Trigger ] (TASK-501, Domain: Sales) 
-         │ ──► [Context: H0] (0 Hop: Quick Task - เจาะจงไฟล์เดี่ยว ไม่มีโครง Context รอบตัว ตัวจับสัญญาณเริ่มทำทันที)
+         │ ──► [Context: R0] (0 Hop: Quick Task - เจาะจงไฟล์เดี่ยว ไม่มีโครง Context รอบตัว ตัวจับสัญญาณเริ่มทำทันที)
          ▼
 [ PROTOCOL::Async-Event-Streaming-AMQP ] (TASK-650, Domain: Infrastructure)
-         │ ──► [Context: H1] (1 Hop: Component Assembly - ดึงข้อมูลไฟล์ติดกัน 1 ระดับเพื่อสตรีมสัญญาณเข้าคิวระบบ)
+         │ ──► [Context: R1] (1 Hop: Component Assembly - ดึงข้อมูลไฟล์ติดกัน 1 ระดับเพื่อสตรีมสัญญาณเข้าคิวระบบ)
          ▼
 [ API::Inventory-Fulfillment-Gateway-REST ] (TASK-414, Domain: Inventory)
-         │ ──► [Context: H1] (1 Hop - ตรวจสอบตัวแปรทางผ่านขาเข้า Interface)
+         │ ──► [Context: R1] (1 Hop - ตรวจสอบตัวแปรทางผ่านขาเข้า Interface)
          ▼
 [ CONCEPT::Automatic-Stock-Deduction ] (TASK-408, Domain: Inventory)
-         │ ──► [Context: H2] (2 Hops: Feature Assembly - สแกนแผนงานรันบุ๊คและสเปกผู้ใช้ที่ Lead T3 วางแผนไว้)
-         ├───► [Read Input PARAMS::Automatic-Stock-Deduction]: (TASK-409) ──► [Context: H0] (จำกัดไฟล์เดี่ยวเพื่อความเร็วสูง)
+         │ ──► [Context: R2] (2 Hops: Feature Assembly - สแกนแผนงานรันบุ๊คและสเปกผู้ใช้ที่ Lead T3 วางแผนไว้)
+         ├───► [Read Input PARAMS::Automatic-Stock-Deduction]: (TASK-409) ──► [Context: R0] (จำกัดไฟล์เดี่ยวเพื่อความเร็วสูง)
          │
          ▼
 [ GUARD::Identity-And-Access-Control ] (TASK-201, Domain: Security)
-         │ ──► [Context: H2] (2 Hops - ดึงโครงสร้างสิทธิ์ผู้ใช้งานแวดล้อมมาวิเคราะห์)
+         │ ──► [Context: R2] (2 Hops - ดึงโครงสร้างสิทธิ์ผู้ใช้งานแวดล้อมมาวิเคราะห์)
          ▼
 [ ALGO::Inventory-Strategy-Selector-Logic ] (TASK-404, Domain: Inventory)
-         │ ──► [Context: H1] (1 Hop - ตรวจสอบประเภทสินค้าติดกันเพื่อสั่งสลับเส้นทาง Logic)
+         │ ──► [Context: R1] (1 Hop - ตรวจสอบประเภทสินค้าติดกันเพื่อสั่งสลับเส้นทาง Logic)
          │      • ผลลัพธ์: ตรวจพบนมสด (Dairy) ──► คัดเลือกส่งต่อให้ระบบคำนวณ FEFO
          │
          ▼
 [ GUARD::Expiry-Validation-And-Stock-Shortage-Handler ] (TASK-413, Domain: Inventory)
-         │ ──► [Context: H2] (2 Hops - ตรวจกรองวันหมดอายุเทียบตารางสต็อกใกล้เคียง)
+         │ ──► [Context: R2] (2 Hops - ตรวจกรองวันหมดอายุเทียบตารางสต็อกใกล้เคียง)
          │      • Target Entity: [ENTITY::Central-Inventory-Datastore]
          │
          ▼
 [ ALGO::FEFO-Standard-Sorting-Engine ] (TASK-405, Domain: Inventory)
-         │ ──► [Context: H1] (1 Hop - จัดเรียงและคำนวณแบ่งจ่ายล็อตสินค้าจากอินพุตโดยตรงแบบเส้นตรง)
+         │ ──► [Context: R1] (1 Hop - จัดเรียงและคำนวณแบ่งจ่ายล็อตสินค้าจากอินพุตโดยตรงแบบเส้นตรง)
          │      • Decision: เลือกทำการหักยอดสินค้าจาก "LOT-A" จำนวน 5 ชิ้น
          │
          ▼
 [ SAFTY::Inventory-Lock-And-Transaction-Isolation ] (TASK-412, Domain: Inventory)
-         │ ──► [Context: H1] (1 Hop - เปิดระบบ Row-level Lock ล็อกเฉพาะพิกัดสต็อกของ LOT-A ในระดับปฏิบัติการ)
+         │ ──► [Context: R1] (1 Hop - เปิดระบบ Row-level Lock ล็อกเฉพาะพิกัดสต็อกของ LOT-A ในระดับปฏิบัติการ)
          │
          ▼
 [ STACK::Enterprise-Distributed-Inventory-Engine ] (TASK-601, Domain: Infrastructure)
-         │ ──► [Context: H4] (4 Hops: System Architecture - ลงลึกระดับโครงสร้างฐานข้อมูลและการจัดการ ORM ของรากฐานสถาปัตยกรรม)
+         │ ──► [Context: R4] (4 Hops: System Architecture - ลงลึกระดับโครงสร้างฐานข้อมูลและการจัดการ ORM ของรากฐานสถาปัตยกรรม)
          │      • Commit Update/Insert ข้อมูลลงสู่ Database กายภาพจริง
          │
          ▼
 [ AUDIT::Central-Stock-Change-Logger ] (TASK-305, Domain: Finance-Audit)
-         │ ──► [Context: H1] (1 Hop - บันทึกประวัติและปั๊มตราประทับเวลารายงานส่งสเต็ปถัดไป)
+         │ ──► [Context: R1] (1 Hop - บันทึกประวัติและปั๊มตราประทับเวลารายงานส่งสเต็ปถัดไป)
          │
          ▼
 [ MCP::AI-Agent-Inventory-Context-Bridge ] (TASK-701, Domain: AI-Operations)
-         │ ──► [Context: H5] (5 Hops: Enterprise Vision - สแกนฐานความรู้ทั้งหมด (GKS) เพื่อส่งรายงานสรุปแผนงานระยะยาวและจุดกระทบข้ามระบบกลับให้มนุษย์ (USER) ควบคุมความเสี่ยง)
+         │ ──► [Context: R5] (5 Hops: Enterprise Vision - สแกนฐานความรู้ทั้งหมด (GKS) เพื่อส่งรายงานสรุปแผนงานระยะยาวและจุดกระทบข้ามระบบกลับให้มนุษย์ (USER) ควบคุมความเสี่ยง)
          │
          ▼
 [ NEXT STEP ] ────────────────────────────────────────────────────────────────► สิ้นสุดการประมวลผลระบบ ออกแบบใบงานคลังให้พนักงานหยิบของล็อต A ดำเนินการแพ็คของส่งมอบลูกค้าทันที

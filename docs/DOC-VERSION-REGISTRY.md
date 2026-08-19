@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.66+draft"
+version: "0.3.67+draft"
 updated: "2026-08-19"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,14 +33,14 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.66+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.67+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
 | BRD | `BRD-GOVIBE-PLATFORM` | `0.3.0+draft` | draft | Boss (CEO) | `docs/BRD-GoVibe-Platform.md` |
-| PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.6.0+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
+| PRD | `PRD-GOVIBE-PLATFORM-OVERVIEW` | `0.6.1+draft` | draft | Rwang (Senior Dev) | `docs/PRD-GoVibe-Platform-Overview.md` |
 | SRS | `SRS-CANONICAL-SEMANTIC-IR` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/srs/SRS-Canonical-Semantic-IR.md` |
 | Integration Contract | `CONTRACT-GOVIBE-GENESISBLOCKDB-ADAPTER` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/integration/CONTRACT-GenesisBlockDB-Adapter.md` |
 | Reference | `REFERENCE-NOTION-JIRA-CONNECTOR-REQUIREMENTS` | `0.1.0+draft` | draft | ARCHON | `docs/integration/REFERENCE-Notion-Jira-Connector-Requirements.md` |
@@ -79,7 +79,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Migration | `MIGRATION-DOCUMENT-IA-GRAPH-READINESS` | `0.3.0+draft` | draft | LYRA / ATHER | `docs/migration/MIGRATION-Document-IA-and-Graph-Readiness.md` |
 | Rollback | `ROLLBACK-DOCUMENT-IA-CLEANSING-PHASE1` | `0.3.0+draft` | draft | ATHER | `docs/change-requests/ROLLBACK-Document-IA-Cleansing-Phase1.md` |
 | Navigation | `DOCS-NAVIGATION-HUB` | `0.3.1+draft` | draft | THESEUS / ATHER | `docs/README.md` |
-| PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.1+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
+| PRD | `PRD-GOVIBE-MCP-ORCHESTRATION` | `0.2.2+draft` | draft | GoVibe | `docs/PRD-GoVibe-MCP-Orchestration.md` |
 | Design | `DESIGN-GOVIBE-DOCUMENT-HIERARCHY` | `0.2.0+draft` | draft | ARCHON / THESEUS / ATHER | `docs/design/GoVibe-Document-Hierarchy.md` |
 | Design | `DESIGN-WIREFRAME-A2-ROADMAP-BOARD` | `0.1.1+draft` | draft | THESEUS / VIBE | `docs/design/WIREFRAME-A2-Roadmap-Board.md` |
 | Design | `DESIGN-SITE-MAP` | `1.1.0` | approved | Boss (CEO) | `docs/design/SITE_MAP.md` |
@@ -90,8 +90,8 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.13` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.1` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.14` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -109,26 +109,26 @@ This registry is the audit sitemap for active canonical and registered conforman
 
 | Group | Doc ID | Version | Status | Owner | Path |
 |---|---|---|---|---|---|
-| Feature | `FEAT-DOCUMENT-VERSION-GOVERNANCE` | `0.1.0` | approved | ATHER / THESEUS | `docs/features/traceability-audit/FEAT-Document-Version-Governance.md` |
+| Feature | `FEAT-DOCUMENT-VERSION-GOVERNANCE` | `0.1.1` | approved | ATHER / THESEUS | `docs/features/traceability-audit/FEAT-Document-Version-Governance.md` |
 | Feature | `FEAT-MSP-VALIDATE-EVIDENCE-ADAPTER` | `0.1.1` | approved | ATHER / KIN | `docs/features/traceability-audit/FEAT-MSP-Validate-Evidence-Adapter.md` |
-| Feature | `FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION` | `0.1.1` | approved | LYRA / ATHER | `docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md` |
-| Feature | `FEAT-PER-AGENT-MEMORY-UNIT` | `0.2.0+draft` | draft | ARCHON / ATHER | `docs/features/agent-team/FEAT-Per-Agent-Memory-Unit.md` |
+| Feature | `FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION` | `0.1.2` | approved | LYRA / ATHER | `docs/features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md` |
+| Feature | `FEAT-PER-AGENT-MEMORY-UNIT` | `0.2.1+draft` | draft | ARCHON / ATHER | `docs/features/agent-team/FEAT-Per-Agent-Memory-Unit.md` |
 | Feature | `FEAT-TIERED-REVIEW` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/features/agent-team/FEAT-Tiered-Review.md` |
 | Feature | `FEAT-CODEV-COVIBE-TERMINOLOGY-DEFINITION` | `0.2.0` | approved | THESEUS | `docs/features/agent-team/FEAT-CoDev-CoVibe-Terminology-Definition.md` |
 | Feature | `FEAT-CODEV-MODULE` | `0.2.0` | approved | THESEUS | `docs/features/agent-team/FEAT-CoDev-Module.md` |
 | Feature | `FEAT-COVIBE-MODULE` | `0.2.0` | approved | THESEUS | `docs/features/agent-team/FEAT-CoVibe-Module.md` |
 | Feature | `FEAT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | ARCHON / ATHER | `docs/features/agent-team/FEAT-Task-Scoped-Context-Injection.md` |
-| Feature | `FEAT-QWEN-CLI-MODEL-ROUTING` | `0.1.3` | approved | KIN / LYRA / ATHER | `docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md` |
+| Feature | `FEAT-QWEN-CLI-MODEL-ROUTING` | `0.1.4` | approved | KIN / LYRA / ATHER | `docs/features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md` |
 | Feature | `FEAT-MULTI-PROVIDER-ENTITLEMENT-ROUTING` | `0.1.0+draft` | draft | LYRA / ARCHON / ATHER | `docs/features/integration-bridge/FEAT-Multi-Provider-Entitlement-Routing.md` |
 | Audit | `AUDIT-COGNITIVE-SYSTEM-INBOUND-TRIAGE-2026-06-16` | `0.1.1` | approved | ATHER / LYRA | `docs/assurance/audit/AUDIT-Cognitive-System-Inbound-Triage-2026-06-16.md` |
-| Audit | `POC-5-AXIS-COVERAGE` | `0.1.0+draft` | draft | Boss (CEO) | `docs/assurance/audit/POC-5-Axis-Coverage.md` |
+| Audit | `POC-5-AXIS-COVERAGE` | `0.1.1+draft` | draft | Boss (CEO) | `docs/assurance/audit/POC-5-Axis-Coverage.md` |
 | Audit | `POC-H6-BUDGET-SUFFICIENCY` | `0.2.0` | approved | Boss (CEO) | `docs/assurance/audit/POC-H6-Budget-Sufficiency.md` |
 | Audit | `AUDIT-USER-FLOW-RUNTIME-GAPS-2026-06-22` | `0.1.0+draft` | draft | Boss (CEO) | `docs/assurance/audit/AUDIT-User-Flow-Runtime-Gaps-2026-06-22.md` |
 | Audit | `AUDIT-GOVIBE-RWANG-CUTOVER-READINESS-2026-07-30` | `1.0.2` | draft | ATHER | `docs/audit/AUDIT-GoVibe-RWANG-Cutover-Readiness-2026-07-30.md` |
 | Audit | `AUDIT-2026-08-01-H-AXIS-STD-INVENTORY` | `0.1.2` | under-review | ATHER | `docs/assurance/audit/AUDIT-2026-08-01-H-Axis-and-STD-Inventory.md` |
 | Feature | `FEAT-ROADMAP-PROMOTION-CONTRACT` | `0.1.0` | approved | LYRA | `docs/features/project-roadmap/FEAT-Roadmap-Promotion-Contract.md` |
-| Feature | `FEAT-VISUAL-AGENT-FLEET-SYSTEM` | `0.1.0` | approved | THESEUS | `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md` |
-| Feature | `FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION` | `0.1.0+draft` | draft | Boss (CEO) | `docs/features/genesis-knowledge-system/FEAT-Doc-Format-Template-Extraction.md` |
+| Feature | `FEAT-VISUAL-AGENT-FLEET-SYSTEM` | `0.1.1` | approved | THESEUS | `docs/features/agent-team/FEAT-Visual-Agent-Fleet-System.md` |
+| Feature | `FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION` | `0.1.1+draft` | draft | Boss (CEO) | `docs/features/genesis-knowledge-system/FEAT-Doc-Format-Template-Extraction.md` |
 | ADR | `ADR-013-task-scoped-context-injection` | `0.1.0` | accepted | ARCHON / ATHER | `docs/adr/ADR-013-Task-Scoped-Context-Injection.md` |
 | ADR | `ADR-014-msp-gks-traceability-gate` | `0.1.0` | accepted | ARCHON / ATHER | `docs/adr/ADR-014-MSP-GKS-Traceability-Gate.md` |
 | ADR | `ADR-015-MASTER-ESSENCE-VS-GOV-POLICY` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-015-Master-Essence-vs-GOV-Policy.md` |
@@ -153,7 +153,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Architecture | `TDD-POC-CANONICAL-LOOP` | `1.0.0` | approved | Boss / ATHER | `docs/architecture/TDD-POC-Canonical-Loop.md` |
 | Architecture / Conformance | `C4-KNOWLEDGE-CONTEXT-AUTHORITY-OVERLAY` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/C4-Knowledge-Context-Authority-Overlay.md` |
 | Architecture / Conformance | `C4-PROVIDER-ENTITLEMENT-EXECUTION-ROUTING-OVERLAY` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/C4-Provider-Entitlement-Execution-Routing-Overlay.md` |
-| Architecture | `BLUEPRINT-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Translator-Core-Slice.md` |
+| Architecture | `BLUEPRINT-TRANSLATOR-CORE-SLICE` | `0.1.1+draft` | draft | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Translator-Core-Slice.md` |
 | LLD | `LLD-TASK-SCOPED-CONTEXT-INJECTION-CORE` | `0.1.1` | approved | ARCHON / ATHER | `docs/lld/LLD-Task-Scoped-Context-Injection-Core.md` |
 | Architecture | `MSP-GKS-TAXONOMY-MAPPING` | `0.1.0` | approved | THESEUS / KIN | `docs/architecture/MSP-GKS-Taxonomy-Mapping.md` |
 | Architecture | `SDD-MSP-EXTERNAL-EVIDENCE-BOUNDARY` | `0.1.1` | approved | ARCHON / KIN / ATHER | `docs/architecture/SDD-MSP-External-Evidence-Boundary.md` |
@@ -192,11 +192,11 @@ These files map historical or cross-document terminology into canonical owners. 
 | SRS | `SRS-GOVIBE-MCP-SERVER` | `0.2.1` | approved | GoVibe | `docs/srs/SRS-GoVibe-MCP-Server.md` |
 | SRS | `SRS-OLLAMA-SIDECAR-EXECUTION` | `0.2.1` | approved | THESEUS | `docs/srs/SRS-Ollama-Sidecar-Execution.md` |
 | SRS | `SRS-GKS-RETRIEVAL-LAYER` | `0.1.1+draft` | draft | Boss (CEO) | `docs/srs/SRS-GKS-Retrieval-Layer.md` |
-| SRS | `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` | `0.1.1+draft` | draft | Boss (CEO) | `docs/srs/SRS-GoVibe-Translator-Core-Slice.md` |
+| SRS | `SRS-GOVIBE-TRANSLATOR-CORE-SLICE` | `0.1.2+draft` | draft | Boss (CEO) | `docs/srs/SRS-GoVibe-Translator-Core-Slice.md` |
 | SRS | `SRS-PERSISTENT-MEMORY-MSP-RUNTIME` | `0.1.0+draft` | draft | Boss (CEO) | `docs/srs/SRS-Persistent-Memory-MSP-Runtime.md` |
 | Architecture | `SEQ-OLLAMA-SIDECAR-FLOW` | `0.1.2` | approved | THESEUS | `docs/architecture/SEQ-Ollama-Sidecar-Flow.md` |
 | LLD | `LLD-GOVIBE-MCP-TOOLS` | `0.3.1` | approved | GoVibe | `docs/lld/LLD-GoVibe-MCP-Tools.md` |
-| LLD | `LLD-TRANSLATOR-CORE-SLICE` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/lld/LLD-Translator-Core-Slice.md` |
+| LLD | `LLD-TRANSLATOR-CORE-SLICE` | `0.1.1+draft` | draft | ARCHON / ATHER | `docs/lld/LLD-Translator-Core-Slice.md` |
 | LLD | `LLD-AGENT-LAUNCHER-EXECUTION-ROUTER` | `0.1.2` | approved | THESEUS | `docs/lld/LLD-Agent-Launcher-Execution-Router.md` |
 | Context | `AGENT-BRIDGE-QWEN-COMPAT` | `1.2.1+draft` | draft | ATHER / THESEUS | `AGENT.md` |
 | Context | `CONTEXT-BOUNDED-EXTERNAL-EXECUTOR` | `0.2.3` | draft | THESEUS | `.agents/context/CONTEXT-Bounded-External-Executor.md` |
@@ -233,6 +233,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.67+draft | 2026-08-19 | ATHER | Reconciled the TASK-PRD-009/TASK-PRD-022 H-axis sweep (worktree commit b709a00, review-gate APPROVE-FOR-COMMIT) onto origin/main's Batch 3/4/6 merge base (protocol v2 + parity + CI hygiene, frontend honesty, dispatch gate + ADR-024 acceptance). Synchronized the version rows of thirteen registered documents to match the abolished-H-axis semantic corrections made to their frontmatter/body (field renames `context_scaling_tier`/`context_tier`/`planning_tier` -> `access_scope`, hop labels -> `retrieval_radius`, no status changes) — PRD-GOVIBE-PLATFORM-OVERVIEW 0.6.1+draft, PRD-GOVIBE-MCP-ORCHESTRATION 0.2.2+draft, MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL 0.2.1, FEAT-DOCUMENT-VERSION-GOVERNANCE 0.1.1, FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION 0.1.2, FEAT-PER-AGENT-MEMORY-UNIT 0.2.1+draft, FEAT-QWEN-CLI-MODEL-ROUTING 0.1.4, POC-5-AXIS-COVERAGE 0.1.1+draft, FEAT-VISUAL-AGENT-FLEET-SYSTEM 0.1.1, FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION 0.1.1+draft, BLUEPRINT-TRANSLATOR-CORE-SLICE 0.1.1+draft, SRS-GOVIBE-TRANSLATOR-CORE-SLICE 0.1.2+draft, LLD-TRANSLATOR-CORE-SLICE 0.1.1+draft — none of these thirteen were touched by any merged batch, so no collision. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.14 (reconciled onto main's 0.3.13 tip, keeping every TASK-PRD row through 036 and all PHASE/SPR states from main's Batches 3/4/6, plus this worktree's TASK-PRD-009/TASK-PRD-022 review status and PHASE-PRD-04/SPR-PRD-04 progress 0 -> 90; GATE-SEMANTIC stays not met pending CI evidence) and this registry's own self-row to 0.3.67+draft. No document status changed by this row. |
 | 0.3.66+draft | 2026-08-19 | Claude Sonnet 5 | Owner-decision row, by owner authority (Boss, CR-2026-08-19 §6 D-01 recorded decision): `ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY` `0.1.1+draft` draft → `0.2.0` accepted, scoped to §2.5 two-phase routing as executed by TASK-PRD-035's phase-1 dispatch gate (API-008 remains draft; entitlement/compatibility arbitration across external providers, the credential boundary, and the D-03 deferred modules explicitly out of scope per the ADR's new §7). This row DOES change ADR-024 to accepted, on owner authority (CR-2026-08-19 §6 D-01), not a self-applied ratification. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.13 (reconciled onto origin/main's Batch 3+4 merge base, 0.3.12 -> 0.3.13: TASK-PRD-035 D-01 phase-1 dispatch-gate integration and TASK-PRD-036 D-04 replay-provider pinned test executed to review; PHASE-PRD-07/SPR-PRD-07 progress 70 → 85, kept alongside main's independent PHASE-PRD-02/SPR-PRD-02 and PHASE-PRD-03/SPR-PRD-03 bumps recorded in the 0.3.65+draft row below) and TODO-EXECUTION-BINDING-LIFECYCLE to 0.1.2+draft (recorded the TASK-PRD-035 review-gate MINOR — provider-adapter-host.mjs's rejectCanonicalIdentities fail-closed against the launcher's opaque stdout/stderr — as a deferred phase-2 follow-up, not fixed in this batch). |
 | 0.3.65+draft | 2026-08-19 | Claude Sonnet 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.12 (reconciled onto the Batch 3 merge base, 0.3.11 -> 0.3.12): TASK-PRD-020 (AUD-07, the sole live-data-rule violation — fabricated D1 Reactor Run Trigger telemetry/benchmark/lifecycle removed and replaced with honest empty-state + real reactor.run acknowledgement) and TASK-PRD-021 (AUD-24 — dedicated "unauthorized" connection state, EventProvenance/lastIngest marker on every ingestion path, shared useConnectionStatus hook consumed by EmptyState and StatusBar) executed to review in one batch (VIBE executor). PHASE-PRD-03/SPR-PRD-03 progress 20 → 40. No document status changed by this row. |
 | 0.3.64+draft | 2026-08-19 | Claude Sonnet 5 | Registered `MISSION-PROTOCOL-V2` (draft, 0.1.0+draft, owner ATHER, `docs/api/MISSION-PROTOCOL-v2.md`) under §3 Product and Platform — the doc AUD-34/TASK-PRD-034 replaced the unregistered `docs/api/MISSION-PROTOCOL-v1.md` (removed) with. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.11 (TASK-PRD-018, TASK-PRD-019, TASK-PRD-034 executed to review in one owner-directed batch) and `BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT` to 0.1.2 (reference-path-only update from the retired v1 filename to v2). This row DOES add one new registered document (MISSION-PROTOCOL-V2, entering as draft); no existing document's status changed. |

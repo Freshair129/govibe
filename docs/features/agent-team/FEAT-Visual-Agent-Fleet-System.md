@@ -2,13 +2,13 @@
 title: "FEAT: Visual Agent Fleet System"
 doc_id: "FEAT-VISUAL-AGENT-FLEET-SYSTEM"
 status: "approved"
-version: "0.1.0"
-updated: "2026-06-14"
+version: "0.1.1"
+updated: "2026-08-19"
 owner: "THESEUS"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
 complexity: "C-2"
-context_tier: "H4"
+access_scope: "H4"
 risk: "MEDIUM"
 related_docs:
   - "docs/features/agent-team/FEAT-Multi-Agent-Workflow-System.md"
@@ -126,5 +126,6 @@ The system maps each agent identity to a fleet role, job-title equivalent, domai
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1 | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): frontmatter `context_tier: "H4"` renamed to `access_scope: "H4"`; no status change. |
 | 0.1.0 | 2026-06-20 | THESEUS | Signed off; promoted draft -> approved. |
 | 0.1.0+draft | 2026-06-20 | THESEUS | Migrated to canonical draft convention: normalized version suffix to +draft, uppercased doc_id, and added this changelog footer. |

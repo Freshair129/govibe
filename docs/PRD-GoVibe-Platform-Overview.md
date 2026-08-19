@@ -2,17 +2,17 @@
 title: "PRD: GoVibe Platform Overview"
 doc_id: "PRD-GOVIBE-PLATFORM-OVERVIEW"
 status: "draft"
-version: "0.6.0+draft"
-updated: "2026-08-03"
+version: "0.6.1+draft"
+updated: "2026-08-19"
 owner: "Rwang (Senior Dev)"
 source_of_truth: true
 related_issue: 91
-related_adrs: ["ADR-015", "ADR-016", "ADR-017", "ADR-018", "ADR-019", "ADR-023", "ADR-025"]
+related_adrs: ["ADR-015", "ADR-016", "ADR-017", "ADR-018", "ADR-019", "ADR-021", "ADR-023", "ADR-025"]
 block_manifest:
   core:
     id: "[[DOC::PRD_PLATFORM_OVERVIEW]]"
     block_id: "[[GKS::GENESIS_BLOCK_V3]]"
-    context_scaling_tier: "H4"
+    access_scope: "H4"
 ---
 
 # PRD: GoVibe Platform Overview
@@ -392,6 +392,7 @@ Canonical Semantic IR is a cross-system capability rather than a new fake top-le
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.6.1+draft | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): `block_manifest.core.context_scaling_tier` renamed to `access_scope`; no status change. |
 | 0.6.0+draft | 2026-08-03 | Rwang / Boss / ARCHON / ATHER | Added Canonical Semantic IR, governed multi-view projection, reverse deltas, backend independence, and GenesisBlockDB standalone-client boundary. |
 | 0.5.0+draft | 2026-08-02 | Rwang / Boss | Added shared failure pattern, agent-usable knowledge, ADR-023 GKS/MSP boundary, authority-based CoVibe/CoDev, user journey, and provider candidate boundary. |
 | 0.4.3+draft | 2026-06-23 | Rwang | Previous platform overview and ten-system map. |

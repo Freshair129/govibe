@@ -22,8 +22,8 @@ Master Plan
 ## Level Definitions
 | Level | Meaning | Owner | Typical H Tier | Output |
 |---|---|---|---|---|
-| Master Plan | Product-wide operating plan | Product owner + PM | H5 | Master plan |
-| Roadmap | Multi-phase delivery direction | PM | H5 | Roadmap |
+| Master Plan | Product-wide operating plan | Product owner + PM | H4 | Master plan |
+| Roadmap | Multi-phase delivery direction | PM | H4 | Roadmap |
 | Phase | Major delivery slice | PM + Architect | H4 | Phase plan |
 | Epic | Cross-feature capability | PM + Architect | H3 | Epic brief |
 | Sprint | Short-horizon execution plan | PM + Lead | H2 | Sprint plan |

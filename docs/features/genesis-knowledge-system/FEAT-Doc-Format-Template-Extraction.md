@@ -2,8 +2,8 @@
 title: "FEAT: Doc-Format Template Extraction & Format-Adaptive Rendering"
 doc_id: "FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-22"
+version: "0.1.1+draft"
+updated: "2026-08-19"
 owner: "Boss (CEO)"
 auditor: "ATHER"
 type: feat
@@ -78,7 +78,7 @@ onboard repo
   -> scan docs  -> extract format template (store per repo)
   -> scan code  -> symbol-link + semantic match into GKS atoms
 on request
-  -> gather atoms by scope (hop H0-H6)
+  -> gather atoms by scope (retrieval radius R0-R6)
   -> render into the asking repo's format template
   -> return document + provenance (atoms cited)
 ```
@@ -105,4 +105,5 @@ on request
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): §6 workflow "hop H0-H6" relabeled retrieval radius R0-R6. |
 | 0.1.0+draft | 2026-06-22 | Boss (CEO) | Defined the doc-format template extraction + format-adaptive JIT rendering feature that resolves cross-repo doc-paradigm mismatch (Feature-Base vs System-Base). |

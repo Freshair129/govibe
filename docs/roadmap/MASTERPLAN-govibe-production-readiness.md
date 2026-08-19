@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.3.13"
+version: "0.3.14"
 updated: "2026-08-19"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -208,7 +208,7 @@ its own threshold.
 | GATE-CI | Every pull request runs `npm run baseline:check` with no path filter | met (2026-08-08: run 31226249238 on PR #122 executed docs, roadmap, typecheck, 70 vitest files, 65 security tests, and build; baseline-check set as a required status check on main; failure path proven red on PR #123) |
 | GATE-CONTRACT | The TypeScript MissionSnapshot and the runtime snapshot agree field for field | not met |
 | GATE-HONESTY | Every view either shows live data or an empty state naming the missing feed, with no fabricated values | met |
-| GATE-SEMANTIC | No active document uses abolished `H5`/`H6` semantics | not met |
+| GATE-SEMANTIC | No active document uses abolished `H5`/`H6` semantics | not met (2026-08-19: TASK-PRD-009/TASK-PRD-022 full sweep complete; `node scripts/docs/validate-docs.mjs` locally reports PASS with its new GATE-SEMANTIC rule in `checkAbolishedHAxisSemantics`; gate stays not-met pending a CI-run baseline-check confirming this on the merge commit) |
 | GATE-BOOTSTRAP | A clean checkout reaches a running Mission Control by following one document | not met |
 | GATE-SECURITY | The sidecar rejects unauthenticated and foreign-origin traffic under automated test | met |
 
@@ -224,7 +224,7 @@ any production claim that involves a network-reachable deployment.
 | PHASE-PRD-01 | Close the CI gate so the real suite protects the branch | `docs/STD-Execution-Governance.md` | GATE-CI is met | in-progress | 75 |
 | PHASE-PRD-02 | Realign the snapshot contract across TypeScript and runtime | `docs/PRD-GoVibe-Platform-Overview.md` | GATE-CONTRACT is met | in-progress | 50 |
 | PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | in-progress | 40 |
-| PHASE-PRD-04 | Remove abolished H-axis semantics from active documents | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | GATE-SEMANTIC is met | planned | 0 |
+| PHASE-PRD-04 | Remove abolished H-axis semantics from active documents | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | GATE-SEMANTIC is met | review | 90 |
 | PHASE-PRD-05 | Package a repeatable clean-checkout developer trial | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` | GATE-BOOTSTRAP is met | planned | 0 |
 | PHASE-PRD-06 | Bring the runtime into verified conformance with the Workspace System spec | `docs/specs/SPEC-Workspace-System.md` | Spec acceptance criteria AC-01 through AC-08 hold with recorded command evidence | done | 100 |
 | PHASE-PRD-07 | Activate the governed semantic pipeline (MSP parent and context authority) | `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md` | A real candidate promotion round-trips through a configured MSP and a live-surface workflow.continue succeeds with validated context authority, both with recorded command evidence | in-progress | 85 |
@@ -239,7 +239,7 @@ any production claim that involves a network-reachable deployment.
 | SPR-PRD-01 | PHASE-PRD-01 | Make the full baseline gate run on every pull request | A pull request touching only frontend code still runs the full suite | in-progress | 50 |
 | SPR-PRD-02 | PHASE-PRD-02 | Reconcile every MissionSnapshot field across both implementations | A contract test fails when either side adds an unmatched field | in-progress | 50 |
 | SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | in-progress | 40 |
-| SPR-PRD-04 | PHASE-PRD-04 | Correct the H-axis vocabulary in architecture documents | A repository scan finds no active `H5`/`H6` access semantics | planned | 0 |
+| SPR-PRD-04 | PHASE-PRD-04 | Correct the H-axis vocabulary in architecture documents | A repository scan finds no active `H5`/`H6` access semantics | review | 90 |
 | SPR-PRD-05 | PHASE-PRD-05 | Author and verify the clean-checkout quickstart | A reviewer reaches a running Mission Control from the document alone | planned | 0 |
 | SPR-PRD-06 | PHASE-PRD-06 | Pin workspace-spec conformance and land the personnel identity and RBAC contracts | AC-01 through AC-06 are pinned by automated tests; the personnel and RBAC suites demonstrate AC-07 and AC-08 | done | 100 |
 | SPR-PRD-07 | PHASE-PRD-07 | Wire the MSP parent and repair the context-authority path | Deep scan promotes one real candidate end-to-end and workflow.continue succeeds on the live tool surface with validated context authority | in-progress | 85 |
@@ -258,7 +258,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-006 | SPR-PRD-02 | task | Resolve the heatmap and master plan preview contract orphans | P1 | ARCHON | planned | TASK-PRD-005 | Section 3.1 GAP-05 |
 | TASK-PRD-007 | SPR-PRD-03 | task | Publish graph and symbol producers from the workspace scan | P0 | VIBE | planned | TASK-PRD-005 | Section 3.2 |
 | TASK-PRD-008 | SPR-PRD-03 | task | Reconcile sidebar labels with rendered view titles | P2 | VIBE | planned | - | Section 3.1 GAP-07 |
-| TASK-PRD-009 | SPR-PRD-04 | task | Correct abolished H-axis semantics in architecture documents | P1 | ATHER | planned | - | Section 3.1 GAP-08 |
+| TASK-PRD-009 | SPR-PRD-04 | task | Correct abolished H-axis semantics in architecture documents | P1 | ATHER | review | - | Section 3.1 GAP-08 |
 | TASK-PRD-010 | SPR-PRD-05 | task | Author the clean-checkout developer quickstart | P0 | THESEUS | planned | TASK-PRD-003 | Section 3.1 GAP-09 |
 | TASK-PRD-011 | SPR-PRD-00 | task | Provide a Mission Control readiness tracking and command view | P1 | VIBE | done | TASK-PRD-001 | Section 11 |
 | TASK-PRD-012 | SPR-PRD-03 | task | Roadmap source hygiene and honest recency scoring | P1 | LYRA | done | - | Section 3.1 GAP-10 |
@@ -271,7 +271,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-019 | SPR-PRD-02 | task | Add the cross-runtime MissionSnapshot parity contract test | P0 | ARCHON | review | TASK-PRD-005 | Section 3.3 AUD-16 |
 | TASK-PRD-020 | SPR-PRD-03 | task | Remove fabricated telemetry from the D1 Reactor Run Trigger | P0 | VIBE | review | - | Section 3.3 AUD-07 |
 | TASK-PRD-021 | SPR-PRD-03 | task | Distinguish disconnected, stale, and empty states per panel | P2 | VIBE | review | - | Section 3.3 AUD-24 |
-| TASK-PRD-022 | SPR-PRD-04 | task | Extend H-axis remediation to the full leak sweep, fix the doc-generation template, and add a validator backstop | P1 | ATHER | planned | TASK-PRD-009 | Section 3.3 AUD-14 |
+| TASK-PRD-022 | SPR-PRD-04 | task | Extend H-axis remediation to the full leak sweep, fix the doc-generation template, and add a validator backstop | P1 | ATHER | review | TASK-PRD-009 | Section 3.3 AUD-14 |
 | TASK-PRD-023 | SPR-PRD-07 | task | Configure and launch the in-repo MSP runtime with a promotion smoke test | P0 | VIBE | review | - | Section 3.3 AUD-01 |
 | TASK-PRD-024 | SPR-PRD-07 | task | Forward contextAuthority through the hardened workflow.continue surface | P0 | VIBE | review | TASK-PRD-023 | Section 3.3 AUD-02 |
 | TASK-PRD-025 | SPR-PRD-07 | task | Prepare the owner decision: integrate or descope the entitlement execution and credential stack | P1 | ARCHON | done | - | Section 3.3 AUD-03 |
@@ -312,6 +312,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-019 | ARCHON | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-020 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-021 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
+| TASK-PRD-022 | ATHER | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-023 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-024 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-025 | ARCHON | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
@@ -348,7 +349,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-006 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-007 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-008 | pending | pending | n/a | 2026-08-06T00:00:00Z |
-| TASK-PRD-009 | pending | pending | n/a | 2026-08-06T00:00:00Z |
+| TASK-PRD-009 | passed | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-010 | pending | pending | n/a | 2026-08-06T00:00:00Z |
 | TASK-PRD-011 | passed | passed | n/a | 2026-08-09T21:00:00Z |
 | TASK-PRD-012 | passed | passed | n/a | 2026-08-09T21:00:00Z |
@@ -361,7 +362,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-019 | passed | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-020 | passed | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-021 | passed | pending | n/a | 2026-08-19T00:00:00Z |
-| TASK-PRD-022 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-022 | passed | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-023 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-024 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-025 | passed | passed | n/a | 2026-08-19T00:00:00Z |
@@ -742,8 +743,8 @@ title: Correct abolished H-axis semantics in architecture documents
 requirement_type: NFR
 complexity: C-3
 access_scope: H3
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: ATHER
 executor: THESEUS
 approver: Boss
@@ -755,14 +756,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given the platform C4, genesis block design, and translator blueprint, when each is read, then graph distance is expressed as retrieval radius and never as an H tier
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given a repository scan for active H5 or H6 usage, when it runs outside archive and audit paths, then it returns no active access semantics
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given the MVP developer trial plan declares a planning tier, when it is corrected, then it uses a valid access scope between H0 and H4
-      checked: false
-changelog: Four active documents carrying abolished H-axis semantics recorded on 2026-08-06.
+      checked: true
+changelog: Four active documents carrying abolished H-axis semantics recorded on 2026-08-06. 2026-08-19 (ATHER) - the 2026-08-19 audit (AUD-14) found this task's original four-file scope materially understated (~20 active violations across the repo); TASK-PRD-022 was opened same-day to extend remediation to the full sweep, the doc-generation template, and a validator backstop, and its execution covers this task's original scope. `docs/architecture/C4-GoVibe-Platform.md` §5.7/§6.1 now uses `AccessScopeResolver`/`resolveAccessScope` and `RetrievalRadiusPlanner` with `H0-H4` Access Scope separated from `R0-R6` Retrieval Radius; `docs/architecture/SDD-Genesis-Block.md` §3/§4 renamed to Retrieval Radius `R0-R5` and Compaction Depth `D0-D6`; `docs/architecture/BLUEPRINT-Translator-Core-Slice.md` Selector row relabeled `R0-R6`; `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` frontmatter `planning_tier: "H5"` corrected to `access_scope: "H4"`. Evidence: `node scripts/docs/validate-docs.mjs` PASS (full file/violation inventory recorded in TC-TASK-PRD-022's changelog, which subsumes this task). Status set to review, not done — CI-run baseline-check evidence for GATE-SEMANTIC is still outstanding.
 created_at: 2026-08-06T00:00:00Z,THESEUS,pending
 token_telemetry:
   model_name: claude-opus-5
@@ -1425,8 +1426,8 @@ title: Extend H-axis remediation to the full leak sweep with a template fix and 
 requirement_type: NFR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: ATHER
 executor: THESEUS
 approver: Boss
@@ -1438,14 +1439,126 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given the roughly twenty active documents the 2026-08-19 audit found carrying H5/H6 or context_scaling_tier semantics (including both PRDs, the approved MVP masterplan frontmatter, and the agent assets), when each is remediated or overlay-corrected, then a repository scan finds no active abolished-tier semantics outside clearly historical changelog text
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the doc-generation template .agents/doc_writer/template/GENESIS-BLOCK-TEMPLATE.md, when a new document is generated from it, then the output carries access_scope vocabulary and no context_scaling_tier field
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given docs:validate runs, when an active document introduces H5, H6, or context_scaling_tier as live semantics, then validation fails, preventing regression
-      checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-14 (Section 3.3), which found GAP-08's four-file scope materially understated; also absorbs the AUD-33 legacy contextTier sweep note.
+      checked: true
+changelog: >-
+  Opened 2026-08-19 from audit finding AUD-14 (Section 3.3), which found GAP-08's four-file scope
+  materially understated; also absorbs the AUD-33 legacy contextTier sweep note.
+  2026-08-19 (ATHER) - full sweep executed and closed to review; this task's execution also covers
+  TASK-PRD-009's original architecture-doc scope (see that task's changelog).
+  DISCOVERY (grep for H5|H6|context_scaling_tier|HLevelClassifier|classifyHLevel|Context Scaling
+  Tier|context_tier across docs/ and .agents/, then per-hit classification): ~59 files matched
+  before remediation; after classifying each hit as VIOLATION or OK/historical, 28 docs/ files and
+  19 .agents/ files needed real edits (47 files total), plus the validator.
+  REMEDIATED - docs/: PRD-GoVibe-Platform-Overview.md and PRD-GoVibe-MCP-Orchestration.md
+  (block_manifest.core.context_scaling_tier -> access_scope), MASTERPLAN-govibe-mvp-developer-trial.md
+  (planning_tier:"H5" -> access_scope:"H4", MVP-BL-001 C-2/H5 -> C-2/H4, approved status unchanged),
+  CONCEPT--HYBRID-JIT-CONTEXT.md and lld/LLD-Translator-Core-Slice.md and
+  srs/SRS-GoVibe-Translator-Core-Slice.md and architecture/BLUEPRINT-Translator-Core-Slice.md (hop
+  H0-H6 -> retrieval radius R0-R6), architecture/C4-GoVibe-Platform.md (direct rewrite per GAP-08:
+  HLevelClassifier/classifyHLevel -> AccessScopeResolver/resolveAccessScope,
+  GraphHopResolver -> RetrievalRadiusPlanner, H0-H6 -> H0-H4 Access Scope + R0-R6 Retrieval Radius),
+  architecture/SDD-Genesis-Block.md (retrieval diagram H0-H5 -> R0-R5; compaction diagram H0-H6 ->
+  D0-D6, flagged unreconciled against .agents' CH1-CH5 scale), the Genesis-Block SRS/SRD/SPEC family
+  (srs/SRS-Genesis-Block.md, srs/SRD-Genesis-Block.md, specs/SPEC-Genesis-Block.md - split the
+  legacy overloaded context_scaling_tier into access_scope H0-H4, for the SPEC's runtime-behavior
+  table, and Retrieval Radius R0-R6 / Compaction Depth D0-D6 for the hop/layer tables),
+  specs/SPEC--LOCAL-MODEL-ANTI-ERROR-LOOP.md (GRL H0-H5 -> R0-R5), features/traceability-audit/
+  FEAT-Document-Version-Governance.md, features/agent-team/FEAT-Visual-Agent-Fleet-System.md
+  (context_tier:"H4" -> access_scope:"H4"), features/execution-governance/
+  FEAT-Execution-Governance-Standard.md (context tiers H0-H5 -> access scope H0-H4),
+  features/agent-team/FEAT-Quota-Aware-Local-LLM-Decomposition.md (GAP-08-named: Context Scaling
+  Tier scale ascending to H6 -> Access Scope scale ascending to H4), features/agent-team/
+  FEAT-Per-Agent-Memory-Unit.md (H0-H6 Context Scaling Tier -> R0-R6 Retrieval Radius, correcting
+  which axis it actually cites), features/agent-team/FEAT-Multi-Agent-Workflow-System.md and
+  features/integration-bridge/FEAT-Qwen-CLI-Model-Routing.md (H0-H6 -> H0-H4 access scope),
+  features/genesis-knowledge-system/FEAT-Doc-Format-Template-Extraction.md (hop H0-H6 -> R0-R6),
+  blueprints/BLUEPRINT-Genesis-Knowledge-System.md and blueprints/BLUEPRINT-Agent-Team-Management.md
+  (context_scaling_tier -> access_scope; split retrieval-flavored "Context Scaling"/"Zero-Trust
+  Context Scaling" principles into Retrieval Radius R0-R6 separately from Access Scope H0-H4),
+  alignment/small-model-prompting.md (third H-meaning, AUD-33: H-scale model routing H0-H6 ->
+  canonical T0-T3 model-tier vocabulary from STD-SLM-Tiered-Routing.md), assurance/audit/
+  POC-5-Axis-Coverage.md (the 5-axis model's own H axis, defined as "context hop radius" H0-H6,
+  renamed to R throughout its axis table and coverage matrix), change-control/change-requests/
+  work-packets/WP-01-Canonical-Document-Audit.md (context_tier:"H5" -> access_scope:"H4",
+  down-mapped), references/fixtures/LANDING-GoVibe-Mockup.html ("context tier (H0-H5)" -> "access
+  scope (H0-H4)"), and DOC-VERSION-REGISTRY.md (13 registered-doc version rows plus its own self-row
+  synced to the frontmatter bumps above; see its own 0.3.65+draft changelog row for the full list).
+  REMEDIATED - .agents/ (delegated to a scoped subagent, then corrected by ATHER after re-classifying
+  the Genesis-Block worked-example family - see DEVIATION below):
+  doc_writer/template/GENESIS-BLOCK-TEMPLATE.md (the doc-generation template GAP-08/AUD-14 named as
+  re-seeding the leak - context_scaling_tier -> retrieval_radius, R-scale values, per the
+  DEVIATION note), doc_writer/template/FEAT-template.md (context_tier:"H?" -> access_scope:"H?"),
+  GenesisBlock.md (~20 context_scaling_tier occurrences -> retrieval_radius with R-scale values,
+  including the one H5 case which now fits cleanly as R5 with no down-map needed), auditor/AGENT.md,
+  frontend/AGENT.md, backend/AGENT.md, cto/AGENT.md, devops/AGENT.md, tech_lead/AGENT.md, pm/AGENT.md,
+  doc_writer/THESEUS.md (all: "Context Tier: H0|H1|...|H6" -> "Access Scope: H0|H1|H2|H3|H4";
+  escalation ranges H3-H6/H4-H6 -> H3-H4/H4), doc_writer/setup/AGENT.md ("Execution Governance
+  (H0-H6)" -> "(H0-H4)"), auditor/asset/Risk-Assessment.md ("H3 to H5" -> "H3 to H4"),
+  agent-registry.yaml ("escalate C-3 and H4-H6 work" -> "H4 work"), pm/asset/
+  Planning-Decomposition-Standard.md and pm/asset/Roadmap-Template.md (Master Plan/Roadmap H5/H5-H6
+  -> H4, flagged information-loss risk below), RUNBOOK-GoVibe-Multi-Agent.md (a third H-meaning:
+  planning-hierarchy H6..H0 labels removed entirely rather than down-mapped, since collapsing seven
+  levels onto five H values would destroy the distinctions), and pm/change request/
+  CR-2026-06-14-PM-Asset-Redundancy-Cleanup.md plus its -feedback.md companion (originally scoped
+  out as historical, then also corrected once the new validator flagged their live "(H5-H0)"/
+  "(H5-H3)" ranges - H5-bearing ranges down-mapped to H4).
+  DEVIATION FROM THIS CRITERION'S LITERAL WORDING: the success criterion above assumed
+  GENESIS-BLOCK-TEMPLATE.md's field should become access_scope. Cross-checking against its sibling
+  worked example (GenesisBlock.md), whose inline comments explicitly justify each value by hop count
+  ("requires 3 Hops to compute cross-module linkage"), showed the field's real behavior is graph
+  retrieval reach, not the executor tool-permission ceiling - so it was corrected to
+  `retrieval_radius` (R0-R6) instead, per ADR-021's own rule to classify actual behavior rather than
+  map field names mechanically. The template still emits no context_scaling_tier field (satisfying
+  the criterion's core intent) and no access_scope field (documented as a gap in both files'
+  changelogs for a future pass). This is the most significant classification judgment call in this
+  sweep - flagged for reviewer attention.
+  OK / LEFT AS HISTORICAL (not edited): docs/archive/**, docs/assurance/audit/** (audit findings that
+  quote the violation, including POC-H6-Budget-Sufficiency.md's legacy filename/doc_id and
+  AUDIT-2026-08-01-*.md), docs/change-control/** and docs/change-requests/** decision records that
+  discuss the H-axis correction itself (CR-2026-08-01-GoVibe-Architecture-Alignment,
+  AMENDMENT-2026-08-01-H-Axis-Definition, WP-02-H-Axis-Canonical-Propagation, and the
+  DOC-CLEANSING-*.json execution manifests), docs/adr/ADR-021 itself and its companion
+  architecture/H-Axis-Compatibility-Decision.md and architecture/C4-GoVibe-Platform-H-Axis-Correction.md
+  (the binding decision + compatibility-mapping + correction-overlay docs), docs/STD-Execution-Governance.md
+  (the abolition statement itself), docs/handover/GVDOC-1004-Handover Specification.md (prohibition
+  text), docs/specs/SPEC-Workspace-System.md:341-342 (prohibition text), docs/alignment/
+  ALIGNMENT-06-Context-Vault-and-Memory-Assembly.md:79 (a migration-rule sentence, not a violation),
+  features/genesis-knowledge-system/FEAT-Hierarchy-Compaction-System.md's own "Do not use:" list
+  (already-corrected, quoting the forbidden names as prohibition), srs/SRS-GKS-Retrieval-Layer.md
+  (already corrected in a prior batch), this masterplan's own GAP-08/AUD-14/AUD-33/GATE-SEMANTIC
+  rows and DoD criteria (accurate history/live governance text, not edited), and .agents/
+  FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS.md (already uses correct R0-R6/CH1-CH5 vocabulary) and
+  .agents/.devlog/CHECKPOINT-2026-06-22-Architecture-Session.md (devlog, historical).
+  DEFERRED / NOT IN THIS SWEEP'S SCOPE: docs/adr/ADR-018-Structural-Decomposition-Containment-Wikilink.md:28
+  "Hector Height (H1-H5)" - a distinct named concept (physical-file compaction depth) that happens to
+  reuse the letter H with a H1-H5 shape matching the abolished pattern; not in the audit's named list,
+  status "accepted" (governance-locked), and renaming it risks inconsistency with other references to
+  "Hector Height" not surfaced by this sweep's grep set - flagged as a risk for the review gate rather
+  than edited. scripts/mcp/runtime/orchestration-service.mjs's legacy `contextTier` step argument
+  (AUD-33) - CODE, explicitly out of this docs+template+validator task's scope per the assignment;
+  recorded as deferred.
+  VALIDATOR (GATE-SEMANTIC backstop): scripts/docs/validate-docs.mjs gained checkAbolishedHAxisSemantics,
+  wired into main(). It exempts docs/archive/**, docs/assurance/audit/**, docs/change-control/**,
+  docs/change-requests/**, and .agents/.devlog/** by path; everywhere else it flags (a) the literal
+  field name `context_scaling_tier:` used live, (b) the symbols HLevelClassifier/classifyHLevel used
+  live, and (c) H5/H6 declared as the value of a structured `key: value` or `**Bold Label:** value`
+  line - all three gated by a historical/prohibition-context allowance (matched against the current
+  line, a 6-line lookback window, and the enclosing heading) plus a structural exemption for
+  Given/When/Then "- criterion:" lines. Evidence: `node scripts/docs/validate-docs.mjs` PASSes clean
+  on the post-sweep repo (411 markdown files, 0 errors); a temporary fixture
+  (docs/features/genesis-knowledge-system/FEAT-Validator-Fixture-Temp.md, reintroducing
+  `context_scaling_tier: "H4"` and a bare H0-H6 range) was created, confirmed to FAIL validation with
+  the expected error message, then deleted - no fixture left behind. False-positive risk: the
+  line/window/heading/criterion allowance is keyword-based, not a full parser, so a real regression
+  phrased to closely mimic historical/prohibition language (e.g. inside a table cell far from any
+  heading, beyond the 6-line lookback) could theoretically slip through; this is a known, accepted
+  precision/recall tradeoff for a lint-style backstop, not a proof of completeness.
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -2207,6 +2320,7 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.3.14 | 2026-08-19 | approved | Reconciled the TASK-PRD-009/TASK-PRD-022 H-axis sweep (worktree commit b709a00, review-gate APPROVE-FOR-COMMIT) onto origin/main's tip (Batches 3/4/6: protocol v2 + parity + CI hygiene, frontend honesty, dispatch gate + ADR-024 acceptance) — a merge of origin/main, not new execution work beyond the reconciliation itself. Executed TASK-PRD-009 and TASK-PRD-022 to review in the worktree (ATHER role; TASK-PRD-022's execution also covers TASK-PRD-009's original scope — see both containers' own changelogs for the full grep-derived violation inventory, the OK/historical set left untouched, the doc-generation template fix, the validator mechanism, and a flagged classification deviation). Real-count discovery (grep across docs/ and .agents/ for H5, H6, context_scaling_tier, HLevelClassifier, classifyHLevel, "Context Scaling Tier", context_tier, then per-hit classification) found the audit's "~20 documents" materially understated the true edit count once .agents/ agent contracts and worked examples were included: 47 files needed real edits (28 under docs/, 19 under .agents/), not ~20. Remediated: both PRDs' block_manifest context_scaling_tier -> access_scope; the approved MVP masterplan's planning_tier:"H5" -> access_scope:"H4" and its C-2/H5 backlog row -> C-2/H4; the C4 platform doc's direct rewrite (GAP-08) replacing HLevelClassifier/classifyHLevel/GraphHopResolver with the ADR-021-mandated AccessScopeResolver/resolveAccessScope/RetrievalRadiusPlanner and separating H0-H4 Access Scope from R0-R6 Retrieval Radius; the Genesis-Block SDD/SRS/SRD/SPEC family's overloaded H0-H6 field split into Access Scope (H0-H4) and Retrieval Radius (R0-R6)/Compaction Depth (D0-D6) per each table's actual documented behavior; the Translator-Core-Slice LLD/SRS/Blueprint trio's "hop H0-H6" relabeled Retrieval Radius R0-R6; six FEAT docs and two BLUEPRINT docs corrected (context_tier/context_scaling_tier -> access_scope, or Context Scaling Tier -> Retrieval Radius where the doc's own citation target was retrieval-flavored); the small-model-prompting guide's third H-meaning (AUD-33: H = model tier) replaced with the canonical T0-T3 vocabulary from STD-SLM-Tiered-Routing.md; the 5-Axis PoC's own H axis (context hop radius) renamed R; a work-packet's context_tier:"H5" down-mapped to access_scope:"H4"; a landing-page fixture's marketing copy corrected; GEMINI.md's block_manifest.core.context_scaling_tier -> access_scope; the doc-generation template GENESIS-BLOCK-TEMPLATE.md and its GenesisBlock.md worked example (the highest-leverage fix — re-seeds every new document) converted from context_scaling_tier to retrieval_radius after cross-checking the worked example's own inline hop-count justifications overturned this task's literal-wording assumption that access_scope was the right target; and roughly a dozen .agents/*/AGENT.md contracts, PM planning assets, and the multi-agent runbook (a third H-meaning: planning-hierarchy labels, removed rather than down-mapped) — full per-file list in TC-TASK-PRD-022's changelog. Added GATE-SEMANTIC's validator backstop: scripts/docs/validate-docs.mjs gained checkAbolishedHAxisSemantics (exempts docs/archive/**, docs/assurance/audit/**, docs/change-control/**, docs/change-requests/**, .agents/.devlog/** by path; flags a live context_scaling_tier field name, a live HLevelClassifier/classifyHLevel symbol, or H5/H6 as a declared field value elsewhere, gated by a historical/prohibition-context allowance checked against the line, a lookback window, and the enclosing heading, plus a Given/When/Then criterion-line exemption); merged clean against origin/main (no conflict — main had not touched this file). Post-merge critical check: re-ran `npm run docs:validate` against the files added/changed by the three merged batches (MISSION-PROTOCOL-v2.md, ADR-024, frontend-honesty docs, dispatch-gate docs) — the new validator did not flag any of them; no additional remediation was needed outside this worktree's original 50-file set. docs/roadmap/MASTERPLAN-govibe-production-readiness.md and docs/DOC-VERSION-REGISTRY.md needed manual reconciliation (union of both batches' bookkeeping; this row's own §13 numbering renumbered 0.3.12 -> 0.3.14 and registry rows renumbered 0.3.65/0.3.66+draft -> 0.3.67+draft to sit above main's same-numbered rows, per the coordinator's explicit renumbering instruction — no prior row's text was rewritten). Two Task Containers moved planned -> review, all their DoD criteria ticked with the evidence above; SPR-PRD-04/PHASE-PRD-04 moved planned -> review, progress 0 -> 90 (kept alongside main's independent PHASE-PRD-03/SPR-PRD-03 bump to 40 from the frontend-honesty batch — neither overwrote the other). GATE-SEMANTIC in Section 4 stays "not met" — the local scan and validator are now clean and provable, but a CI-run baseline-check on the merge commit is still outstanding, so the gate is not self-flipped to met. Flagged for the review gate: the GENESIS-BLOCK-TEMPLATE.md/GenesisBlock.md field-target deviation (access_scope assumed by the success criterion vs. retrieval_radius actually applied); an information-loss risk where two .agents/ files collapsed distinct Master-Plan-vs-Roadmap H5-H6/H5 labels onto a single H4; ADR-018's unrelated "Hector Height (H1-H5)" left unedited as out-of-scope; and the code-side `contextTier` step argument (AUD-33) explicitly deferred as out of this docs-only task's scope. Local evidence, re-run post-merge: `node scripts/docs/validate-docs.mjs` PASS (411+ markdown files, 0 errors, including every file the three merged batches added); a temporary fixture reintroducing the violation was created, confirmed to FAIL, then deleted (no fixture left behind); `npm run roadmap:validate` 0 errors; `npm run lint` clean. No CI run yet on this change; both tasks stay at review pending ATHER/ARCHON audit and Boss approval. | pending | Claude Sonnet 5 |
 | 0.3.13 | 2026-08-19 | approved | Reconciled TASK-PRD-035/036 (D-01/D-04 phase-1 dispatch gate + replay-provider contract test) onto origin/main's Batch 3+4 merge base (0.3.12: TASK-PRD-018/019/020/021/034) — a merge of origin/main, not new execution work beyond the reconciliation itself. Executed TASK-PRD-035 and TASK-PRD-036 to review (Boss-approved D-01/D-04 selections in CR-2026-08-19 §6, C-3/C-1). TASK-PRD-035: wired the phase-1 execution dispatch gate — new packages/govibe-core/src/local-agent-dispatch-gate.mjs wraps scripts/agents/invoke-agent.ps1 as a governed subscription-CLI adapter behind execution-capability-planner -> execution-router -> execution-binding-service -> executor-adapter -> provider-adapter-host, with a single hard-coded local entitlement/compatibility record (not a general multi-provider arbitration system — D-03's registries stay deferred). GovibeRuntime.runAgent (scripts/mcp/runtime-core.mjs) now builds a per-dispatch identity and calls dispatchGate.dispatch(...) instead of spawning directly, still routing the child process through TASK-PRD-028's buildAllowlistedChildEnv() (confirmed unregressed post-merge); StEP dispatches through the same path since it already calls runAgent via orchestrationService. Doc-first: ADR-024 accepted 0.1.1+draft -> 0.2.0, scoped to §2.5 two-phase routing, citing CR-2026-08-19 §6 D-01, API-008 remaining draft (new §7 scope note); DOC-VERSION-REGISTRY synced. TASK-PRD-036: extended the pre-existing packages/govibe-core/src/replay-provider.test.mjs (not clobbered) with the two previously-uncovered loadReplayBundle mismatch cases (context_hash, source_manifest_hash) and a test pinning that restoreReplayContext() passes the three API-006 replay claims through as distinct, un-conflated booleans; consumption stays deferred per D-04 (TODO-Execution-Binding-Lifecycle.md, already recorded). Review gate returned APPROVE-FOR-COMMIT with one MINOR (provider-adapter-host.mjs's rejectCanonicalIdentities is fail-closed against agent stdout/stderr that happens to start with "gks:") recorded as a phase-2 follow-up in TC-TASK-PRD-035's changelog and the execution-binding TODO register, not fixed in this batch. scripts/mcp/runtime-core.mjs and packages/govibe-core/src/index.mjs auto-merged cleanly against origin/main (git auto-merge, no conflict — main had not touched either file since this branch diverged); docs/roadmap/MASTERPLAN-govibe-production-readiness.md and docs/DOC-VERSION-REGISTRY.md needed manual reconciliation (union of both batches' bookkeeping, this row). PHASE-PRD-07/SPR-PRD-07 progress 70 → 85 (kept alongside main's independent PHASE-PRD-02/SPR-PRD-02 and PHASE-PRD-03/SPR-PRD-03 bumps — neither overwrote the other). Both tasks bumped 0.1.0+draft → 0.2.0+draft with real criteria ticked; Verification QA set to passed/pending (audit pending ATHER). Local evidence, re-run post-merge: `npx vitest run --no-file-parallelism` across packages/govibe-core/src/local-agent-dispatch-gate.test.mjs (4/4), packages/govibe-core/src/replay-provider.test.mjs (5/5), packages/govibe-core/src/executor-adapter.test.mjs, scripts/mcp/runtime-core.test.mjs, scripts/mcp/runtime-core.security.test.mjs, scripts/mcp/step.test.mjs, scripts/mcp/runtime/orchestration-service.test.mjs — all green, no pre-existing test broken; `npm run lint` clean; `npm run docs:validate` PASS; `npm run roadmap:validate` 0 errors; `npm run mcp:smoke` PASS with a real gated agent-launcher dispatch (`agent launcher exit: 0`). No CI run yet on this change; both tasks stay at review pending ATHER audit and Boss approval. | pending | Claude Sonnet 5 |
 | 0.3.12 | 2026-08-19 | approved | Reconciled the frontend-honesty batch (TASK-PRD-020/021, VIBE executor) onto the Batch 3 merge base (0.3.11: TASK-PRD-018/019/034) — a merge of origin/main, not new execution work. Executed TASK-PRD-020 and TASK-PRD-021 to review (VIBE executor). TASK-PRD-020 (AUD-07, the audit's sole live-data-rule violation): src/features/benchmark/ReactorRunTrigger.tsx rewritten to remove the fabricated model roster, Math.random() hardware telemetry, simulated benchmark lifecycle, simulated GGUF download progress, and misleading offline-success message; replaced with an honest EmptyState naming the missing producer, a real reactor.run trigger reporting the backend's actual acknowledged-but-unimplemented status, and the on-disk local_model/auto_scanned_models.json shown as labeled static config. New guard test src/features/noFabricatedTelemetry.test.ts source-scans src/features for random-number-telemetry calls. TASK-PRD-021 (AUD-24): added a dedicated "unauthorized" ConnectionState (distinct from "error") that a 401 bootstrap now sets; added EventProvenance/lastIngest to MissionSnapshot so every ingestion path (sidecar WS, C3 debug ingress, trusted postMessage, dev CustomEvent) tags what it merges in; new shared src/hooks/useConnectionStatus.ts hook consumed directly by src/shared/EmptyState.tsx (empty-feed vs disconnected vs unauthorized) and src/app/StatusBar.tsx (a "showing last-known data" banner rendered above every view, reaching all 21 panels without per-view edits). Both containers bumped 0.1.0+draft -> 0.2.0+draft with all DoD criteria ticked on real local evidence (see each container's changelog). PHASE-PRD-03/SPR-PRD-03 progress 20 -> 40 (TASK-PRD-007/008 remain open) — merged alongside main's independent PHASE-PRD-02/SPR-PRD-02 bump (planned/0 -> in-progress/50 from TASK-PRD-019/034); both bumps kept, neither overwrote the other. packages/mission-protocol/index.js and index.d.ts merged cleanly (git auto-merge): main's protocol v2 additions and this batch's ConnectionState "unauthorized" / isMissionSnapshot check landed in the same file with no manual reconciliation needed, confirmed post-merge by grep and by a green missionProtocol.test.ts run. Evidence this batch: npx vitest run --no-file-parallelism across src/features/noFabricatedTelemetry.test.ts, src/missionGateway.test.ts, src/missionExternalIngestion.test.ts, src/missionBrowserIngress.test.ts, src/missionProtocol.test.ts, src/missionContract.test.ts, src/mission/snapshot-reducer.test.ts, src/mission-auth-bootstrap.test.ts, src/missionSessionContract.test.ts, scripts/mcp/runtime/mission-command-router.test.mjs, scripts/mcp/sidecar-server.security.mjs -- all green (re-run post-merge); npm run lint clean; npm run docs:validate PASS; npm run roadmap:validate 0 errors. No CI run yet on this change; TASK-PRD-020/021 stay at review pending ATHER audit and Boss approval. | pending | Claude Sonnet 5 |
 | 0.3.11 | 2026-08-19 | approved | Executed TASK-PRD-019, TASK-PRD-034, TASK-PRD-018 to review in one owner-directed batch (Boss instruction, ARCHON/ATHER executors per each container's pic, not an independent audit reproduction). TASK-PRD-019 (AUD-16): added a compile-time-plus-runtime MissionSnapshot parity guard to src/missionContract.test.ts — a direct `Record<keyof MissionSnapshot, true>` type annotation catches both a field added to or removed from the type at `tsc --noEmit` time (verified destructively in-session, both directions), diffed at runtime against the real `createRuntimeSnapshot()` key set, with an asserted allowlist for the five fields populated post-boot by other runtime code paths (heatmap, roadmap, masterPlanPreview, roadmapSources, usage) and a separate recorded-not-fixed disposition for the seven producer-less slices and the roadmap.dag rider (TASK-PRD-006/007 scope, not fabricated here). TASK-PRD-034 (AUD-34): replaced the stale, unregistered docs/api/MISSION-PROTOCOL-v1.md (1.0.0/compat-1, 2-of-6 endpoints, no frontmatter) with docs/api/MISSION-PROTOCOL-v2.md (2.0.0/compat-2 matching the runtime, all 8 live sidecar surfaces formally defined — the 6 AUD-34 named plus 2 it did not enumerate — the TASK-PRD-028 WS auth transport and TASK-PRD-033 idempotency behavior documented, honest §7 ordering/version-negotiation limitations added), registered in DOC-VERSION-REGISTRY §3, with a version-drift guard test (src/missionProtocol.test.ts) pinning the doc's declared version against the live MISSION_PROTOCOL_VERSION/COMPATIBILITY constants. TASK-PRD-018 (AUD-25/AUD-26): added `npm run mcp:smoke` to the existing required `baseline-check` CI job; split scripts/docs/validate-env.mjs so its repo-tracked checks (.govibe-knowledge-block/, local_model/, .gitignore) now run under CI instead of the whole script no-op'ing, while its genuinely per-machine checks (global profile, gitignored .govibe/brain/) stay explicitly CI-skipped by name; created 6 previously-missing .govibe-knowledge-block/ subdirectories with .gitkeep so that CI-enabled check actually passes; moved all five dead tests/*.test.js files into collected vitest locations (two converted from node:test to vitest syntax) with the tests/ directory now removed entirely, verified 21/21 green; documented (not moved) the credential-session-boundary.security.test.mjs unit-lane judgment call; recorded enforce_admins:false as an owner-tracked residual per `gh api` inspection, not remediated. PHASE-PRD-01/SPR-PRD-01 status unchanged (already in-progress); PHASE-PRD-02/SPR-PRD-02 planned → in-progress, progress 0 → 50. GATE-CONTRACT in Section 4 stays "not met" — the parity mechanism is now provable but not yet proven by a CI run (no push in this working-tree-only session). Local evidence this batch: `npx vitest run --no-file-parallelism` across src/missionContract.test.ts (15/15), src/missionProtocol.test.ts (18/18), the 5 moved test files (21/21); `npm run lint` clean; `npm run mcp:smoke` PASS; `CI=true node scripts/docs/validate-env.mjs` exit 0. No CI run yet on this change; all three tasks stay at review pending audit and Boss approval. | pending | Claude Fable 5 |

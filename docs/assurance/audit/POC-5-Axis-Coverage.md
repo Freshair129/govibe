@@ -2,8 +2,8 @@
 doc_id: "POC-5-AXIS-COVERAGE"
 title: "PoC-1: The 5-axis model covers project documents at every density (sparse → dense)"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-22"
+version: "0.1.1+draft"
+updated: "2026-08-19"
 owner: "Boss (CEO)"
 type: audit
 ---
@@ -26,41 +26,41 @@ A coordinate space covers a sparse population and a dense population identically
 | **L** | structural containment (where in the part-whole tree) | L0–L7 (METH…PLAT) |
 | **D** | compaction depth (levels packed per physical file) | D1–D5 |
 | **SWE** | document abstraction / human-facing type (the "language") | BRD/PRD/SRS/SDD/HLD/LLD + cross-cutting |
-| **H** | context hop radius | H0–H6 |
+| **R** | context hop radius (Retrieval Radius) | R0–R6 |
 | **P/S** | process phase / decomposition stage | P0–P6 / S1–S12 |
 
 ## 4. Coverage Matrix — GoVibe's real doc types mapped (empirical)
 Bucket: **A** = structural-design (→ L/D) · **B** = cross-cutting (→ SWE-type + wikilink) · **C** = code (→ L0 atoms).
 
-| GoVibe doc type | Bucket | SWE type | L / D | H | P/S |
+| GoVibe doc type | Bucket | SWE type | L / D | R | P/S |
 |---|---|---|---|---|---|
-| BRD-* | B | BRD (business) | — | H6 | P0 |
-| PRD-* | B | PRD | — | H5 | P0–P1 |
-| SRS-* / SRD-* | B | SRS | — | H2–H3 | P2 |
-| SDD-* / SDD-System-Design | A | SDD/HLD | Sys–Mod / D4–D5 | H3–H4 | P2–P3 |
-| LLD-* | A | LLD | Comp–Meth / D1–D2 | H1–H2 | P3 |
-| C4-* / CTX-* | A | HLD/Architecture | Plat–Mod / D5 | H4–H6 | P2 |
-| ERD-* | A | Data model | ENTITY atoms / D3 | H2 | P2 |
-| SEQ-* | A | FLOW/sequence | cross-level / D3 | H2–H3 | P2–P3 |
-| FEAT-* (×38) | A | Feature spec | Feature (L2–L3) | H2 | P2 |
-| BLUEPRINT-* | A/B | Implementation plan | Mod–Feat | H2–H3 | P3 |
-| SPEC-* | A | Technical spec | varies | H2–H3 | P2 |
-| DESIGN-* (SITE_MAP, DESIGN_SYSTEM, WIREFRAME) | A | UI/UX design | Comp | H2 | P2 |
+| BRD-* | B | BRD (business) | — | R6 | P0 |
+| PRD-* | B | PRD | — | R5 | P0–P1 |
+| SRS-* / SRD-* | B | SRS | — | R2–R3 | P2 |
+| SDD-* / SDD-System-Design | A | SDD/HLD | Sys–Mod / D4–D5 | R3–R4 | P2–P3 |
+| LLD-* | A | LLD | Comp–Meth / D1–D2 | R1–R2 | P3 |
+| C4-* / CTX-* | A | HLD/Architecture | Plat–Mod / D5 | R4–R6 | P2 |
+| ERD-* | A | Data model | ENTITY atoms / D3 | R2 | P2 |
+| SEQ-* | A | FLOW/sequence | cross-level / D3 | R2–R3 | P2–P3 |
+| FEAT-* (×38) | A | Feature spec | Feature (L2–L3) | R2 | P2 |
+| BLUEPRINT-* | A/B | Implementation plan | Mod–Feat | R2–R3 | P3 |
+| SPEC-* | A | Technical spec | varies | R2–R3 | P2 |
+| DESIGN-* (SITE_MAP, DESIGN_SYSTEM, WIREFRAME) | A | UI/UX design | Comp | R2 | P2 |
 | ADR-* (×19) | B | ADR (decision) | — | varies | P2 |
-| API-* | B | API contract | API atoms | H2 | P2 |
-| STD-* | B | Governance policy (`GOV--`) | — | H4–H6 | P0 |
-| CONCEPT--* | B | Concept/vision | — | H5 | P1 |
-| RUNBOOK-* | B | Runbook (ops) | — | H1–H3 | P2(ops) |
+| API-* | B | API contract | API atoms | R2 | P2 |
+| STD-* | B | Governance policy (`GOV--`) | — | R4–R6 | P0 |
+| CONCEPT--* | B | Concept/vision | — | R5 | P1 |
+| RUNBOOK-* | B | Runbook (ops) | — | R1–R3 | P2(ops) |
 | RCA-* | B | RCA (analysis) | — | varies | P6 |
 | AUDIT-* / this doc | B | Audit/verification | — | varies | P6 |
-| TEST-PLAN / TDD-* / UAT-* | B | Test Plan | — | H1–H2 | P6 |
-| MIG-* | B | Migration plan | — | H3–H4 | P3 |
+| TEST-PLAN / TDD-* / UAT-* | B | Test Plan | — | R1–R2 | P6 |
+| MIG-* | B | Migration plan | — | R3–R4 | P3 |
 | GVDOC-* (Handover) | B | Handover/ops | — | varies | P3 |
-| ROADMAP/MASTERPLAN/BACKLOG/SPRINT/IMP | B | Planning | — | H5–H6 | P0/P4 |
-| DOC-VERSION-REGISTRY | B | Index/provenance (Master Log) | — | H5 | — |
+| ROADMAP/MASTERPLAN/BACKLOG/SPRINT/IMP | B | Planning | — | R5–R6 | P0/P4 |
+| DOC-VERSION-REGISTRY | B | Index/provenance (Master Log) | — | R5 | — |
 | CR-* (change request) | B | Decision/process | — | varies | P2 |
-| AGENTS.md / AGENT.md | B | Agent contract/policy (`GOV--`) | — | H4 | P0 |
-| `src/**`, `scripts/**` | **C** | code | L0 atoms (decompose) | H0–H1 | P5 |
+| AGENTS.md / AGENT.md | B | Agent contract/policy (`GOV--`) | — | R4 | P0 |
+| `src/**`, `scripts/**` | **C** | code | L0 atoms (decompose) | R0–R1 | P5 |
 
 **Result:** 26 representative doc types (covering GoVibe's ~108 registered doc_ids + 38 FEAT + 12 systems) → **all 26 map to A / B / C with coordinates. 0 fall outside.** Closure over *types* ⇒ closure over *instances*. ∎
 
@@ -87,4 +87,5 @@ Extend `validate-docs`: for every doc, assert it resolves to a `(bucket, SWE-typ
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): the axis previously labeled `H` (values `H0-H6`) is renamed `R` (Retrieval Radius, `R0-R6`) throughout the axis table and coverage matrix — this PoC's "H" always meant context hop radius, never the executor Access Scope axis. |
 | 0.1.0+draft | 2026-06-22 | Boss (CEO) | PoC-1: 5-axis coverage via coordinate-system + 3-bucket closure; empirical map of GoVibe's real doc types (0 outside). |

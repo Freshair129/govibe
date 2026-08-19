@@ -25,7 +25,7 @@ block_manifest:
       epic: "{{EP_ID}}"
       sprint: "{{SP_ID}}"
       task: "{{TASK_ID}}"
-      context_scaling_tier: "H3"
+      retrieval_radius: "R3"
       cluster: "{{CLUSTER}}"
       domain: "{{DOMAIN}}"
       layer: "Module"
@@ -52,7 +52,7 @@ graph TD
 - **Metadata:**
   ```yaml
   id: [[FEAT::{{FEAT_ID}}]]
-  context_scaling_tier: "H2"
+  retrieval_radius: "R2"
   role: "worker"
   ```
 - **Logic:**
@@ -62,7 +62,7 @@ graph TD
 - **Metadata:**
   ```yaml
   id: [[ALGO::{{ALGO_ID}}]]
-  context_scaling_tier: "H1"
+  retrieval_radius: "R1"
   role: "calculator"
   ```
 - **Logic:**
@@ -72,7 +72,7 @@ graph TD
 - **Metadata:**
   ```yaml
   id: [[ENTITY::{{ENTITY_ID}}]]
-  context_scaling_tier: "H2"
+  retrieval_radius: "R2"
   role: "repository"
   ```
 - **Schema:**
@@ -81,5 +81,6 @@ graph TD
 ## Changelog
 | Version | Date | Summary |
 |---|---|---|
+| 0.1.1 | 2026-08-19 | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): the field previously named `context_scaling_tier` is renamed `retrieval_radius` (values `H1-H3` renamed `R1-R3`) — the per-atom values decrease with containment depth exactly as `GenesisBlock.md`'s worked example, whose inline comments confirm the field measures graph-hop reach, not the executor tool-permission ceiling. Documents generated from this template that also need a governed Access Scope declaration should add an independent `access_scope: "H0"-"H4"` field per ADR-021's axis separation — this template does not currently emit one. |
 | 0.1.0 | 2026-06-15 | Initial template scaffold aligned with document versioning governance. |
 

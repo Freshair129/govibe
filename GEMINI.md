@@ -3,7 +3,7 @@ block_manifest:
   core:
     id: "[[AGENT::GEMINI_CLI_CONTEXT]]"
     block_id: "[[GKS::GENESIS_BLOCK_V3]]"
-    context_scaling_tier: "H4"
+    access_scope: "H4"
 ---
 
 # GoVibe - GEMINI.md
@@ -140,5 +140,6 @@ For UI changes, also perform browser verification and console-error checks. Use 
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.3.1 | 2026-08-19 | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): `block_manifest.core.context_scaling_tier` renamed to `access_scope`. |
 | 0.3.0 | 2026-06-13 | ID-based agent references, MemoryOS V3 integration, traceability headers. |
 | 0.2.0 | 2026-06-12 | Updated to current Vite React app, GoVibe docs SSOT, PM/QA/auditor contracts, document-driven roadmap, design/template parity, and Vercel deployment guidance. |

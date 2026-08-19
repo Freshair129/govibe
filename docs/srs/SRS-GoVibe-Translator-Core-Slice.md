@@ -2,8 +2,8 @@
 title: "SRS: GoVibe Translator-Core Slice (Ingest → Render → Fidelity Gate)"
 doc_id: "SRS-GOVIBE-TRANSLATOR-CORE-SLICE"
 status: "draft"
-version: "0.1.1+draft"
-updated: "2026-06-22"
+version: "0.1.2+draft"
+updated: "2026-08-19"
 owner: "Boss (CEO)"
 auditor: "ATHER"
 type: srs
@@ -59,7 +59,7 @@ Specify the **smallest end-to-end vertical slice** that turns GoVibe's translato
 | ID | NFR | Requirement |
 |---|---|---|
 | NFR-1 | Live-data-only | No fake atoms or mock renders presented as real output (`PRODUCT.md`). |
-| NFR-2 | Token efficiency | Native-GKS render path; render is scope-bounded (hop H0–H6). |
+| NFR-2 | Token efficiency | Native-GKS render path; render is scope-bounded (retrieval radius R0–R6). |
 | NFR-3 | Determinism | Same atoms + same template ⇒ same output. |
 | NFR-4 | Governance | Rendered output passes a governance check before it is treated as deliverable (extends the gate beyond GoVibe's own docs — audit #4). |
 | NFR-5 | Provider-neutral | Ingest/atomize must not assume one coding tool or framework (`ADR-019` code-in, not framework-in). |
@@ -102,5 +102,6 @@ Downstream design: `BLUEPRINT-Translator-Core-Slice` (architecture) and `LLD-Tra
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): NFR-2 "hop H0–H6" relabeled as Retrieval Radius R0–R6. |
 | 0.1.1+draft | 2026-06-22 | Boss (CEO) | Resolved the three open questions: language-pack curation = hybrid (auto-draft + confirm low-confidence); fidelity = both (round-trip + semantic threshold); provenance = local jsonl interim → migrate to MSP. Linked downstream Blueprint + LLD. |
 | 0.1.0+draft | 2026-06-22 | Boss (CEO) | Initial SRS for the translator-core slice (ingest → atomize → symbol-link → render → fidelity gate) addressing audit findings #1–#3; carries open questions on curation, fidelity metric, and provenance home. |
