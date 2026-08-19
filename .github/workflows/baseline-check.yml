@@ -25,6 +25,10 @@ jobs:
       - run: npm ci
       - run: npm ci --prefix packages/msp-runtime
       - run: npm run baseline:check
+      # TASK-PRD-018 (AUD-25): mcp:smoke was runnable but absent from CI, so a broken MCP tool
+      # catalog could merge undetected. Boots the MCP server over stdio and asserts the tool
+      # catalog responds.
+      - run: npm run mcp:smoke
       # TASK-PRD-023: prove the MSP launch contract on every PR — boots the
       # in-repo msp-runtime via GOVIBE_MSP_COMMAND and round-trips one real
       # candidate promotion. A failed MSP boot fails this check.

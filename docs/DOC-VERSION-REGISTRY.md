@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.64+draft"
+version: "0.3.65+draft"
 updated: "2026-08-19"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.64+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.65+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -52,6 +52,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | API | `API-008-PROVIDER-ENTITLEMENT-ROUTING-USAGE-CONTRACT` | `0.4.0+draft` | draft | ARCHON / ATHER | `docs/api/API-008-Provider-Entitlement-Routing-Usage-Contract.md` |
 | API | `API-009-PERSISTENT-MEMORY-CONTRACT` | `0.2.0+draft` | draft | Boss (CEO) | `docs/api/API-009-Persistent-Memory-Contract.md` |
 | API | `API-010-MULTI-TENANT-VAULT-RESOLUTION-CONTRACT` | `0.1.0+draft` | draft | Boss (CEO) | `docs/api/API-010-Multi-Tenant-Vault-Resolution-Contract.md` |
+| API | `MISSION-PROTOCOL-V2` | `0.1.0+draft` | draft | ATHER | `docs/api/MISSION-PROTOCOL-v2.md` |
 | Change Request | `CR-2026-07-26-govibe-rwang-capability-absorption` | `1.0.0` | approved | Boss (Product Authority) | `docs/change-control/change-requests/CR-2026-07-26-GoVibe-RWANG-Capability-Absorption.md` |
 | Change Request | `CR-2026-08-02-MULTI-PROVIDER-ENTITLEMENT-ROUTING` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-02-Multi-Provider-Entitlement-Routing.md` |
 | Change Request | `CR-2026-08-04-DOC-GOVERNANCE-REFINEMENT` | `0.1.0+draft` | draft | Boss (CEO) | `docs/change-control/change-requests/CR-2026-08-04-Doc-Governance-Refinement.md` |
@@ -90,7 +91,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.11` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.12` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -146,7 +147,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | ADR | `ADR-026-MSP-EXTERNAL-RUNTIME-DEPLOYMENT` | `0.1.2+draft` | proposed | Boss (CEO) | `docs/adr/ADR-026-MSP-External-Runtime-Deployment.md` |
 | Architecture | `BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.1` | approved | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md` |
 | Architecture | `BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE` | `3.1.0` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md` |
-| Architecture | `BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT` | `0.1.1` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-Mission-Gateway-Runtime-Responsibility-Split.md` |
+| Architecture | `BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT` | `0.1.2` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-Mission-Gateway-Runtime-Responsibility-Split.md` |
 | Architecture | `ARCH-VAULT-CONTEXT-MODEL` | `1.0.1` | approved | Boss / ATHER | `docs/architecture/ARCH-Vault-and-Context-Model.md` |
 | Spec | `SPEC-WORKSPACE-SYSTEM` | `0.3.1` | approved | Boss (CEO) | `docs/specs/SPEC-Workspace-System.md` |
 | Architecture | `TDD-POC-CANONICAL-LOOP` | `1.0.0` | approved | Boss / ATHER | `docs/architecture/TDD-POC-Canonical-Loop.md` |
@@ -232,7 +233,8 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
-| 0.3.64+draft | 2026-08-19 | Claude Sonnet 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.11: TASK-PRD-020 (AUD-07, the sole live-data-rule violation — fabricated D1 Reactor Run Trigger telemetry/benchmark/lifecycle removed and replaced with honest empty-state + real reactor.run acknowledgement) and TASK-PRD-021 (AUD-24 — dedicated "unauthorized" connection state, EventProvenance/lastIngest marker on every ingestion path, shared useConnectionStatus hook consumed by EmptyState and StatusBar) executed to review in one batch (VIBE executor). PHASE-PRD-03/SPR-PRD-03 progress 20 → 40. No document status changed by this row. |
+| 0.3.65+draft | 2026-08-19 | Claude Sonnet 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.12 (reconciled onto the Batch 3 merge base, 0.3.11 -> 0.3.12): TASK-PRD-020 (AUD-07, the sole live-data-rule violation — fabricated D1 Reactor Run Trigger telemetry/benchmark/lifecycle removed and replaced with honest empty-state + real reactor.run acknowledgement) and TASK-PRD-021 (AUD-24 — dedicated "unauthorized" connection state, EventProvenance/lastIngest marker on every ingestion path, shared useConnectionStatus hook consumed by EmptyState and StatusBar) executed to review in one batch (VIBE executor). PHASE-PRD-03/SPR-PRD-03 progress 20 → 40. No document status changed by this row. |
+| 0.3.64+draft | 2026-08-19 | Claude Sonnet 5 | Registered `MISSION-PROTOCOL-V2` (draft, 0.1.0+draft, owner ATHER, `docs/api/MISSION-PROTOCOL-v2.md`) under §3 Product and Platform — the doc AUD-34/TASK-PRD-034 replaced the unregistered `docs/api/MISSION-PROTOCOL-v1.md` (removed) with. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.11 (TASK-PRD-018, TASK-PRD-019, TASK-PRD-034 executed to review in one owner-directed batch) and `BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT` to 0.1.2 (reference-path-only update from the retired v1 filename to v2). This row DOES add one new registered document (MISSION-PROTOCOL-V2, entering as draft); no existing document's status changed. |
 | 0.3.63+draft | 2026-08-19 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.10 and SPEC-WORKSPACE-SYSTEM to 0.3.1: TASK-PRD-026 (AUD-04 sidecar RBAC bypass), TASK-PRD-027 (AUD-05 ungoverned docs.resolve/ingest.code file access), TASK-PRD-028 (AUD-10 credential exposures — child env, WS token, log redaction; PM connector vault-wiring recorded as an interim acceptance expiring 2026-11-19), and TASK-PRD-029 (AUD-08 unverified approvalRef) executed to review in one owner-directed batch (Boss instruction, VIBE/ARCHON executors per each Task Container's pic). PHASE-PRD-08/SPR-PRD-08 progress 0 → 70. No document status changed by this row. |
 | 0.3.62+draft | 2026-08-19 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.9: the independent review gate's round-2 delta verification (probes A/B/B2/C/D/E/F) reproduced all twelve 0.3.8 findings as fixed — verdict APPROVE-FOR-COMMIT. Verification table Audit Status set pending → passed for TASK-PRD-030, TASK-PRD-031, TASK-PRD-033 (QA stays passed); each Task Container's changelog got one appended sentence recording the audit as this in-session review-gate audit, not a separate ATHER session. No document status changed by this row. |
 | 0.3.61+draft | 2026-08-19 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.8: review-gate (Opus, ATHER-role) correction/hardening row on the 0.3.7 batch. TASK-PRD-030's node.update->done guard had a demonstrated caller-controlled asOf bypass (030-A, fixed) and a verification-erasure bug that blocked the ADR-029 approve flow (030-B, fixed), both closed with new named regression tests in scripts/mcp/runtime/roadmap-service.test.mjs; TASK-PRD-031/033 were approved as executed and received nine additional reviewer-endorsed hardening fixes (snapshot freshness on dedup replay, minted-commandId/command-type dedup-key correctness, journal-append rollback on failure, absolute-path env validation, durability-scope comment accuracy, governance-visibility markers for the DoD override path). No document status changed by this row. |

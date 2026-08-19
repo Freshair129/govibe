@@ -12,6 +12,10 @@ import {
   isMissionSnapshot,
   isMutatingMissionCommandType,
 } from "../packages/mission-protocol/index.js";
+// TASK-PRD-034 (AUD-34): raw-text import (via the vite/client `?raw` module declaration in
+// vite-env.d.ts) of the governed protocol spec, read below to guard against exactly the drift
+// this task closed — the doc's declared version silently falling behind the runtime's.
+import missionProtocolSpec from "../docs/api/MISSION-PROTOCOL-v2.md?raw";
 
 const snapshotFixture = {
   connectionState: "connected" as const,
@@ -255,5 +259,25 @@ describe("createCommandDedupWindow (TASK-PRD-033)", () => {
     expect(() => createCommandDedupWindow({ maxEntries: 0 })).toThrow(TypeError);
     expect(() => createCommandDedupWindow({ maxEntries: -1 })).toThrow(TypeError);
     expect(() => createCommandDedupWindow({ maxEntries: 1.5 })).toThrow(TypeError);
+  });
+});
+
+// TASK-PRD-034 (AUD-34) exit criterion: "future version drift between spec and runtime is
+// caught by a recorded check." AUD-34's original finding was exactly this drift going
+// undetected (the spec doc declared 1.0.0/compat-1 while the runtime had already moved to
+// 2.0.0/compat-2). This test reads the governed spec's own declared version lines and fails if
+// they stop matching the runtime constants they claim to describe — the doc-side half of the
+// contract; the registry-row half (doc_id/version/status matching frontmatter) is enforced by
+// `npm run docs:validate` against docs/DOC-VERSION-REGISTRY.md.
+describe("mission protocol spec version pin (TASK-PRD-034)", () => {
+  it("MISSION-PROTOCOL-v2.md declares the exact semantic and compatibility version the runtime ships", () => {
+    expect(
+      missionProtocolSpec,
+      `docs/api/MISSION-PROTOCOL-v2.md no longer declares the runtime's semantic version ${MISSION_PROTOCOL_VERSION} — update its "Semantic version" line (or, if the runtime bumped intentionally, update the doc to match).`,
+    ).toContain(`Semantic version: \`${MISSION_PROTOCOL_VERSION}\``);
+    expect(
+      missionProtocolSpec,
+      `docs/api/MISSION-PROTOCOL-v2.md no longer declares the runtime's compatibility version ${MISSION_PROTOCOL_COMPATIBILITY} — update its "Compatibility version" line (or, if the runtime bumped intentionally, update the doc to match).`,
+    ).toContain(`Compatibility version: \`${MISSION_PROTOCOL_COMPATIBILITY}\``);
   });
 });
