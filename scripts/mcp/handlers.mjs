@@ -262,7 +262,7 @@ export async function handleToolCall(name, args = {}) {
       };
     }
     case "govibe.ingest.code": {
-      const result = govibeRuntime.ingestCode(args);
+      const result = await govibeRuntime.ingestCode(args);
       return {
         content: asTextContent(
           [

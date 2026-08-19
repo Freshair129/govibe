@@ -32,6 +32,8 @@ const SPEC_MATRIX = {
   "govibe.workflow.status": { owner: true, maintainer: true, operator: true, viewer: true },
   "govibe.docs.version": { owner: true, maintainer: true, operator: true, viewer: true },
   "govibe.review.run": { owner: true, maintainer: true, operator: true, viewer: true },
+  "govibe.docs.resolve": { owner: true, maintainer: true, operator: true, viewer: true },
+  "govibe.ingest.code": { owner: true, maintainer: true, operator: true, viewer: false },
   "govibe.approval.promotion": { owner: true, maintainer: false, operator: false, viewer: false },
   "govibe.approval.doc_signoff": { owner: true, maintainer: false, operator: false, viewer: false },
   "govibe.approval.h4_override": { owner: true, maintainer: false, operator: false, viewer: false },

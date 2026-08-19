@@ -1,5 +1,5 @@
-import { existsSync, readFileSync } from "node:fs";
-import path from "node:path";
+import { readFileSync } from "node:fs";
+import { resolvePathWithinAnyRoot } from "../path-security.mjs";
 import { atomize } from "../translator/atomizer.mjs";
 import { extractTemplate } from "../translator/format-template.mjs";
 import { render as renderFromTemplate, selectScope } from "../translator/renderer.mjs";
@@ -11,11 +11,23 @@ const auditRef = (capability) => `${capability}:${new Date().toISOString()}`;
 
 export class TranslatorService {
   #atoms = new Map(); #templates = new Map();
-  constructor({ workspaceRoot, appendTerminal = () => {}, appendProvenance = defaultAppendProvenance }) { this.workspaceRoot = workspaceRoot; this.appendTerminal = appendTerminal; this.appendProvenance = appendProvenance; }
-  ingest(args = {}) {
+  constructor({ workspaceRoot, appendTerminal = () => {}, appendProvenance = defaultAppendProvenance, allowedRoots }) { this.workspaceRoot = workspaceRoot; this.appendTerminal = appendTerminal; this.appendProvenance = appendProvenance; this.allowedRoots = allowedRoots ?? [workspaceRoot]; }
+  async ingest(args = {}) {
     const startedAt = new Date().toISOString(); const repo = args.repo ?? args.repoPath ?? "unknown";
     let text = String(args.content ?? ""); let lang = String(args.lang ?? "").toLowerCase();
-    if (!text && args.repoPath) { const absolute = path.isAbsolute(args.repoPath) ? args.repoPath : path.join(this.workspaceRoot, args.repoPath); if (existsSync(absolute)) { text = readFileSync(absolute, "utf8"); if (!lang) lang = (args.repoPath.split(".").pop() || "").toLowerCase(); } }
+    if (!text && args.repoPath) {
+      // TASK-PRD-027 (AUD-05): previously honored an absolute path or a `..`-escaping
+      // relative repoPath with no containment. resolvePathWithinAnyRoot rejects both BEFORE
+      // any read; a legitimately missing-but-contained path keeps the prior soft-fail
+      // ("no atoms parsed") behavior instead of throwing.
+      let absolute;
+      try {
+        absolute = await resolvePathWithinAnyRoot(args.repoPath, this.allowedRoots, { basePath: this.workspaceRoot });
+      } catch (error) {
+        if (error?.code !== "PATH_NOT_FOUND") throw error;
+      }
+      if (absolute) { text = readFileSync(absolute, "utf8"); if (!lang) lang = (args.repoPath.split(".").pop() || "").toLowerCase(); }
+    }
     if (!lang) lang = "md"; const isCode = CODE_LANGS.has(lang);
     const atoms = isCode ? atomizeCode(text, { file: args.repoPath ?? `inline.${lang}`, lang }).atoms : atomize(text).atoms;
     const template = isCode ? extractTemplate("", { repo }) : extractTemplate(text, { repo });

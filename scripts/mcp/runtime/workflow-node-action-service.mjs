@@ -39,12 +39,17 @@ export class WorkflowNodeActionService {
   #applyRoadmapMutation;
   #getSnapshot;
   #now;
+  #approvalStore;
 
-  constructor({ store, applyRoadmapMutation, getSnapshot, now = () => new Date().toISOString() }) {
+  constructor({ store, applyRoadmapMutation, getSnapshot, now = () => new Date().toISOString(), approvalStore }) {
     this.#store = store;
     this.#applyRoadmapMutation = applyRoadmapMutation;
     this.#getSnapshot = getSnapshot;
     this.#now = now;
+    // TASK-PRD-029 (AUD-08): required for any gated (C-3) action — see the fail-closed check
+    // below. Ungated actions (C-0..C-2) never touch it, so a caller with no gated tasks can
+    // still omit it, but a caller that DOES route gated actions here must configure it.
+    this.#approvalStore = approvalStore;
   }
 
   async apply({ taskId, action, actor, assigneeId, approvalRef }) {
@@ -56,8 +61,25 @@ export class WorkflowNodeActionService {
 
     const container = (this.#getSnapshot().roadmap?.taskContainers ?? []).find((item) => item.task_id === taskId);
     const gate = accessScopeGateFor(container);
-    if (gate && !approvalRef) {
-      throw new Error(`Action refused: task ${taskId} requires ${gate} before "${action}" can run (ADR-021).`);
+    let verifiedApproval = null;
+    if (gate) {
+      if (!approvalRef) {
+        throw new Error(`Action refused: task ${taskId} requires ${gate} before "${action}" can run (ADR-021).`);
+      }
+      if (!this.#approvalStore) {
+        // Fail closed: a gated task with no approval-record store configured must never fall
+        // through to "any non-empty approvalRef passes" — that is exactly the AUD-08 gap.
+        throw new Error(`Action refused: task ${taskId} requires ${gate}, but no approval record store is configured to verify it against (fail closed).`);
+      }
+      // TASK-PRD-029 (AUD-08): verify the presented ref against a RECORDED approval whose
+      // scope covers this task and complexity — an unverifiable ref is refused rather than
+      // accepted as ceremony. `container.complexity` is always "C-3" here (accessScopeGateFor
+      // only names a gate for C-3), included explicitly so the approval is bound to the
+      // access-scope override it authorizes, not just the task id.
+      verifiedApproval = await this.#approvalStore.verifyApproval({
+        approvalRef,
+        requiredScope: { taskId, complexity: container.complexity },
+      });
     }
 
     const mutation = await this.#applyRoadmapMutation(mutationForAction({ action, taskId, assigneeId, actor }));
@@ -69,6 +91,9 @@ export class WorkflowNodeActionService {
       action,
       at: this.#now(),
       ...(approvalRef ? { approvalRef } : {}),
+      // Links the audited action back to the verified approval record so the chain (who
+      // approved, under what scope, when) is reconstructable from the audit log alone.
+      ...(verifiedApproval ? { approvalApprover: verifiedApproval.approver, approvalRecordedAt: verifiedApproval.recordedAt } : {}),
     };
     this.#appendAudit(entry);
 

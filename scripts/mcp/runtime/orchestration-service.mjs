@@ -2,8 +2,12 @@ import { spawn } from "node:child_process";
 import { runStep as executeStep } from "../step.mjs";
 import { runVerifyGate } from "../verify-gate.mjs";
 import { createTemporalVersion } from "../temporal-versioning.mjs";
+import { buildAllowlistedChildEnv } from "./child-env.mjs";
 
-function gitStatus(cwd) { return new Promise((resolve) => { const child = spawn("git", ["status", "--porcelain"], { cwd }); let output = ""; child.stdout.on("data", (chunk) => { output += chunk.toString(); }); child.on("error", () => resolve([])); child.on("close", () => resolve(output.split(/\r?\n/).map((line) => line.trim()).filter(Boolean))); }); }
+// TASK-PRD-028 (AUD-10a) review-gate hardening: an explicit allowlisted env, not the full
+// parent process.env, for defense-in-depth parity with the other two spawn sites (agent-session
+// PTY spawn, runAgent's launcher spawn) even though `git status` runs no user-controlled code.
+function gitStatus(cwd) { return new Promise((resolve) => { const child = spawn("git", ["status", "--porcelain"], { cwd, env: buildAllowlistedChildEnv() }); let output = ""; child.stdout.on("data", (chunk) => { output += chunk.toString(); }); child.on("error", () => resolve([])); child.on("close", () => resolve(output.split(/\r?\n/).map((line) => line.trim()).filter(Boolean))); }); }
 const auditRef = (capability) => `${capability}:${new Date().toISOString()}`;
 
 export class OrchestrationService {

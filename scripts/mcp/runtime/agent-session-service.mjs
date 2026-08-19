@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import path from "node:path";
 
 import { MISSION_PROTOCOL_LIMITS } from "../../../packages/mission-protocol/index.js";
+import { buildAllowlistedChildEnv } from "./child-env.mjs";
 
 // ADR-029 §4: the console spawns only binaries from this explicit allowlist —
 // never an arbitrary command received from the web surface.
@@ -123,6 +124,8 @@ export class AgentSessionService {
   #scrollbackLines;
   #sessions = new Map();
 
+  #approvalStore;
+
   constructor({
     store,
     allowedRoots,
@@ -134,6 +137,9 @@ export class AgentSessionService {
     scheduleWrite = (callback, delayMs) => setTimeout(callback, delayMs),
     createScreen = createHeadlessScreen,
     scrollbackLines = SCREEN_SCROLLBACK_LINES,
+    // TASK-PRD-029 (AUD-08): required for an H4 session start — see the fail-closed check
+    // below. A caller that never starts H4 sessions can still omit it.
+    approvalStore,
   }) {
     this.#store = store;
     this.#allowlist = allowlist;
@@ -145,13 +151,14 @@ export class AgentSessionService {
     this.#schedule = scheduleWrite;
     this.#createScreen = createScreen;
     this.#scrollbackLines = scrollbackLines;
+    this.#approvalStore = approvalStore;
   }
 
   listSessions() {
     return [...this.#sessions.values()].map((entry) => ({ ...entry.record }));
   }
 
-  async start({ agent, cwd, accessScope, approvalRef, cols = 120, rows = 32 }) {
+  async start({ agent, cwd, accessScope, approvalRef, actor, cols = 120, rows = 32 }) {
     const binary = this.#allowlist[agent];
     if (!binary) {
       throw new Error(`Agent "${agent}" is not in the session allowlist (allowed: ${Object.keys(this.#allowlist).join(", ")}).`);
@@ -159,8 +166,22 @@ export class AgentSessionService {
     if (!ACCESS_SCOPES.has(accessScope)) {
       throw new Error(`Unknown access scope "${accessScope}". Sessions declare a ceiling of H0..H4 (ADR-021).`);
     }
-    if (accessScope === "H4" && !approvalRef) {
-      throw new Error("H4 sessions require a recorded owner approval (approvalRef) before start (ADR-029 §4).");
+    let verifiedApproval = null;
+    if (accessScope === "H4") {
+      if (!approvalRef) {
+        throw new Error("H4 sessions require a recorded owner approval (approvalRef) before start (ADR-029 §4).");
+      }
+      if (!this.#approvalStore) {
+        // Fail closed: an H4 start with no approval-record store configured must never fall
+        // through to "any non-empty approvalRef passes" — that is exactly the AUD-08 gap.
+        throw new Error("H4 sessions require a recorded owner approval, but no approval record store is configured to verify it against (fail closed).");
+      }
+      // TASK-PRD-029 (AUD-08): verify the presented ref against a RECORDED approval scoped to
+      // an H4 override — an unverifiable ref is refused rather than accepted as ceremony.
+      verifiedApproval = await this.#approvalStore.verifyApproval({
+        approvalRef,
+        requiredScope: { accessScope: "H4" },
+      });
     }
     const resolvedCwd = path.resolve(cwd);
     if (!this.#cwdAllowed(resolvedCwd)) {
@@ -173,7 +194,9 @@ export class AgentSessionService {
     const spawnPty = this.#spawnPty ?? (await import("@lydell/node-pty")).spawn;
     const command = resolveSpawnCommand(binary);
     const screen = await this.#createScreen({ cols, rows, scrollback: this.#scrollbackLines });
-    const pty = spawnPty(command.file, command.args, { name: "xterm-color", cols, rows, cwd: resolvedCwd, env: process.env });
+    // TASK-PRD-028 (AUD-10a): an explicit allowlisted env, not the full parent process.env —
+    // the PTY child never sees GOVIBE_MCP_TOKEN, GOVIBE_MSP_*, or any other server secret.
+    const pty = spawnPty(command.file, command.args, { name: "xterm-color", cols, rows, cwd: resolvedCwd, env: buildAllowlistedChildEnv() });
 
     const record = {
       id: crypto.randomUUID(),
@@ -199,7 +222,14 @@ export class AgentSessionService {
     });
 
     this.#publish();
-    return { ...record };
+    // TASK-PRD-029 (AUD-08): approvalApprover/approver actor sit alongside the returned record
+    // for audit purposes only — the STORED record (and everything broadcast over
+    // sessions.update/snapshot) stays exactly the missionSessionContract.test.ts-pinned shape.
+    return {
+      ...record,
+      ...(actor ? { requestedBy: actor } : {}),
+      ...(verifiedApproval ? { approvalApprover: verifiedApproval.approver, approvalRecordedAt: verifiedApproval.recordedAt } : {}),
+    };
   }
 
   input({ sessionId, data }) {

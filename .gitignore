@@ -27,7 +27,14 @@ Thumbs.db
 .govibe/roadmap-overlay.jsonl
 # RBAC decision audit trail (runtime-generated; see scripts/mcp/runtime/rbac-enforcement.mjs).
 .govibe/rbac-audit.jsonl
+# TASK-PRD-029 (AUD-08): recorded approvals for C-3/H4 gates (runtime-generated/owner-authored;
+# see packages/govibe-core/src/approval-record.mjs).
+.govibe/approvals.jsonl
 .agents/*/session_logs/
+# Translator provenance evidence (runtime-generated; see scripts/mcp/translator/provenance.mjs).
+# Surfaced by scripts/mcp/docs-ingest-containment.security.mjs exercising the real
+# govibe.ingest.code tool through the exported singleton.
+.agents/*/translator-provenance/
 
 # GoVibe inbound governance
 # Keep raw cognitive-system exports out of commits; derive approved packets through docs/audit first.

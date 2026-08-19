@@ -35,6 +35,9 @@ const DIRECT_OPERATIONS = new Set([
   "govibe.workflow.status",
   "govibe.docs.version",
   "govibe.review.run",
+  // TASK-PRD-027 (AUD-05): both were ungoverned arbitrary file reads outside this matrix.
+  "govibe.docs.resolve",
+  "govibe.ingest.code",
 ]);
 
 export function resolveRbacOperation(toolName, args = {}) {

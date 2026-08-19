@@ -31,3 +31,5 @@ export { reviewWorkspace, optimizeMeasured, workspaceImpact, docsVersion } from 
 export { createCredentialVault, createEncryptedSecretBackend, createInMemorySecretBackend, CredentialVaultError } from "./credential-vault.mjs";
 export { createDurableEncryptedSecretBackend } from "./credential-durable-backend.mjs";
 export { CREDENTIAL_HANDOFF_MODES, DERIVED_HANDOFF_SCHEMA, CredentialHandoffError, normalizeCredentialMode, normalizeDerivedCredentialHandoff } from "./credential-handoff.mjs";
+export { redactSensitiveFields } from "./log-redaction.mjs";
+export { ApprovalVerificationError, APPROVAL_RECORD_SCHEMA, createApprovalRecordStore } from "./approval-record.mjs";

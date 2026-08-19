@@ -3,11 +3,23 @@ import { once } from "node:events";
 import test from "node:test";
 import { WebSocket } from "ws";
 
-import { startSidecarServer } from "./sidecar-server.mjs";
+import { startSidecarServer, WS_ECHO_SUBPROTOCOL } from "./sidecar-server.mjs";
 import { createCommandDedupWindow } from "../../packages/mission-protocol/index.js";
 
 const trustedOrigin = "http://localhost:1420";
 const token = "test-token-123";
+
+// TASK-PRD-028 (AUD-10b / AUD-32): the WS handshake carries the auth token as the last
+// offered Sec-WebSocket-Protocol subprotocol (base64url-encoded), never in the URL — mirrors
+// src/mission-auth-bootstrap.ts's client-side encoding and sidecar-server.mjs's server-side
+// decoding. An empty/absent credential offers no protocol at all, matching "the client sent
+// no token". Review-gate hardening: the fixed WS_ECHO_SUBPROTOCOL sentinel is offered
+// alongside the token so a successful handshake has a non-secret value for the server to
+// select/echo — mirrors mission-auth-bootstrap.ts exactly, and satisfies the strict `ws`
+// client library's requirement that the server only ever echo a client-offered protocol.
+function wsProtocolsFor(clientToken) {
+  return clientToken ? [WS_ECHO_SUBPROTOCOL, Buffer.from(clientToken, "utf8").toString("base64url")] : [];
+}
 
 function createRuntime(handledCommands = []) {
   const listeners = new Set();
@@ -204,7 +216,7 @@ test("returns 413 for oversized request bodies", async () => {
 
 test("rejects WebSocket upgrades from untrusted origins", async () => {
   const instance = await startTestServer();
-  const socket = new WebSocket(`${instance.wsUrl}?token=${encodeURIComponent(token)}`, {
+  const socket = new WebSocket(instance.wsUrl, wsProtocolsFor(token), {
     origin: "https://attacker.example",
   });
   try {
@@ -295,8 +307,7 @@ test("returns 413 for oversized binary file transfers", async () => {
 for (const [name, credential] of [["missing", ""], ["invalid", "invalid-token"]]) {
   test(`rejects WebSocket upgrades with ${name} authentication`, async () => {
     const instance = await startTestServer();
-    const suffix = credential ? `?token=${encodeURIComponent(credential)}` : "";
-    const socket = new WebSocket(`${instance.wsUrl}${suffix}`, { origin: trustedOrigin });
+    const socket = new WebSocket(instance.wsUrl, wsProtocolsFor(credential), { origin: trustedOrigin });
     try {
       const [error] = await once(socket, "error");
       assert.match(error.message, /Unexpected server response: 403/);
@@ -307,9 +318,36 @@ for (const [name, credential] of [["missing", ""], ["invalid", "invalid-token"]]
   });
 }
 
+// Review-gate hardening: the `ws` server library's default behavior echoes back whatever
+// subprotocol the client offered (here, the token-carrying one) in the 101 response's
+// Sec-WebSocket-Protocol header — so the credential would round-trip into a header some
+// reverse proxies log. handleProtocols (sidecar-server.mjs) must select the fixed
+// WS_ECHO_SUBPROTOCOL sentinel instead, never the token, while the handshake still succeeds.
+test("never echoes the auth token back in the response Sec-WebSocket-Protocol header", async () => {
+  const instance = await startTestServer();
+  const socket = new WebSocket(instance.wsUrl, wsProtocolsFor(token), { origin: trustedOrigin });
+  try {
+    // Both listeners MUST be registered before the first await — 'upgrade' and 'open' fire in
+    // close succession, so awaiting 'upgrade' first risks missing 'open' entirely (once() only
+    // catches future events), the same ordering hazard this file's other tests already guard.
+    const upgradePromise = once(socket, "upgrade");
+    const openPromise = once(socket, "open");
+    const [response] = await upgradePromise;
+    const echoed = response.headers["sec-websocket-protocol"];
+    assert.equal(echoed, WS_ECHO_SUBPROTOCOL);
+    assert.notEqual(echoed, Buffer.from(token, "utf8").toString("base64url"));
+    assert.equal(echoed.includes(token), false);
+    await openPromise;
+    assert.equal(socket.protocol, WS_ECHO_SUBPROTOCOL);
+  } finally {
+    await closeSocket(socket);
+    await stopTestServer(instance);
+  }
+});
+
 test("accepts authenticated WebSocket upgrades and emits a snapshot", async () => {
   const instance = await startTestServer();
-  const socket = new WebSocket(`${instance.wsUrl}?token=${encodeURIComponent(token)}`, {
+  const socket = new WebSocket(instance.wsUrl, wsProtocolsFor(token), {
     origin: trustedOrigin,
   });
   try {
@@ -324,10 +362,22 @@ test("accepts authenticated WebSocket upgrades and emits a snapshot", async () =
   }
 });
 
+test("never accepts the auth token via the URL query string anymore", async () => {
+  const instance = await startTestServer();
+  const socket = new WebSocket(`${instance.wsUrl}?token=${encodeURIComponent(token)}`, { origin: trustedOrigin });
+  try {
+    const [error] = await once(socket, "error");
+    assert.match(error.message, /Unexpected server response: 403/);
+  } finally {
+    await closeSocket(socket);
+    await stopTestServer(instance);
+  }
+});
+
 test("rejects invalid WebSocket commands before runtime execution", async () => {
   const handledCommands = [];
   const instance = await startTestServer({ handledCommands });
-  const socket = new WebSocket(`${instance.wsUrl}?token=${encodeURIComponent(token)}`, {
+  const socket = new WebSocket(instance.wsUrl, wsProtocolsFor(token), {
     origin: trustedOrigin,
   });
   try {
@@ -374,7 +424,7 @@ function sendWsCommand(socket, body) {
 // sends the snapshot as soon as its own "connection" handler runs, which can race an
 // out-of-order `await once(socket, "open")` followed by a separately-attached listener.
 async function connectAndAwaitSnapshot(wsUrl) {
-  const socket = new WebSocket(`${wsUrl}?token=${encodeURIComponent(token)}`, { origin: trustedOrigin });
+  const socket = new WebSocket(wsUrl, wsProtocolsFor(token), { origin: trustedOrigin });
   const snapshot = once(socket, "message");
   await once(socket, "open");
   await snapshot;

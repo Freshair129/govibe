@@ -53,13 +53,18 @@ const workflowNodeActions = new Set(["approve", "rerun", "assign"]);
 
 function isWorkflowNodeAuditEntry(value) {
   return isBoundedRecord(value)
-    && hasOnlyKeys(value, ["id", "actor", "taskId", "action", "at", "approvalRef"])
+    // TASK-PRD-029 (AUD-08): approvalApprover/approvalRecordedAt link a gated action's audit
+    // entry back to the verified approval record it was checked against, so the chain (who
+    // approved, when) is reconstructable from the audit log alone.
+    && hasOnlyKeys(value, ["id", "actor", "taskId", "action", "at", "approvalRef", "approvalApprover", "approvalRecordedAt"])
     && isBoundedString(value.id, MISSION_PROTOCOL_LIMITS.idChars)
     && isBoundedString(value.actor, MISSION_PROTOCOL_LIMITS.idChars)
     && isBoundedString(value.taskId, MISSION_PROTOCOL_LIMITS.idChars)
     && workflowNodeActions.has(value.action)
     && isBoundedString(value.at, MISSION_PROTOCOL_LIMITS.idChars)
-    && (value.approvalRef === undefined || isBoundedString(value.approvalRef, MISSION_PROTOCOL_LIMITS.idChars));
+    && (value.approvalRef === undefined || isBoundedString(value.approvalRef, MISSION_PROTOCOL_LIMITS.idChars))
+    && (value.approvalApprover === undefined || isBoundedString(value.approvalApprover, MISSION_PROTOCOL_LIMITS.idChars))
+    && (value.approvalRecordedAt === undefined || isBoundedString(value.approvalRecordedAt, MISSION_PROTOCOL_LIMITS.idChars));
 }
 const agentSessionStates = new Set(["running", "exited"]);
 
@@ -135,10 +140,13 @@ export function isMissionCommand(value) {
     case "agent.select": return hasOnlyKeys(value, ["type", "agentId"]) && isBoundedString(value.agentId, MISSION_PROTOCOL_LIMITS.idChars);
     case "roadmap.select":
     case "masterplan.preview": return hasOnlyKeys(value, ["type", "sourcePath"]) && isBoundedString(value.sourcePath, MISSION_PROTOCOL_LIMITS.pathChars);
-    case "workspace.scan": return hasOnlyKeys(value, ["type", "workspacePath", "deep", "runId"])
+    case "workspace.scan": return hasOnlyKeys(value, ["type", "workspacePath", "deep", "runId", "actor"])
       && isBoundedString(value.workspacePath, MISSION_PROTOCOL_LIMITS.pathChars)
       && typeof value.deep === "boolean"
-      && (value.runId === undefined || isBoundedString(value.runId, MISSION_PROTOCOL_LIMITS.idChars));
+      && (value.runId === undefined || isBoundedString(value.runId, MISSION_PROTOCOL_LIMITS.idChars))
+      // TASK-PRD-026 (AUD-04): lets the caller attribute a governed workspace.scan mission
+      // command to a real actor instead of the router falling back to a hardcoded constant.
+      && (value.actor === undefined || isBoundedString(value.actor, MISSION_PROTOCOL_LIMITS.idChars));
     case "reactor.run": return hasOnlyKeys(value, ["type", "profile"]) && isBoundedString(value.profile, MISSION_PROTOCOL_LIMITS.idChars);
     case "file.save": return hasOnlyKeys(value, ["type", "hash", "data", "meta"])
       && isBoundedString(value.hash, MISSION_PROTOCOL_LIMITS.idChars)
@@ -157,11 +165,14 @@ export function isMissionCommand(value) {
     case "memory.decay.run": return hasOnlyKeys(value, ["type", "vaultId", "dryRun"])
       && isBoundedString(value.vaultId, MISSION_PROTOCOL_LIMITS.idChars)
       && (value.dryRun === undefined || typeof value.dryRun === "boolean");
-    case "agent.session.start": return hasOnlyKeys(value, ["type", "agent", "cwd", "accessScope", "approvalRef", "cols", "rows"])
+    case "agent.session.start": return hasOnlyKeys(value, ["type", "agent", "cwd", "accessScope", "approvalRef", "actor", "cols", "rows"])
       && isBoundedString(value.agent, MISSION_PROTOCOL_LIMITS.idChars)
       && isBoundedString(value.cwd, MISSION_PROTOCOL_LIMITS.pathChars)
       && agentSessionAccessScopes.has(value.accessScope)
       && (value.approvalRef === undefined || isBoundedString(value.approvalRef, MISSION_PROTOCOL_LIMITS.idChars))
+      // TASK-PRD-029 (AUD-08): optional actor attribution, mirroring workspace.scan's
+      // TASK-PRD-026 addition — lets the caller attribute an H4 session start to a real actor.
+      && (value.actor === undefined || isBoundedString(value.actor, MISSION_PROTOCOL_LIMITS.idChars))
       && (value.cols === undefined || (Number.isInteger(value.cols) && value.cols > 0 && value.cols <= 500))
       && (value.rows === undefined || (Number.isInteger(value.rows) && value.rows > 0 && value.rows <= 500));
     case "agent.session.input": return hasOnlyKeys(value, ["type", "sessionId", "data"])

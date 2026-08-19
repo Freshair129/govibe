@@ -57,6 +57,9 @@ export const toolCatalog = [
         selectors: { type: "array", items: { type: "string" } },
         scope: { type: "string" },
         contextProfile: { type: "string", enum: ["T-ctx", "V-ctx", "W-ctx", "M-ctx"] },
+        // TASK-PRD-027 (AUD-05): optional — an RBAC-enabled workspace subjects this call to
+        // the govibe.docs.resolve operation; a caller that omits it keeps the pre-RBAC posture.
+        workspacePath: { type: "string" },
       },
       required: ["actor", "selectors"],
     },
@@ -255,6 +258,9 @@ export const toolCatalog = [
         repoPath: { type: "string" },
         content: { type: "string" },
         scope: { type: "string" },
+        // TASK-PRD-027 (AUD-05): optional — an RBAC-enabled workspace subjects this call to
+        // the govibe.ingest.code operation; a caller that omits it keeps the pre-RBAC posture.
+        workspacePath: { type: "string" },
       },
       required: ["actor"],
     },
