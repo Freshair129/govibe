@@ -1,5 +1,11 @@
+// Moved from tests/canonical-materialization.test.js (TASK-PRD-018 / AUD-26): the old location
+// under tests/ was not collected by any runner (vitest.config.ts only collects
+// src/**/*.test.ts, scripts/**/*.test.mjs, and packages/**/*.test.mjs; this file was neither
+// under a collected root nor a collected extension). The source module it covers
+// (canonical-materialization.mjs) is still live and otherwise untested, so this is still-valuable
+// coverage moved into a collected location rather than deleted.
 import { describe, expect, it, vi } from "vitest";
-import { materializeCanonicalKnowledge, validateCanonicalMaterializationRequest } from "../packages/govibe-core/src/canonical-materialization.mjs";
+import { materializeCanonicalKnowledge, validateCanonicalMaterializationRequest } from "./canonical-materialization.mjs";
 
 const hash = "a".repeat(64);
 const request = {

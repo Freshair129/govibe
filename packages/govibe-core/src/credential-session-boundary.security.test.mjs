@@ -3,6 +3,12 @@
  *
  * Every negative case starts from an otherwise authorized provider compatibility
  * baseline so failures continue to isolate credential/session/binding behavior.
+ *
+ * TASK-PRD-018 (AUD-26): despite the `.security.` name, this stays collected in the vitest
+ * unit lane (packages/**\/*.test.mjs), not moved to the `test:security` node --test lane — it
+ * lives source-adjacent to its module here under packages/govibe-core/src/, not under
+ * packages/msp-runtime/test/, which is that lane's actual glob root, and it already runs on
+ * every `npm test` inside baseline:check.
  */
 import { describe, expect, it, vi } from 'vitest';
 import { createCredentialVault, createEncryptedSecretBackend, createInMemorySecretBackend } from './credential-vault.mjs';

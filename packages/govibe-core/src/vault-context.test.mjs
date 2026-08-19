@@ -1,3 +1,8 @@
+// Moved from tests/vault-context.test.js (TASK-PRD-018 / AUD-26): the old location under
+// tests/ was not collected by any runner (vitest.config.ts only collects src/**/*.test.ts,
+// scripts/**/*.test.mjs, and packages/**/*.test.mjs). The vault-identity and context-lineage
+// primitives it covers (packages/govibe-core/src/index.mjs) are still live, so this is
+// still-valuable coverage moved into a collected location rather than deleted.
 import { mkdtemp, rm } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -11,7 +16,7 @@ import {
   loadContextCache,
   persistContextInjection,
   validateContextProfile,
-} from "../packages/govibe-core/src/index.mjs";
+} from "./index.mjs";
 
 const temporary = [];
 afterEach(async () => {

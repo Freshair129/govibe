@@ -21,9 +21,22 @@ async function checkExists(p, isDirectory = false) {
 }
 
 async function validateEnv() {
-    if (process.env.CI) {
-        console.log('🤖 CI environment detected. Skipping local environment structure validation.');
-        process.exit(0);
+    // TASK-PRD-018 (AUD-25): this used to exit(0) unconditionally under CI, so baseline:check's
+    // env:validate step silently validated nothing on every pull request while still reporting
+    // green. That is now split per-check instead of an all-or-nothing skip: Sections 3-5 below
+    // check paths that are either committed to the repo (.govibe-knowledge-block/, the tracked
+    // local_model/auto_scanned_models.json exception, .gitignore itself) or repo-relative, so a
+    // fresh CI checkout has them and a regression there is real signal — they now run
+    // unconditionally, including under CI. Sections 1-2 check genuinely per-machine/per-workspace
+    // state that a fresh CI checkout will never have by design (the global ~/.govibe machine
+    // profile written by first-run setup on a developer's own machine, and the gitignored
+    // .govibe/brain/ episodic-memory directory a real coding session accumulates locally) —
+    // fabricating a fake profile or brain directory in CI just to satisfy the check would defeat
+    // its purpose of catching a genuinely broken local developer environment, so those two stay
+    // CI-skipped, explicitly and by name, rather than silently.
+    const ci = Boolean(process.env.CI);
+    if (ci) {
+        console.log('🤖 CI environment detected. Sections 1-2 (global machine profile, local .govibe/brain/ workspace state) are per-machine/per-workspace state a fresh checkout never has and are skipped by design; Sections 3-5 (repo-tracked paths) still run.');
     }
 
     let failed = false;
@@ -31,34 +44,38 @@ async function validateEnv() {
 
     console.log('🔍 Validating GoVibe Environment Structure...');
 
-    // 1. Global Checks
-    const globalProfile = path.join(globalDir, 'machine_profile.json');
-    const globalCheck = await checkExists(globalProfile);
-    if (!globalCheck.exists) {
-        errors.push(`[GLOBAL] Missing machine profile: ${globalCheck.error}`);
-        failed = true;
-    } else {
-        console.log('✅ [GLOBAL] machine_profile.json verified.');
-    }
-
-    // 2. Local Workspace .govibe/ Checks
-    const brainDir = path.join(workspaceDir, '.govibe', 'brain');
-    const requiredBrainPaths = [
-        { path: brainDir, isDir: true },
-        { path: path.join(brainDir, 'skills'), isDir: true },
-        { path: path.join(brainDir, 'rca'), isDir: true },
-        { path: path.join(brainDir, 'sessions'), isDir: true },
-        { path: path.join(brainDir, 'MEMORY.md'), isDir: false },
-    ];
-
-    for (const item of requiredBrainPaths) {
-        const check = await checkExists(item.path, item.isDir);
-        if (!check.exists) {
-            errors.push(`[WORKSPACE] Brain component missing: ${check.error}`);
+    if (!ci) {
+        // 1. Global Checks
+        const globalProfile = path.join(globalDir, 'machine_profile.json');
+        const globalCheck = await checkExists(globalProfile);
+        if (!globalCheck.exists) {
+            errors.push(`[GLOBAL] Missing machine profile: ${globalCheck.error}`);
             failed = true;
+        } else {
+            console.log('✅ [GLOBAL] machine_profile.json verified.');
         }
+
+        // 2. Local Workspace .govibe/ Checks
+        const brainDir = path.join(workspaceDir, '.govibe', 'brain');
+        const requiredBrainPaths = [
+            { path: brainDir, isDir: true },
+            { path: path.join(brainDir, 'skills'), isDir: true },
+            { path: path.join(brainDir, 'rca'), isDir: true },
+            { path: path.join(brainDir, 'sessions'), isDir: true },
+            { path: path.join(brainDir, 'MEMORY.md'), isDir: false },
+        ];
+
+        for (const item of requiredBrainPaths) {
+            const check = await checkExists(item.path, item.isDir);
+            if (!check.exists) {
+                errors.push(`[WORKSPACE] Brain component missing: ${check.error}`);
+                failed = true;
+            }
+        }
+        if (!failed) console.log('✅ [WORKSPACE] .govibe/brain/ verified.');
+    } else {
+        console.log('ℹ️  [CI] Skipping Section 1 (global machine profile) and Section 2 (.govibe/brain/): per-machine/per-workspace local state, gitignored and absent by design on a fresh checkout.');
     }
-    if (!failed) console.log('✅ [WORKSPACE] .govibe/brain/ verified.');
 
     // 3. Local Model Checks
     const localModelDir = path.join(workspaceDir, 'local_model');

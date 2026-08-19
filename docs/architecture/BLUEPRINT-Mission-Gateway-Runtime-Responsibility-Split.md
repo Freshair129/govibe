@@ -2,12 +2,12 @@
 title: "Blueprint: Mission Gateway and Runtime Responsibility Split"
 doc_id: "BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT"
 status: "approved"
-version: "0.1.1"
-updated: "2026-08-02"
+version: "0.1.2"
+updated: "2026-08-19"
 owner: "Boss / ATHER"
 source_of_truth: true
 related_docs:
-  - "docs/api/MISSION-PROTOCOL-v1.md"
+  - "docs/api/MISSION-PROTOCOL-v2.md"
   - "docs/protocol/MISSION-PROTOCOL-MIGRATION.md"
   - "docs/design/DESIGN_SYSTEM.md"
   - "docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md"
@@ -169,6 +169,7 @@ Architecture review result: **PASS pending CI/E2E confirmation on the implementa
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.1.2 | 2026-08-19 | approved | TASK-PRD-034 (AUD-34): updated the `related_docs` reference from the retired `docs/api/MISSION-PROTOCOL-v1.md` to its replacement `docs/api/MISSION-PROTOCOL-v2.md`. Reference-path correction only; no content in this document changed. | pending | ATHER |
 | 0.1.1 | 2026-08-02 | approved | Added implementation mapping and architecture-review evidence for issue #27. | pending | ATHER |
 | 0.1.0 | 2026-08-02 | approved | Owner approved the responsibility split, dependency direction, and staged compatibility plan for issue #27. | pending | ATHER |
 | 0.1.0b | 2026-08-02 | candidate | Initial responsibility split and staged compatibility plan for issue #27. | pending | ATHER |
