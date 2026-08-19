@@ -2,8 +2,8 @@
 title: "SPEC: Workspace System Specification"
 doc_id: "SPEC-WORKSPACE-SYSTEM"
 status: "approved"
-version: "0.3.1"
-updated: "2026-08-19"
+version: "0.3.2"
+updated: "2026-08-20"
 owner: "Boss (CEO)"
 source_of_truth: true
 related_docs:
@@ -239,6 +239,27 @@ impact score and confidence, required action (`must_update`, `review_and_update`
 `review`), and any unresolved links. The runtime MUST NOT claim completeness while
 unresolved links exist. Plain substring search is not an acceptable implementation.
 
+Every result MUST also declare its own analysis boundary in `boundary.excluded[]`, one
+entry per subtree left out of the link graph, each carrying the `path` and a `reason`.
+The link graph is built by walking the filesystem, not the git index, so subtrees that
+are on disk but do not govern the workspace MUST be excluded and MUST be reported rather
+than silently dropped:
+
+- `nested_git_checkout` — a directory carrying its own `.git` marker (a submodule, or a
+  `git worktree add` target parked inside the repository). `git worktree` writes a `.git`
+  *file* rather than a directory, so type MUST NOT be used to detect one.
+- `scratch_directory` — an immediate child of the workspace root holding agent scratch,
+  generated run state, or vendored reference copies (`.claude/`, `.agents/`, `.brain/`,
+  `state/`, `benchmark_results/`, `ref/`). Matched against root children only, so a
+  governed nested directory that merely shares one of these names is still indexed.
+
+This boundary is a correctness requirement, not an optimisation: `AGENTS.md` §10 makes
+impact analysis a precondition for completing a semantic, schema, authority-boundary, or
+runtime-behaviour change and obliges the executor to act on every returned `must_update`
+and `review_and_update` artifact. A duplicate checkout on disk returns the same governed
+document twice as two distinct dependents, inflating that obligation with paths nobody
+should edit.
+
 ### 5.5 `govibe.workspace.validate`
 
 Validates the current workspace against `docs/STD-Execution-Governance.md`. This is the
@@ -413,7 +434,8 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
 - `npx vitest run scripts/mcp/runtime-core.test.mjs` — runtime initialize coverage.
 - `npx vitest run packages/govibe-core/src/capability-runtime.test.mjs` — capability
   surface including workspace initialization.
-- `npx vitest run packages/govibe-core/impact-engine.test.mjs` — impact traversal.
+- `npx vitest run packages/govibe-core/impact-engine.test.mjs` — impact traversal and §5.4
+  analysis-boundary reporting (nested git checkouts, root scratch directories).
 - `npm run mcp:smoke` — tool catalog exposure of `govibe.workspace.*`.
 - `npm run docs:validate` — this document's governance conformance.
 - `node --test scripts/mcp/sidecar-rbac-enforcement.security.mjs` — TASK-PRD-026 (AUD-04):
@@ -425,6 +447,7 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.2 | 2026-08-20 | VIBE / Boss | §5.4: `govibe.workspace.impact` results now declare their own analysis boundary in `boundary.excluded[]`. The link graph is built by walking the filesystem rather than the git index, so a `git worktree add` target parked inside the repository (`.git` written as a *file*, which the walker's `.git` directory-name exclusion never matched) was indexed as a full second copy of the tree — `docs/specs/SPEC-Workspace-System.md` and its worktree twin were both returned as distinct `review_and_update` dependents at distance 1 for the same change. Nested checkouts and root-level scratch directories are now excluded and reported with a reason rather than silently dropped. This is an AGENTS.md §10 correctness fix: phantom dependents inflate the mandatory required-review set with paths nobody should edit. Measured on this repository, a single-seed impact run drops from 197 affected artifacts to 100, with zero worktree duplicates. Evidence: `npx vitest run packages/govibe-core/impact-engine.test.mjs` (9 passed, 6 new covering `.git`-as-file, `.git`-as-directory, scratch exclusion, the nested `src/state/` name-collision guard, and boundary reporting through `calculateWorkspaceImpact`). Deep scan's separate `ignored` set in `packages/govibe-core/src/scan/scan.mjs` was deliberately NOT changed — it governs what is submitted to MSP and needs owner sign-off. No status change; approved content addition under the live-document precedent this repo already applies to other approved planning/spec docs. |
 | 0.3.1 | 2026-08-19 | VIBE / Boss | TASK-PRD-026 (AUD-04): the sidecar's `workspace.scan` mission command now passes through the SAME `enforceToolRbac` decision point as stdio (`scripts/mcp/runtime/mission-command-router.mjs`), attributing the actor from the command payload rather than a hardcoded `mission-control` constant. TASK-PRD-027 (AUD-05): `govibe.docs.resolve` and `govibe.ingest.code` added to the §6.2/§7 tables and put behind `scripts/mcp/path-security.mjs`'s existing containment helper — both previously honored absolute/traversal paths with no containment and sat outside the RBAC matrix entirely. Evidence: `node --test scripts/mcp/sidecar-rbac-enforcement.security.mjs` (5 passed), `node --test scripts/mcp/docs-ingest-containment.security.mjs` (11 passed), `npx vitest run packages/govibe-core/src/rbac.test.mjs scripts/mcp/rbac-enforcement.test.mjs` (44 passed). No status change; approved content addition under the live-document precedent this repo already applies to other approved planning/spec docs. |
 | 0.3.0 | 2026-08-09 | Boss (CEO) | Ratified draft → approved by owner decision. Content unchanged from 0.2.4+draft; all acceptance criteria AC-01..AC-08 carry executable evidence via the §12 verification suites, merged to main in PR #128 (merge commit c75e636) with the full baseline gate and CI green. |
 | 0.2.4+draft | 2026-08-09 | Boss (CEO) | §3.3 open item closed (TASK-PRD-017): the RBAC enforcement boundary now validates `employee_`/`staff_` actors against the workspace personnel registry snapshot (`.govibe/personnel.json`, `govibe-personnel-registry/v1`) — unknown IDs deny as `unknown_personnel_identity`, retired IDs from employment-type conversion deny as `retired_personnel_identity`, both audited; agent actors and snapshot-less workspaces keep their prior posture; unknown snapshot schemas hard-fail per §10. |

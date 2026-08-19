@@ -1,8 +1,17 @@
 import { createHash } from "node:crypto";
-import { readFile, readdir } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 
 const EXCLUDED_DIRECTORIES = new Set([".git", "node_modules", "dist", ".vite", ".vercel", ".turbo", "coverage"]);
+// AGENTS.md section 10 makes reverse-dependency impact analysis a precondition for completing a
+// semantic, schema, authority-boundary, or runtime-behaviour change, and every returned
+// `must_update` / `review_and_update` artifact has to be acted on. That obligation is only
+// honest if the returned set contains artifacts that actually govern this workspace. These
+// directories hold agent scratch, generated run state, or vendored reference copies -- indexing
+// them inflates the required-review list with files nobody should edit. Matched only against
+// immediate children of the workspace root, so a legitimate nested `src/state/` is never
+// swallowed by a name collision.
+const EXCLUDED_ROOT_DIRECTORIES = new Set([".claude", ".agents", ".brain", "state", "benchmark_results", "ref"]);
 const INDEXED_EXTENSIONS = /\.(md|mdx|mjs|cjs|js|jsx|ts|tsx|json|yaml|yml)$/i;
 const RELATION_WEIGHTS = Object.freeze({
   implements: 1,
@@ -38,18 +47,48 @@ function stableId(prefix, value) {
   return `${prefix}_${digest}`;
 }
 
+// A nested git checkout -- a submodule, or a `git worktree add` target parked inside the repo --
+// carries its own `.git` marker. `git worktree` writes a `.git` FILE (a gitdir pointer), not a
+// directory, so the EXCLUDED_DIRECTORIES `.git` entry above never fires for one and the walker
+// descends into a full second copy of the tree. Either kind of marker means "this subtree is a
+// different checkout", so test for presence, not for type.
+async function isNestedCheckout(directory) {
+  try {
+    await stat(path.join(directory, ".git"));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function listFiles(root) {
   const files = [];
+  // The boundary is reported, never silently applied -- a caller has to be able to see which
+  // subtrees were left out of the analysis and why.
+  const excluded = [];
   async function walk(directory) {
     for (const entry of await readdir(directory, { withFileTypes: true })) {
-      if (entry.isDirectory() && EXCLUDED_DIRECTORIES.has(entry.name)) continue;
       const fullPath = path.join(directory, entry.name);
-      if (entry.isDirectory()) await walk(fullPath);
-      else if (entry.isFile() && INDEXED_EXTENSIONS.test(entry.name)) files.push(fullPath);
+      if (!entry.isDirectory()) {
+        if (entry.isFile() && INDEXED_EXTENSIONS.test(entry.name)) files.push(fullPath);
+        continue;
+      }
+      if (EXCLUDED_DIRECTORIES.has(entry.name)) continue;
+      const relativePath = normalizeRepoPath(path.relative(root, fullPath));
+      if (directory === root && EXCLUDED_ROOT_DIRECTORIES.has(entry.name)) {
+        excluded.push({ path: relativePath, reason: "scratch_directory" });
+        continue;
+      }
+      if (await isNestedCheckout(fullPath)) {
+        excluded.push({ path: relativePath, reason: "nested_git_checkout" });
+        continue;
+      }
+      await walk(fullPath);
     }
   }
   await walk(root);
-  return files;
+  excluded.sort((a, b) => a.path.localeCompare(b.path));
+  return { files, excluded };
 }
 
 function parseFrontmatter(text) {
@@ -127,7 +166,7 @@ function importSpecifiers(text) {
 
 export async function buildLinkGraph(workspacePath) {
   const root = path.resolve(workspacePath);
-  const fullPaths = await listFiles(root);
+  const { files: fullPaths, excluded } = await listFiles(root);
   const documents = [];
   for (const fullPath of fullPaths) {
     const relativePath = normalizeRepoPath(path.relative(root, fullPath));
@@ -201,6 +240,7 @@ export async function buildLinkGraph(workspacePath) {
 
   return {
     schema: "govibe-link-graph/v1",
+    excluded,
     nodes: documents.map((document) => ({ id: `file:${document.path}`, path: document.path, doc_id: document.frontmatter.doc_id ?? null })),
     edges,
     backlinks: Object.fromEntries([...incoming].map(([target, targetEdges]) => [target, targetEdges.map((edge) => ({ source: edge.from, relation: edge.relation, link_id: edge.id }))])),
@@ -284,6 +324,9 @@ export async function calculateWorkspaceImpact({
     references: affectedList.map((item) => item.path),
     unresolved: [...unresolvedSeeds, ...graph.unresolved],
     graph_summary: { nodes: graph.nodes.length, links: graph.edges.length, backlinks: Object.keys(graph.backlinks).length },
+    // The analysis explains its own boundary: every subtree left out of the link graph, with the
+    // reason. An empty list means the whole workspace was indexed.
+    boundary: { excluded: graph.excluded },
     policy: { max_distance: maxDistance, minimum_score: minimumScore },
   };
 }
