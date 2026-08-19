@@ -1,4 +1,5 @@
 import { spawn as nodeSpawn } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -21,8 +22,8 @@ import { toolCatalog } from "./registry.mjs";
 import { SessionTracker } from "../../packages/govibe-core/bin/session-tracker.mjs";
 import {
   createApprovalRecordStore,
-  createExecutorRegistry,
   createGksClientFromEnvironment,
+  createLocalAgentDispatchGate,
   createMspClientFromEnvironment,
 } from "../../packages/govibe-core/src/index.mjs";
 
@@ -74,6 +75,38 @@ function formatAgentRunResult(stdout, stderr, exitCode) {
   };
 }
 
+// TASK-PRD-035 (CR-2026-08-19 D-01): govibe.agent.run and StEP do not yet carry a live
+// MSP-issued continue packet (no contextAuthority/contextLineage arrives on `args` today), so
+// this builds the minimal honest per-dispatch identity the governed services require — a
+// self-consistent set of ids, not a claim of MSP-mediated context authority. `sessionId` is the
+// runtime's own stable per-process session id (real, not synthesized); `runId`/`turnId` are
+// fresh per dispatch since there is no lineage to continue from yet.
+function buildAgentRunDispatchIdentity(args, sessionId) {
+  return {
+    taskId: typeof args.task_id === "string" && args.task_id.trim() !== "" ? args.task_id : `adhoc-${randomUUID()}`,
+    agentId: typeof args.agent === "string" && args.agent.trim() !== "" ? args.agent : (typeof args.agent_id === "string" && args.agent_id.trim() !== "" ? args.agent_id : "unassigned-agent"),
+    workspaceId: typeof args.workspace_id === "string" && args.workspace_id.trim() !== "" ? args.workspace_id : "govibe-local-workspace",
+    runId: randomUUID(),
+    sessionId,
+    turnId: randomUUID(),
+  };
+}
+
+// Unwraps the governed run result (schema govibe-provider-run-result/v1) produced by
+// spawnLauncher()'s output back into the classic {stdout,stderr,exitCode,ok} shape that
+// step.mjs and handlers.mjs already depend on. A non-`completed` status means the gate itself
+// refused or classified the dispatch as a provider-level failure before/without a usable
+// artifact (e.g. governance denial surfaced as a thrown error further up, or a rare adapter
+// failure classification) — reported as a failed result rather than fabricating output.
+function extractAgentRunResult(dispatchResult) {
+  if (dispatchResult.status !== "completed") {
+    const failure = dispatchResult.normalized_errors?.[0];
+    return formatAgentRunResult("", failure?.message ?? `agent dispatch ${dispatchResult.status}`, 1);
+  }
+  const artifact = dispatchResult.candidate?.artifacts?.[0] ?? {};
+  return formatAgentRunResult(artifact.stdout ?? "", artifact.stderr ?? "", artifact.exitCode ?? 1);
+}
+
 function configuredWorkspaceRoots() {
   if (!process.env.GOVIBE_ALLOWED_WORKSPACE_ROOTS) return [workspaceRoot];
   const roots = JSON.parse(process.env.GOVIBE_ALLOWED_WORKSPACE_ROOTS);
@@ -113,10 +146,21 @@ export class GovibeRuntime {
     this.availableSources = [];
     this.mspClient = options.mspClient ?? createMspClientFromEnvironment();
     this.gksClient = options.gksClient ?? createGksClientFromEnvironment();
-    this.executorRegistry = createExecutorRegistry(options.executorAdapters ?? {});
     // TASK-PRD-028 (AUD-10a): injectable so security tests can intercept the child's `env`
     // option without actually spawning powershell; the real singleton uses node:child_process.
     this.spawnProcess = options.spawnProcess ?? nodeSpawn;
+    // TASK-PRD-035 (CR-2026-08-19 D-01, phase 1): the live agent-run dispatch gate. Wraps the
+    // PowerShell launcher as a governed subscription-CLI provider target so govibe.agent.run and
+    // StEP (which both call runAgent — see the orchestrationService wiring below) pass through
+    // execution-capability-planner -> execution-router -> execution-binding-service ->
+    // executor-adapter's scope-match gate instead of spawning directly. `this.executorRegistry`
+    // is the SAME registry the gate dispatches through, so snapshot.providers reflects it.
+    this.dispatchGate = options.dispatchGate ?? createLocalAgentDispatchGate({
+      launcherScriptPath: launcherScript,
+      additionalAdapters: options.executorAdapters ?? {},
+      run: (request) => this.spawnLauncher(request),
+    });
+    this.executorRegistry = this.dispatchGate.executorRegistry;
     this.allowedWorkspaceRoots = options.allowedWorkspaceRoots ?? configuredWorkspaceRoots();
     this.allowedRoadmapReadRoots = options.allowedRoadmapReadRoots ?? configuredPathRoots("GOVIBE_ROADMAP_READ_ROOTS", roadmapDir);
     this.allowedRoadmapWriteRoots = options.allowedRoadmapWriteRoots ?? configuredPathRoots("GOVIBE_ROADMAP_WRITE_ROOTS", roadmapDir);
@@ -243,7 +287,12 @@ export class GovibeRuntime {
     return files;
   }
 
-  async runAgent(args = {}) {
+  // The dispatch gate's `run` seam (TASK-PRD-035): spawns scripts/agents/invoke-agent.ps1
+  // exactly as runAgent did before the gate was wired in — same args, same allowlisted child
+  // env, same failure semantics (only a spawn error rejects; a non-zero exit is a normal
+  // completed result). `request` is the executor-adapter's safe (credential-stripped) request,
+  // which still carries the original agent-run args (task/agent/scope/mode/executor/...).
+  async spawnLauncher(request) {
     const psArgs = [
       "-NoProfile",
       "-ExecutionPolicy",
@@ -251,18 +300,18 @@ export class GovibeRuntime {
       "-File",
       launcherScript,
       "-Task",
-      args.task ?? "",
+      request.task ?? "",
       "-OutputFormat",
-      args.outputFormat ?? "text",
+      request.outputFormat ?? "text",
     ];
 
-    if (args.agent) psArgs.push("-AgentId", args.agent);
-    if (args.scope) psArgs.push("-Scope", args.scope);
-    if (args.mode) psArgs.push("-Mode", args.mode);
-    if (args.executor) psArgs.push("-Executor", args.executor);
-    if (args.localModel) psArgs.push("-LocalModel", args.localModel);
-    if (args.retryLargerLocalModel) psArgs.push("-RetryLargerLocalModel");
-    if (args.asJson) psArgs.push("-AsJson");
+    if (request.agent) psArgs.push("-AgentId", request.agent);
+    if (request.scope) psArgs.push("-Scope", request.scope);
+    if (request.mode) psArgs.push("-Mode", request.mode);
+    if (request.executor) psArgs.push("-Executor", request.executor);
+    if (request.localModel) psArgs.push("-LocalModel", request.localModel);
+    if (request.retryLargerLocalModel) psArgs.push("-RetryLargerLocalModel");
+    if (request.asJson) psArgs.push("-AsJson");
 
     const shell = process.platform === "win32" ? "powershell.exe" : "pwsh";
     const result = await new Promise((resolve, reject) => {
@@ -278,6 +327,25 @@ export class GovibeRuntime {
       child.on("close", (exitCode) => resolve(formatAgentRunResult(stdout, stderr, exitCode ?? 1)));
     });
 
+    // provider-adapters.mjs's baseResult() carries whatever this returns into
+    // candidate.artifacts[0]; extractAgentRunResult() below reconstructs the classic
+    // {stdout,stderr,exitCode,ok} shape from it after the gate normalizes the run result.
+    return { artifacts: [result] };
+  }
+
+  async runAgent(args = {}) {
+    const identity = buildAgentRunDispatchIdentity(args, this.sessionTracker.sessionId);
+    const dispatchResult = await this.dispatchGate.dispatch({
+      taskId: identity.taskId,
+      agentId: identity.agentId,
+      workspaceId: identity.workspaceId,
+      runId: identity.runId,
+      sessionId: identity.sessionId,
+      turnId: identity.turnId,
+      requestArgs: args,
+    });
+    const result = extractAgentRunResult(dispatchResult);
+
     this.appendTerminal("agent", `Agent run completed for ${args.agent_id ?? "resolved-agent"} (${args.scope ?? "no-scope"}).`);
     await this.sessionTracker.logEvent("agent_run", { args, result });
     return {
@@ -286,7 +354,7 @@ export class GovibeRuntime {
       request: args,
       result,
     };
-    }
+  }
 
   // Translator-core compatibility methods delegate to the isolated service.
   async ingestCode(args = {}) {

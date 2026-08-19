@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type UIEvent } from "react";
+import { useEffect, useRef, useState, type CSSProperties, type UIEvent } from "react";
 import { Header } from "./app/Header";
 import { RenderView } from "./app/RenderView";
 import { Sidebar } from "./app/Sidebar";
@@ -41,16 +41,18 @@ export function App() {
     }
   }, []);
 
-  const connectionLabel = useMemo(() => snapshot.connectionState.toUpperCase(), [snapshot.connectionState]);
-
   const changeDomain = (next: DomainId) => {
     setActiveDomain(next);
     setActiveView(defaultViewByDomain[next]);
   };
 
+  // TASK-PRD-021 (AUD-24): this is the C3 debug ingress (DataIngestView) -- the only place a
+  // user can hand-author a MissionEvent payload and inject it directly, bypassing the sidecar
+  // transport entirely. Tag it "debug-ingress" so the resulting snapshot state is never
+  // indistinguishable from something the governed sidecar actually delivered.
   const ingest = (json: string) => {
     const event = JSON.parse(json) as Parameters<typeof missionGateway.handleEvent>[0];
-    missionGateway.handleEvent(event);
+    missionGateway.handleEvent(event, "debug-ingress");
   };
 
   const handleScroll = (event: UIEvent<HTMLElement>) => {
@@ -96,7 +98,7 @@ export function App() {
           onViewChange={setActiveView}
         />
         <main onScroll={handleScroll}>
-          <StatusBar connectionLabel={connectionLabel} updatedAt={snapshot.updatedAt} />
+          <StatusBar />
           <RenderView activeView={activeView} snapshot={snapshot} theme={theme} send={send} ingest={ingest} onNavigate={setActiveView} />
         </main>
       </div>

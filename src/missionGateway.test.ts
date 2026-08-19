@@ -176,6 +176,31 @@ describe("ReliableMissionGateway WebSocket resilience", () => {
     expect(factory).toHaveBeenCalledTimes(2);
   });
 
+  it("TASK-PRD-021 (AUD-24): a 401 bootstrap surfaces a dedicated unauthorized state, not the generic error state", async () => {
+    const fetchImpl = vi.fn<typeof fetch>(async (_input, _init) => new Response(JSON.stringify({ error: "unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    }));
+    const gateway = new ReliableMissionGateway({ httpBaseUrl: "http://localhost:4310", wsUrl: "", fetchImpl });
+
+    await gateway.connect();
+
+    expect(gateway.getSnapshot().connectionState).toBe("unauthorized");
+    expect(gateway.getSnapshot().connectionState).not.toBe("error");
+  });
+
+  it("TASK-PRD-021 (AUD-24): a non-401 bootstrap failure still surfaces the generic error state", async () => {
+    const fetchImpl = vi.fn<typeof fetch>(async (_input, _init) => new Response(JSON.stringify({ error: "boom" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    }));
+    const gateway = new ReliableMissionGateway({ httpBaseUrl: "http://localhost:4310", wsUrl: "", fetchImpl });
+
+    await gateway.connect();
+
+    expect(gateway.getSnapshot().connectionState).toBe("error");
+  });
+
   it("supports explicit HTTP-only re-bootstrap", async () => {
     const fetchImpl = vi.fn<typeof fetch>(async (_input, _init) => new Response(JSON.stringify({
       connectionState: "connected",
@@ -190,5 +215,67 @@ describe("ReliableMissionGateway WebSocket resilience", () => {
 
     expect(fetchImpl).toHaveBeenCalledTimes(2);
     expect(gateway.getSnapshot().connectionState).toBe("connected");
+  });
+});
+
+// TASK-PRD-021 (AUD-24): per-panel status. Exercises the same {connectionState, updatedAt}
+// pair src/hooks/useConnectionStatus.ts derives isStale from, and the lastIngest provenance
+// marker src/shared/EmptyState.tsx and any other consumer would read to tell a genuinely empty,
+// live-connected feed apart from a dropped connection still showing the last snapshot received.
+describe("ReliableMissionGateway connection status (TASK-PRD-021)", () => {
+  it("connected -> disconnected -> reconnect: updatedAt survives the drop, giving isStale its 'last-known data' signal", async () => {
+    const socket = new FakeSocket();
+    const gateway = new ReliableMissionGateway({
+      wsUrl: "ws://localhost/mission/ws",
+      webSocketFactory: () => socket as unknown as WebSocket,
+      reconnectBaseDelayMs: 10,
+      reconnectMaxDelayMs: 10,
+      random: () => 0.5,
+    });
+
+    void gateway.connect();
+    socket.open();
+    expect(gateway.getSnapshot().connectionState).toBe("connected");
+    const connectedUpdatedAt = gateway.getSnapshot().updatedAt;
+    expect(connectedUpdatedAt).toBeTruthy();
+
+    socket.close();
+    expect(gateway.getSnapshot().connectionState).toBe("disconnected");
+    // A panel computing isStale as `connectionState !== "connected" && Boolean(updatedAt)`
+    // (see src/hooks/useConnectionStatus.ts) can now tell "lost connection, last-known data"
+    // apart from "healthy connection, empty feed" -- updatedAt is still set from the moment we
+    // were connected, it is not cleared just because the transport dropped.
+    expect(gateway.getSnapshot().updatedAt).toBeTruthy();
+    expect(gateway.getSnapshot().connectionState).not.toBe("connected");
+
+    gateway.dispose();
+  });
+
+  it("stamps a sidecar-originated event with 'sidecar' provenance by default", () => {
+    const gateway = new ReliableMissionGateway();
+
+    gateway.handleRawFrame(JSON.stringify({ type: "metrics.update", metrics: [] }));
+
+    expect(gateway.getSnapshot().lastIngest).toMatchObject({ source: "sidecar", eventType: "metrics.update" });
+  });
+
+  it("stamps a C3 debug-ingress event with 'debug-ingress' provenance, distinguishing it from sidecar-delivered state", () => {
+    const gateway = new ReliableMissionGateway();
+
+    // Mirrors App.tsx's `ingest` handler for the C3 DataIngestView debug form.
+    gateway.handleEvent({ type: "metrics.update", metrics: [] }, "debug-ingress");
+
+    expect(gateway.getSnapshot().lastIngest).toMatchObject({ source: "debug-ingress", eventType: "metrics.update" });
+    expect(gateway.getSnapshot().lastIngest?.source).not.toBe("sidecar");
+  });
+
+  it("does not stamp lastIngest for command.ack or terminal.line events (command lifecycle, not ingested state)", () => {
+    const gateway = new ReliableMissionGateway();
+
+    gateway.handleEvent({ type: "command.ack", commandId: "cmd-1", ok: true });
+    expect(gateway.getSnapshot().lastIngest).toBeUndefined();
+
+    gateway.handleEvent({ type: "terminal.line", line: { id: "line-1", type: "sys", text: "hi", time: "12:00:00" } });
+    expect(gateway.getSnapshot().lastIngest).toBeUndefined();
   });
 });

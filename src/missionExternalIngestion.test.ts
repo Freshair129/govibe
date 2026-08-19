@@ -22,4 +22,16 @@ describe("browser external MissionEvent ingestion", () => {
     expect(legacyGateway.getSnapshot().metrics).toEqual([]);
     expect(reliableGateway.getSnapshot().metrics).toEqual([]);
   });
+
+  // TASK-PRD-021 (AUD-24): a value ingested through this generic external entrypoint must
+  // carry a provenance marker distinguishing it from sidecar-delivered state once it merges
+  // into the snapshot.
+  it("marks a generically-ingested event with non-sidecar provenance by default", () => {
+    const valid = { type: "metrics.update", metrics: [] };
+
+    ingestReliableExternalMissionEvent(valid);
+
+    expect(reliableGateway.getSnapshot().lastIngest?.source).toBe("external-postmessage");
+    expect(reliableGateway.getSnapshot().lastIngest?.source).not.toBe("sidecar");
+  });
 });
