@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.68+draft"
+version: "0.3.69+draft"
 updated: "2026-08-19"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.68+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.69+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -91,7 +91,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.1` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.15` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.16` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -233,6 +233,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.69+draft | 2026-08-19 | Claude Sonnet 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.16 and this registry's own self-row to 0.3.69+draft: owner-directed ratification (Boss, in session) of nineteen review-status tasks to done (TASK-PRD-005, 009, 018, 019, 020, 021, 022, 023, 024, 026, 027, 028, 030, 031, 032, 033, 034, 035, 036), citing green baseline-check run 32226975076 on `main` @ commit 9bc4215 (the #166 merge, current HEAD); GATE-CONTRACT and GATE-SEMANTIC flipped to met citing the same run; GATE-BOOTSTRAP stays not met. TASK-PRD-029 stays at review (its actor-attribution success criterion has no new evidence). No document status changed by this row. |
 | 0.3.68+draft | 2026-08-19 | VIBE | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.15 and this registry's own self-row to 0.3.68+draft: TASK-PRD-032 (AUD-15) executed to review — completion gate now requires attached impact evidence for explicitly-declared semantic/schema/authority/runtime-behavior-class done transitions (scripts/mcp/runtime/roadmap-service.mjs, extending the TASK-PRD-030 node.update guard), and scripts/docs/diff-check.mjs is wired as a blocking, pull_request-scoped step in .github/workflows/baseline-check.yml (new --base <ref> diff mode). PHASE-PRD-09/SPR-PRD-09 progress 60 → 90, status in-progress → review. No document status changed by this row. |
 | 0.3.67+draft | 2026-08-19 | ATHER | Reconciled the TASK-PRD-009/TASK-PRD-022 H-axis sweep (worktree commit b709a00, review-gate APPROVE-FOR-COMMIT) onto origin/main's Batch 3/4/6 merge base (protocol v2 + parity + CI hygiene, frontend honesty, dispatch gate + ADR-024 acceptance). Synchronized the version rows of thirteen registered documents to match the abolished-H-axis semantic corrections made to their frontmatter/body (field renames `context_scaling_tier`/`context_tier`/`planning_tier` -> `access_scope`, hop labels -> `retrieval_radius`, no status changes) — PRD-GOVIBE-PLATFORM-OVERVIEW 0.6.1+draft, PRD-GOVIBE-MCP-ORCHESTRATION 0.2.2+draft, MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL 0.2.1, FEAT-DOCUMENT-VERSION-GOVERNANCE 0.1.1, FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION 0.1.2, FEAT-PER-AGENT-MEMORY-UNIT 0.2.1+draft, FEAT-QWEN-CLI-MODEL-ROUTING 0.1.4, POC-5-AXIS-COVERAGE 0.1.1+draft, FEAT-VISUAL-AGENT-FLEET-SYSTEM 0.1.1, FEAT-DOC-FORMAT-TEMPLATE-EXTRACTION 0.1.1+draft, BLUEPRINT-TRANSLATOR-CORE-SLICE 0.1.1+draft, SRS-GOVIBE-TRANSLATOR-CORE-SLICE 0.1.2+draft, LLD-TRANSLATOR-CORE-SLICE 0.1.1+draft — none of these thirteen were touched by any merged batch, so no collision. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.14 (reconciled onto main's 0.3.13 tip, keeping every TASK-PRD row through 036 and all PHASE/SPR states from main's Batches 3/4/6, plus this worktree's TASK-PRD-009/TASK-PRD-022 review status and PHASE-PRD-04/SPR-PRD-04 progress 0 -> 90; GATE-SEMANTIC stays not met pending CI evidence) and this registry's own self-row to 0.3.67+draft. No document status changed by this row. |
 | 0.3.66+draft | 2026-08-19 | Claude Sonnet 5 | Owner-decision row, by owner authority (Boss, CR-2026-08-19 §6 D-01 recorded decision): `ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY` `0.1.1+draft` draft → `0.2.0` accepted, scoped to §2.5 two-phase routing as executed by TASK-PRD-035's phase-1 dispatch gate (API-008 remains draft; entitlement/compatibility arbitration across external providers, the credential boundary, and the D-03 deferred modules explicitly out of scope per the ADR's new §7). This row DOES change ADR-024 to accepted, on owner authority (CR-2026-08-19 §6 D-01), not a self-applied ratification. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.13 (reconciled onto origin/main's Batch 3+4 merge base, 0.3.12 -> 0.3.13: TASK-PRD-035 D-01 phase-1 dispatch-gate integration and TASK-PRD-036 D-04 replay-provider pinned test executed to review; PHASE-PRD-07/SPR-PRD-07 progress 70 → 85, kept alongside main's independent PHASE-PRD-02/SPR-PRD-02 and PHASE-PRD-03/SPR-PRD-03 bumps recorded in the 0.3.65+draft row below) and TODO-EXECUTION-BINDING-LIFECYCLE to 0.1.2+draft (recorded the TASK-PRD-035 review-gate MINOR — provider-adapter-host.mjs's rejectCanonicalIdentities fail-closed against the launcher's opaque stdout/stderr — as a deferred phase-2 follow-up, not fixed in this batch). |
