@@ -71,3 +71,12 @@ test-results/
 
 # Reference/sample trees used for comparison only; not live GoVibe source truth.
 ref/
+
+# AUD-31 orphan cleanup (owner-directed): local/foreign artifacts kept out of git.
+# JULES_REPORT.md is a nightly report about a *different* repository, not GoVibe.
+/JULES_REPORT.md
+# Local benchmark re-run output (regenerable; v1 under benchmark_results/logs stays tracked).
+benchmark_results/v2/
+# Local benchmark harness scratch + fixtures. Contains real customer/account mapping
+# data (scripts/bench/.smartgift-mapping.json) that must never be committed.
+scripts/bench/
