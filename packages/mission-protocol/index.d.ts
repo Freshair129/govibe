@@ -60,7 +60,7 @@ export type MissionCommand =
   | { type: "workflow.node.action"; taskId: string; action: WorkflowNodeAction; actor: string; assigneeId?: string; approvalRef?: string };
 
 export type MissionSnapshot = {
-  connectionState: "disconnected" | "connecting" | "connected" | "error";
+  connectionState: "disconnected" | "connecting" | "connected" | "error" | "unauthorized";
   updatedAt?: string;
   metrics: unknown[];
   chart: Record<string, unknown>;

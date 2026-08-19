@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.64+draft"
+version: "0.3.65+draft"
 updated: "2026-08-19"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.64+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.65+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -91,7 +91,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.11` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.12` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -233,6 +233,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.65+draft | 2026-08-19 | Claude Sonnet 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.12 (reconciled onto the Batch 3 merge base, 0.3.11 -> 0.3.12): TASK-PRD-020 (AUD-07, the sole live-data-rule violation — fabricated D1 Reactor Run Trigger telemetry/benchmark/lifecycle removed and replaced with honest empty-state + real reactor.run acknowledgement) and TASK-PRD-021 (AUD-24 — dedicated "unauthorized" connection state, EventProvenance/lastIngest marker on every ingestion path, shared useConnectionStatus hook consumed by EmptyState and StatusBar) executed to review in one batch (VIBE executor). PHASE-PRD-03/SPR-PRD-03 progress 20 → 40. No document status changed by this row. |
 | 0.3.64+draft | 2026-08-19 | Claude Sonnet 5 | Registered `MISSION-PROTOCOL-V2` (draft, 0.1.0+draft, owner ATHER, `docs/api/MISSION-PROTOCOL-v2.md`) under §3 Product and Platform — the doc AUD-34/TASK-PRD-034 replaced the unregistered `docs/api/MISSION-PROTOCOL-v1.md` (removed) with. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.11 (TASK-PRD-018, TASK-PRD-019, TASK-PRD-034 executed to review in one owner-directed batch) and `BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT` to 0.1.2 (reference-path-only update from the retired v1 filename to v2). This row DOES add one new registered document (MISSION-PROTOCOL-V2, entering as draft); no existing document's status changed. |
 | 0.3.63+draft | 2026-08-19 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.10 and SPEC-WORKSPACE-SYSTEM to 0.3.1: TASK-PRD-026 (AUD-04 sidecar RBAC bypass), TASK-PRD-027 (AUD-05 ungoverned docs.resolve/ingest.code file access), TASK-PRD-028 (AUD-10 credential exposures — child env, WS token, log redaction; PM connector vault-wiring recorded as an interim acceptance expiring 2026-11-19), and TASK-PRD-029 (AUD-08 unverified approvalRef) executed to review in one owner-directed batch (Boss instruction, VIBE/ARCHON executors per each Task Container's pic). PHASE-PRD-08/SPR-PRD-08 progress 0 → 70. No document status changed by this row. |
 | 0.3.62+draft | 2026-08-19 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.9: the independent review gate's round-2 delta verification (probes A/B/B2/C/D/E/F) reproduced all twelve 0.3.8 findings as fixed — verdict APPROVE-FOR-COMMIT. Verification table Audit Status set pending → passed for TASK-PRD-030, TASK-PRD-031, TASK-PRD-033 (QA stays passed); each Task Container's changelog got one appended sentence recording the audit as this in-session review-gate audit, not a separate ATHER session. No document status changed by this row. |

@@ -196,7 +196,9 @@ export function isMissionCommand(value) {
 
 export function isMissionSnapshot(value) {
   return isRecord(value)
-    && ["disconnected", "connecting", "connected", "error"].includes(value.connectionState)
+    // TASK-PRD-021 (AUD-24): "unauthorized" is a dedicated 401-bootstrap state distinct from
+    // the generic "error" transport-failure state -- see src/mission/domain.ts ConnectionState.
+    && ["disconnected", "connecting", "connected", "error", "unauthorized"].includes(value.connectionState)
     && isBoundedArray(value.metrics)
     && isBoundedRecord(value.chart)
     && isBoundedArray(value.agents)
