@@ -2,8 +2,8 @@
 title: "RUNBOOK: GoVibe First Use"
 doc_id: "RUNBOOK-GOVIBE-FIRST-USE"
 status: "draft"
-version: "0.1.3+draft"
-updated: "2026-08-04"
+version: "0.1.4+draft"
+updated: "2026-08-19"
 owner: "GoVibe"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -11,6 +11,7 @@ related_docs:
   - "docs/api/API-005-GoVibe-Capability-Contracts.md"
   - "docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md"
   - "docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md"
+  - "docs/operations/runbooks/RUNBOOK-GoVibe-Quickstart.md"
 ---
 
 # RUNBOOK: GoVibe First Use
@@ -53,8 +54,11 @@ npm run dev
 ```
 
 The Mission sidecar now fails closed unless both processes share a local
-authentication token. Copy `.env.example` to the ignored `.env.local`, replace
-the placeholder with a random value, and keep these two values identical:
+authentication token. Copy `.env.example` to the ignored `.env` (loaded
+automatically by `npm run mcp:dev` / `mission:dev` via `--env-file-if-exists`;
+`npm run env:bootstrap` does this step for you with a fresh matching token —
+see `docs/operations/runbooks/RUNBOOK-GoVibe-Quickstart.md`), replace the
+placeholder with a random value, and keep these two values identical:
 
 ```dotenv
 GOVIBE_MCP_TOKEN=<random-local-token>
@@ -63,7 +67,7 @@ VITE_GOVIBE_MCP_TOKEN=<same-random-local-token>
 
 `GOVIBE_MCP_TOKEN` protects HTTP and WebSocket access. The `VITE_` value lets
 Mission Control attach that credential before the application imports. Never
-commit `.env.local`, print the token, or put it in a MissionSnapshot. The
+commit `.env`, print the token, or put it in a MissionSnapshot. The
 default allowlist accepts Vite on localhost/127.0.0.1 ports 1420 and 5173. For
 a different development origin, set `GOVIBE_MCP_ALLOWED_ORIGINS` to an explicit
 comma-separated list; wildcard origins are not supported.
@@ -151,6 +155,7 @@ GoVibe เรียก **MSP parent** ผ่าน stdio MCP เพียงเ�
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.4+draft | 2026-08-19 | THESEUS | Fixed a stale reference: §3 said to copy `.env.example` to `.env.local`, but `npm run mcp:dev`/`mission:dev` load `.env` (`--env-file-if-exists=.env`), not `.env.local` — the wrong filename would have silently defeated the whole token setup. Now points at `.env` and at the new `npm run env:bootstrap` helper / `RUNBOOK-GoVibe-Quickstart.md` for the linear clean-checkout path (TASK-PRD-010 / GAP-09). No other content changed. |
 | 0.1.3+draft | 2026-08-04 | GoVibe | Added the approved-Master-Plan activation path while retaining review-only behavior for unapproved sources. |
 | 0.1.2+draft | 2026-08-03 | GoVibe | Removed obsolete direct GKS configuration; clarified MSP-only preflight and non-dispatchable configuration states. |
 | 0.1.1+draft | 2026-08-02 | GoVibe | Documented the required local sidecar token and explicit browser-origin trust boundary. |
