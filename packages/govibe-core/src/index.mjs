@@ -26,6 +26,7 @@ export { createMode2Stages } from "./mode2/stages.mjs";
 export { createWorkspaceAdapter, DEFAULT_EXCLUSIONS, resolveClient, WORKSPACE_CLIENTS } from "./mode2/workspace-adapter.mjs";
 export { createWorkflowPlan, getWorkflowStatus, transitionWorkflow } from "./workflow-engine.mjs";
 export { createExecutorRegistry, ProviderUnavailableError } from "./executor-adapter.mjs";
+export { createLocalAgentDispatchGate, LOCAL_AGENT_PROVIDER_ID, LOCAL_AGENT_ADAPTER_ID } from "./local-agent-dispatch-gate.mjs";
 export { createPolicyEnvelope, assertPolicyAllows } from "./policy-envelope.mjs";
 export { reviewWorkspace, optimizeMeasured, workspaceImpact, docsVersion } from "./governance-operations.mjs";
 export { createCredentialVault, createEncryptedSecretBackend, createInMemorySecretBackend, CredentialVaultError } from "./credential-vault.mjs";

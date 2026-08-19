@@ -1,9 +1,9 @@
 ---
 doc_id: "ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY"
 title: "ADR-024: Provider Entitlement and Execution Authority Boundary"
-status: "draft"
-version: "0.1.1+draft"
-updated: "2026-08-03"
+status: "accepted"
+version: "0.2.0"
+updated: "2026-08-19"
 owner: "Boss (CEO)"
 type: adr
 related_issue: 55
@@ -12,7 +12,7 @@ related_adrs: ["ADR-023"]
 
 # ADR-024: Provider Entitlement and Execution Authority Boundary
 
-**Status:** Draft
+**Status:** Accepted (scoped — see §7)
 **Date:** 2026-08-02  
 **Owner:** Boss (CEO)
 
@@ -206,9 +206,44 @@ Rejected because provider history is not canonical, may expire, may be inaccessi
 - API-007 Knowledge and Context Authority Contract
 - CR-2026-08-02 Multi-Provider Entitlement Routing
 
+## 7. Acceptance scope (2026-08-19)
+
+This ADR is accepted **scoped to §2.5 two-phase routing** (capability planning ->
+execution binding) as implemented by TASK-PRD-035's phase-1 dispatch gate: the
+`execution-capability-planner.mjs` -> `execution-router.mjs` ->
+`execution-binding-service.mjs` -> `executor-adapter.mjs` chain, attached at
+`GovibeRuntime.runAgent` (both `govibe.agent.run` and StEP dispatch through it) via
+one subscription-CLI adapter wrapping `scripts/agents/invoke-agent.ps1`.
+
+Explicitly **out of scope** and still deferred:
+
+- **API-008** (Provider Entitlement, Routing and Usage Contract) remains **draft**.
+  No entitlement-arbitration API is promoted by this acceptance.
+- Multi-provider entitlement/compatibility arbitration across external providers
+  (codex, claude-code, crewai) is not authorized. The phase-1 dispatch gate
+  instantiates `provider-entitlement-registry.mjs` / `provider-compatibility-registry.mjs`
+  with a single, hard-coded, self-issued local entitlement/compatibility record
+  describing the one launcher target GoVibe already runs unconditionally — this is
+  not the general arbitration machinery those modules exist to eventually provide.
+- §2.4's `credential-vault.mjs` credential boundary continues under TASK-PRD-028
+  (D-02), not this acceptance.
+- Entitlement/compatibility/session registries, the usage ledger, `mode2/`, and
+  `canonical-materialization.mjs` remain deferred per D-03, recorded in
+  `docs/change-control/TODO-Execution-Binding-Lifecycle.md`.
+- A9 PTY interactive sessions (§4.3 of the CR) stay outside the binding gate —
+  phase 2, not this acceptance.
+
+**Authority:** this acceptance executes the owner decision recorded in
+CR-2026-08-19 §6, D-01 ("Integrate phase-1 dispatch gate at runAgent + StEP" —
+approved as recommended, Boss, 2026-08-19). It is not a self-applied ratification;
+it is execution of that recorded decision, per the doc-first order in
+`docs/roadmap/MASTERPLAN-govibe-production-readiness.md` §11.2 and the exit
+criterion of TC-TASK-PRD-035.
+
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.0 | 2026-08-19 | Boss (CR-2026-08-19 §6 D-01) | Accepted, scoped to §2.5 two-phase routing as executed by TASK-PRD-035's phase-1 dispatch gate (planner -> router -> binding service -> executor-adapter, attached at runAgent/StEP). API-008 remains draft; entitlement/compatibility arbitration across external providers, the credential boundary (TASK-PRD-028/D-02), and the D-03 deferred modules are explicitly out of scope (see §7). This row DOES change ADR-024 to accepted, on owner authority (CR-2026-08-19 §6 D-01), not a self-applied ratification. |
 | 0.1.1+draft | 2026-08-03 | Boss / ATHER | Normalized lifecycle status from `proposed` to `draft` as an owner-approved documentation conformance correction; no ADR acceptance or runtime authorization. |
 | 0.1.0+draft | 2026-08-02 | Boss (CEO) | Proposed execution-resource authority, entitlement ownership, two-phase routing, usage semantics, affinity and failover boundaries. |

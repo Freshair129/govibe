@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.65+draft"
+version: "0.3.66+draft"
 updated: "2026-08-19"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.65+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.66+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -74,7 +74,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Change Request | `CR-2026-08-03-EXECUTION-BINDING-V1-LIFECYCLE-DECISION` | `0.2.6` | approved | Boss (CEO) | `docs/change-requests/CR-2026-08-03-Execution-Binding-v1-Lifecycle-and-Legacy-Sunset-Decision.md` |
 | Evidence | `EVIDENCE-WP-10-EXECUTION-BINDING-V1-CONSUMER-DISCOVERY` | `0.2.2` | approved | ATHER | `docs/assurance/audit/EVIDENCE-WP-10-Execution-Binding-v1-Consumer-Discovery.md` |
 | Evidence | `EVIDENCE-PROVIDER-ENTITLEMENT-RUNTIME-CONFORMANCE` | `0.4.0+draft` | draft | ATHER | `docs/assurance/audit/EVIDENCE-Provider-Entitlement-Runtime-Conformance.md` |
-| TODO | `TODO-EXECUTION-BINDING-LIFECYCLE` | `0.1.1+draft` | draft | Boss (CEO) / ATHER | `docs/change-control/TODO-Execution-Binding-Lifecycle.md` |
+| TODO | `TODO-EXECUTION-BINDING-LIFECYCLE` | `0.1.2+draft` | draft | Boss (CEO) / ATHER | `docs/change-control/TODO-Execution-Binding-Lifecycle.md` |
 | Blueprint | `BLUEPRINT-DOCUMENT-IA-GRAPH-CONTRACT` | `0.1.0+draft` | draft | ARCHON / THESEUS / ATHER | `docs/blueprints/BLUEPRINT-Document-Information-Architecture-and-Graph-Contract.md` |
 | Migration | `MIGRATION-DOCUMENT-IA-GRAPH-READINESS` | `0.3.0+draft` | draft | LYRA / ATHER | `docs/migration/MIGRATION-Document-IA-and-Graph-Readiness.md` |
 | Rollback | `ROLLBACK-DOCUMENT-IA-CLEANSING-PHASE1` | `0.3.0+draft` | draft | ATHER | `docs/change-requests/ROLLBACK-Document-IA-Cleansing-Phase1.md` |
@@ -91,7 +91,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.0` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.12` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.13` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -142,7 +142,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | ADR | `ADR-029-GOV-LAYER-LAUNCHER-CONSOLE-BOUNDARY` | `0.2.0` | accepted | Boss (CEO) | `docs/adr/ADR-029-Gov-Layer-Launcher-Console-Boundary.md` |
 | ADR | `ADR-022-VAULT-OWNERSHIP-CONTEXT-LINEAGE` | `1.0.0` | approved | Boss / ATHER | `docs/adr/ADR-022-Vault-Ownership-and-Context-Lineage.md` |
 | ADR | `ADR-023-KNOWLEDGE-AUTHORITY-CONTEXT-AUTHORITY-BOUNDARY` | `0.1.0` | accepted | Boss (CEO) | `docs/adr/ADR-023-Knowledge-Authority-Context-Authority-Boundary.md` |
-| ADR | `ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY` | `0.1.1+draft` | draft | Boss (CEO) | `docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md` |
+| ADR | `ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY` | `0.2.0` | accepted | Boss (CEO) | `docs/adr/ADR-024-Provider-Entitlement-Execution-Authority-Boundary.md` |
 | ADR | `ADR-025-STORAGE-BACKEND-INDEPENDENCE` | `0.1.0+draft` | proposed | Boss / ARCHON / ATHER | `docs/adr/ADR-025-Storage-Backend-Independence-and-GenesisBlockDB-Adapter-Boundary.md` |
 | ADR | `ADR-026-MSP-EXTERNAL-RUNTIME-DEPLOYMENT` | `0.1.2+draft` | proposed | Boss (CEO) | `docs/adr/ADR-026-MSP-External-Runtime-Deployment.md` |
 | Architecture | `BLUEPRINT-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.1` | approved | ARCHON / ATHER | `docs/architecture/BLUEPRINT-Task-Scoped-Context-Injection.md` |
@@ -233,6 +233,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.66+draft | 2026-08-19 | Claude Sonnet 5 | Owner-decision row, by owner authority (Boss, CR-2026-08-19 §6 D-01 recorded decision): `ADR-024-PROVIDER-ENTITLEMENT-EXECUTION-AUTHORITY-BOUNDARY` `0.1.1+draft` draft → `0.2.0` accepted, scoped to §2.5 two-phase routing as executed by TASK-PRD-035's phase-1 dispatch gate (API-008 remains draft; entitlement/compatibility arbitration across external providers, the credential boundary, and the D-03 deferred modules explicitly out of scope per the ADR's new §7). This row DOES change ADR-024 to accepted, on owner authority (CR-2026-08-19 §6 D-01), not a self-applied ratification. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.13 (reconciled onto origin/main's Batch 3+4 merge base, 0.3.12 -> 0.3.13: TASK-PRD-035 D-01 phase-1 dispatch-gate integration and TASK-PRD-036 D-04 replay-provider pinned test executed to review; PHASE-PRD-07/SPR-PRD-07 progress 70 → 85, kept alongside main's independent PHASE-PRD-02/SPR-PRD-02 and PHASE-PRD-03/SPR-PRD-03 bumps recorded in the 0.3.65+draft row below) and TODO-EXECUTION-BINDING-LIFECYCLE to 0.1.2+draft (recorded the TASK-PRD-035 review-gate MINOR — provider-adapter-host.mjs's rejectCanonicalIdentities fail-closed against the launcher's opaque stdout/stderr — as a deferred phase-2 follow-up, not fixed in this batch). |
 | 0.3.65+draft | 2026-08-19 | Claude Sonnet 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.12 (reconciled onto the Batch 3 merge base, 0.3.11 -> 0.3.12): TASK-PRD-020 (AUD-07, the sole live-data-rule violation — fabricated D1 Reactor Run Trigger telemetry/benchmark/lifecycle removed and replaced with honest empty-state + real reactor.run acknowledgement) and TASK-PRD-021 (AUD-24 — dedicated "unauthorized" connection state, EventProvenance/lastIngest marker on every ingestion path, shared useConnectionStatus hook consumed by EmptyState and StatusBar) executed to review in one batch (VIBE executor). PHASE-PRD-03/SPR-PRD-03 progress 20 → 40. No document status changed by this row. |
 | 0.3.64+draft | 2026-08-19 | Claude Sonnet 5 | Registered `MISSION-PROTOCOL-V2` (draft, 0.1.0+draft, owner ATHER, `docs/api/MISSION-PROTOCOL-v2.md`) under §3 Product and Platform — the doc AUD-34/TASK-PRD-034 replaced the unregistered `docs/api/MISSION-PROTOCOL-v1.md` (removed) with. Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.11 (TASK-PRD-018, TASK-PRD-019, TASK-PRD-034 executed to review in one owner-directed batch) and `BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT` to 0.1.2 (reference-path-only update from the retired v1 filename to v2). This row DOES add one new registered document (MISSION-PROTOCOL-V2, entering as draft); no existing document's status changed. |
 | 0.3.63+draft | 2026-08-19 | Claude Fable 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.10 and SPEC-WORKSPACE-SYSTEM to 0.3.1: TASK-PRD-026 (AUD-04 sidecar RBAC bypass), TASK-PRD-027 (AUD-05 ungoverned docs.resolve/ingest.code file access), TASK-PRD-028 (AUD-10 credential exposures — child env, WS token, log redaction; PM connector vault-wiring recorded as an interim acceptance expiring 2026-11-19), and TASK-PRD-029 (AUD-08 unverified approvalRef) executed to review in one owner-directed batch (Boss instruction, VIBE/ARCHON executors per each Task Container's pic). PHASE-PRD-08/SPR-PRD-08 progress 0 → 70. No document status changed by this row. |
