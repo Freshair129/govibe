@@ -258,3 +258,60 @@ export function isCommandResponse(value) {
     && (value.message === undefined || typeof value.message === "string")
     && (value.snapshot === undefined || isRecord(value.snapshot));
 }
+
+// TASK-PRD-033 (AUD-18): commandId was echoed but never deduplicated, so a client retry or a
+// WS reconnect replay could double-apply a mutating command (e.g. workflow.node.action). This
+// is the single shared classification both sides of the wire read: the frontend gateway
+// (src/mission/gateway.ts) uses it to decide which commands are safe to retry blindly with the
+// same commandId, and the sidecar (scripts/mcp/sidecar-server.mjs) uses its complement to decide
+// which commands get server-side dedup. Keeping one Set in the shared protocol module — instead
+// of two hand-maintained lists — is what "reconciled" means here.
+//
+// Read-shaped commands: no state mutation, redoing the operation is harmless, so the gateway
+// deliberately retries these with the SAME commandId on an ack timeout. Because of that, the
+// server must never dedup them — a dedup hit would return a stale/failed cached ack instead of
+// actually retrying, breaking the gateway's existing reliability retry for exactly these three.
+export const IDEMPOTENT_RETRY_COMMAND_TYPES = new Set(["agent.select", "roadmap.select", "masterplan.preview"]);
+
+// Everything else is "mutating" for dedup purposes: the server must apply it at most once per
+// commandId, however many times that commandId is delivered, on either transport. Fails closed
+// for anything not explicitly listed as retry-safe — including a malformed/empty type, which
+// should never reach here in practice (the caller validates with isMissionCommand first), but a
+// caller-error default of "treat it as unsafe to blindly re-run" is the honest one.
+export function isMutatingMissionCommandType(type) {
+  return !IDEMPOTENT_RETRY_COMMAND_TYPES.has(type);
+}
+
+// Bounded LRU of commandId -> the exact response first returned for it. A duplicate delivery of
+// a mutating command (same commandId, either transport) replays this cached response instead of
+// re-invoking runtime.handleMissionCommand. `maxEntries` bounds memory over a long-lived process;
+// least-recently-used entries are evicted first.
+export function createCommandDedupWindow({ maxEntries = 500 } = {}) {
+  if (!Number.isInteger(maxEntries) || maxEntries <= 0) {
+    throw new TypeError("createCommandDedupWindow requires a positive integer maxEntries.");
+  }
+  const cache = new Map();
+  return {
+    has(commandId) {
+      return cache.has(commandId);
+    },
+    get(commandId) {
+      if (!cache.has(commandId)) return undefined;
+      const value = cache.get(commandId);
+      cache.delete(commandId);
+      cache.set(commandId, value); // bump recency
+      return value;
+    },
+    set(commandId, value) {
+      cache.delete(commandId);
+      cache.set(commandId, value);
+      while (cache.size > maxEntries) {
+        const oldestKey = cache.keys().next().value;
+        cache.delete(oldestKey);
+      }
+    },
+    get size() {
+      return cache.size;
+    },
+  };
+}

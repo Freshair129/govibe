@@ -113,6 +113,28 @@ export async function runStep(step, deps = {}) {
       evidence.push({ kind: "check", ref: check.name, ok: check.ok, detail: tail(check.output, 400) });
     }
 
+    // TASK-PRD-030 (AUD-06): a vacuous DoD (zero declared checks, no explicit
+    // allowEmptyDefinitionOfDone override) can never be marked done on executor
+    // exit-code alone — no amount of retrying an empty checklist fixes that, so
+    // this fails closed immediately instead of burning the remaining attempts.
+    if (selfCheck.verdict === "vacuous") {
+      const afterFiles = gitStatus ? await gitStatus() : [];
+      const artifactRefs = diffFiles(beforeFiles, afterFiles);
+      if (applyMutation) {
+        await applyMutation({ mutationType: "verification", nodeId: step.taskId, payload: { qaStatus: "failed" } });
+        await applyMutation({ mutationType: "node.update", nodeId: step.taskId, payload: { state: "blocked" } });
+      }
+      const humanGate = {
+        required: true,
+        reason: `Definition-of-Done declared zero checks (vacuous). Refusing to mark ${step.taskId} done on executor exit-code alone. Pass definitionOfDone.allowEmptyDefinitionOfDone: true to explicitly accept an unverified DoD.`,
+      };
+      const result = finalize("blocked", { step, attempts, artifactRefs, evidence, selfCheck, humanGate, createTemporal, now });
+      appendTerminal?.("warn", `StEP ${step.stepId} (${step.taskId}) blocked: vacuous Definition-of-Done, not marking done.`);
+      logEvent?.("orchestrate_step", { step, result });
+      emit?.({ type: "step.gate", stepId: step.stepId, taskId: step.taskId, status: "blocked", humanGate });
+      return result;
+    }
+
     if (selfCheck.verdict === "pass") {
       const afterFiles = gitStatus ? await gitStatus() : [];
       const artifactRefs = diffFiles(beforeFiles, afterFiles);
@@ -121,9 +143,25 @@ export async function runStep(step, deps = {}) {
         await applyMutation({ mutationType: "node.update", nodeId: step.taskId, payload: { state: "done", progress: 100 } });
       }
       const result = finalize("done", { step, attempts, artifactRefs, evidence, selfCheck, createTemporal, now });
+      // Review-gate finding 030-D: a "pass" verdict on an empty DoD only ever happens via the
+      // explicit allowEmptyDefinitionOfDone override (see verify-gate.mjs) — but at the "agent"
+      // terminal line and the plain step.gate event, that pass reads identical to a pass earned
+      // by real checks. Make the override visible at both governance surfaces: an extra `warn`
+      // terminal line naming it, and a marker field on the emitted event so a listener that only
+      // watches step.gate (not the full result/selfCheck) can still tell the two apart.
+      const usedEmptyDefinitionOfDoneOverride = selfCheck.empty === true && selfCheck.allowEmptyDefinitionOfDone === true;
       appendTerminal?.("agent", `StEP ${step.stepId} (${step.taskId}) passed DoD on attempt ${attempt}.`);
+      if (usedEmptyDefinitionOfDoneOverride) {
+        appendTerminal?.("warn", `StEP ${step.stepId} (${step.taskId}) passed via explicit allowEmptyDefinitionOfDone override — no checks were actually run.`);
+      }
       logEvent?.("orchestrate_step", { step, result });
-      emit?.({ type: "step.gate", stepId: step.stepId, taskId: step.taskId, status: "done" });
+      emit?.({
+        type: "step.gate",
+        stepId: step.stepId,
+        taskId: step.taskId,
+        status: "done",
+        ...(usedEmptyDefinitionOfDoneOverride ? { emptyDefinitionOfDoneOverride: true } : {}),
+      });
       return result;
     }
 

@@ -4,6 +4,7 @@ import test from "node:test";
 import { WebSocket } from "ws";
 
 import { startSidecarServer } from "./sidecar-server.mjs";
+import { createCommandDedupWindow } from "../../packages/mission-protocol/index.js";
 
 const trustedOrigin = "http://localhost:1420";
 const token = "test-token-123";
@@ -30,13 +31,40 @@ function createRuntime(handledCommands = []) {
   };
 }
 
-async function startTestServer({ handledCommands = [], maxBodyBytes = 1024 } = {}) {
-  const instance = startSidecarServer(createRuntime(handledCommands), {
+// 033-A: a runtime whose snapshot visibly changes on every call, so a stale cached snapshot
+// (vs. a freshly-fetched one) is observably distinguishable in a replayed acknowledgement.
+function createRuntimeWithLiveSnapshot(handledCommands = []) {
+  const listeners = new Set();
+  let snapshotVersion = 0;
+  return {
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    getSnapshot() {
+      snapshotVersion += 1;
+      return { connectionState: "connected", terminal: [], snapshotVersion };
+    },
+    async listRoadmapSources() {
+      return [];
+    },
+    async reloadRoadmap() {},
+    async handleMissionCommand(command) {
+      handledCommands.push(command);
+      return { accepted: command.type };
+    },
+    appendTerminal() {},
+  };
+}
+
+async function startTestServer({ handledCommands = [], maxBodyBytes = 1024, runtime, commandDedup } = {}) {
+  const instance = startSidecarServer(runtime ?? createRuntime(handledCommands), {
     host: "127.0.0.1",
     port: 0,
     authToken: token,
     allowedOrigins: [trustedOrigin],
     maxBodyBytes,
+    ...(commandDedup ? { commandDedup } : {}),
   });
   await once(instance.server, "listening");
   const address = instance.server.address();
@@ -316,6 +344,200 @@ test("rejects invalid WebSocket commands before runtime execution", async () => 
     assert.deepEqual(handledCommands, []);
   } finally {
     await closeSocket(socket);
+    await stopTestServer(instance);
+  }
+});
+
+// TASK-PRD-033 (AUD-18): commandId was echoed but never deduplicated, so a client retry or a
+// WS reconnect replay could double-apply a mutating command. workflow.node.action stands in for
+// "a command that mutates the roadmap" here — it is the only MissionCommand type that reaches
+// RoadmapService#applyRoadmapMutation over this transport (a bare "roadmap.update" is not a
+// MissionCommand; the roadmap board mutates via this action, not a separate command type).
+
+async function postCommand(instance, body) {
+  const response = await fetch(`${instance.baseUrl}/mission/commands`, {
+    method: "POST",
+    headers: { Origin: trustedOrigin, Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return { status: response.status, body: await response.json() };
+}
+
+function sendWsCommand(socket, body) {
+  const acknowledgement = once(socket, "message");
+  socket.send(JSON.stringify(body));
+  return acknowledgement.then(([message]) => JSON.parse(message.toString("utf8")));
+}
+
+// Mirrors the ordering the other WebSocket tests in this file rely on: the "message"
+// listener for the initial snapshot MUST be attached before awaiting "open" — the server
+// sends the snapshot as soon as its own "connection" handler runs, which can race an
+// out-of-order `await once(socket, "open")` followed by a separately-attached listener.
+async function connectAndAwaitSnapshot(wsUrl) {
+  const socket = new WebSocket(`${wsUrl}?token=${encodeURIComponent(token)}`, { origin: trustedOrigin });
+  const snapshot = once(socket, "message");
+  await once(socket, "open");
+  await snapshot;
+  return socket;
+}
+
+test("HTTP: applies a mutating command once and replays the original acknowledgement for a duplicate commandId", async () => {
+  const handledCommands = [];
+  const instance = await startTestServer({ handledCommands });
+  try {
+    const command = { commandId: "dup-1", type: "workflow.node.action", taskId: "T1", action: "approve", actor: "tester" };
+    const first = await postCommand(instance, command);
+    const second = await postCommand(instance, command);
+    assert.equal(first.status, 200);
+    assert.equal(second.status, 200);
+    assert.equal(handledCommands.length, 1, "the mutating command must apply exactly once");
+    assert.deepEqual(second.body, first.body, "the duplicate must return the original acknowledgement");
+  } finally {
+    await stopTestServer(instance);
+  }
+});
+
+test("WebSocket: applies a mutating command once and replays the original acknowledgement for a duplicate commandId", async () => {
+  const handledCommands = [];
+  const instance = await startTestServer({ handledCommands });
+  const socket = await connectAndAwaitSnapshot(instance.wsUrl);
+  try {
+    const command = { commandId: "dup-ws-1", type: "workflow.node.action", taskId: "T1", action: "approve", actor: "tester" };
+    const first = await sendWsCommand(socket, command);
+    const second = await sendWsCommand(socket, command);
+    assert.equal(handledCommands.length, 1, "the mutating command must apply exactly once");
+    assert.equal(first.ok, true);
+    assert.deepEqual(second, first, "the duplicate must return the original acknowledgement");
+  } finally {
+    await closeSocket(socket);
+    await stopTestServer(instance);
+  }
+});
+
+test("cross-transport: a mutating command applied over HTTP is not re-applied when replayed over WebSocket with the same commandId", async () => {
+  const handledCommands = [];
+  const instance = await startTestServer({ handledCommands });
+  const socket = await connectAndAwaitSnapshot(instance.wsUrl);
+  try {
+    const command = { commandId: "dup-cross-1", type: "workflow.node.action", taskId: "T1", action: "approve", actor: "tester" };
+    const httpResult = await postCommand(instance, command);
+    assert.equal(httpResult.status, 200);
+    const wsReplay = await sendWsCommand(socket, command);
+    assert.equal(handledCommands.length, 1, "the shared dedup window must span both transports");
+    assert.equal(wsReplay.ok, true);
+    assert.equal(wsReplay.commandId, "dup-cross-1");
+  } finally {
+    await closeSocket(socket);
+    await stopTestServer(instance);
+  }
+});
+
+test("does not deduplicate a read-shaped idempotent-retry command — each delivery actually re-executes", async () => {
+  const handledCommands = [];
+  const instance = await startTestServer({ handledCommands });
+  try {
+    const command = { commandId: "retry-1", type: "agent.select", agentId: "agent-1" };
+    const first = await postCommand(instance, command);
+    const second = await postCommand(instance, command);
+    assert.equal(first.status, 200);
+    assert.equal(second.status, 200);
+    assert.equal(handledCommands.length, 2, "agent.select is retry-safe and must not be cached by the dedup window");
+  } finally {
+    await stopTestServer(instance);
+  }
+});
+
+test("a failed mutating command is cached too — a duplicate does not retry it against the runtime", async () => {
+  const handledCommands = [];
+  const instance = startSidecarServer({
+    subscribe: () => () => {},
+    getSnapshot: () => ({ connectionState: "connected", terminal: [] }),
+    async listRoadmapSources() { return []; },
+    async reloadRoadmap() {},
+    async handleMissionCommand(command) {
+      handledCommands.push(command);
+      throw new Error("simulated runtime failure");
+    },
+    appendTerminal() {},
+  }, { host: "127.0.0.1", port: 0, authToken: token, allowedOrigins: [trustedOrigin], maxBodyBytes: 1024 });
+  await once(instance.server, "listening");
+  const address = instance.server.address();
+  const wrapped = { ...instance, baseUrl: `http://127.0.0.1:${address.port}` };
+  try {
+    const command = { commandId: "dup-fail-1", type: "workflow.node.action", taskId: "T1", action: "approve", actor: "tester" };
+    const first = await postCommand(wrapped, command);
+    const second = await postCommand(wrapped, command);
+    assert.equal(first.status, 500);
+    assert.equal(second.status, 500);
+    assert.equal(handledCommands.length, 1);
+    assert.deepEqual(second.body, first.body);
+  } finally {
+    await stopTestServer(wrapped);
+  }
+});
+
+test("033-A: a duplicate delivery's acknowledgement carries a FRESH snapshot, never the one cached at first execution", async () => {
+  const handledCommands = [];
+  const instance = await startTestServer({ handledCommands, runtime: createRuntimeWithLiveSnapshot(handledCommands) });
+  try {
+    const command = { commandId: "snap-1", type: "workflow.node.action", taskId: "T1", action: "approve", actor: "tester" };
+    const first = await postCommand(instance, command);
+    const second = await postCommand(instance, command);
+    assert.equal(handledCommands.length, 1, "still applied exactly once");
+    assert.equal(first.status, 200);
+    assert.equal(second.status, 200);
+    assert.ok(
+      second.body.snapshot.snapshotVersion > first.body.snapshot.snapshotVersion,
+      `replay must fetch a fresh snapshot (got ${second.body.snapshot.snapshotVersion}, expected > ${first.body.snapshot.snapshotVersion})`,
+    );
+  } finally {
+    await stopTestServer(instance);
+  }
+});
+
+test("033-B: a server-minted commandId (client sent none) is never cached — it can never be replayed with the same id anyway", async () => {
+  const handledCommands = [];
+  const setCalls = [];
+  const realWindow = createCommandDedupWindow();
+  const spyWindow = {
+    has: (key) => realWindow.has(key),
+    get: (key) => realWindow.get(key),
+    set: (key, value) => {
+      setCalls.push(key);
+      realWindow.set(key, value);
+    },
+    get size() {
+      return realWindow.size;
+    },
+  };
+  const instance = await startTestServer({ handledCommands, commandDedup: spyWindow });
+  try {
+    const response = await fetch(`${instance.baseUrl}/mission/commands`, {
+      method: "POST",
+      headers: { Origin: trustedOrigin, Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "workflow.node.action", taskId: "T1", action: "approve", actor: "tester" }), // no commandId
+    });
+    assert.equal(response.status, 200);
+    assert.equal(handledCommands.length, 1);
+    assert.equal(setCalls.length, 0, "a minted commandId must never be written into the dedup window");
+  } finally {
+    await stopTestServer(instance);
+  }
+});
+
+test("033-C: two different command types sharing the same client-supplied commandId do not share a cached acknowledgement", async () => {
+  const handledCommands = [];
+  const instance = await startTestServer({ handledCommands });
+  try {
+    const sharedId = "shared-commandid-across-types";
+    const first = await postCommand(instance, { commandId: sharedId, type: "workflow.node.action", taskId: "T1", action: "approve", actor: "tester" });
+    const second = await postCommand(instance, { commandId: sharedId, type: "workspace.scan", workspacePath: "C:/repo", deep: false });
+    assert.equal(first.status, 200);
+    assert.equal(second.status, 200);
+    assert.equal(handledCommands.length, 2, "different command types sharing a commandId must both execute, not share one cached ack");
+    assert.equal(first.body.result.accepted, "workflow.node.action");
+    assert.equal(second.body.result.accepted, "workspace.scan"); // not workflow.node.action's cached result
+  } finally {
     await stopTestServer(instance);
   }
 });

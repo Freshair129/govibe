@@ -23,6 +23,10 @@ Thumbs.db
 .govibe/skill-lock.json
 .govibe/runs/
 .govibe/msp/
+# TASK-PRD-031 (AUD-11): durable roadmap overlay mutation journal (runtime-generated).
+.govibe/roadmap-overlay.jsonl
+# RBAC decision audit trail (runtime-generated; see scripts/mcp/runtime/rbac-enforcement.mjs).
+.govibe/rbac-audit.jsonl
 .agents/*/session_logs/
 
 # GoVibe inbound governance

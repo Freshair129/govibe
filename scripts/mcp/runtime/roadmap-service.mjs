@@ -376,6 +376,39 @@ export class RoadmapService {
 
     let event;
     if (mutationType === "node.update") {
+      // TASK-PRD-030 (AUD-06): a node.update that sets state:"done" used to apply
+      // unconditionally. Fail closed — refuse the transition unless a passing
+      // verification (qaStatus: "passed") is already on record for this task, and
+      // audit the refusal (terminal + auditLog) instead of applying it silently.
+      //
+      // Review-gate finding 030-A: this guard MUST be evaluated at real present time, with
+      // fixed options ({}) — never with the caller-supplied `temporalOptions`
+      // (asOfValidAt/asOfRecordedAt are public govibe.roadmap.update tool inputs, see
+      // registry.mjs). `temporalOptions` exists to let a caller ask "what did the roadmap
+      // look like as of some past moment" for READS (reloadRoadmap/history); reusing it for
+      // this WRITE-time precondition let a caller present `asOfRecordedAt` from before a
+      // later superseding failed verification and get state:"done" applied at the CURRENT,
+      // present-time roadmap despite that current state being unverified. The write always
+      // evaluates against what is actually true right now, regardless of what view of history
+      // the caller asked to see.
+      if (args.payload?.state === "done") {
+        const verificationHistory = this.temporalOverlayStore.getHistory("verifications", args.nodeId);
+        const [activeVerification] = latestTemporalByKey(verificationHistory, (item) => item.taskId, {});
+        if (activeVerification?.qaStatus !== "passed") {
+          const reason = `node.update refused: task "${args.nodeId}" cannot transition to state "done" without a recorded passing verification (qaStatus: "passed"); found ${activeVerification?.qaStatus ? `"${activeVerification.qaStatus}"` : "none"}.`;
+          const auditEntry = {
+            id: crypto.randomUUID(),
+            actor: args.actor ?? "unknown",
+            taskId: args.nodeId,
+            action: "node.update.refused",
+            at: new Date().toISOString(),
+            reason,
+          };
+          this.snapshotStore.patch({ auditLog: [...(this.snapshot.auditLog ?? []), auditEntry].slice(-200) });
+          this.appendTerminal("warn", reason);
+          throw new Error(reason);
+        }
+      }
       const history = this.temporalOverlayStore.getHistory("nodes", args.nodeId);
       const now = new Date().toISOString();
       const nextNode = {
@@ -440,12 +473,21 @@ export class RoadmapService {
       event = { type: "roadmap.handoff", handoff };
     } else if (mutationType === "verification") {
       const history = this.temporalOverlayStore.getHistory("verifications", args.nodeId);
+      // Review-gate finding 030-B: a verification mutation used to build the record from
+      // scratch, so a caller supplying only one field (e.g. Mission Canvas's "approve"
+      // action — workflow-node-action-service.mjs, payload {auditStatus:"passed"} only)
+      // silently erased every other previously recorded field, including a passed
+      // qaStatus — destroying QA evidence and then blocking a legitimate done transition
+      // on the node.update guard above. Merge on top of the current present-time
+      // verification ({} — write-time, not the caller's asOf view; same reasoning as the
+      // guard above) so a field the caller didn't mention keeps its prior value.
+      const [priorVerification] = latestTemporalByKey(history, (item) => item.taskId, {});
       const now = new Date().toISOString();
       const verification = {
         taskId: args.nodeId,
-        qaStatus: args.payload?.qaStatus,
-        auditStatus: args.payload?.auditStatus,
-        deploymentStatus: args.payload?.deploymentStatus,
+        qaStatus: args.payload?.qaStatus ?? priorVerification?.qaStatus,
+        auditStatus: args.payload?.auditStatus ?? priorVerification?.auditStatus,
+        deploymentStatus: args.payload?.deploymentStatus ?? priorVerification?.deploymentStatus,
         lastUpdatedAt: args.payload?.lastUpdatedAt ?? now,
         ...createTemporalVersion({
           version: args.payload?.version ?? nextVersion(history),
@@ -461,6 +503,12 @@ export class RoadmapService {
     } else {
       throw new Error(`Unsupported roadmap mutation type: ${mutationType}`);
     }
+
+    // TASK-PRD-031 (AUD-11): do not acknowledge the mutation until the durable journal
+    // append (if configured) has actually landed — otherwise a crash between "in-memory
+    // applied" and "written to disk" would silently lose a mutation the caller was told
+    // succeeded. No-op when the overlay store has no journalPath.
+    await this.temporalOverlayStore.flush();
 
     this.applyMissionEvent(event);
     this.emit(event);

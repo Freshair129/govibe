@@ -1,9 +1,18 @@
 import { spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { unlink } from "node:fs/promises";
+import { mkdtemp, rm, unlink } from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 
 import { GovibeRuntime } from "./runtime-core.mjs";
 import { toolCatalog } from "./registry.mjs";
+
+// TASK-PRD-031 (AUD-11): the spawned server now persists roadmap overlay mutations to a
+// durable journal by default. Point the smoke run's journal at a throwaway temp directory so
+// repeated `npm run mcp:smoke` runs never leak synthetic smoke-test task mutations into a
+// developer's real .govibe/roadmap-overlay.jsonl.
+const smokeOverlayJournalDir = await mkdtemp(path.join(os.tmpdir(), "govibe-smoke-overlay-"));
+const smokeOverlayJournalPath = path.join(smokeOverlayJournalDir, "roadmap-overlay.jsonl");
 
 const requiredTools = [
   "govibe.plan.create",
@@ -43,6 +52,7 @@ function createMcpClient() {
       ...process.env,
       GOVIBE_MCP_PORT: "0",
       GOVIBE_MCP_TOKEN: randomBytes(32).toString("hex"),
+      GOVIBE_ROADMAP_OVERLAY_JOURNAL: smokeOverlayJournalPath,
     },
     stdio: ["pipe", "pipe", "pipe"],
   });
@@ -357,13 +367,33 @@ async function main() {
         mode: "doc",
         scope: "docs/features/integration-bridge",
         task: "Smoke-test StEP prompt build only; do not execute an external agent.",
-        definitionOfDone: { checks: [] },
+        // TASK-PRD-030 (AUD-06): an empty checks array no longer verdicts "pass"
+        // silently — allowEmptyDefinitionOfDone must be explicit. This smoke run
+        // has no real checks to declare, so it opts in deliberately.
+        definitionOfDone: { checks: [], allowEmptyDefinitionOfDone: true },
         maxAttempts: 1,
       },
     });
     assert(stepRun.structuredContent?.capability === "govibe.orchestrate.step", "orchestrate.step did not return structured StEP metadata.");
-    assert(stepRun.structuredContent?.result?.status === "done", "orchestrate.step did not reach done on a prompt-build run with an empty Definition-of-Done.");
-    assert(stepRun.structuredContent?.result?.selfCheck?.verdict === "pass", "orchestrate.step self-check did not pass for an empty Definition-of-Done.");
+    assert(stepRun.structuredContent?.result?.status === "done", "orchestrate.step did not reach done on a prompt-build run with an explicit allowEmptyDefinitionOfDone override.");
+    assert(stepRun.structuredContent?.result?.selfCheck?.verdict === "pass", "orchestrate.step self-check did not pass for an explicit allowEmptyDefinitionOfDone override.");
+
+    const vacuousStepRun = await client.request("tools/call", {
+      name: "govibe.orchestrate.step",
+      arguments: {
+        actor: "smoke-test",
+        taskId: "SMOKE-STEP-TASK-VACUOUS",
+        agentId: "theseus",
+        mode: "doc",
+        scope: "docs/features/integration-bridge",
+        task: "Smoke-test StEP vacuous-DoD refusal; do not execute an external agent.",
+        definitionOfDone: { checks: [] },
+        maxAttempts: 1,
+      },
+    });
+    assert(vacuousStepRun.structuredContent?.result?.status === "blocked", "orchestrate.step marked a vacuous Definition-of-Done done instead of refusing it (AUD-06 regression).");
+    assert(vacuousStepRun.structuredContent?.result?.selfCheck?.verdict === "vacuous", "orchestrate.step self-check did not report the vacuous verdict for a zero-check DoD.");
+    assert(/vacuous/i.test(vacuousStepRun.structuredContent?.result?.humanGate?.reason ?? ""), "orchestrate.step did not report the vacuous DoD in the human gate reason.");
 
     console.log("PASS: GoVibe MCP smoke test");
     console.log(`tools: ${requiredTools.length}`);
@@ -374,6 +404,7 @@ async function main() {
     await unlink(smokeExportPath).catch((error) => {
       if (error?.code !== "ENOENT") throw error;
     });
+    await rm(smokeOverlayJournalDir, { recursive: true, force: true });
   }
 }
 

@@ -3,10 +3,12 @@ import { timingSafeEqual } from "node:crypto";
 import { WebSocketServer } from "ws";
 import {
   boundedProtocolMessage,
+  createCommandDedupWindow,
   createCommandResponse,
   isFileSaveMetadata,
   isMissionCommand,
   isMissionEvent,
+  isMutatingMissionCommandType,
   MISSION_PROTOCOL_LIMITS,
 } from "../../packages/mission-protocol/index.js";
 
@@ -102,6 +104,23 @@ function commandIdFrom(body) {
     : crypto.randomUUID();
 }
 
+// Review-gate finding 033-B: a commandId this function had to MINT (the client sent none)
+// can, by construction, never be delivered twice by a retrying/reconnecting client — the
+// client never had that id to resend. Caching it would only ever waste one LRU slot per
+// unlabelled command, for no dedup benefit; a bursty client omitting commandId could evict
+// genuinely-dedupable entries. Only a commandId the client actually supplied is eligible.
+function isClientSuppliedCommandId(body) {
+  return typeof body?.commandId === "string" && body.commandId.length > 0;
+}
+
+// Review-gate finding 033-C: keying the dedup window on commandId alone let two different
+// command TYPES that happened to share a commandId (e.g. a client bug, or two independent
+// callers minting from the same pool) hand each other's cached acknowledgement to the wrong
+// command. The command's own type is part of the identity of "this exact mutation, once".
+function dedupKeyFor(command, commandId) {
+  return `${command.type}:${commandId}`;
+}
+
 function commandPayload(body) {
   if (!body || typeof body !== "object") return body;
   const { commandId: _commandId, ...command } = body;
@@ -119,6 +138,13 @@ export function startSidecarServer(runtime, options = {}) {
   if (!Number.isSafeInteger(maxBodyBytes) || maxBodyBytes <= 0) {
     throw new Error("GOVIBE_MCP_MAX_BODY_BYTES must be a positive integer.");
   }
+
+  // TASK-PRD-033 (AUD-18): one dedup window shared by BOTH transports (HTTP and WS) below, so a
+  // mutating commandId delivered twice — whether the duplicate arrives over the same transport
+  // or the other one (e.g. an HTTP timeout followed by a WS reconnect replay) — applies at most
+  // once. Read-shaped commands (IDEMPOTENT_RETRY_COMMAND_TYPES) are never cached here: the
+  // gateway deliberately retries those with the same commandId expecting a fresh execution.
+  const commandDedup = options.commandDedup ?? createCommandDedupWindow();
 
   const server = http.createServer(async (request, response) => {
     const origin = request.headers.origin;
@@ -187,6 +213,7 @@ export function startSidecarServer(runtime, options = {}) {
       if (request.method === "POST" && url.pathname === "/mission/commands") {
         const body = await readJsonBody(request, maxBodyBytes);
         const commandId = commandIdFrom(body);
+        const clientSuppliedCommandId = isClientSuppliedCommandId(body);
         const command = commandPayload(body);
         if (!isMissionCommand(command) || command.type === "file.save") {
           sendJson(response, 400, createCommandResponse({
@@ -196,20 +223,35 @@ export function startSidecarServer(runtime, options = {}) {
           }), origin, allowedOrigins);
           return;
         }
+        // TASK-PRD-033 (AUD-18): a duplicate delivery of a mutating command (client retry or
+        // reconnect replay carrying the same commandId) returns the original acknowledgement
+        // instead of re-executing runtime.handleMissionCommand. The cached outcome shape
+        // ({ok, message?, result?}) is transport-agnostic, so a command executed on one
+        // transport and replayed on the other still renders a correctly-shaped response.
+        // Review-gate finding 033-A: the cache never stores `snapshot` — a replay attaches a
+        // FRESH runtime.getSnapshot() so the client's view is never rolled back to whatever
+        // state existed at the moment of the original execution.
+        const dedupEligible = isMutatingMissionCommandType(command.type);
+        const dedupKey = dedupKeyFor(command, commandId);
+        if (dedupEligible && commandDedup.has(dedupKey)) {
+          const cached = commandDedup.get(dedupKey);
+          sendJson(response, cached.ok ? 200 : 500, createCommandResponse({
+            commandId,
+            ok: cached.ok,
+            ...(cached.ok ? { result: cached.result, snapshot: runtime.getSnapshot() } : { message: cached.message }),
+          }), origin, allowedOrigins);
+          return;
+        }
         try {
           const result = await runtime.handleMissionCommand(command);
-          sendJson(response, 200, createCommandResponse({
-            commandId,
-            ok: true,
-            result,
-            snapshot: runtime.getSnapshot(),
-          }), origin, allowedOrigins);
+          // 033-B: only a client-supplied commandId is ever cached — a minted one can never
+          // be replayed with the same id, so caching it would only waste an LRU slot.
+          if (dedupEligible && clientSuppliedCommandId) commandDedup.set(dedupKey, { ok: true, result });
+          sendJson(response, 200, createCommandResponse({ commandId, ok: true, result, snapshot: runtime.getSnapshot() }), origin, allowedOrigins);
         } catch (error) {
-          sendJson(response, 500, createCommandResponse({
-            commandId,
-            ok: false,
-            message: boundedProtocolMessage(error),
-          }), origin, allowedOrigins);
+          const message = boundedProtocolMessage(error);
+          if (dedupEligible && clientSuppliedCommandId) commandDedup.set(dedupKey, { ok: false, message });
+          sendJson(response, 500, createCommandResponse({ commandId, ok: false, message }), origin, allowedOrigins);
         }
         return;
       }
@@ -299,6 +341,7 @@ export function startSidecarServer(runtime, options = {}) {
       }
 
       const commandId = commandIdFrom(body);
+      const clientSuppliedCommandId = isClientSuppliedCommandId(body);
       const command = commandPayload(body);
       if (!isMissionCommand(command) || command.type === "file.save") {
         socket.send(JSON.stringify({
@@ -310,8 +353,27 @@ export function startSidecarServer(runtime, options = {}) {
         return;
       }
 
+      // TASK-PRD-033 (AUD-18): shares the same dedup window as the HTTP handler above (same
+      // transport-agnostic cached outcome shape, keyed by dedupKeyFor — 033-C), so a mutating
+      // commandId already applied via one transport is not re-applied via the other. 033-A: no
+      // `snapshot` is cached — a replay always attaches a fresh runtime.getSnapshot().
+      const dedupEligible = isMutatingMissionCommandType(command.type);
+      const dedupKey = dedupKeyFor(command, commandId);
+      if (dedupEligible && commandDedup.has(dedupKey)) {
+        const cached = commandDedup.get(dedupKey);
+        socket.send(JSON.stringify({
+          type: "command.ack",
+          commandId,
+          ok: cached.ok,
+          ...(cached.ok ? { snapshot: runtime.getSnapshot() } : { message: cached.message }),
+        }));
+        return;
+      }
+
       try {
-        await runtime.handleMissionCommand(command);
+        const result = await runtime.handleMissionCommand(command);
+        // 033-B: only cache a client-supplied commandId — a minted one is never replayable.
+        if (dedupEligible && clientSuppliedCommandId) commandDedup.set(dedupKey, { ok: true, result });
         socket.send(JSON.stringify({
           type: "command.ack",
           commandId,
@@ -321,6 +383,7 @@ export function startSidecarServer(runtime, options = {}) {
       } catch (error) {
         const messageText = boundedProtocolMessage(error);
         runtime.appendTerminal("warn", `Mission command failed: ${messageText}`);
+        if (dedupEligible && clientSuppliedCommandId) commandDedup.set(dedupKey, { ok: false, message: messageText });
         socket.send(JSON.stringify({
           type: "command.ack",
           commandId,

@@ -156,3 +156,15 @@ export function createCommandResponse(input: {
   result?: unknown;
 }): CommandResponse;
 export function isCommandResponse(value: unknown): value is CommandResponse;
+
+// TASK-PRD-033 (AUD-18): shared mutating/idempotent-retry classification — see the JSDoc above
+// the implementation in index.js for why this lives here instead of two separate lists.
+export const IDEMPOTENT_RETRY_COMMAND_TYPES: ReadonlySet<MissionCommand["type"]>;
+export function isMutatingMissionCommandType(type: string): boolean;
+export type CommandDedupWindow<T = unknown> = {
+  has(commandId: string): boolean;
+  get(commandId: string): T | undefined;
+  set(commandId: string, value: T): void;
+  readonly size: number;
+};
+export function createCommandDedupWindow<T = unknown>(options?: { maxEntries?: number }): CommandDedupWindow<T>;

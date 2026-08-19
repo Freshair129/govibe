@@ -42,12 +42,18 @@ export async function runCheck(name, options = {}) {
 /**
  * Evaluate a Definition-of-Done. Runs each declared check (serially — build/test mutate the repo,
  * so they must not race) and returns a pass/fail verdict from the REAL exit codes.
- * @param {{checks?: string[], requireAll?: boolean}} definitionOfDone
+ *
+ * TASK-PRD-030 (AUD-06): an empty `checks` array used to verdict "pass" unconditionally — a StEP
+ * with a vacuous DoD closed on agent exit-code alone. That is now a fail-closed "vacuous" verdict,
+ * distinct from both "pass" and "fail", unless the caller sets `allowEmptyDefinitionOfDone: true`
+ * explicitly — a deliberate, visible override rather than a silent default.
+ * @param {{checks?: string[], requireAll?: boolean, allowEmptyDefinitionOfDone?: boolean}} definitionOfDone
  * @param {{cwd?: string, maxMs?: number, runCheck?: Function}} [options]
  */
 export async function runVerifyGate(definitionOfDone = {}, options = {}) {
   const checks = Array.isArray(definitionOfDone.checks) ? definitionOfDone.checks : [];
   const requireAll = definitionOfDone.requireAll !== false; // default: every check must pass
+  const allowEmptyDefinitionOfDone = definitionOfDone.allowEmptyDefinitionOfDone === true;
   const run = options.runCheck ?? ((name) => runCheck(name, options));
 
   const results = [];
@@ -58,10 +64,12 @@ export async function runVerifyGate(definitionOfDone = {}, options = {}) {
 
   let verdict;
   if (checks.length === 0) {
-    verdict = "pass"; // nothing declared to verify — vacuous pass (orchestrator flags empty DoD)
+    // Nothing declared to verify. Fail closed: "vacuous" is not "pass" — the caller must opt in
+    // explicitly via allowEmptyDefinitionOfDone to accept an unverified DoD as satisfied.
+    verdict = allowEmptyDefinitionOfDone ? "pass" : "vacuous";
   } else {
     verdict = (requireAll ? results.every((r) => r.ok) : results.some((r) => r.ok)) ? "pass" : "fail";
   }
 
-  return { verdict, checks: results, requireAll, empty: checks.length === 0 };
+  return { verdict, checks: results, requireAll, empty: checks.length === 0, allowEmptyDefinitionOfDone };
 }
