@@ -185,6 +185,146 @@ describe("roadmap service — node.update done requires a passing verification (
   });
 });
 
+// TASK-PRD-032 (AUD-15): a node.update to state:"done" that explicitly declares a
+// non-editorial changeType must carry impact evidence (verification.impactResult) with
+// no unaddressed must_update items, or the transition is refused and audited — mirroring
+// the TASK-PRD-030 verification-precondition refusal pattern.
+describe("roadmap service — done requires impact evidence for semantic-class changes (TASK-PRD-032)", () => {
+  async function buildService() {
+    const root = process.cwd();
+    const snapshotStore = new RuntimeSnapshotStore(createRuntimeSnapshot());
+    const service = new RoadmapService({
+      snapshotStore,
+      temporalOverlayStore: new TemporalOverlayStore(),
+      allowedRoadmapReadRoots: [`${root}/docs/roadmap`],
+      allowedRoadmapWriteRoots: [`${root}/docs/roadmap`],
+    });
+    await service.reloadRoadmap();
+    return { service, snapshotStore };
+  }
+
+  it("refuses a semantic-class done with no recorded impact evidence", async () => {
+    const { service, snapshotStore } = await buildService();
+    const nodeId = "REGRESSION-node-semantic-no-impact";
+    await service.applyRoadmapMutation({
+      actor: "test",
+      nodeId,
+      mutationType: "verification",
+      payload: { qaStatus: "passed" },
+    });
+
+    await expect(
+      service.applyRoadmapMutation({
+        actor: "test",
+        nodeId,
+        mutationType: "node.update",
+        payload: { state: "done", changeType: "semantic_change" },
+      }),
+    ).rejects.toThrow(/carries no recorded govibe\.workspace\.impact evidence/i);
+
+    const node = snapshotStore.getSnapshot().roadmap?.nodes?.find((item) => item.id === nodeId);
+    expect(node).toBeUndefined();
+    const auditEntry = snapshotStore.getSnapshot().auditLog?.at(-1);
+    expect(auditEntry?.action).toBe("node.update.refused");
+    expect(auditEntry?.taskId).toBe(nodeId);
+  });
+
+  it("refuses a semantic-class done whose impact evidence has an unaddressed must_update item, listing it", async () => {
+    const { service, snapshotStore } = await buildService();
+    const nodeId = "REGRESSION-node-semantic-unaddressed";
+    await service.applyRoadmapMutation({
+      actor: "test",
+      nodeId,
+      mutationType: "verification",
+      payload: {
+        qaStatus: "passed",
+        impactResult: {
+          changeId: "change_test",
+          mustUpdate: ["docs/architecture/ARCH-Vault-and-Context-Model.md"],
+          addressed: [],
+        },
+      },
+    });
+
+    await expect(
+      service.applyRoadmapMutation({
+        actor: "test",
+        nodeId,
+        mutationType: "node.update",
+        payload: { state: "done", changeType: "authority_boundary_change" },
+      }),
+    ).rejects.toThrow(/unaddressed must_update impact item.*ARCH-Vault-and-Context-Model\.md/is);
+
+    const node = snapshotStore.getSnapshot().roadmap?.nodes?.find((item) => item.id === nodeId);
+    expect(node).toBeUndefined();
+  });
+
+  it("applies a semantic-class done once impact evidence has an empty or fully-addressed must_update set", async () => {
+    const { service, snapshotStore } = await buildService();
+    const nodeId = "REGRESSION-node-semantic-addressed";
+    await service.applyRoadmapMutation({
+      actor: "test",
+      nodeId,
+      mutationType: "verification",
+      payload: {
+        qaStatus: "passed",
+        impactResult: {
+          changeId: "change_test",
+          mustUpdate: ["docs/architecture/ARCH-Vault-and-Context-Model.md"],
+          addressed: ["docs/architecture/ARCH-Vault-and-Context-Model.md"],
+        },
+      },
+    });
+
+    await service.applyRoadmapMutation({
+      actor: "test",
+      nodeId,
+      mutationType: "node.update",
+      payload: { state: "done", progress: 100, changeType: "schema_breaking" },
+    });
+
+    const node = snapshotStore.getSnapshot().roadmap?.nodes?.find((item) => item.id === nodeId);
+    expect(node?.state).toBe("done");
+  });
+
+  it("does not gate an editorial-class (or unlabeled) done on impact evidence", async () => {
+    const { service, snapshotStore } = await buildService();
+    const nodeId = "REGRESSION-node-editorial-unblocked";
+    await service.applyRoadmapMutation({
+      actor: "test",
+      nodeId,
+      mutationType: "verification",
+      payload: { qaStatus: "passed" },
+    });
+
+    await service.applyRoadmapMutation({
+      actor: "test",
+      nodeId,
+      mutationType: "node.update",
+      payload: { state: "done", progress: 100, changeType: "editorial" },
+    });
+
+    const node = snapshotStore.getSnapshot().roadmap?.nodes?.find((item) => item.id === nodeId);
+    expect(node?.state).toBe("done");
+
+    const nodeId2 = "REGRESSION-node-unlabeled-unblocked";
+    await service.applyRoadmapMutation({
+      actor: "test",
+      nodeId: nodeId2,
+      mutationType: "verification",
+      payload: { qaStatus: "passed" },
+    });
+    await service.applyRoadmapMutation({
+      actor: "test",
+      nodeId: nodeId2,
+      mutationType: "node.update",
+      payload: { state: "done", progress: 100 },
+    });
+    const node2 = snapshotStore.getSnapshot().roadmap?.nodes?.find((item) => item.id === nodeId2);
+    expect(node2?.state).toBe("done");
+  });
+});
+
 // TASK-PRD-012 (GAP-10): a source with no authored updatedAt must not receive a
 // recency bonus. Only an authored timestamp is a real freshness signal.
 describe("scoreApprovedSources — recency scoring (TASK-PRD-012)", () => {

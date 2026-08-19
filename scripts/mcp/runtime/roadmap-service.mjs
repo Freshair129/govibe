@@ -12,6 +12,17 @@ const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)),
 const roadmapDir = path.join(workspaceRoot, "docs", "roadmap");
 const actionableRoadmapTypes = new Set(["task", "sub-task", "micro-task", "atomic-task"]);
 
+// TASK-PRD-032 (AUD-15): the same non-editorial changeType enum the impact engine uses
+// (packages/govibe-core/src/impact/impact-engine.mjs CHANGE_WEIGHTS). "editorial" is
+// intentionally excluded — an editorial change does not require impact evidence to close.
+const SEMANTIC_CHANGE_TYPES = new Set([
+  "schema_additive",
+  "schema_breaking",
+  "semantic_change",
+  "authority_boundary_change",
+  "runtime_behavior_change",
+]);
+
 const planningTypeWeights = {
   roadmap: 40,
   backlog: 30,
@@ -210,6 +221,23 @@ export class RoadmapService {
   emit(event) { this.snapshotStore.emit(event); }
   appendTerminal(type, text) { this.snapshotStore.appendTerminal(type, text); }
 
+  // Shared refusal path for the node.update -> done guards (TASK-PRD-030 verification
+  // precondition and TASK-PRD-032 impact-evidence precondition): audit the refusal,
+  // warn on the terminal, then throw. Never applies the mutation and never fails silently.
+  refuseNodeUpdate(nodeId, actor, reason) {
+    const auditEntry = {
+      id: crypto.randomUUID(),
+      actor: actor ?? "unknown",
+      taskId: nodeId,
+      action: "node.update.refused",
+      at: new Date().toISOString(),
+      reason,
+    };
+    this.snapshotStore.patch({ auditLog: [...(this.snapshot.auditLog ?? []), auditEntry].slice(-200) });
+    this.appendTerminal("warn", reason);
+    throw new Error(reason);
+  }
+
   async discoverSources() {
     this.availableSources = await buildRoadmapSourceInventory(await discoverRoadmapSources(roadmapDir));
     return this.availableSources.map((source) => ({
@@ -396,17 +424,31 @@ export class RoadmapService {
         const [activeVerification] = latestTemporalByKey(verificationHistory, (item) => item.taskId, {});
         if (activeVerification?.qaStatus !== "passed") {
           const reason = `node.update refused: task "${args.nodeId}" cannot transition to state "done" without a recorded passing verification (qaStatus: "passed"); found ${activeVerification?.qaStatus ? `"${activeVerification.qaStatus}"` : "none"}.`;
-          const auditEntry = {
-            id: crypto.randomUUID(),
-            actor: args.actor ?? "unknown",
-            taskId: args.nodeId,
-            action: "node.update.refused",
-            at: new Date().toISOString(),
-            reason,
-          };
-          this.snapshotStore.patch({ auditLog: [...(this.snapshot.auditLog ?? []), auditEntry].slice(-200) });
-          this.appendTerminal("warn", reason);
-          throw new Error(reason);
+          this.refuseNodeUpdate(args.nodeId, args.actor, reason);
+        }
+
+        // TASK-PRD-032 (AUD-15): impact-before-completion. Change-class detection is
+        // intentionally an EXPLICIT signal only — this gate fires solely when the caller
+        // declares payload.changeType on the done mutation itself, using the same enum the
+        // impact engine already uses (packages/govibe-core/src/impact/impact-engine.mjs).
+        // No changeType, or changeType:"editorial", is NOT gated here. This is a documented
+        // boundary, not full auto-classification of every task's change surface — see
+        // TC-TASK-PRD-032's changelog. A caller can bypass this gate by omitting or
+        // mislabeling changeType; the gate cannot detect a mislabeled change on its own.
+        const changeType = args.payload?.changeType;
+        if (changeType && SEMANTIC_CHANGE_TYPES.has(changeType)) {
+          const impactResult = activeVerification?.impactResult;
+          const mustUpdate = Array.isArray(impactResult?.mustUpdate) ? impactResult.mustUpdate : null;
+          if (!impactResult || mustUpdate === null) {
+            const reason = `node.update refused: task "${args.nodeId}" declares changeType "${changeType}" but carries no recorded govibe.workspace.impact evidence (verification.impactResult with a mustUpdate array); attach one via a "verification" mutation with payload.impactResult before closing.`;
+            this.refuseNodeUpdate(args.nodeId, args.actor, reason);
+          }
+          const addressed = new Set(Array.isArray(impactResult.addressed) ? impactResult.addressed : []);
+          const unresolved = mustUpdate.filter((item) => !addressed.has(item));
+          if (unresolved.length > 0) {
+            const reason = `node.update refused: task "${args.nodeId}" (changeType "${changeType}") has ${unresolved.length} unaddressed must_update impact item(s): ${unresolved.join(", ")}. Address each dependent artifact and record it in verification.impactResult.addressed, or rerun govibe.workspace.impact until mustUpdate is empty, before closing.`;
+            this.refuseNodeUpdate(args.nodeId, args.actor, reason);
+          }
         }
       }
       const history = this.temporalOverlayStore.getHistory("nodes", args.nodeId);
@@ -488,6 +530,11 @@ export class RoadmapService {
         qaStatus: args.payload?.qaStatus ?? priorVerification?.qaStatus,
         auditStatus: args.payload?.auditStatus ?? priorVerification?.auditStatus,
         deploymentStatus: args.payload?.deploymentStatus ?? priorVerification?.deploymentStatus,
+        // TASK-PRD-032 (AUD-15): impact-before-completion evidence, merge-preserved the
+        // same way qaStatus/auditStatus/deploymentStatus are (030-B) so a later partial
+        // verification mutation (e.g. an "approve" action) does not erase recorded impact
+        // evidence out from under the node.update -> done gate above.
+        impactResult: args.payload?.impactResult ?? priorVerification?.impactResult,
         lastUpdatedAt: args.payload?.lastUpdatedAt ?? now,
         ...createTemporalVersion({
           version: args.payload?.version ?? nextVersion(history),
