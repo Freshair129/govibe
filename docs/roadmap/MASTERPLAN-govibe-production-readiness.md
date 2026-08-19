@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.3.10"
+version: "0.3.11"
 updated: "2026-08-19"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -223,7 +223,7 @@ any production claim that involves a network-reachable deployment.
 | PHASE-PRD-00 | Anchor governance and register this plan | `docs/DOC-VERSION-REGISTRY.md` | This plan is registered and the agent contracts point at it | done | 100 |
 | PHASE-PRD-01 | Close the CI gate so the real suite protects the branch | `docs/STD-Execution-Governance.md` | GATE-CI is met | in-progress | 75 |
 | PHASE-PRD-02 | Realign the snapshot contract across TypeScript and runtime | `docs/PRD-GoVibe-Platform-Overview.md` | GATE-CONTRACT is met | planned | 0 |
-| PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | in-progress | 20 |
+| PHASE-PRD-03 | Give every view a real producer or an owned decision to retire it | `docs/PRD-GoVibe-Platform-Overview.md` | No view is unwired without a recorded decision | in-progress | 40 |
 | PHASE-PRD-04 | Remove abolished H-axis semantics from active documents | `docs/adr/ADR-021-H-Axis-Access-Scope-Semantic-Separation.md` | GATE-SEMANTIC is met | planned | 0 |
 | PHASE-PRD-05 | Package a repeatable clean-checkout developer trial | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` | GATE-BOOTSTRAP is met | planned | 0 |
 | PHASE-PRD-06 | Bring the runtime into verified conformance with the Workspace System spec | `docs/specs/SPEC-Workspace-System.md` | Spec acceptance criteria AC-01 through AC-08 hold with recorded command evidence | done | 100 |
@@ -238,7 +238,7 @@ any production claim that involves a network-reachable deployment.
 | SPR-PRD-00 | PHASE-PRD-00 | Register the readiness plan and bind the agent contracts to it | Registry row exists and both agent contracts cite this plan | done | 100 |
 | SPR-PRD-01 | PHASE-PRD-01 | Make the full baseline gate run on every pull request | A pull request touching only frontend code still runs the full suite | in-progress | 50 |
 | SPR-PRD-02 | PHASE-PRD-02 | Reconcile every MissionSnapshot field across both implementations | A contract test fails when either side adds an unmatched field | planned | 0 |
-| SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | in-progress | 20 |
+| SPR-PRD-03 | PHASE-PRD-03 | Wire the graph, symbol, and telemetry producers | Each formerly unwired view renders live data from a real feed | in-progress | 40 |
 | SPR-PRD-04 | PHASE-PRD-04 | Correct the H-axis vocabulary in architecture documents | A repository scan finds no active `H5`/`H6` access semantics | planned | 0 |
 | SPR-PRD-05 | PHASE-PRD-05 | Author and verify the clean-checkout quickstart | A reviewer reaches a running Mission Control from the document alone | planned | 0 |
 | SPR-PRD-06 | PHASE-PRD-06 | Pin workspace-spec conformance and land the personnel identity and RBAC contracts | AC-01 through AC-06 are pinned by automated tests; the personnel and RBAC suites demonstrate AC-07 and AC-08 | done | 100 |
@@ -269,8 +269,8 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-017 | SPR-PRD-06 | task | Validate active personnel identity at the RBAC enforcement boundary | P2 | VIBE | done | TASK-PRD-016 | SPEC-Workspace-System §3.3 |
 | TASK-PRD-018 | SPR-PRD-01 | task | Close the CI coverage gaps: run mcp:smoke in CI, stop env:validate self-skipping, recover the dead and mis-laned tests | P1 | ATHER | planned | TASK-PRD-003 | Section 3.3 AUD-25, AUD-26 |
 | TASK-PRD-019 | SPR-PRD-02 | task | Add the cross-runtime MissionSnapshot parity contract test | P0 | ARCHON | planned | TASK-PRD-005 | Section 3.3 AUD-16 |
-| TASK-PRD-020 | SPR-PRD-03 | task | Remove fabricated telemetry from the D1 Reactor Run Trigger | P0 | VIBE | planned | - | Section 3.3 AUD-07 |
-| TASK-PRD-021 | SPR-PRD-03 | task | Distinguish disconnected, stale, and empty states per panel | P2 | VIBE | planned | - | Section 3.3 AUD-24 |
+| TASK-PRD-020 | SPR-PRD-03 | task | Remove fabricated telemetry from the D1 Reactor Run Trigger | P0 | VIBE | review | - | Section 3.3 AUD-07 |
+| TASK-PRD-021 | SPR-PRD-03 | task | Distinguish disconnected, stale, and empty states per panel | P2 | VIBE | review | - | Section 3.3 AUD-24 |
 | TASK-PRD-022 | SPR-PRD-04 | task | Extend H-axis remediation to the full leak sweep, fix the doc-generation template, and add a validator backstop | P1 | ATHER | planned | TASK-PRD-009 | Section 3.3 AUD-14 |
 | TASK-PRD-023 | SPR-PRD-07 | task | Configure and launch the in-repo MSP runtime with a promotion smoke test | P0 | VIBE | review | - | Section 3.3 AUD-01 |
 | TASK-PRD-024 | SPR-PRD-07 | task | Forward contextAuthority through the hardened workflow.continue surface | P0 | VIBE | review | TASK-PRD-023 | Section 3.3 AUD-02 |
@@ -308,6 +308,8 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-015 | VIBE | agent | ABAC | 2026-08-09T00:00:00Z | Boss |
 | TASK-PRD-016 | ARCHON | agent | ABAC | 2026-08-09T00:00:00Z | Boss |
 | TASK-PRD-017 | VIBE | agent | ABAC | 2026-08-09T00:00:00Z | Boss |
+| TASK-PRD-020 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
+| TASK-PRD-021 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-023 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-024 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-025 | ARCHON | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
@@ -352,8 +354,8 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-017 | passed | passed | n/a | 2026-08-09T19:45:00Z |
 | TASK-PRD-018 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-019 | pending | pending | n/a | 2026-08-19T00:00:00Z |
-| TASK-PRD-020 | pending | pending | n/a | 2026-08-19T00:00:00Z |
-| TASK-PRD-021 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-020 | passed | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-021 | passed | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-022 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-023 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-024 | pending | pending | n/a | 2026-08-19T00:00:00Z |
@@ -1219,8 +1221,8 @@ title: Remove fabricated telemetry from the D1 Reactor Run Trigger
 requirement_type: FR
 complexity: C-1
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
 approver: Boss
@@ -1228,18 +1230,18 @@ auditor: ATHER
 symbol_links:
   code: src/features/benchmark/ReactorRunTrigger.tsx
   doc: PRODUCT.md
-  test: unavailable
+  test: src/features/noFabricatedTelemetry.test.ts
 definition_of_done:
   acceptance_criteria:
     - criterion: Given the D1 view renders with no live benchmark feed, when a user inspects it, then no fabricated model results, Math.random hardware telemetry, simulated run lifecycle, or invented download progress is shown and the view presents an honest empty or unsupported state naming the missing feed
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the reactor.run command remains a backend no-op, when the user triggers it, then the UI reports the acknowledged-but-unimplemented status instead of simulating a successful benchmark run
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given a guard test over src/features, when any component presents randomly generated values as live telemetry, then the test fails
-      checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-07 (Section 3.3) — the sole live-data-rule violation found by the audit.
+      checked: true
+changelog: Opened 2026-08-19 from audit finding AUD-07 (Section 3.3) — the sole live-data-rule violation found by the audit. Executed 2026-08-19 (VIBE): src/features/benchmark/ReactorRunTrigger.tsx (~1652 lines) rewritten from scratch (~135 lines) removing STATIC_MODELS' invented benchmark numbers, the Math.random() hardware-telemetry setInterval loop, the simulated Queued->Loading->Warm->Benchmark->Done lifecycle, simulated GGUF download progress, the hardcoded "Telemetry Replay Logs", and the misleading "Scanned 8 local..." success message shown even when offline; replaced with an EmptyState naming the missing producer (idiom matched from src/features/benchmark/CampaignLogsView.tsx and Heatmap.tsx), a real reactor.run trigger that reports the backend's actual acknowledged-but-unimplemented status (not a simulated run), and the on-disk local_model/auto_scanned_models.json rendered as an honestly-labeled static config table ("static, on-disk -- not live telemetry", no fabricated passRate/avgLatency/tps columns). scripts/mcp/runtime/mission-command-router.mjs's reactor.run branch now logs an explicit "no backend benchmark runner is implemented; this is a no-op" terminal line instead of a bare acknowledgement. New guard test src/features/noFabricatedTelemetry.test.ts source-scans every file under src/features for a random-number-telemetry call and fails naming the offending file; scoped to src/features only (not the whole src tree) because src/mission/gateway.ts has a legitimate non-telemetry Math.random use for reconnect-backoff jitter that would otherwise false-positive. Evidence: npx vitest run --no-file-parallelism src/features/noFabricatedTelemetry.test.ts (1/1 pass), scripts/mcp/runtime/mission-command-router.test.mjs (9/9 pass, unchanged assertions since toMatchObject tolerates the added message), npm run lint clean, npm run docs:validate PASS, npm run roadmap:validate 0 errors. QA passed; ATHER audit pending.
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1263,8 +1265,8 @@ title: Distinguish disconnected, stale, and empty states per panel
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
 approver: Boss
@@ -1272,18 +1274,18 @@ auditor: ATHER
 symbol_links:
   code: src/mission/gateway.ts
   doc: docs/PRD-GoVibe-Platform-Overview.md
-  test: unavailable
+  test: src/missionGateway.test.ts
 definition_of_done:
   acceptance_criteria:
     - criterion: Given the WebSocket transport drops, when a user views any panel, then the panel visibly distinguishes a lost connection with last-known data from a healthy connection with an empty feed
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given an unauthorized (401) bootstrap, when the app loads, then the user sees a dedicated unauthorized state rather than a generic error connection label
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given events ingested through the C3 debug ingress, when they merge into the snapshot, then they carry a provenance marker distinguishing them from sidecar-delivered state
-      checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-24 (Section 3.3).
+      checked: true
+changelog: Opened 2026-08-19 from audit finding AUD-24 (Section 3.3). Executed 2026-08-19 (VIBE): added ConnectionState value "unauthorized" (src/mission/domain.ts, packages/mission-protocol/index.js and .d.ts) distinct from the generic "error" transport-failure state; ReliableMissionGateway.bootstrap() (src/mission/gateway.ts) now short-circuits a 401 /mission/snapshot response straight to connectionState:"unauthorized" without attempting the WebSocket upgrade (same bearer token would fail it too). Added EventProvenance ("sidecar" | "debug-ingress" | "external-postmessage" | "development-custom-event") and MissionSnapshot.lastIngest {source, eventType, at}; ReliableMissionGateway.handleEvent(event, provenance = "sidecar") stamps lastIngest on every non-command-lifecycle event it applies to the store; handleRawFrame (real WS frames) keeps the "sidecar" default, the govibe:mission-event CustomEvent listener passes "development-custom-event", the trusted-postMessage listener and the generic ingestReliableExternalMissionEvent() export pass "external-postmessage", and App.tsx's `ingest` handler for the C3 DataIngestView debug form now explicitly passes "debug-ingress" -- the one path the exit criterion names. New shared src/hooks/useConnectionStatus.ts hook exposes {connectionState, lastUpdated, isStale}; src/shared/EmptyState.tsx (used by every honest empty-state view) now consumes it directly and appends a status note distinguishing "not connected", "transport disconnected (last-known data)", and "unauthorized" from a plain empty feed, with zero per-view code changes required. src/app/StatusBar.tsx (rendered above every view's content in App.tsx, so it reaches every panel without editing all 21 views) now also consumes the hook directly and renders a distinct amber "Showing last-known data from HH:MM:SS -- connection lost" / "Unauthorized (401)" banner whenever isStale or unauthorized, addressing the "panel with existing content, not just an empty one" half of the acceptance criterion that EmptyState alone cannot cover. Test coverage is at the gateway/data-layer this hook and both components read from (this repo has no React Testing Library / .test.tsx infra to render hooks or components directly -- every existing src test is .test.ts): new tests in src/missionGateway.test.ts ("a 401 bootstrap surfaces a dedicated unauthorized state, not the generic error state"; "a non-401 bootstrap failure still surfaces the generic error state"; "connected -> disconnected -> reconnect: updatedAt survives the drop, giving isStale its 'last-known data' signal"; "stamps a sidecar-originated event with 'sidecar' provenance by default"; "stamps a C3 debug-ingress event with 'debug-ingress' provenance..."; "does not stamp lastIngest for command.ack or terminal.line events") and src/missionExternalIngestion.test.ts ("marks a generically-ingested event with non-sidecar provenance by default"). Evidence: npx vitest run --no-file-parallelism src/missionGateway.test.ts src/missionExternalIngestion.test.ts (17/17 pass), src/missionBrowserIngress.test.ts / src/missionProtocol.test.ts / src/mission/snapshot-reducer.test.ts / src/missionContract.test.ts unaffected and still green, npm run lint clean, npm run docs:validate PASS, npm run roadmap:validate 0 errors. QA passed; ATHER audit pending.
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -2040,6 +2042,7 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.3.11 | 2026-08-19 | approved | Executed TASK-PRD-020 and TASK-PRD-021 to review (the frontend-honesty batch, VIBE executor). TASK-PRD-020 (AUD-07, the audit's sole live-data-rule violation): src/features/benchmark/ReactorRunTrigger.tsx rewritten to remove the fabricated model roster, Math.random() hardware telemetry, simulated benchmark lifecycle, simulated GGUF download progress, and misleading offline-success message; replaced with an honest EmptyState naming the missing producer, a real reactor.run trigger reporting the backend's actual acknowledged-but-unimplemented status, and the on-disk local_model/auto_scanned_models.json shown as labeled static config. New guard test src/features/noFabricatedTelemetry.test.ts source-scans src/features for random-number-telemetry calls. TASK-PRD-021 (AUD-24): added a dedicated "unauthorized" ConnectionState (distinct from "error") that a 401 bootstrap now sets; added EventProvenance/lastIngest to MissionSnapshot so every ingestion path (sidecar WS, C3 debug ingress, trusted postMessage, dev CustomEvent) tags what it merges in; new shared src/hooks/useConnectionStatus.ts hook consumed directly by src/shared/EmptyState.tsx (empty-feed vs disconnected vs unauthorized) and src/app/StatusBar.tsx (a "showing last-known data" banner rendered above every view, reaching all 21 panels without per-view edits). Both containers bumped 0.1.0+draft -> 0.2.0+draft with all DoD criteria ticked on real local evidence (see each container's changelog). PHASE-PRD-03/SPR-PRD-03 progress 20 -> 40 (TASK-PRD-007/008 remain open). Evidence this batch: npx vitest run --no-file-parallelism across src/features/noFabricatedTelemetry.test.ts, src/missionGateway.test.ts, src/missionExternalIngestion.test.ts, src/missionBrowserIngress.test.ts, src/missionProtocol.test.ts, src/missionContract.test.ts, src/mission/snapshot-reducer.test.ts, src/mission-auth-bootstrap.test.ts, src/missionSessionContract.test.ts, scripts/mcp/runtime/mission-command-router.test.mjs, scripts/mcp/sidecar-server.security.mjs -- 91 tests, all green; npm run lint clean; npm run docs:validate PASS; npm run roadmap:validate 0 errors. No CI run yet on this change; both tasks stay at review pending ATHER audit and Boss approval. | pending | Claude Sonnet 5 |
 | 0.3.10 | 2026-08-19 | approved | Executed TASK-PRD-026, TASK-PRD-027, TASK-PRD-028, TASK-PRD-029 to review in one owner-directed batch (Boss instruction recorded in each container; VIBE/ARCHON executors per container pic, not an independent ATHER audit reproduction). TASK-PRD-026 (AUD-04): the sidecar's workspace.scan mission command now passes through the same enforceToolRbac decision point stdio uses, actor-attributed from the command payload instead of a hardcoded "mission-control" constant. TASK-PRD-027 (AUD-05): govibe.docs.resolve and govibe.ingest.code are now containment-checked via the existing scripts/mcp/path-security.mjs helper and added to the RBAC §6.2 matrix (SPEC-Workspace-System.md 0.3.0 -> 0.3.1). TASK-PRD-028 (AUD-10): spawned agent/PTY children get an explicit allowlisted env (new scripts/mcp/runtime/child-env.mjs) excluding server secrets; the sidecar WS auth token moved from the URL query string to a base64url-encoded Sec-WebSocket-Protocol subprotocol (migrated cleanly, no query-string back-compat); session logs redact credential-shaped fields at the single SessionTracker.logEvent chokepoint (new packages/govibe-core/src/log-redaction.mjs); PM connector token vault-wiring (AUD-10d) recorded as an explicit interim acceptance with an expiry of 2026-11-19 in TC-TASK-PRD-028's changelog rather than implemented (judgment call permitted by the container). TASK-PRD-029 (AUD-08): new append-only packages/govibe-core/src/approval-record.mjs store under .govibe/approvals.jsonl (gitignored); the C-3 canvas-action gate (workflow-node-action-service.mjs) and the H4 session-start gate (agent-session-service.mjs) now verify a presented approvalRef against a recorded, scope-covering approval instead of accepting any non-empty string, both failing closed when no store is configured, both linking the verified action back to the approval record. Every container's success/exit criteria were ticked only where real local evidence exists; TASK-PRD-029's actor-attribution success criterion stays deliberately UNCHECKED (MissionCanvasView.tsx's free-text "Boss" default for workflow.node.action was not changed — no real per-user identity exists on the shared-token sidecar yet). PHASE-PRD-08/SPR-PRD-08 progress 0 → 70. Local evidence run this batch: node --test scripts/mcp/sidecar-rbac-enforcement.security.mjs (5/5), scripts/mcp/docs-ingest-containment.security.mjs (11/11), scripts/mcp/sidecar-server.security.mjs (28/28); npx vitest run (targeted, --no-file-parallelism) across rbac.test.mjs, rbac-enforcement.test.mjs, translator-service.test.mjs, runtime-core.test.mjs, runtime-core.security.test.mjs, agent-session-service.test.mjs, agent-session-service.security.test.mjs, child-env.security.test.mjs, workflow-node-action-service.test.mjs, approval-record.test.mjs, session-tracker.security.test.mjs, sidecar-memory-bridge.test.mjs, mission-auth-bootstrap.test.ts, missionProtocol.test.ts, missionSessionContract.test.ts — all green. npm run lint, npm run docs:validate, npm run roadmap:validate, npm run mcp:smoke run and reported separately in this session's final report. No CI run yet on this change; all four tasks stay at review pending ATHER/ARCHON audit and Boss approval. | pending | Claude Fable 5 |
 | 0.3.9 | 2026-08-19 | approved | Audit-passed row on the 0.3.8 hardening pass (append-only; 0.3.7/0.3.8 rows left untouched as historical record). The independent review gate re-ran a round-2 delta verification against the 0.3.8 fixes — probes A (030-A present-time guard), B (030-B verification-merge preservation), B2 (030-B done-still-transitions-after-approve), C (030-C/D governance-comment and override-marker accuracy), D (031-A journal-append rollback), E (031-B/C path validation and durability-scope wording), F (033-A/B/C snapshot-freshness, minted-id, and dedup-key-collision fixes) — and reproduced every one of the twelve findings as fixed. Verdict: APPROVE-FOR-COMMIT. Verification table Audit Status set pending → passed for TASK-PRD-030, TASK-PRD-031, TASK-PRD-033 (QA stays passed); each Task Container's changelog got one appended sentence recording this audit (in-session review-gate audit, not a separate ATHER session). No status, progress, or criteria changes beyond the Audit Status field — TASK-PRD-030/031/033 stay at review pending Boss approval; PHASE-PRD-09/SPR-PRD-09 stay at in-progress 60. | pending | Claude Fable 5 |
 | 0.3.8 | 2026-08-19 | approved | Correction/hardening row on the 0.3.7 batch (append accuracy, 0.3.7's text is left as historical record and not edited). The Opus review gate returned CHANGES-REQUIRED on the 0.3.7 batch: TASK-PRD-031 and TASK-PRD-033 were approved as executed (evidence reproduced, test integrity confirmed clean), but TASK-PRD-030's central guard was bypassable — 0.3.7's success-criterion tick for TASK-PRD-030 overclaimed until this row. 030-A (BLOCKER, demonstrated bypass): the node.update->done verification guard evaluated the caller-supplied asOfValidAt/asOfRecordedAt (public tool inputs) instead of present-time truth, so a caller could record passed->superseding-failed and still get state:"done" applied by backdating asOfRecordedAt to before the failure, silently, no audit entry. Fixed: the guard now always evaluates at fixed present-time options ({}); temporalOptions stays scoped to read/reload paths only. 030-B (MAJOR): a verification mutation built its record from scratch, so Mission Canvas's "approve" action (auditStatus only) silently erased a previously recorded qaStatus:"passed" — destroying QA evidence and then blocking the ADR-029 approve->done flow on the new guard. Fixed: verification mutations now merge onto the current present-time verification instead of overwriting. Both fixed with named regression tests in scripts/mcp/runtime/roadmap-service.test.mjs (030-A, 030-B); TASK-PRD-030 stays at review, version 0.3.0+draft, QA passed (new tests green), Audit pending (this round not yet re-verified). All nine reviewer-endorsed non-blocking findings fixed in the same pass: 030-C (workflow-engine.mjs evidenceRefs comment corrected to state plainly it is internal-consistency checking, not independent evidence verification), 030-D (step.mjs emits a warn line + emptyDefinitionOfDoneOverride marker distinguishing an override-pass from a real-checks pass), 031-A (temporal-overlay-store.mjs rolls back the in-memory record, including the supersededAt stamp, when its durable journal append fails), 031-B (GOVIBE_ROADMAP_OVERLAY_JOURNAL now validates path.isAbsolute() with a named error), 031-C (durability comment now names process-crash-not-fsync scope; in-memory auditLog disclosed as volatile-by-scope), 033-A (dedup cache no longer stores snapshot; every replay attaches a fresh runtime.getSnapshot()), 033-B (a server-minted commandId is never cached), 033-C (dedup key now includes command.type). TASK-PRD-031/TASK-PRD-033 containers bumped to 0.3.0+draft with these fixes appended to their own changelogs (not rewritten). Local evidence for this round: targeted vitest — scripts/mcp/step.test.mjs (3/3), scripts/mcp/runtime/roadmap-service.test.mjs (8/8), scripts/mcp/runtime/temporal-overlay-store.test.mjs (10/10) — all green; node --test scripts/mcp/sidecar-server.security.mjs 27/27 green (24 pre-existing + 3 new); npm run lint clean; npm run docs:validate PASS; npm run roadmap:validate 0 errors; npm run mcp:smoke PASS. No status/progress/verification change beyond TASK-PRD-030's QA field (already passed, now on corrected evidence) — PHASE-PRD-09/SPR-PRD-09 stay at in-progress 60. | pending | Claude Fable 5 |

@@ -60,7 +60,12 @@ export class MissionCommandRouter {
       return { ok: true, action: "agent.select" };
     }
     if (command.type === "reactor.run") {
-      service.appendTerminal("sys", `Reactor run requested for profile: ${command.profile}`);
+      // TASK-PRD-020 (AUD-07): no benchmark execution engine is wired to this command --
+      // acknowledge it honestly as a no-op rather than implying a run started.
+      service.appendTerminal(
+        "sys",
+        `Reactor run acknowledged for profile: ${command.profile} -- no backend benchmark runner is implemented; this is a no-op.`,
+      );
       return { ok: true, action: "reactor.run" };
     }
     if (command.type === "file.save") {

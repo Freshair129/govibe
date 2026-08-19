@@ -6,7 +6,24 @@ export type ViewId =
   | "D1" | "D2" | "D3";
 
 export type ThemeMode = "dark" | "light";
-export type ConnectionState = "disconnected" | "connecting" | "connected" | "error";
+// TASK-PRD-021 (AUD-24): "unauthorized" is a dedicated state for a 401 bootstrap response --
+// distinct from "error" (network/transport failure) so the UI can tell the user to sign in /
+// configure credentials instead of showing a generic connection-error label.
+export type ConnectionState = "disconnected" | "connecting" | "connected" | "error" | "unauthorized";
+
+// TASK-PRD-021 (AUD-24): where a MissionEvent that mutated the snapshot actually came from.
+// "sidecar" is the normal case (WebSocket frame or HTTP command response from the governed
+// mission sidecar). The others are ingestion paths that bypass the sidecar entirely -- the C3
+// debug ingress form, a trusted window.postMessage payload, and (dev-only) the
+// govibe:mission-event CustomEvent -- so a panel can tell live sidecar state apart from
+// something a user or script injected locally.
+export type EventProvenance = "sidecar" | "debug-ingress" | "external-postmessage" | "development-custom-event";
+
+export type IngestionProvenance = {
+  source: EventProvenance;
+  eventType: string;
+  at: string;
+};
 
 export type TerminalLine = {
   id: string;
@@ -367,6 +384,10 @@ export type MissionSnapshot = {
   usage?: UsageSnapshot;
   sessions?: AgentSessionRecord[];
   auditLog?: WorkflowNodeAuditEntry[];
+  // TASK-PRD-021 (AUD-24): provenance of the most recently merged MissionEvent. Absent until
+  // the first event is applied; overwritten on every subsequent apply so it always reflects
+  // where the CURRENT snapshot content last changed from.
+  lastIngest?: IngestionProvenance;
 };
 
 export type MissionEvent =

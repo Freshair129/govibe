@@ -598,6 +598,13 @@ main::after {
   letter-spacing: 0.08em;
 }
 
+/* TASK-PRD-021 (AUD-24): "showing last-known data" / "unauthorized" banner -- rendered above
+   every panel (see App.tsx) so a connection problem is visible regardless of which view has
+   its own content on screen, not just when a view happens to be empty. */
+.status-row-stale {
+  color: #f59e0b;
+}
+
 .view-stack {
   max-width: 1280px;
   margin: 0 auto;
@@ -648,6 +655,13 @@ main::after {
   flex-direction: column;
   gap: 8px;
   border-style: dashed;
+}
+
+/* TASK-PRD-021 (AUD-24): distinguishes a connection-derived status note (stale/unauthorized/
+   disconnected) from the view's own empty-state copy without introducing a new color token. */
+.empty-state-status {
+  font-style: italic;
+  opacity: 0.85;
 }
 
 .metric-grid,
