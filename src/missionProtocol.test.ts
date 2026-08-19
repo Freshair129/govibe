@@ -1,13 +1,16 @@
 import { describe, expect, it } from "vitest";
 import {
+  IDEMPOTENT_RETRY_COMMAND_TYPES,
   MISSION_PROTOCOL_COMPATIBILITY,
   MISSION_PROTOCOL_LIMITS,
   MISSION_PROTOCOL_VERSION,
+  createCommandDedupWindow,
   createCommandResponse,
   isCommandResponse,
   isMissionCommand,
   isMissionEvent,
   isMissionSnapshot,
+  isMutatingMissionCommandType,
 } from "../packages/mission-protocol/index.js";
 
 const snapshotFixture = {
@@ -190,5 +193,67 @@ describe("mission protocol v2", () => {
   it("fails contract validation for a breaking compatibility version", () => {
     const response = createCommandResponse({ commandId: "cmd-1", ok: true });
     expect(isCommandResponse({ ...response, compatibilityVersion: 3 })).toBe(false);
+  });
+});
+
+// TASK-PRD-033 (AUD-18): the shared mutating/idempotent-retry command classification and the
+// bounded dedup window both sides of the wire (src/mission/gateway.ts and
+// scripts/mcp/sidecar-server.mjs) read from this module.
+describe("mission protocol v2 — command idempotency classification (TASK-PRD-033)", () => {
+  it("classifies exactly the frontend gateway's retry-safe set as non-mutating", () => {
+    expect([...IDEMPOTENT_RETRY_COMMAND_TYPES].sort()).toEqual(["agent.select", "masterplan.preview", "roadmap.select"]);
+    for (const type of IDEMPOTENT_RETRY_COMMAND_TYPES) {
+      expect(isMutatingMissionCommandType(type)).toBe(false);
+    }
+  });
+
+  it("classifies workflow.node.action and every other command type as mutating", () => {
+    expect(isMutatingMissionCommandType("workflow.node.action")).toBe(true);
+    expect(isMutatingMissionCommandType("terminal.command")).toBe(true);
+    expect(isMutatingMissionCommandType("memory.forget")).toBe(true);
+    expect(isMutatingMissionCommandType("agent.session.start")).toBe(true);
+  });
+
+  it("treats an unknown/empty type as mutating (fail closed: dedup by default, never silently skip it)", () => {
+    expect(isMutatingMissionCommandType("")).toBe(true);
+    expect(isMutatingMissionCommandType("some.unknown.type")).toBe(true);
+  });
+});
+
+describe("createCommandDedupWindow (TASK-PRD-033)", () => {
+  it("returns the cached value for a known commandId without needing to be told it happened again", () => {
+    const window = createCommandDedupWindow();
+    expect(window.has("cmd-1")).toBe(false);
+    window.set("cmd-1", { ok: true });
+    expect(window.has("cmd-1")).toBe(true);
+    expect(window.get("cmd-1")).toEqual({ ok: true });
+    expect(window.get("missing")).toBeUndefined();
+  });
+
+  it("evicts the least-recently-used entry once maxEntries is exceeded", () => {
+    const window = createCommandDedupWindow({ maxEntries: 2 });
+    window.set("a", 1);
+    window.set("b", 2);
+    window.set("c", 3); // evicts "a"
+    expect(window.has("a")).toBe(false);
+    expect(window.size).toBe(2);
+    expect(window.get("b")).toBe(2);
+    expect(window.get("c")).toBe(3);
+  });
+
+  it("get() bumps recency, so a recently-read entry survives eviction over an untouched one", () => {
+    const window = createCommandDedupWindow({ maxEntries: 2 });
+    window.set("a", 1);
+    window.set("b", 2);
+    window.get("a"); // "a" is now more recent than "b"
+    window.set("c", 3); // evicts "b", not "a"
+    expect(window.has("a")).toBe(true);
+    expect(window.has("b")).toBe(false);
+  });
+
+  it("rejects a non-positive-integer maxEntries", () => {
+    expect(() => createCommandDedupWindow({ maxEntries: 0 })).toThrow(TypeError);
+    expect(() => createCommandDedupWindow({ maxEntries: -1 })).toThrow(TypeError);
+    expect(() => createCommandDedupWindow({ maxEntries: 1.5 })).toThrow(TypeError);
   });
 });

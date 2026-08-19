@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -136,5 +136,69 @@ describe("Mission Control workspace scan command", () => {
     });
     expect(runtime.getSnapshot().masterPlanPreview.nodes.filter((node) => node.type === "phase")).toHaveLength(5);
     expect(runtime.getSnapshot().roadmap).toBeUndefined();
+  });
+});
+
+// TASK-PRD-031 (AUD-11): runtime roadmap mutations used to live only in an in-memory overlay
+// and evaporate on MCP server restart. This is the restart regression guard — it recreates a
+// second runtime from the same durable journal and asserts the mutation survives.
+describe("GovibeRuntime — roadmap overlay durability across restart (TASK-PRD-031)", () => {
+  it("does not persist mutations when no temporalOverlayJournalPath is configured (pre-existing bare-constructor behavior)", async () => {
+    const runtime = new GovibeRuntime();
+    await runtime.initialize();
+    await runtime.applyRoadmapMutation({
+      actor: "test",
+      nodeId: "NO-JOURNAL-NODE",
+      mutationType: "assignment",
+      payload: { subjectId: "agent-x", assignedBy: "test" },
+    });
+    const second = new GovibeRuntime();
+    await second.initialize();
+    expect(second.snapshot.roadmap?.assignments?.find((item) => item.taskId === "NO-JOURNAL-NODE")).toBeUndefined();
+  });
+
+  it("restores a roadmap mutation from the same durable journal after simulating a restart", async () => {
+    const journalDir = await mkdtemp(path.join(os.tmpdir(), "govibe-overlay-restart-"));
+    roots.push(journalDir);
+    const journalPath = path.join(journalDir, "roadmap-overlay.jsonl");
+
+    const first = new GovibeRuntime({ temporalOverlayJournalPath: journalPath });
+    await first.initialize();
+    await first.applyRoadmapMutation({
+      actor: "test",
+      nodeId: "RESTART-TEST-NODE",
+      mutationType: "assignment",
+      payload: { subjectId: "agent-restart-test", assignedBy: "test" },
+    });
+    const beforeRestart = first.snapshot.roadmap?.assignments?.find((item) => item.taskId === "RESTART-TEST-NODE");
+    expect(beforeRestart?.subjectId).toBe("agent-restart-test");
+
+    // Simulate a process restart: a brand-new runtime instance pointed at the same journal.
+    const second = new GovibeRuntime({ temporalOverlayJournalPath: journalPath });
+    await second.initialize();
+    const afterRestart = second.snapshot.roadmap?.assignments?.find((item) => item.taskId === "RESTART-TEST-NODE");
+    expect(afterRestart?.subjectId).toBe("agent-restart-test");
+  });
+
+  it("boots cleanly and reports a bounded skip count when the journal's trailing line is corrupt/truncated", async () => {
+    const journalDir = await mkdtemp(path.join(os.tmpdir(), "govibe-overlay-corrupt-"));
+    roots.push(journalDir);
+    const journalPath = path.join(journalDir, "roadmap-overlay.jsonl");
+
+    const first = new GovibeRuntime({ temporalOverlayJournalPath: journalPath });
+    await first.initialize();
+    await first.applyRoadmapMutation({
+      actor: "test",
+      nodeId: "CORRUPT-JOURNAL-NODE",
+      mutationType: "assignment",
+      payload: { subjectId: "agent-y", assignedBy: "test" },
+    });
+    // Simulate a crash mid-append: a truncated JSON line with no trailing newline.
+    await writeFile(journalPath, `${await readFile(journalPath, "utf8")}{"kind":"nodes","key":"trun`, "utf8");
+
+    const second = new GovibeRuntime({ temporalOverlayJournalPath: journalPath });
+    await expect(second.initialize()).resolves.toBeDefined();
+    expect(second.snapshot.roadmap?.assignments?.find((item) => item.taskId === "CORRUPT-JOURNAL-NODE")?.subjectId).toBe("agent-y");
+    expect(second.snapshot.terminal.some((line) => line.type === "warn" && /skipped 1 corrupt/i.test(line.text))).toBe(true);
   });
 });

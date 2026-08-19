@@ -141,7 +141,7 @@ describe('durable workflow', () => {
       { id: 'scan', dependsOn: [] }, { id: 'review', dependsOn: ['scan'] },
     ] });
     expect(plan.currentTask).toBe('scan');
-    await transitionWorkflow({ workspacePath, runId: 'run-1', taskId: 'scan', status: 'complete', verification: { passed: true } });
+    await transitionWorkflow({ workspacePath, runId: 'run-1', taskId: 'scan', status: 'complete', verification: { passed: true, evidenceRefs: ['artifact:scan-report'] }, outputRefs: ['artifact:scan-report'] });
     const first = await transitionWorkflow({ workspacePath, runId: 'run-1', taskId: 'review', status: 'running', idempotencyKey: 'start-review' });
     const replay = await transitionWorkflow({ workspacePath, runId: 'run-1', taskId: 'review', status: 'running', idempotencyKey: 'start-review' });
     expect(replay.eventId).toBe(first.eventId);

@@ -1,5 +1,6 @@
 import {
   boundedProtocolMessage,
+  IDEMPOTENT_RETRY_COMMAND_TYPES,
   isCommandResponse,
   isMissionCommand,
   isMissionEvent,
@@ -57,11 +58,10 @@ export type MissionGatewayOptions = {
   random?: () => number;
 };
 
-const IDEMPOTENT_COMMANDS = new Set<MissionCommand["type"]>([
-  "agent.select",
-  "roadmap.select",
-  "masterplan.preview",
-]);
+// TASK-PRD-033 (AUD-18): reconciled with the sidecar's server-side dedup window — both sides
+// now read the same Set from packages/mission-protocol/index.js instead of maintaining two
+// hand-written lists that could drift.
+const IDEMPOTENT_COMMANDS: ReadonlySet<MissionCommand["type"]> = IDEMPOTENT_RETRY_COMMAND_TYPES;
 
 const DEFAULT_REQUEST_TIMEOUT_MS = 10_000;
 const DEFAULT_ACK_TIMEOUT_MS = 10_000;

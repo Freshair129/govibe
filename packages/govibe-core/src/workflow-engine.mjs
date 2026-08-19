@@ -83,7 +83,27 @@ export async function transitionWorkflow({ workspacePath, runId, taskId, status,
   const task = snapshot.tasks.find((item) => item.id === taskId);
   if (!task) throw new Error(`Unknown workflow task: ${taskId}`);
   if (status === 'running' && task.dependsOn.some((dependency) => snapshot.tasks.find((item) => item.id === dependency)?.status !== 'complete')) throw new Error('Workflow dependency is not complete.');
-  if (status === 'complete' && verification?.passed !== true) throw new Error('Workflow completion requires passing verification.');
+  // TASK-PRD-030 (AUD-06): a caller-supplied { passed: true } used to be sufficient to complete a
+  // task — no evidence check. The minimal honest contract now in place: completion requires at
+  // least one evidenceRefs entry, and every entry must resolve against a declared outputRef —
+  // this transition's `outputRefs` argument, or (because task.outputRefs persists across calls)
+  // a prior transition's on the same task. Review-gate finding 030-C: be honest about what this
+  // buys — the SAME caller controls both `outputRefs` and `verification.evidenceRefs`, so this is
+  // internal-consistency checking (the caller must declare the same ref twice, in two different
+  // arguments), not independent verification of the evidence. It closes the literal
+  // caller-asserts-{passed:true}-with-nothing-else gap; it does not prove the referenced artifact
+  // actually exists. Cross-transition-only resolution or filesystem-backed evidence (does the
+  // referenced path/artifact actually exist on disk) remain follow-up work, not done here.
+  if (status === 'complete') {
+    if (verification?.passed !== true) throw new Error('Workflow completion requires passing verification.');
+    const evidenceRefs = Array.isArray(verification.evidenceRefs)
+      ? verification.evidenceRefs.filter((ref) => typeof ref === 'string' && ref.trim().length > 0)
+      : [];
+    if (evidenceRefs.length === 0) throw new Error('Workflow completion requires at least one resolvable verification.evidenceRefs entry.');
+    const knownOutputRefs = new Set([...outputRefs, ...(task.outputRefs ?? [])]);
+    const unresolved = evidenceRefs.filter((ref) => !knownOutputRefs.has(ref));
+    if (unresolved.length > 0) throw new Error(`Workflow completion evidenceRefs do not resolve to a recorded outputRef: ${unresolved.join(', ')}`);
+  }
   task.status = status;
   task.attempts += status === 'running' ? 1 : 0;
   task.outputRefs = [...outputRefs];

@@ -27,6 +27,21 @@ const workspaceRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)),
 const roadmapDir = path.join(workspaceRoot, "docs", "roadmap");
 const launcherScript = path.join(workspaceRoot, "scripts", "agents", "invoke-agent.ps1");
 const agentRegistryPath = path.join(workspaceRoot, ".agents", "agent-registry.yaml");
+
+// TASK-PRD-031 (AUD-11): the real running server's default durable journal for roadmap
+// overlay mutations. Overridable (e.g. by scripts/mcp/smoke-test.mjs's spawned server) so a
+// throwaway run does not permanently pollute a developer's real overlay state.
+//
+// Review-gate finding 031-B: validated the same way configuredPathRoots() validates its own
+// env-supplied paths — an absolute path only, with a named error, rather than silently
+// resolving a relative override against whatever process.cwd() happens to be at boot.
+function defaultTemporalOverlayJournalPath() {
+  if (!process.env.GOVIBE_ROADMAP_OVERLAY_JOURNAL) return path.join(workspaceRoot, ".govibe", "roadmap-overlay.jsonl");
+  if (!path.isAbsolute(process.env.GOVIBE_ROADMAP_OVERLAY_JOURNAL)) {
+    throw new Error("GOVIBE_ROADMAP_OVERLAY_JOURNAL must be an absolute path.");
+  }
+  return process.env.GOVIBE_ROADMAP_OVERLAY_JOURNAL;
+}
 function toRelativePath(fullPath) {
   return path.relative(workspaceRoot, fullPath).replaceAll("\\", "/");
 }
@@ -72,7 +87,9 @@ export class GovibeRuntime {
       sourcePath: "scripts/mcp/registry.mjs",
     }))));
     this.sessionTracker = new SessionTracker(workspaceRoot);
-    this.temporalOverlayStore = new TemporalOverlayStore();
+    // No journalPath by default (in-memory only, matching pre-TASK-PRD-031 behavior) — only
+    // the exported `govibeRuntime` singleton below opts in to a real durable journal.
+    this.temporalOverlayStore = new TemporalOverlayStore({ journalPath: options.temporalOverlayJournalPath });
     this.activeRoadmapSource = undefined;
     this.availableSources = [];
     this.mspClient = options.mspClient ?? createMspClientFromEnvironment();
@@ -102,6 +119,17 @@ export class GovibeRuntime {
   }
 
   async initialize() {
+    // TASK-PRD-031 (AUD-11): replay the durable roadmap overlay journal BEFORE
+    // reloadRoadmap() merges the overlay into the parsed roadmap, so mutations from
+    // before a restart are visible in the very first snapshot. A no-op when this
+    // instance has no journalPath configured.
+    const overlayReplay = await this.temporalOverlayStore.load();
+    if (overlayReplay.skipped > 0) {
+      this.appendTerminal(
+        "warn",
+        `Roadmap overlay journal replay skipped ${overlayReplay.skipped} corrupt/truncated line(s) (${overlayReplay.loaded} replayed cleanly).`,
+      );
+    }
     const registryAgents = parseAgentRegistry(await readFile(agentRegistryPath, "utf8"));
     this.snapshot = { ...this.snapshot, agents: registryAgents, updatedAt: new Date().toISOString() };
     await this.reloadRoadmap();
@@ -301,4 +329,7 @@ export class GovibeRuntime {
   }
 }
 
-export const govibeRuntime = new GovibeRuntime();
+// TASK-PRD-031 (AUD-11): the singleton the real MCP server process runs gets a real durable
+// journal by default. Every other `new GovibeRuntime()` call site (unit tests, the
+// smoke-test.mjs registry-introspection instance) stays in-memory-only unless it opts in.
+export const govibeRuntime = new GovibeRuntime({ temporalOverlayJournalPath: defaultTemporalOverlayJournalPath() });
