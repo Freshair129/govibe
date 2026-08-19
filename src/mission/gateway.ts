@@ -10,6 +10,7 @@ import {
   type MissionEvent,
 } from "../../packages/mission-protocol/index.js";
 import type {
+  EventProvenance,
   MissionSnapshot,
   RoadmapSnapshot,
   TerminalLine,
@@ -208,7 +209,12 @@ export class ReliableMissionGateway {
     this.handleEvent(parsed);
   }
 
-  handleEvent(event: WireEvent): void {
+  // TASK-PRD-021 (AUD-24): `provenance` defaults to "sidecar" -- the normal case, a WebSocket
+  // frame or HTTP command response from the governed mission sidecar (see handleRawFrame).
+  // Every other call site (the C3 debug-ingress form, a trusted postMessage payload, the
+  // dev-only govibe:mission-event CustomEvent) passes its real provenance explicitly so an
+  // event that bypassed the sidecar is never indistinguishable from one that came from it.
+  handleEvent(event: WireEvent, provenance: EventProvenance = "sidecar"): void {
     if (event.type === "command.ack") {
       const pending = this.pendingCommands.get(event.commandId);
       const result: CommandResult = {
@@ -225,8 +231,12 @@ export class ReliableMissionGateway {
       this.reconcileCommand(result);
       return;
     }
-    if (event.type === "terminal.line") this.reconcileTerminalLine(event.line as CommandTerminalLine);
-    else this.store.apply(event as import("./domain").MissionEvent);
+    if (event.type === "terminal.line") {
+      this.reconcileTerminalLine(event.line as CommandTerminalLine);
+      return;
+    }
+    this.store.apply(event as import("./domain").MissionEvent);
+    this.setSnapshot({ lastIngest: { source: provenance, eventType: event.type, at: new Date().toISOString() } });
   }
 
   private async bootstrap(): Promise<void> {
@@ -238,6 +248,15 @@ export class ReliableMissionGateway {
     if (hasHttp) {
       try {
         const response = await this.http!.request("/mission/snapshot");
+        // TASK-PRD-021 (AUD-24): a 401 bootstrap gets its own dedicated state rather than
+        // falling into the generic "error" branch below -- the fix here is signing in /
+        // configuring credentials, not retrying a broken transport, and the same bearer
+        // token would fail the WebSocket upgrade too, so this returns without attempting it.
+        if (response.status === 401) {
+          this.appendTerminal("warn", "Mission sidecar rejected the bootstrap request as unauthorized (401).");
+          this.setSnapshot({ connectionState: "unauthorized" });
+          return;
+        }
         if (!response.ok) throw new Error(`Snapshot bootstrap failed with ${response.status}`);
         const payload: unknown = await response.json();
         if (!isMissionSnapshot(payload)) throw new Error("Snapshot bootstrap failed Mission Control schema validation.");
@@ -449,9 +468,12 @@ export const missionGateway = new ReliableMissionGateway({
   httpBaseUrl: import.meta.env.VITE_GOVIBE_API_URL ?? resolveLocalApiFallback(),
 });
 
-export function ingestReliableExternalMissionEvent(value: unknown): boolean {
+// TASK-PRD-021 (AUD-24): this is a general-purpose external ingestion entrypoint (not tied to
+// any one caller), so it defaults to the "external-postmessage" provenance rather than
+// "sidecar" -- a caller with more specific knowledge of its own origin may override it.
+export function ingestReliableExternalMissionEvent(value: unknown, provenance: EventProvenance = "external-postmessage"): boolean {
   if (!isMissionEvent(value)) return false;
-  missionGateway.handleEvent(value);
+  missionGateway.handleEvent(value, provenance);
   return true;
 }
 
@@ -464,13 +486,13 @@ if (typeof window !== "undefined") {
   if (allowDevelopmentCustomEvents) {
     window.addEventListener("govibe:mission-event", ((event: CustomEvent<unknown>) => {
       const missionEvent = readDevelopmentCustomMissionEvent(event.detail, allowDevelopmentCustomEvents);
-      if (missionEvent) missionGateway.handleEvent(missionEvent);
+      if (missionEvent) missionGateway.handleEvent(missionEvent, "development-custom-event");
       else console.warn("Rejected invalid development mission event.");
     }) as EventListener);
   }
   window.addEventListener("message", (event: MessageEvent<unknown>) => {
     const missionEvent = readTrustedMissionMessage(event, window, allowedMissionEventOrigins);
-    if (missionEvent) missionGateway.handleEvent(missionEvent);
+    if (missionEvent) missionGateway.handleEvent(missionEvent, "external-postmessage");
     else console.warn("Rejected untrusted or invalid mission message.");
   });
 }

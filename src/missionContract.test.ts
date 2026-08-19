@@ -341,6 +341,7 @@ const _missionSnapshotKeyCheck: Record<keyof MissionSnapshot, true> = {
   usage: true,
   sessions: true,
   auditLog: true,
+  lastIngest: true,
 };
 // Suppress "unused variable" lint error — the object is only meaningful at type-check time.
 void _missionSnapshotKeyCheck;
@@ -364,6 +365,8 @@ const RUNTIME_POST_BOOT_ALLOWLIST: Record<string, string> = {
     "Populated post-boot by RoadmapService.discoverSources()/reloadRoadmap() (scripts/mcp/runtime/roadmap-service.mjs:241,331), not part of createRuntimeSnapshot()'s boot-time shape.",
   usage:
     "Populated post-boot by GovibeRuntime.ingestUsageData() via snapshotStore.patch({usage}) (scripts/mcp/runtime-core.mjs:344), not part of createRuntimeSnapshot()'s boot-time shape.",
+  lastIngest:
+    "TASK-PRD-021 (AUD-24): a client-only provenance marker stamped by ReliableMissionGateway.handleEvent() (src/mission/gateway.ts) on every event it applies, distinguishing sidecar-delivered state from C3 debug-ingress / postMessage / dev-CustomEvent ingestion. The runtime never produces or transmits this field -- it exists only in the browser gateway's own snapshot store, by design.",
 };
 
 describe("MissionSnapshot cross-runtime parity guard (TASK-PRD-019)", () => {

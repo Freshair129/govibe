@@ -2,7 +2,7 @@
 title: "TODO: Execution-Binding Lifecycle"
 doc_id: "TODO-EXECUTION-BINDING-LIFECYCLE"
 status: "draft"
-version: "0.1.1+draft"
+version: "0.1.2+draft"
 updated: "2026-08-19"
 owner: "Boss (CEO) / ATHER"
 source_of_truth: true
@@ -207,6 +207,7 @@ completeness claim until its revisit trigger fires.
 | `packages/govibe-core/src/entitlement-usage-ledger.mjs` | deferred | a durable-persistence design for the ledger |
 | `packages/govibe-core/src/mode2/` | deferred | Mode 2 scope entering governance (the driving draft is currently untracked/ungoverned) |
 | `packages/govibe-core/src/canonical-materialization.mjs` | deferred | a batch-materialization consumer beyond the live per-stage deep-scan path |
+| `packages/govibe-core/src/provider-adapter-host.mjs` `rejectCanonicalIdentities` vs. the local-agent launcher's opaque stdout/stderr artifact (TASK-PRD-035 review-gate MINOR) | deferred | fold into the A9-PTY/lineage phase-2 work; today a launcher whose output happens to start with `"gks:"` is fail-closed rejected as a fabricated canonical-identity claim, not special-cased |
 
 Integrated per the same decision: planner/router/binding/adapter host + one
 subscription-CLI adapter (D-01 → TASK-PRD-035); credential stack (D-02 →
@@ -218,5 +219,6 @@ TASK-PRD-028). `replay-provider` gets a pinned test with consumption deferred
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2+draft | 2026-08-19 | VIBE | Added a deferred disposition row for the TASK-PRD-035 review-gate MINOR (provider-adapter-host.mjs's rejectCanonicalIdentities is fail-closed against the local-agent launcher's opaque stdout/stderr — an output beginning with "gks:" would be wrongly rejected), recorded as a phase-2 follow-up to fold into the A9-PTY/lineage work, not fixed in the TASK-PRD-035 batch. |
 | 0.1.1+draft | 2026-08-19 | ARCHON / Boss | Recorded the CR-2026-08-19 owner-approved D-03 deferred dispositions (entitlement/compatibility/session registries, usage ledger, mode2, canonical-materialization) with revisit triggers, and the D-01/D-02/D-04/D-05 execution pointers. |
 | 0.1.0+draft | 2026-08-03 | ATHER | Registered only remaining execution-binding lifecycle work after WP-06, WP-10, and WP-11 closure; retained unknown external, provider, graph, rollback, and bundled lifecycle gates without inferring promotion or safety. |
