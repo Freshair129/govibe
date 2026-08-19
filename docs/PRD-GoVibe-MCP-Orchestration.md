@@ -2,16 +2,16 @@
 title: "PRD: GoVibe MCP Orchestration"
 doc_id: "PRD-GOVIBE-MCP-ORCHESTRATION"
 status: "draft"
-version: "0.2.1+draft"
-updated: "2026-06-22"
+version: "0.2.2+draft"
+updated: "2026-08-19"
 owner: "GoVibe"
 source_of_truth: true
-related_adrs: ["ADR-016", "ADR-017", "ADR-019"]
+related_adrs: ["ADR-016", "ADR-017", "ADR-019", "ADR-021"]
 block_manifest:
   core:
     id: "[[DOC::PRD_MCP_ORCHESTRATION]]"
     block_id: "[[GKS::GENESIS_BLOCK_V3]]"
-    context_scaling_tier: "H4"
+    access_scope: "H4"
 ---
 
 # PRD: GoVibe MCP Orchestration
@@ -207,6 +207,7 @@ Phasing is derived from the current as-built runtime and the work the SRS/LLD ma
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.2+draft | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): `block_manifest.core.context_scaling_tier` renamed to `access_scope`; no status change. |
 | 0.2.1+draft | 2026-06-22 | GoVibe | Corrected the tool count (nine → ten) and added the missing `govibe.orchestrate.step` capability (§7.7); framed orchestration as a runtime capability, not a separate product identity. |
 | 0.2.0+draft | 2026-06-21 | GoVibe | Authored the previously-stubbed PRD body (capability surface, permission model, boundaries, metrics, rollout, risks, traceability) synthesized from the approved MCP SRS and tools LLD. |
 | 0.1.1+draft | 2026-06-20 | GoVibe | Added missing title frontmatter field. Body remains stubbed and incomplete for sign-off. |

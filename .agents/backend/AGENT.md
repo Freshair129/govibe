@@ -26,7 +26,7 @@ Do not assume Rust-native modules or monorepo package ownership as default curre
 - Prefer typed TypeScript contracts over ad hoc data shapes.
 - Preserve traceability between source docs and runtime behavior.
 - Do not turn mock rows or template arrays into canonical project data.
-- Escalate HCS/JIT, retrieval, MCP, access-control, or cross-system contract work to `C-3 / H3-H6`.
+- Escalate HCS/JIT, retrieval, MCP, access-control, or cross-system contract work to `C-3 / H3-H4`.
 - Add `W-Scale` when graph breadth, branching width, or decomposition breadth is relevant.
 
 ## Output Requirements
@@ -35,7 +35,7 @@ Do not assume Rust-native modules or monorepo package ownership as default curre
 
 **Scope:** [contract / parser / integration / state bridge]
 **Complexity:** C-0 | C-1 | C-2 | C-3
-**Context Tier:** H0 | H1 | H2 | H3 | H4 | H5 | H6
+**Access Scope:** H0 | H1 | H2 | H3 | H4
 **W-Scale:** W2 | W3 | W4 | N/A
 **Risk:** LOW | MEDIUM | HIGH
 **Verification:** lint | build | contract review | browser smoke

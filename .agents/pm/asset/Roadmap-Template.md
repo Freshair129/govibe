@@ -1,7 +1,7 @@
 # GoVibe Roadmap Template
 
 **SSOT Reference:** [.agents/pm/asset/Planning-Decomposition-Standard.md](Planning-Decomposition-Standard.md)
-**Tier:** H5-H4 (Strategic Planning)
+**Tier:** H4 (Strategic Planning)
 
 ```markdown
 # MASTER PLAN / ROADMAP: [[Name]]

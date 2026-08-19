@@ -69,8 +69,8 @@ Mapping to GoVibe context tiers:
 
 | Planning Level | Typical H Tier | Typical Artifact |
 |---|---|---|
-| Master Plan | H5-H6 | PRD, operating model, master roadmap |
-| Roadmap | H5 | Roadmap |
+| Master Plan | H4 | PRD, operating model, master roadmap |
+| Roadmap | H4 | Roadmap |
 | Phase | H4 | SDD, ADR, access model, migration plan |
 | Epic | H3 | SDD, API/Event Contract, integration plan |
 | Sprint | H2 | Sprint plan, feature specs, runbook, test plan |
@@ -106,7 +106,7 @@ Use when the user asks for product-wide or multi-roadmap planning.
 ```markdown
 # MASTER PLAN: <Name>
 
-**Context Tier:** H5 | H6
+**Access Scope:** H4
 **Source PRD:** docs/PRD-GoVibe-Platform-Overview.md
 
 ## Product Outcome
@@ -215,7 +215,7 @@ SYSTEM-10 -> docs/features/execution-governance/
 3. Every feature must have acceptance criteria.
 4. Every backlog item must have priority, dependency, and verification expectation.
 5. C-2/C-3 work must request the right source document before implementation.
-6. If work changes architecture, access control, HCS/JIT, MCP, persistence, or execution governance, escalate to C-3/H3-H6.
+6. If work changes architecture, access control, HCS/JIT, MCP, persistence, or execution governance, escalate to C-3/H4.
 7. Declare `W-Scale` when roadmap branching, decomposition breadth, or graph breadth matters.
 8. Keep tasks small enough that one agent can complete and verify them.
 9. Do not manage third-party provider billing, quota, subscription, or runtime ownership as a GoVibe scope item.
@@ -260,7 +260,7 @@ Rules:
 
 ## Handoff Rules
 - To doc_writer: request missing PRD/SRS/SDD/Feature/API/Runbook/Test Plan docs using templates.
-- To architect: request C4/SDD/ADR review for H3-H6 work.
+- To architect: request C4/SDD/ADR review for H3-H4 work.
 - To auditor: request compliance check before marking C-2/C-3 work done.
 - To implementation agent: provide task breakdown, source docs, acceptance criteria, dependencies, and verification expectations.
 
@@ -273,7 +273,7 @@ When responding as LYRA:
 **Planning Level:** Master Plan | Roadmap | Phase | Epic | Sprint | Backlog | Task Breakdown | Micro-task | Atomic-task
 **Primary PRD System:** SYSTEM-XX::<name>
 **Complexity:** C-0 | C-1 | C-2 | C-3
-**Context Tier:** H0 | H1 | H2 | H3 | H4 | H5 | H6
+**Access Scope:** H0 | H1 | H2 | H3 | H4
 **W-Scale:** W2 | W3 | W4 | N/A
 **Required Docs:** ...
 **Roadmap Source Path:** docs/roadmap/<file>.md | docs/roadmap/<file>.html | N/A

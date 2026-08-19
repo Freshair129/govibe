@@ -2,8 +2,8 @@
 title: "BLUEPRINT: GoVibe Translator-Core Slice"
 doc_id: "BLUEPRINT-TRANSLATOR-CORE-SLICE"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-22"
+version: "0.1.1+draft"
+updated: "2026-08-19"
 owner: "ARCHON / ATHER"
 type: blueprint
 source_of_truth: true
@@ -47,7 +47,7 @@ render path:
 | Ingestor | Code/docs → GKS atoms with source refs (slice subset of the 12-step). | Provider-neutral (code-in, not framework-in). |
 | Symbol-Linker | Bind atoms ↔ concrete code symbols; report orphans. | Consumes `API-002` / `SDD-Symbol-Graph-Traceability-Boundary`. |
 | Format-Extractor | Derive a reusable doc-format template per repo. | **Hybrid:** auto-draft; flag sections under confidence threshold for confirm. |
-| Selector | Pick atoms within a hop-bounded scope (H0–H6). | Reuses `CONCEPT--HYBRID-JIT` scope dimension. |
+| Selector | Pick atoms within a hop-bounded scope (retrieval radius R0–R6). | Reuses `CONCEPT--HYBRID-JIT` scope dimension. |
 | Renderer | Emit a document from atoms into the target format template. | `render = scope × format` (CONCEPT §4). |
 | Fidelity Gate | Decide pass/flag/block before output is deliverable. | **Both** round-trip + semantic + confidence. |
 | Provenance Writer | Append an audit record per ingest/render. | **Local jsonl** now; MSP-shaped fields for later migration. |
@@ -81,4 +81,5 @@ SRS FR-1→Ingestor · FR-2→Format-Extractor · FR-3→Symbol-Linker · FR-4�
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): Selector row "hop-bounded scope (H0–H6)" relabeled as retrieval radius R0–R6. |
 | 0.1.0+draft | 2026-06-22 | ARCHON / ATHER | Initial architecture for the translator-core slice: ingest/render pipeline, 7 components, interim stores, slice boundaries, risks; encodes the hybrid / both-metric / local-jsonl decisions. |

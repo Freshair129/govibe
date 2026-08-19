@@ -42,6 +42,25 @@ const governedDocPatterns = [
   /^\.agents\/doc_writer\/template\/AGENTS-template\.md$/i,
 ];
 const ignoredDirs = new Set([".git", "node_modules", "dist", ".vercel", ".vite", ".turbo"]);
+
+// GATE-SEMANTIC (ADR-021-H-Axis-Access-Scope-Semantic-Separation, AUD-14, TASK-PRD-022): H is
+// executor Access Scope with valid values H0-H4 only. H5/H6 and the pre-ADR-021 field name
+// `context_scaling_tier` are abolished and must not appear as live, active semantics in a
+// governed document. Historical changelog rows, explicit prohibition/abolition text, audit
+// findings that quote the violation, and archived/change-control decision records are legitimate
+// and must not trip this rule.
+const hAxisExemptPathPatterns = [
+  /^docs\/archive\//i,
+  /^docs\/assurance\/audit\//i,
+  /^docs\/change-control\//i,
+  /^docs\/change-requests\//i,
+  /^\.agents\/\.devlog\//i,
+];
+const hAxisAbolishedFieldNamePattern = /\bcontext_scaling_tier\s*:/i;
+const hAxisAbolishedSymbolPattern = /\bHLevelClassifier\b|\bclassifyHLevel\b/;
+const hAxisStructuredFieldLinePattern = /^\s*(?:[-*]\s*)?(?:\*\*[^*]+\*\*|`?[A-Za-z][\w.-]*`?)\s*:\s*(.+)$/;
+const hAxisAbolishedValuePattern = /\bH[56]\b/;
+
 const results = {
   errors: [],
   warnings: [],
@@ -418,6 +437,78 @@ function isResolvableReference(path) {
   return /^(docs|standards|\.agents|scripts|src|comp|public|workflows|template)\//.test(path);
 }
 
+// Text that talks ABOUT the abolished semantics (correction notes, changelog rows, prohibition
+// text, audit-finding prose, migration/compatibility-decision tables, Given/When/Then acceptance
+// criteria describing what the gate itself must catch) rather than declaring them as live.
+function isHAxisAllowanceText(text) {
+  return (
+    /abolished|retired\b|\bremoved\b|must not|invalid|not valid|prohibit|forbidden|\breject/i.test(text) ||
+    /do not (?:use|introduce)|correction \(adr-0|down-mapped|renamed|corrected|gap-0\d|aud-\d\d|legacy_leak/i.test(text) ||
+    /superseded|previously used|\blegacy\b|historical|\bfinding\b|audit sweep|no active|not met/i.test(text) ||
+    /non-conformant|do not simply rename|\bdeprecat|compatib|\bmapping\b|migration rule|naming contract/i.test(text) ||
+    /decision log|binding replacement|\bsuperseded\b/i.test(text)
+  );
+}
+
+const hAxisSectionHeadingPattern = /^(#{1,6})\s+(.*)$/;
+const hAxisCriterionLinePattern = /^\s*-\s*criterion:/i;
+const hAxisLookbackLines = 6;
+
+function checkAbolishedHAxisSemantics(markdownFiles) {
+  for (const file of markdownFiles) {
+    if (hAxisExemptPathPatterns.some((pattern) => pattern.test(file))) continue;
+
+    const content = readRepoFile(file);
+    const lines = content.split(/\r?\n/);
+    const sectionAllowedByDepth = [];
+
+    lines.forEach((line, index) => {
+      const heading = line.match(hAxisSectionHeadingPattern);
+      if (heading) {
+        const depth = heading[1].length;
+        while (sectionAllowedByDepth.length && sectionAllowedByDepth[sectionAllowedByDepth.length - 1].depth >= depth) {
+          sectionAllowedByDepth.pop();
+        }
+        sectionAllowedByDepth.push({ depth, allowed: isHAxisAllowanceText(heading[2]) });
+      }
+
+      // Given/When/Then acceptance/success/exit criteria describe what the gate must detect in
+      // hypothetical prose ("when an active document introduces H5..."), not a live declaration.
+      if (hAxisCriterionLinePattern.test(line)) return;
+
+      const inAllowedSection = sectionAllowedByDepth.some((entry) => entry.allowed);
+      if (inAllowedSection) return;
+
+      const windowStart = Math.max(0, index - hAxisLookbackLines);
+      if (isHAxisAllowanceText(lines.slice(windowStart, index + 1).join("\n"))) return;
+
+      if (hAxisAbolishedFieldNamePattern.test(line)) {
+        addError(
+          file,
+          `Line ${index + 1}: abolished field name \`context_scaling_tier\` used as live semantics. Use \`access_scope\` (H0-H4) or \`retrieval_radius\` (R0-R6) per ADR-021.`,
+        );
+        return;
+      }
+
+      if (hAxisAbolishedSymbolPattern.test(line)) {
+        addError(
+          file,
+          `Line ${index + 1}: abolished H-axis symbol reintroduced. Use \`AccessScopeResolver\`/\`resolveAccessScope\` or \`RetrievalRadiusPlanner\` per ADR-021's H-Axis-Compatibility-Decision mapping.`,
+        );
+        return;
+      }
+
+      const structuredMatch = line.match(hAxisStructuredFieldLinePattern);
+      if (structuredMatch && hAxisAbolishedValuePattern.test(structuredMatch[1])) {
+        addError(
+          file,
+          `Line ${index + 1}: abolished access value H5/H6 declared as a live field value. Executor Access Scope is H0-H4 only; retrieval/graph reach is a separate \`retrieval_radius\` (R0-R6) concern (ADR-021).`,
+        );
+      }
+    });
+  }
+}
+
 function checkLegacyDocs(markdownFiles) {
   for (const file of markdownFiles) {
     if (!/^docs\/(features|srs)\//.test(file) || file === "docs/features/README.md") continue;
@@ -570,6 +661,7 @@ function main() {
   checkLegacyDocs(markdownFiles);
   checkRoadmapTemporalIntegrity(markdownFiles);
   checkRoadmapPromotion(markdownFiles);
+  checkAbolishedHAxisSemantics(markdownFiles);
 
   printReport();
 

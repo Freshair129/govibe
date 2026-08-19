@@ -127,12 +127,15 @@ PAST MISTAKES):
 
 ## 5. Routing & gates — when NOT to go local
 
-**Quota-aware decomposition (H-scale, `docs/DESIGN--G-ORCHESTRA-V2.md`):** H0 = subtask/PR
-(local only, 8–16k ctx, one action); H1 = component (local + escalation); H2–H6 = cloud/frontier
-only.
+**Quota-aware decomposition (model tier, `docs/STD-SLM-Tiered-Routing.md`):** T0/T1 local SLM =
+subtask/PR scope (local only, 8–16k ctx, one action) and component scope (local + escalation);
+T1.5/T2/T3 = cloud/frontier only. (2026-08-19 correction, ADR-021/AUD-14/TASK-PRD-022: this row
+previously used `H0-H6` as a model-tier scale — a third, abolished meaning of H distinct from
+executor Access Scope and Retrieval Radius — replaced with the canonical `T0-T3` model-tier
+vocabulary already defined in `STD-SLM-Tiered-Routing.md`.)
 
 - ✅ **Route LOCAL:** extraction / classification / one-line edits / checklist verify /
-  repetitive formatting / bounded single-file changes / H0 packets.
+  repetitive formatting / bounded single-file changes / T0 packets.
 - ❌ **NEVER route local:** architecture interpretation, PRD/cross-repo decisions, scope
   approval, work needing full SDD/C4/PRD, broad multi-subsystem search → return
   `escalate_to_lead` instead of widening context.

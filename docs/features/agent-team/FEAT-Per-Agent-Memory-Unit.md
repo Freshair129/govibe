@@ -2,8 +2,8 @@
 title: "FEAT: Per-Agent Memory Unit"
 doc_id: "FEAT-PER-AGENT-MEMORY-UNIT"
 status: "draft"
-version: "0.2.0+draft"
-updated: "2026-08-04"
+version: "0.2.1+draft"
+updated: "2026-08-19"
 owner: "ARCHON / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -46,8 +46,9 @@ bitemporal versioning) rather than rebuilding storage, retrieval, or compaction.
 
 ## 3. Scope
 
-Context tiers (`H0`–`H6`) follow the canonical Context Scaling Tier scale in
-`.agents/FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS.md` §3.
+Retrieval radius (`R0`–`R6`) follows the canonical Retrieval Radius scale in
+`.agents/FRAMEWORK--HIERARCHY-COMPACTION-STANDARDS.md` §3; executor Access Scope (`H0`–`H4`) is a
+separate, independently-declared concern per `ADR-021`.
 
 Included:
 
@@ -229,5 +230,6 @@ this FEAT specifies, which is separate, later work.
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.2.1+draft | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): §3 "Context tiers (H0-H6)... Context Scaling Tier scale" renamed "Retrieval radius (R0-R6)... Retrieval Radius scale" per the FRAMEWORK doc it cites. |
 | 0.2.0+draft | 2026-08-04 | Claude (final-gate session) | Added Section 11, pointing this feature's persistence/retrieval requirement at `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md` and `packages/msp-runtime` as the concrete realization; renumbered Acceptance Criteria/Success Criteria/Definition of Done to 12/13/14 without changing their content; added SRS/SDD/API-009 to related_docs and to Definition of Done. Tier model, entry schema, promotion pipeline, and LCA resolution (Sections 5, 7, 8, 9) are unchanged. |
 | 0.1.0+draft | 2026-06-23 | ARCHON / ATHER | Initial tiered per-agent memory unit contract: T0/T1/T2 tiers, 3-file re-grounded unit, epistemic + bitemporal entry schema, Verify-Gate promotion pipeline, LCA conflict resolution, 8-8-8 distillation distinct from spatial compaction, composition over rebuild. |

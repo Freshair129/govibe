@@ -2,8 +2,8 @@
 title: "FEAT: Quota-Aware Local LLM Decomposition"
 doc_id: "FEAT-QUOTA-AWARE-LOCAL-LLM-DECOMPOSITION"
 status: "approved"
-version: "0.1.1"
-updated: "2026-06-20"
+version: "0.1.2"
+updated: "2026-08-19"
 owner: "LYRA / ATHER"
 source_of_truth: true
 prd_system: "SYSTEM-05::Agent-Team-Management-System"
@@ -33,7 +33,7 @@ Local models are less reliable when asked to infer broad product context. GoVibe
 
 ## 3. Scope
 
-Context tiers (`H0`, `H1`, ...) used in this doc follow the canonical Context Scaling Tier scale defined in `docs/STD-Execution-Governance.md` §3 (H-Scale Mapping): `H0` = subtask/PR scope (local change, no broad context required), `H1` = task/component scope, ascending to `H6`. Local LLM packets target `H0` (and at most `H1`) work.
+Access Scope values (`H0`, `H1`, ...) used in this doc follow the canonical Access Scope scale defined in `docs/STD-Execution-Governance.md` §3 (H-Scale: Access Scope): `H0` = subtask/PR scope (local change, no broad context required), `H1` = task/component scope, ascending to `H4` (`H5`/`H6` are abolished per `ADR-021`). Local LLM packets target `H0` (and at most `H1`) work.
 
 Included:
 
@@ -130,6 +130,7 @@ escalation_rule: escalate_to_lead_when_more_than_one_action_is_required
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.2 | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): §3 "Context Scaling Tier scale... ascending to H6" renamed "Access Scope scale... ascending to H4"; no status change. |
 | 0.1.1 | 2026-06-20 | LYRA / ATHER | Signed off; promoted draft -> approved. |
 | 0.1.1+draft | 2026-06-20 | LYRA / ATHER | Anchored H0/H1 context tiers to the canonical Context Scaling Tier scale in STD-Execution-Governance §3 and added it to related_docs. |
 | 0.1.0+draft | 2026-06-16 | LYRA / ATHER | Added quota-aware local LLM decomposition contract for micro-task and atomic-task execution. |

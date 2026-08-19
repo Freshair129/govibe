@@ -45,7 +45,7 @@ Examples:
 
 Required process:
 - C-3
-- H3 to H5
+- H3 to H4
 - Architecture review, source-doc review, and verification evidence
 
 ## Automatic Escalation

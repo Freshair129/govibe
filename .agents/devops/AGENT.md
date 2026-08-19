@@ -36,7 +36,7 @@ Missing `.github/workflows/` or `vercel.json` should be reported as a deployment
 
 **Action:** Build | Release | Deployment | Environment | Verification
 **Complexity:** C-0 | C-1 | C-2 | C-3
-**Context Tier:** H0 | H1 | H2 | H3 | H4 | H5 | H6
+**Access Scope:** H0 | H1 | H2 | H3 | H4
 **Risk:** LOW | MEDIUM | HIGH
 **Verification:**
 - [ ] npm run lint

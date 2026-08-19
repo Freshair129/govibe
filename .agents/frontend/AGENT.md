@@ -79,7 +79,7 @@ Default loading order:
 
 **Scope:** [view / interaction / design parity / refactor]
 **Complexity:** C-0 | C-1 | C-2 | C-3
-**Context Tier:** H0 | H1 | H2 | H3 | H4 | H5 | H6
+**Access Scope:** H0 | H1 | H2 | H3 | H4
 **Risk:** LOW | MEDIUM | HIGH
 **Verification:** lint | build | browser | mobile | console check
 

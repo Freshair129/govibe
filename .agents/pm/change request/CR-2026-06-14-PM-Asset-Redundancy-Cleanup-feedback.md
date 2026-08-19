@@ -2,19 +2,21 @@
 title: "Feedback: CR-2026-06-14-PM-Asset-Redundancy-Cleanup"
 doc_id: "CR-2026-06-14-pm-asset-redundancy-cleanup-feedback"
 status: "review_completed"
-version: "0.1.0"
-updated: "2026-06-14"
+version: "0.1.1"
+updated: "2026-08-19"
 reviewer: "ATHER"
 target_cr: "CR-2026-06-14-pm-asset-redundancy-cleanup"
 ---
 
 # Auditor Feedback: PM Asset Redundancy Cleanup
 
+> **2026-08-19 correction (ADR-021/AUD-14, TASK-PRD-022):** corrected abolished H-axis semantics — the "(H5-H3)" planning-boundary range below is down-mapped to `(H4-H3)`. No status change.
+
 ## 1. Compliance Review
 `[[AGENT::ATHER]]` has reviewed the proposal from `[[AGENT::LYRA]]`.
 
 - **Telemetry Standards:** Alignment with Model Name and Token Telemetry is **MANDATORY** for H4 Tier governance. The current lack of these columns in standard templates is a high-risk gap in traceability.
-- **Asset Naming:** Renaming `PLAN_Template.md` to `Implementation-Plan-Template.md` is approved. This clarifies the boundary between high-level planning (H5-H3) and execution (H2-H0).
+- **Asset Naming:** Renaming `PLAN_Template.md` to `Implementation-Plan-Template.md` is approved. This clarifies the boundary between high-level planning (H4-H3) and execution (H2-H0).
 
 ## 2. Mandatory Additions
 To satisfy the **Execution Governance** standard, the following must be added to the new templates:

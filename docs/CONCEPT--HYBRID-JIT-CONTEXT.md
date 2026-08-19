@@ -1,8 +1,8 @@
 ﻿---
 doc_id: "CONCEPT--HYBRID-JIT-CONTEXT"
 id: CONCEPT--HYBRID-JIT-CONTEXT
-version: "0.1.1+draft"
-updated: "2026-06-22"
+version: "0.1.2+draft"
+updated: "2026-08-19"
 phase: 1
 type: concept
 status: stable
@@ -12,7 +12,7 @@ vault_id: default
 tier: process
 source_type: axiomatic
 title: "The Hybrid Masterpiece: Just-In-Time Context Rendering"
-summary: สถาปัตยกรรมระดับ End-Game ของระบบ Agentic AI ที่ผสานเลเยอร์ Storage แบบ Markdown เข้ากับเลเยอร์ Compute แบบ Graph Database เพื่อดึง Context (H0-H6) แบบ Just-In-Time
+summary: สถาปัตยกรรมระดับ End-Game ของระบบ Agentic AI ที่ผสานเลเยอร์ Storage แบบ Markdown เข้ากับเลเยอร์ Compute แบบ Graph Database เพื่อดึง Context (Retrieval Radius R0-R6) แบบ Just-In-Time
 tags:
   - architecture
   - context
@@ -48,7 +48,7 @@ role: Strategic intent / PRD
 *   **หลักการ:** เมื่อ Agent ต้องการเริ่มทำงาน (เช่น วางแผนที่ระดับ H2) Agent จะไม่ได้ไปเปิดไฟล์ `.md` มาอ่านเองตรงๆ แต่จะเรียกใช้ระบบเบื้องหลัง (GKS Parser Engine / GenesisGraph)
 *   **วิธีการ (Just-In-Time Rendering):** 
     1. ระบบ Parser จะอ่านไฟล์ `.md` แล้วสร้าง **In-Memory Graph** ขึ้นมาชั่วคราว
-    2. ค้นหาเนื้อหาแบบจำกัดวงรัศมีตาม Hop Level (H0 - H6)
+    2. ค้นหาเนื้อหาแบบจำกัดวงรัศมีตาม Retrieval Radius (R0 - R6)
     3. **Render (สร้าง) เนื้อหาเฉพาะส่วนนั้น** ออกมาเป็น Temp File หรือ Text String ส่งกลับให้ Agent
 *   **ข้อดี:** Agent ได้รับ Context ที่ "สั่งตัดมาเฉพาะกิจ (Bespoke)" ไม่มีขยะปน เปลือง Token น้อยสุดๆ และป้องกันอาการหลอน (Context Hallucination) ได้เด็ดขาด
 
@@ -68,7 +68,7 @@ role: Strategic intent / PRD
 
 ## 4. Format-Adaptive Rendering (มิติที่ 2 — ตาม Format ไม่ใช่แค่ Scope)
 
-JIT rendering ข้างต้นตัด context ตาม **scope (hop H0–H6)** แต่ปัญหา mismatch ข้ามโปรเจกต์ — เช่น repo หนึ่งเขียนแบบ **Feature-Base** อีก repo เขียนแบบ **System-Base** — ต้องการมิติที่สอง: **render ตาม format/paradigm ของ repo ปลายทาง**
+JIT rendering ข้างต้นตัด context ตาม **scope (retrieval radius R0–R6)** แต่ปัญหา mismatch ข้ามโปรเจกต์ — เช่น repo หนึ่งเขียนแบบ **Feature-Base** อีก repo เขียนแบบ **System-Base** — ต้องการมิติที่สอง: **render ตาม format/paradigm ของ repo ปลายทาง**
 
 หลักการ: GKS atom เป็น canonical กลาง — ก้อนเดียวกัน render ออกได้ทุก format ตามมาตรฐานของ repo ที่ถาม (ผู้ใช้ไม่ต้อง migrate เอกสารเดิม)
 
@@ -84,6 +84,7 @@ JIT rendering ข้างต้นตัด context ตาม **scope (hop H0�
 
 | Version | Date | Summary |
 |---|---|---|
+| 0.1.2+draft | 2026-08-19 | Corrected abolished H-axis hop semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): summary and §2/§4 "Hop Level (H0-H6)" / "scope (hop H0–H6)" wording replaced with Retrieval Radius R0-R6; Access Scope references (H2) left unchanged. |
 | 0.1.1+draft | 2026-06-22 | Added §4 Format-Adaptive Rendering (render = scope × format-template) to capture doc-format-agnostic JIT output; links to ADR-017 language packs and FEAT-Doc-Format-Template-Extraction. |
 | 0.1.0 | 2026-06-15 | Added canonical doc_id metadata to align the concept doc with the document versioning governance standard. |
 

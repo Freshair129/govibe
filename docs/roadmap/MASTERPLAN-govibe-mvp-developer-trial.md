@@ -2,12 +2,12 @@
 title: "MASTERPLAN: GoVibe MVP Developer Trial"
 doc_id: "MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL"
 status: "approved"
-version: "0.2.0"
-updated: "2026-07-31"
+version: "0.2.1"
+updated: "2026-08-19"
 owner: "LYRA"
 auditor: "ATHER"
 source_of_truth: true
-planning_tier: "H5"
+access_scope: "H4"
 primary_goal: "MVP for developer trial use"
 related_docs:
   - "docs/PRD-GoVibe-Platform-Overview.md"
@@ -104,7 +104,7 @@ The trial should prove:
 
 | ID | Type | Title | System | C/H | Priority | PIC | Executor | Model Name | Context | Predicted Tokens | Status |
 |---|---|---|---|---|---|---|---|---|---|---:|---|
-| MVP-BL-001 | doc | Register MVP master plan and active executor docs | SYSTEM-09 | C-2/H5 | P0 | LYRA | THESEUS | GPT-5 | 128k | 6000 | in_progress |
+| MVP-BL-001 | doc | Register MVP master plan and active executor docs | SYSTEM-09 | C-2/H4 | P0 | LYRA | THESEUS | GPT-5 | 128k | 6000 | in_progress |
 | MVP-BL-002 | feature | Render A2 roadmap and Task Container detail from approved source | SYSTEM-02 | C-3/H4 | P0 | LYRA | VIBE/KIN | GPT-5 | 128k | 18000 | planned |
 | MVP-BL-003 | feature | Render A5 agent-team governance and handoff context | SYSTEM-05 | C-3/H4 | P0 | LYRA | VIBE/THESEUS | GPT-5 | 128k | 16000 | planned |
 | MVP-BL-003A | feature | Deliver task-scoped context injection planning and execution chain | SYSTEM-05 | C-3/H4 | P0 | LYRA | ARCHON/ATHER | GPT-5 | 128k | 14000 | planned |
@@ -182,6 +182,7 @@ Clone repo
 ## Changelog
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.2.1 | 2026-08-19 | approved | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): frontmatter `planning_tier: "H5"` renamed to `access_scope: "H4"`; MVP-BL-001 row `C-2/H5` corrected to `C-2/H4`. Semantic correction only under PHASE-PRD-04/GATE-SEMANTIC authority; approved status unchanged. | pending | ATHER |
 | 0.2.0 | 2026-07-31 | approved | Boss approved the MVP scope; the plan is now eligible to drive the A2 active roadmap through the existing promotion contract. | pending | LYRA |
 | 0.1.1+draft | 2026-06-20 | draft | Added a one-line note qualifying BACKLOG-p1-mvp-core as a legacy import fixture in UI Traceability; no other content changed. | pending | LYRA |
 | 0.1.0+draft | 2026-06-16 | draft | Initial MVP master plan for developer trial scope, phases, backlog seed, traceability, and validation gates. | pending | Codex |

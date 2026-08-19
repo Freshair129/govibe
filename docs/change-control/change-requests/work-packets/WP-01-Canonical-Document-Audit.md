@@ -2,14 +2,14 @@
 doc_id: "WP-01-CANONICAL-DOCUMENT-AUDIT"
 title: "Work Packet 01: Canonical Document Audit"
 status: "active"
-version: "0.1.0"
-updated: "2026-08-01"
+version: "0.1.1"
+updated: "2026-08-19"
 parent_cr: "CR-2026-08-01-GOVIBE-ARCHITECTURE-ALIGNMENT-IMPLEMENTATION"
 owner: "ATHER"
 co_owner: "THESEUS"
 reviewer: "ARCHON"
 complexity: "C-3"
-context_tier: "H5"
+access_scope: "H4"  # 2026-08-19: down-mapped from legacy context_tier: "H5" per ADR-021/AUD-14 (TASK-PRD-022); H4 is the ceiling
 mutation_policy: "audit-only"
 ---
 

@@ -1,13 +1,13 @@
 # FEAT: Multi-Agent Workflow System
 
 **Status:** `DRAFT`
-**Updated:** 2026-06-13
+**Updated:** 2026-08-19 (H-axis semantics corrected per ADR-021/AUD-14, TASK-PRD-022: "Context Tier"/"context depth H0-H6" renamed "Access Scope"/"H0-H4")
 **Primary PRD System:** `SYSTEM-05::Agent-Team-Management-System`
 **Supporting PRD Systems:** `SYSTEM-02::Project-Roadmap-Management-System`, `SYSTEM-06::Integration-Bridge-System`, `SYSTEM-07::Governance-Access-Control-System`, `SYSTEM-09::Traceability-Audit-Verification-System`, `SYSTEM-10::Execution-Governance-System`
 **Owner:** THESEUS
 **Auditor:** ATHER
 **Complexity:** `C-2`
-**Context Tier:** `H4`
+**Access Scope:** `H4`
 **W-Scale:** `W3`
 **Risk:** `MEDIUM`
 
@@ -77,7 +77,7 @@ Request
 ### 5.1 Intake and classification
 
 - The system must classify work by `C-0` to `C-3`.
-- The system must classify context depth by `H0` to `H6`.
+- The system must classify access scope by `H0` to `H4`.
 - The system must declare `W-Scale` when branching width or decomposition fan-out matters.
 - The system must identify one primary PRD system owner for each task.
 

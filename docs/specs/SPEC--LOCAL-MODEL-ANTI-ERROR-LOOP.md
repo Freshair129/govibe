@@ -46,7 +46,7 @@ dispatch(local/microtask) â”€â”€â–º produce â”€â”€â–�
 
 | à¸à¸¥à¹„à¸ | à¹à¸à¹‰ failure | GenesisDB primitive |
 | --- | --- | --- |
-| **G1 â€” Ground:** à¸”à¸¶à¸‡ context à¸—à¸µà¹ˆà¸„à¸¡à¸žà¸­à¸”à¸µ budget | overflow, blank-page | `retrieveContext(targetId, tier, budget, fuzzy)` â†’ `ContextPackage{tokenEstimate, reasoningPath}` (GRL H0â€“H5) |
+| **G1 â€” Ground:** à¸”à¸¶à¸‡ context à¸—à¸µà¹ˆà¸„à¸¡à¸žà¸­à¸”à¸µ budget | overflow, blank-page | `retrieveContext(targetId, tier, budget, fuzzy)` â†’ `ContextPackage{tokenEstimate, reasoningPath}` (GRL R0â€“R5, Retrieval Radius) |
 | **G2 â€” Remember:** à¹€à¸à¹‡à¸šà¸„à¸§à¸²à¸¡à¸œà¸´à¸”à¸—à¸¸à¸à¸„à¸£à¸±à¹‰à¸‡à¸—à¸µà¹ˆ Verify Gate à¸•à¸µà¸à¸¥à¸±à¸š | à¸—à¸³à¸œà¸´à¸”à¸‹à¹‰à¸³ | `addNode{labels:["failure"], embedding, props:{issue, fix}}` + `addEdge{rel:"failed_with"}` |
 | **G3 â€” Retrieve:** à¸à¹ˆà¸­à¸™ dispatch à¸”à¸¶à¸‡ "à¸„à¸§à¸²à¸¡à¸œà¸´à¸”/à¸•à¸±à¸§à¸­à¸¢à¹ˆà¸²à¸‡" à¸—à¸µà¹ˆà¸„à¸¥à¹‰à¸²à¸¢ task à¸™à¸µà¹‰ | à¸—à¸³à¸œà¸´à¸”à¸‹à¹‰à¸³, hallucinate | `hybridSearch{queryVector, k, alpha}` à¸šà¸™ failure/passed nodes |
 

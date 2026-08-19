@@ -18,6 +18,8 @@ This C4 view is governed by the accepted decisions:
 - **Positioning:** governance + interop **translator** — GKS is an internal interlingua (`A1 ⇄ GKS ⇄ A25`); GoVibe **rides MCP/A2A and bridges INTO** LangGraph, it does not replace them (ADR-017).
 - **Structure:** single containment tree `PLAT→SYS→SUBSYS→MOD→…→METH` + wikilink cross-link graph; criticality (support/core/central) auto-derived from the dependency graph (ADR-018).
 - **Flow:** universal code-in (12-step decomposition) + MCP-out (7-phase generation), gated by H + W + Complexity (ADR-019).
+
+**2026-08-19 semantic correction (ADR-021/AUD-14, TASK-PRD-022):** §5.7 and §6.1 below directly incorporate the mapping from `C4-GoVibe-Platform-H-Axis-Correction.md` — `HLevelClassifier`/`classifyHLevel` → `AccessScopeResolver`/`resolveAccessScope`, `GraphHopResolver` → `RetrievalRadiusPlanner`, and `H0-H6` context/retrieval ranges → `H0-H4` Access Scope plus a separate `R0-R6` Retrieval Radius. This is the direct rewrite GAP-08 called for; the correction overlay document remains valid as the decision record.
 - **Naming:** root governance policy = `GOV--`; "Master" = essence/index (ADR-015). See also `BRD-GoVibe-Platform`, `SDD-GoVibe-MSP-GKS-Integration`.
 
 ## 2. C4 Level Summary
@@ -321,9 +323,9 @@ Responsibilities:
 ```text
 GenesisKnowledgeSystem
 +-- HierarchyCompactionSystem
-|   +-- HLevelClassifier
+|   +-- AccessScopeResolver
 |   +-- ContextScopeResolver
-|   +-- GraphHopResolver
+|   +-- RetrievalRadiusPlanner
 |   +-- CompactionEngine
 |   +-- ContextBudgetPlanner
 +-- HybridJITContextSystem
@@ -355,7 +357,7 @@ GenesisKnowledgeSystem
 ```
 
 Responsibilities:
-- Classify task/document/context scope into H0-H6, with H6 reserved for rare full-network traversal.
+- Classify executor Access Scope as `H0-H4` (capability/tool-permission ceiling; `H5`/`H6` are abolished, per `ADR-021`) and select retrieval radius independently as `R0-R6` (graph-traversal breadth; full-network traversal, when permitted, is an explicit retrieval-policy decision, not a reserved H tier).
 - Extract atoms from human docs after authoring.
 - Render just-in-time context for agent work without making atoms the human authoring format.
 
@@ -401,8 +403,8 @@ This level is a design skeleton, not final implementation. Each module may becom
 ContextRetrievalService
 +-- getContext(request)
 +-- validateSubjectAccess(subject, resource, action, context)
-+-- classifyHLevel(task, sourceDoc)
-+-- resolveGraphScope(targetNode, hLevel)
++-- resolveAccessScope(task, policy)
++-- resolveGraphScope(targetNode, retrievalRadius)
 +-- compactContext(nodes, tokenBudget)
 +-- renderVirtualDocument(compactedContext)
 +-- recordTraceability(request, result)

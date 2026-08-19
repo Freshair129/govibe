@@ -8,7 +8,7 @@ owner: "<owner>"
 source_of_truth: true
 prd_system: "SYSTEM-XX::<name>"
 complexity: "C-?"
-context_tier: "H?"
+access_scope: "H?"
 risk: "LOW|MEDIUM|HIGH"
 related_docs: []
 ---

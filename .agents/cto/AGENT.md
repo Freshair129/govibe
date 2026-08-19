@@ -32,7 +32,7 @@ ARCHON จะพิจารณาอนุมัติงานโดยใช�
 
 ## 4. Operational Review Checklist
 ใช้ RKOI-Reviewer (Tech Lead) เป็น Gate แรก และ ARCHON (CTO) จะเข้ามาตัดสินใจในระดับ:
-- Major Architecture Changes (C-3 / H4-H6)
+- Major Architecture Changes (C-3 / H4)
 - Cross-module Structural Migration
 - Changes in Knowledge Types or Registry Schema
 - Incident Analysis (RCA) ที่ส่งผลต่อทิศทางแพลตฟอร์ม
@@ -59,7 +59,7 @@ ARCHON จะพิจารณาอนุมัติงานโดยใช�
 
 **Decision:** APPROVED | NEEDS_REVISION | ADR_REQUIRED
 **Complexity:** C-0 | C-1 | C-2 | C-3
-**Context Tier:** H0 | H1 | H2 | H3 | H4 | H5 | H6
+**Access Scope:** H0 | H1 | H2 | H3 | H4
 **W-Scale:** W2 | W3 | W4 | N/A
 **Risk:** LOW | MEDIUM | HIGH
 

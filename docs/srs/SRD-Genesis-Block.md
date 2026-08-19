@@ -2,8 +2,8 @@
 title: "SRD: Genesis Block Requirements Definition"
 doc_id: "SRD-GKS-001"
 status: "candidate"
-version: "1.3.0"
-updated: "2026-06-13"
+version: "1.3.1"
+updated: "2026-08-19"
 owner: "THESEUS"
 source_of_truth: true
 prd_system: "SYSTEM-08::Genesis Knowledge System"
@@ -16,13 +16,16 @@ Genesis Block คือ "จุดกำเนิดทางปัญญา" �
 
 ## 2. Core Principles
 - **Axiomatic SSOT:** เป็นความจริงเพียงหนึ่งเดียวที่เชื่อมโยง WBS (Work Breakdown Structure) เข้ากับ Physical Code
-- **Small World Network Compliance:** โครงสร้างความสัมพันธ์ของข้อมูลต้องไม่ลึกเกิน 6 Hops (H6 Ceiling) เพื่อป้องกัน "Spaghetti Context"
+- **Small World Network Compliance:** โครงสร้างความสัมพันธ์ของข้อมูลต้องไม่ลึกเกิน 6 Hops (R6 Ceiling) เพื่อป้องกัน "Spaghetti Context"
 - **Separation of Concerns (WBS vs Time):** แยกแกนเนื้องาน (Masterplan -> Subtask) ออกจากแกนเวลา (Release -> Sprint) อย่างเด็ดขาด
 - **Metadata Optimization (Hub-and-Spoke):** ลดภาระ Metadata ในระดับปฏิบัติการ (Low-level) โดยใช้ Genesis BlockDB เป็น "ศูนย์กลางข้อมูล" (Full-scale Metadata Hub) และใช้อะตอมย่อยอ้างอิงผ่าน `block_id`
 
 ## 3. High-Level Requirements
-- **R-01: Context Scaling (H0-H6):** ต้องสามารถจำกัดวงการเข้าถึงกราฟข้อมูลของ Agent ได้ตามระดับชั้นของงาน
-- **R-02: Atom Compaction (H1-H5 Heights):** รองรับการบีบอัดข้อมูลหลายระดับชั้น (Layers) ลงใน GenesisBlockDB เพื่อประสิทธิภาพสูงสุด
+
+**2026-08-19 correction (ADR-021/AUD-14, TASK-PRD-022):** R-01/R-02 below previously used abolished `H`-axis labels for retrieval radius and compaction depth. Renamed to `R` (Retrieval Radius) and `D` (Compaction Depth) per `CLAUDE.md`'s canonical governance-axes table; executor Access Scope (`H0-H4`) is a separate, independently-declared concern not covered by either requirement.
+
+- **R-01: Retrieval Radius (R0-R6):** ต้องสามารถจำกัดวงการเข้าถึงกราฟข้อมูลของ Agent ได้ตามระดับชั้นของงาน
+- **R-02: Atom Compaction (D1-D5 Heights):** รองรับการบีบอัดข้อมูลหลายระดับชั้น (Layers) ลงใน GenesisBlockDB เพื่อประสิทธิภาพสูงสุด
 - **R-03: Deterministic Relinking:** ระบบต้องสามารถฉีดพ่น (Inject) ความสัมพันธ์ Backlinks ย้อนกลับสายโซ่ (Chain) ได้อัตโนมัติโดยไม่มี Loop (Acyclic Invariant)
 - **R-04: Multi-Agent Synchronization:** รองรับการทำงานร่วมกันของหลาย Agent ผ่านระบบ File Lock และ State Partitioning ในระดับ Atom ภายใน GenesisBlockDB
 

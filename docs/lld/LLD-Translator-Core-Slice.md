@@ -2,8 +2,8 @@
 title: "LLD: GoVibe Translator-Core Slice (tool contracts + algorithms)"
 doc_id: "LLD-TRANSLATOR-CORE-SLICE"
 status: "draft"
-version: "0.1.0+draft"
-updated: "2026-06-22"
+version: "0.1.1+draft"
+updated: "2026-08-19"
 owner: "ARCHON / ATHER"
 type: lld
 source_of_truth: true
@@ -55,7 +55,7 @@ Render a document from atoms into a target format template, gated by fidelity.
   "actor": "string",            // required
   "selector": "string",         // required; what to render (atom id / query)
   "templateRef": "string",      // required; target format template
-  "scope": { "hop": 2 },        // H0..H6 bound (default per policy)
+  "scope": { "hop": 2 },        // R0..R6 retrieval-radius bound (default per policy)
   "format": "string?"           // optional explicit format override
 }
 // output
@@ -154,4 +154,5 @@ Tools registered in `scripts/mcp/registry.mjs`; dispatched in `handlers.mjs`; ru
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.1.1+draft | 2026-08-19 | ATHER | Corrected abolished H-axis semantics per ADR-021/AUD-14 (TASK-PRD-022 sweep): `govibe.render` `scope.hop` bound relabeled from `H0..H6` to `R0..R6` retrieval radius. |
 | 0.1.0+draft | 2026-06-22 | ARCHON / ATHER | Initial LLD: `govibe.ingest.code` + `govibe.render` contracts, atom/template shapes, both-metric fidelity algorithm, MSP-shaped local jsonl provenance, module layout. |

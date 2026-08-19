@@ -308,7 +308,7 @@ agents:
       can:
         - approve architecture-sensitive direction
         - require ADRs for major structural changes
-        - escalate C-3 and H4-H6 work
+        - escalate C-3 and H4 work
       cannot:
         - bypass human owner approval
         - treat future architecture as current implementation truth
