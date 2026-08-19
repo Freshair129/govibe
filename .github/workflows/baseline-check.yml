@@ -18,12 +18,23 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          # TASK-PRD-032 (AUD-15): diff:check --base needs the PR base branch ref to diff
+          # against (origin/<base>). fetch-depth 0 fetches full history for all branches.
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
       - run: npm ci
       - run: npm ci --prefix packages/msp-runtime
+      # TASK-PRD-032 (AUD-15): docs-first enforcement. Blocking, PR-triggered runs only —
+      # a push-triggered run (merge to main) has no meaningful "base" to diff against (the
+      # change already passed this same check on its PR), so scoping to pull_request avoids
+      # a false-fail against an arbitrary previous-commit diff on push.
+      - name: Docs-first diff check (PR base)
+        if: github.event_name == 'pull_request'
+        run: npm run diff:check -- --base "origin/${{ github.base_ref }}"
       - run: npm run baseline:check
       # TASK-PRD-018 (AUD-25): mcp:smoke was runnable but absent from CI, so a broken MCP tool
       # catalog could merge undetected. Boots the MCP server over stdio and asserts the tool
