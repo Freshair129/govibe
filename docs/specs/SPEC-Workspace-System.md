@@ -2,8 +2,8 @@
 title: "SPEC: Workspace System Specification"
 doc_id: "SPEC-WORKSPACE-SYSTEM"
 status: "approved"
-version: "0.3.0"
-updated: "2026-08-09"
+version: "0.3.1"
+updated: "2026-08-19"
 owner: "Boss (CEO)"
 source_of_truth: true
 related_docs:
@@ -264,7 +264,14 @@ versions/hashes, `parent_context_id` chaining for M-ctx) are owned by
 > materializes `.govibe/rbac.json` (`govibe-rbac-state/v1`; unknown schemas hard-fail per
 > §10); decisions append to `.govibe/rbac-audit.jsonl`. A workspace without that state file
 > keeps the pre-RBAC posture — H ceiling, repository policy, and human gates — so adopting
-> RBAC is an explicit per-workspace decision, not a silent flag-day.
+> RBAC is an explicit per-workspace decision, not a silent flag-day. TASK-PRD-026 (AUD-04)
+> routes the sidecar's `workspace.scan` mission command through this SAME `enforceToolRbac`
+> decision point (`scripts/mcp/runtime/mission-command-router.mjs`) rather than calling the
+> scan service directly, so a governed operation cannot bypass enforcement by arriving over
+> HTTP/WebSocket instead of stdio. TASK-PRD-027 (AUD-05) added `govibe.docs.resolve` and
+> `govibe.ingest.code` to the §6.2 matrix and put both behind the same path-containment helper
+> (`scripts/mcp/path-security.mjs`) the roadmap read/write paths already use, closing the gap
+> where both tools read arbitrary files with no containment and no RBAC coverage.
 
 ### 6.1 Model
 
@@ -295,6 +302,8 @@ subject (employee_id | staff_id | agent_id)
 | `govibe.workflow.continue` / `govibe.plan.create` | ✔ | ✔ | ✔ | – |
 | `govibe.workspace.impact` / `govibe.workspace.validate` | ✔ | ✔ | ✔ | – |
 | `govibe.workflow.status` / `govibe.docs.version` / `govibe.review.run` | ✔ | ✔ | ✔ | ✔ |
+| `govibe.docs.resolve` | ✔ | ✔ | ✔ | ✔ |
+| `govibe.ingest.code` | ✔ | ✔ | ✔ | – |
 | Approve promotions / doc sign-off / `C-3/H4` override | ✔ | – | – | – |
 
 ### 6.3 Employment-type constraints
@@ -324,6 +333,8 @@ Workspace operations report complexity and access scope per the canonical axes
 | `workspace.scan` (deep) | C-2 | H2 | Twelve-stage decomposition; still candidate-only output. |
 | `workspace.impact` | C-1 | H1 | Read-only traversal of the observed link graph. |
 | `workspace.validate` | C-1 | H1 | Read-only governance check. |
+| `docs.resolve` | C-1 | H1 | Read-only, containment-checked file resolution from approved selectors. |
+| `ingest.code` | C-1 | H1 | Containment-checked read + candidate atom submission via MSP. |
 
 - `H` is the executor tool-permission ceiling only. Retrieval distance in impact
   traversal is expressed as `maxDistance` (an R-axis concern), never as `H`.
@@ -405,11 +416,16 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
 - `npx vitest run packages/govibe-core/impact-engine.test.mjs` — impact traversal.
 - `npm run mcp:smoke` — tool catalog exposure of `govibe.workspace.*`.
 - `npm run docs:validate` — this document's governance conformance.
+- `node --test scripts/mcp/sidecar-rbac-enforcement.security.mjs` — TASK-PRD-026 (AUD-04):
+  sidecar `workspace.scan` mission command through `enforceToolRbac` over HTTP and WebSocket.
+- `node --test scripts/mcp/docs-ingest-containment.security.mjs` — TASK-PRD-027 (AUD-05):
+  path containment and §6.2 RBAC coverage for `govibe.docs.resolve` / `govibe.ingest.code`.
 
 ## Changelog
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.1 | 2026-08-19 | VIBE / Boss | TASK-PRD-026 (AUD-04): the sidecar's `workspace.scan` mission command now passes through the SAME `enforceToolRbac` decision point as stdio (`scripts/mcp/runtime/mission-command-router.mjs`), attributing the actor from the command payload rather than a hardcoded `mission-control` constant. TASK-PRD-027 (AUD-05): `govibe.docs.resolve` and `govibe.ingest.code` added to the §6.2/§7 tables and put behind `scripts/mcp/path-security.mjs`'s existing containment helper — both previously honored absolute/traversal paths with no containment and sat outside the RBAC matrix entirely. Evidence: `node --test scripts/mcp/sidecar-rbac-enforcement.security.mjs` (5 passed), `node --test scripts/mcp/docs-ingest-containment.security.mjs` (11 passed), `npx vitest run packages/govibe-core/src/rbac.test.mjs scripts/mcp/rbac-enforcement.test.mjs` (44 passed). No status change; approved content addition under the live-document precedent this repo already applies to other approved planning/spec docs. |
 | 0.3.0 | 2026-08-09 | Boss (CEO) | Ratified draft → approved by owner decision. Content unchanged from 0.2.4+draft; all acceptance criteria AC-01..AC-08 carry executable evidence via the §12 verification suites, merged to main in PR #128 (merge commit c75e636) with the full baseline gate and CI green. |
 | 0.2.4+draft | 2026-08-09 | Boss (CEO) | §3.3 open item closed (TASK-PRD-017): the RBAC enforcement boundary now validates `employee_`/`staff_` actors against the workspace personnel registry snapshot (`.govibe/personnel.json`, `govibe-personnel-registry/v1`) — unknown IDs deny as `unknown_personnel_identity`, retired IDs from employment-type conversion deny as `retired_personnel_identity`, both audited; agent actors and snapshot-less workspaces keep their prior posture; unknown snapshot schemas hard-fail per §10. |
 | 0.2.3+draft | 2026-08-09 | Boss (CEO) | §6 status updated to implemented-and-enforced-per-workspace: `scripts/mcp/runtime/rbac-enforcement.mjs` wires the RBAC core into `handleToolCall` as a pre-handler decision point over the §6.2 tool operations (scan split by `deep`), activated by `.govibe/rbac.json` (`govibe-rbac-state/v1`) with allow/deny audit in `.govibe/rbac-audit.jsonl`; workspaces without RBAC state keep the pre-RBAC posture. §3.3 note updated: actor attribution is honored at the RBAC boundary; active-identity validation against a personnel registry remains open. §12 lists the enforcement suite. |

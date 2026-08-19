@@ -1,3 +1,17 @@
+import { enforceToolRbac } from "./rbac-enforcement.mjs";
+
+// TASK-PRD-026 (AUD-04): the sidecar has no per-user login today — every caller shares one
+// bearer token (sidecar-server.mjs). Falling back to this label rather than pretending to be
+// a trusted system identity ("mission-control") keeps attribution honest until a real
+// per-request principal exists; a command that DOES carry `actor` (client-declared) is
+// attributed to that value instead, which also gives TASK-PRD-029's approvalRef verification
+// something real to check scope against.
+const UNATTRIBUTED_SIDECAR_ACTOR = "sidecar-shared-token";
+
+function resolveSidecarActor(candidate) {
+  return typeof candidate === "string" && candidate.trim() ? candidate.trim() : UNATTRIBUTED_SIDECAR_ACTOR;
+}
+
 export class MissionCommandRouter {
   constructor(services) { this.services = services; }
 
@@ -31,7 +45,14 @@ export class MissionCommandRouter {
       return { ok: true, action: "masterplan.preview", masterPlan, snapshot: service.getSnapshot() };
     }
     if (command.type === "workspace.scan") {
-      const result = await service.scanWorkspace({ actor: "mission-control", workspacePath: command.workspacePath, deep: command.deep, runId: command.runId });
+      // TASK-PRD-026 (AUD-04): route through the SAME enforceToolRbac decision point the
+      // stdio tool surface uses (scripts/mcp/handlers.mjs) before any scan side effect. A
+      // workspace without .govibe/rbac.json stays in the pre-RBAC posture (enforceToolRbac
+      // no-ops); an RBAC-enabled workspace denies an unauthorized actor here exactly as it
+      // would on stdio, with the same audited decision.
+      const actor = resolveSidecarActor(command.actor);
+      await enforceToolRbac("govibe.workspace.scan", { workspacePath: command.workspacePath, deep: command.deep, actor, requestedBy: actor });
+      const result = await service.scanWorkspace({ actor, workspacePath: command.workspacePath, deep: command.deep, runId: command.runId });
       return { ok: true, action: "workspace.scan", result, snapshot: service.getSnapshot() };
     }
     if (command.type === "agent.select") {
@@ -61,8 +82,13 @@ export class MissionCommandRouter {
       return { ok: true, action: "memory.forget", result, snapshot: service.getSnapshot() };
     }
     if (command.type === "agent.session.start") {
-      const session = await service.startAgentSession({ agent: command.agent, cwd: command.cwd, accessScope: command.accessScope, approvalRef: command.approvalRef, cols: command.cols, rows: command.rows });
-      service.appendTerminal("sys", `Agent session started: ${command.agent} (${session.accessScope}) in ${session.cwd}`);
+      // TASK-PRD-029 (AUD-08): the same honest-attribution pattern TASK-PRD-026 established
+      // for workspace.scan — a client-declared actor is used when present, otherwise the
+      // sidecar's shared-token posture is named rather than assumed.
+      const actor = resolveSidecarActor(command.actor);
+      const session = await service.startAgentSession({ agent: command.agent, cwd: command.cwd, accessScope: command.accessScope, approvalRef: command.approvalRef, actor, cols: command.cols, rows: command.rows });
+      const approvalNote = session.approvalApprover ? ` — approval ${command.approvalRef} verified (approver: ${session.approvalApprover})` : "";
+      service.appendTerminal("sys", `Agent session started: ${command.agent} (${session.accessScope}) in ${session.cwd} by ${actor}${approvalNote}`);
       return { ok: true, action: "agent.session.start", session, snapshot: service.getSnapshot() };
     }
     if (command.type === "agent.session.input") {

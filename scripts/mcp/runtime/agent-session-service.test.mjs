@@ -24,6 +24,26 @@ function fakeStore() {
   };
 }
 
+// TASK-PRD-029 (AUD-08): a minimal fake mirroring createApprovalRecordStore's contract
+// (packages/govibe-core/src/approval-record.mjs).
+function fakeApprovalStore(records = []) {
+  return {
+    records,
+    async verifyApproval({ approvalRef, requiredScope }) {
+      const record = records.find((entry) =>
+        entry.approvalRef === approvalRef
+        && Object.entries(requiredScope).every(([key, value]) => entry.scope[key] === value),
+      );
+      if (!record) {
+        const error = new Error(`Approval reference "${approvalRef}" could not be verified.`);
+        error.code = "approval_unverifiable";
+        throw error;
+      }
+      return record;
+    },
+  };
+}
+
 function fakePtyFactory() {
   const spawned = [];
   const spawnPty = (binary, args, options) => {
@@ -50,7 +70,11 @@ function fakePtyFactory() {
 
 // Input chunks are paced through a scheduler; drain them synchronously so
 // assertions on `written` see the whole payload without waiting on timers.
-function serviceWith(overrides = {}) {
+const defaultApprovalStore = () => fakeApprovalStore([
+  { approvalRef: "ADR-029-ratification", approver: "employee_boss-01", scope: { accessScope: "H4" }, recordedAt: "2026-08-17T12:00:00.000Z" },
+]);
+
+function serviceWith({ approvalStore, ...overrides } = {}) {
   const store = fakeStore();
   const { spawnPty, spawned } = fakePtyFactory();
   const allowedRoot = mkdtempSync(path.join(tmpdir(), "govibe-session-"));
@@ -59,6 +83,10 @@ function serviceWith(overrides = {}) {
     allowedRoots: [allowedRoot],
     spawnPty,
     scheduleWrite: (callback) => callback(),
+    // TASK-PRD-029 (AUD-08): a recorded, H4-scoped approval by default so the existing H4-start
+    // tests below keep exercising a REAL verification pass, not a bypass — pass `approvalStore`
+    // explicitly (including `undefined`/`null`) to test the fail-closed/refusal paths.
+    approvalStore: approvalStore === undefined ? defaultApprovalStore() : approvalStore,
     ...overrides,
   });
   return { service, store, spawned, allowedRoot };
@@ -84,6 +112,40 @@ describe("AgentSessionService", () => {
     await expect(service.start({ agent: "claude-code", cwd: allowedRoot, accessScope: "H4" }))
       .rejects.toThrow(/owner approval/);
     expect(spawned).toHaveLength(0);
+  });
+
+  it("TASK-PRD-029 (AUD-08): fails closed on an H4 start when no approval record store is configured at all", async () => {
+    const { service, spawned, allowedRoot } = serviceWith({ approvalStore: null });
+    await expect(service.start({ agent: "claude-code", cwd: allowedRoot, accessScope: "H4", approvalRef: "anything" }))
+      .rejects.toThrow(/no approval record store is configured/);
+    expect(spawned).toHaveLength(0);
+  });
+
+  it("TASK-PRD-029 (AUD-08): refuses an approvalRef that is not a recorded approval — not any non-empty string", async () => {
+    const { service, spawned, allowedRoot } = serviceWith({ approvalStore: fakeApprovalStore([]) });
+    await expect(service.start({ agent: "claude-code", cwd: allowedRoot, accessScope: "H4", approvalRef: "made-up-ref" }))
+      .rejects.toThrow(/could not be verified/);
+    expect(spawned).toHaveLength(0);
+  });
+
+  it("TASK-PRD-029 (AUD-08): refuses a recorded approval whose scope does not cover an H4 start", async () => {
+    const { service, spawned, allowedRoot } = serviceWith({
+      approvalStore: fakeApprovalStore([{ approvalRef: "scoped-elsewhere", approver: "employee_boss-01", scope: { accessScope: "H3" } }]),
+    });
+    await expect(service.start({ agent: "claude-code", cwd: allowedRoot, accessScope: "H4", approvalRef: "scoped-elsewhere" }))
+      .rejects.toThrow(/could not be verified/);
+    expect(spawned).toHaveLength(0);
+  });
+
+  it("TASK-PRD-029 (AUD-08): a verified approval passes and is linked (approver, recordedAt) on the start result — never on the stored/broadcast record", async () => {
+    const { service, allowedRoot } = serviceWith();
+    const result = await service.start({ agent: "claude-code", cwd: allowedRoot, accessScope: "H4", approvalRef: "ADR-029-ratification", actor: "employee_ops-01" });
+    expect(result.approvalApprover).toBe("employee_boss-01");
+    expect(result.approvalRecordedAt).toBe("2026-08-17T12:00:00.000Z");
+    expect(result.requestedBy).toBe("employee_ops-01");
+    // The contract-pinned record shape (missionSessionContract.test.ts) never carries these.
+    expect(service.listSessions()[0]).not.toHaveProperty("approvalApprover");
+    expect(service.listSessions()[0]).not.toHaveProperty("requestedBy");
   });
 
   it("rejects an unknown access scope and a cwd outside the allowed roots", async () => {

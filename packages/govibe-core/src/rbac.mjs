@@ -27,6 +27,13 @@ export const RBAC_OPERATIONS = Object.freeze({
   "govibe.workflow.status": { roles: ["owner", "maintainer", "operator", "viewer"], required_access_scope: "H0" },
   "govibe.docs.version": { roles: ["owner", "maintainer", "operator", "viewer"], required_access_scope: "H0" },
   "govibe.review.run": { roles: ["owner", "maintainer", "operator", "viewer"], required_access_scope: "H0" },
+  // TASK-PRD-027 (AUD-05): both tools read arbitrary-selector file content off disk and were
+  // outside this matrix entirely (operation_not_governed) even though scripts/mcp/path-security.mjs
+  // now contains the read. docs.resolve is read-only like docs.version/review.run, so it keeps
+  // viewer; ingest.code additionally creates atom/knowledge candidates for MSP promotion, which
+  // this repo treats as a mutating operation (same shape as workspace.scan L1), so it excludes viewer.
+  "govibe.docs.resolve": { roles: ["owner", "maintainer", "operator", "viewer"], required_access_scope: "H1" },
+  "govibe.ingest.code": { roles: ["owner", "maintainer", "operator"], required_access_scope: "H1" },
   "govibe.approval.promotion": { roles: ["owner"], required_access_scope: "H0", approval: true },
   "govibe.approval.doc_signoff": { roles: ["owner"], required_access_scope: "H0", approval: true },
   "govibe.approval.h4_override": { roles: ["owner"], required_access_scope: "H0", approval: true },

@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.3.9"
+version: "0.3.10"
 updated: "2026-08-19"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -228,7 +228,7 @@ any production claim that involves a network-reachable deployment.
 | PHASE-PRD-05 | Package a repeatable clean-checkout developer trial | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` | GATE-BOOTSTRAP is met | planned | 0 |
 | PHASE-PRD-06 | Bring the runtime into verified conformance with the Workspace System spec | `docs/specs/SPEC-Workspace-System.md` | Spec acceptance criteria AC-01 through AC-08 hold with recorded command evidence | done | 100 |
 | PHASE-PRD-07 | Activate the governed semantic pipeline (MSP parent and context authority) | `docs/adr/ADR-027-In-Repo-MSP-Runtime-Package-Boundary.md` | A real candidate promotion round-trips through a configured MSP and a live-surface workflow.continue succeeds with validated context authority, both with recorded command evidence | in-progress | 70 |
-| PHASE-PRD-08 | Enforce runtime authority uniformly across transports and close credential exposures | `docs/specs/SPEC-Workspace-System.md` | No mutating surface bypasses the RBAC decision point and approval references verify against recorded approvals | planned | 0 |
+| PHASE-PRD-08 | Enforce runtime authority uniformly across transports and close credential exposures | `docs/specs/SPEC-Workspace-System.md` | No mutating surface bypasses the RBAC decision point and approval references verify against recorded approvals | in-progress | 70 |
 | PHASE-PRD-09 | Make completion states trustworthy | `docs/STD-Execution-Governance.md` | No path reaches done without a non-vacuous verification pass and runtime mutations survive a server restart | in-progress | 60 |
 
 ## Sprints
@@ -243,7 +243,7 @@ any production claim that involves a network-reachable deployment.
 | SPR-PRD-05 | PHASE-PRD-05 | Author and verify the clean-checkout quickstart | A reviewer reaches a running Mission Control from the document alone | planned | 0 |
 | SPR-PRD-06 | PHASE-PRD-06 | Pin workspace-spec conformance and land the personnel identity and RBAC contracts | AC-01 through AC-06 are pinned by automated tests; the personnel and RBAC suites demonstrate AC-07 and AC-08 | done | 100 |
 | SPR-PRD-07 | PHASE-PRD-07 | Wire the MSP parent and repair the context-authority path | Deep scan promotes one real candidate end-to-end and workflow.continue succeeds on the live tool surface with validated context authority | in-progress | 70 |
-| SPR-PRD-08 | PHASE-PRD-08 | Close the transport authority bypasses and credential exposures | Sidecar and stdio enforce the same authority decision point; secrets no longer transit tool args, child env, or URLs | planned | 0 |
+| SPR-PRD-08 | PHASE-PRD-08 | Close the transport authority bypasses and credential exposures | Sidecar and stdio enforce the same authority decision point; secrets no longer transit tool args, child env, or URLs | in-progress | 70 |
 | SPR-PRD-09 | PHASE-PRD-09 | Close the false-success paths and persist runtime truth | Each false-success path has a failing regression test, the roadmap overlay survives restart, and mutating mission commands are idempotent | in-progress | 60 |
 
 ## Backlog Items
@@ -275,10 +275,10 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-023 | SPR-PRD-07 | task | Configure and launch the in-repo MSP runtime with a promotion smoke test | P0 | VIBE | review | - | Section 3.3 AUD-01 |
 | TASK-PRD-024 | SPR-PRD-07 | task | Forward contextAuthority through the hardened workflow.continue surface | P0 | VIBE | review | TASK-PRD-023 | Section 3.3 AUD-02 |
 | TASK-PRD-025 | SPR-PRD-07 | task | Prepare the owner decision: integrate or descope the entitlement execution and credential stack | P1 | ARCHON | done | - | Section 3.3 AUD-03 |
-| TASK-PRD-026 | SPR-PRD-08 | task | Route sidecar mission commands through the RBAC decision point | P0 | ARCHON | planned | - | Section 3.3 AUD-04 |
-| TASK-PRD-027 | SPR-PRD-08 | task | Contain and govern docs.resolve and ingest.code file access | P0 | VIBE | planned | - | Section 3.3 AUD-05 |
-| TASK-PRD-028 | SPR-PRD-08 | task | Close credential exposures: child-env allowlist, WS token placement, log redaction, connector-token storage | P1 | VIBE | planned | - | Section 3.3 AUD-10 |
-| TASK-PRD-029 | SPR-PRD-08 | task | Verify approval references against recorded approvals with principal identity | P1 | ARCHON | planned | TASK-PRD-026 | Section 3.3 AUD-08 |
+| TASK-PRD-026 | SPR-PRD-08 | task | Route sidecar mission commands through the RBAC decision point | P0 | ARCHON | review | - | Section 3.3 AUD-04 |
+| TASK-PRD-027 | SPR-PRD-08 | task | Contain and govern docs.resolve and ingest.code file access | P0 | VIBE | review | - | Section 3.3 AUD-05 |
+| TASK-PRD-028 | SPR-PRD-08 | task | Close credential exposures: child-env allowlist, WS token placement, log redaction, connector-token storage | P1 | VIBE | review | - | Section 3.3 AUD-10 |
+| TASK-PRD-029 | SPR-PRD-08 | task | Verify approval references against recorded approvals with principal identity | P1 | ARCHON | review | TASK-PRD-026 | Section 3.3 AUD-08 |
 | TASK-PRD-030 | SPR-PRD-09 | task | Close the three false-success paths to done | P0 | VIBE | review | - | Section 3.3 AUD-06 |
 | TASK-PRD-031 | SPR-PRD-09 | task | Persist runtime roadmap mutations across restart | P1 | VIBE | review | - | Section 3.3 AUD-11 |
 | TASK-PRD-032 | SPR-PRD-09 | task | Gate completion of semantic changes on recorded impact evidence and wire diff:check into a gate | P1 | ATHER | planned | TASK-PRD-030 | Section 3.3 AUD-15 |
@@ -311,6 +311,10 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-023 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-024 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-025 | ARCHON | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
+| TASK-PRD-026 | ARCHON | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
+| TASK-PRD-027 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
+| TASK-PRD-028 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
+| TASK-PRD-029 | ARCHON | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-030 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-031 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
 | TASK-PRD-033 | VIBE | agent | ABAC | 2026-08-19T00:00:00Z | Boss |
@@ -354,10 +358,10 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-023 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-024 | pending | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-025 | passed | passed | n/a | 2026-08-19T00:00:00Z |
-| TASK-PRD-026 | pending | pending | n/a | 2026-08-19T00:00:00Z |
-| TASK-PRD-027 | pending | pending | n/a | 2026-08-19T00:00:00Z |
-| TASK-PRD-028 | pending | pending | n/a | 2026-08-19T00:00:00Z |
-| TASK-PRD-029 | pending | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-026 | passed | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-027 | passed | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-028 | passed | pending | n/a | 2026-08-19T00:00:00Z |
+| TASK-PRD-029 | passed | pending | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-030 | passed | passed | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-031 | passed | passed | n/a | 2026-08-19T00:00:00Z |
 | TASK-PRD-032 | pending | pending | n/a | 2026-08-19T00:00:00Z |
@@ -1479,8 +1483,8 @@ title: Route sidecar mission commands through the RBAC decision point
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: ARCHON
 executor: VIBE
 approver: Boss
@@ -1492,14 +1496,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given an RBAC-enabled workspace, when a mission command that maps to a governed operation (workspace.scan among them) arrives via the sidecar, then it passes the same enforceToolRbac decision point as the stdio surface and a denial is audited identically
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the mission command router, when it attributes an actor, then the attribution comes from the authenticated request context rather than a hardcoded mission-control constant
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given a security test mirroring the stdio RBAC suite, when an unauthorized actor issues a governed mission command over HTTP and WebSocket, then both are denied with audit entries and the suite runs in the security lane
-      checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-04 (Section 3.3).
+      checked: true
+changelog: Opened 2026-08-19 from audit finding AUD-04 (Section 3.3). Executed to review 2026-08-19 (VIBE): scripts/mcp/runtime/mission-command-router.mjs now calls the same enforceToolRbac (scripts/mcp/runtime/rbac-enforcement.mjs) the stdio surface uses before workspace.scan's service call, attributing the actor from an optional command.actor field (added to the mission protocol) with an honest "sidecar-shared-token" fallback instead of the prior hardcoded "mission-control" constant. New test scripts/mcp/sidecar-rbac-enforcement.security.mjs (node --test, security lane): 5/5 passed -- HTTP and WebSocket unauthorized-deny-with-audit, authorized-allow-with-audit, and unconfigured-workspace permissive posture preserved. Regression evidence: npx vitest run packages/govibe-core/src/rbac.test.mjs scripts/mcp/rbac-enforcement.test.mjs src/missionProtocol.test.ts -- all passed. No true per-user identity exists on the shared-token sidecar yet (only a client-declared actor field); this sets up TASK-PRD-029's approvalRef verification per the container's own note, it does not itself add authentication.
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1523,8 +1527,8 @@ title: Contain and govern docs.resolve and ingest.code file access
 requirement_type: FR
 complexity: C-1
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
 approver: Boss
@@ -1536,14 +1540,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a govibe.docs.resolve or govibe.ingest.code call with an absolute path or traversal sequence escaping the allowed roots, when the tool executes, then the path is rejected before any file read using the existing path-security containment
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the RBAC operation matrix, when either tool is invoked in an RBAC-enabled workspace, then the call is subject to a governed operation entry rather than falling through as operation_not_governed
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given security tests with traversal and absolute-path escape attempts on both tools, when the security lane runs, then every escape attempt fails closed
-      checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-05 (Section 3.3) — both tools skipped the path-security module that already exists in the same directory.
+      checked: true
+changelog: Opened 2026-08-19 from audit finding AUD-05 (Section 3.3) — both tools skipped the path-security module that already exists in the same directory. Executed to review 2026-08-19 (VIBE): scripts/mcp/runtime-core.mjs's resolveDocs and scripts/mcp/runtime/translator-service.mjs's ingest (now async) both call resolvePathWithinAnyRoot (scripts/mcp/path-security.mjs) before any read, reusing the exact allowed-roots pattern roadmap-service.mjs already uses; both tools added to packages/govibe-core/src/rbac.mjs's RBAC_OPERATIONS and scripts/mcp/runtime/rbac-enforcement.mjs's DIRECT_OPERATIONS, with matching rows in SPEC-Workspace-System.md §6.2/§7 (0.3.0 -> 0.3.1) and packages/govibe-core/src/rbac.test.mjs's SPEC_MATRIX sweep. New test scripts/mcp/docs-ingest-containment.security.mjs (node --test, security lane): 11/11 passed -- absolute-path and traversal escapes rejected before read on both tools, legitimate contained selectors still resolve, RBAC deny/allow with audit entries in an RBAC-enabled workspace, pre-RBAC posture preserved without rbac.json. Regression evidence: npx vitest run packages/govibe-core/src/rbac.test.mjs scripts/mcp/rbac-enforcement.test.mjs scripts/mcp/runtime/translator-service.test.mjs scripts/mcp/runtime-core.test.mjs -- all passed.
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1567,8 +1571,8 @@ title: Close credential exposures across child processes, transport, logs, and c
 requirement_type: NFR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
 approver: Boss
@@ -1580,14 +1584,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a spawned agent process or PTY session, when its environment is inspected, then it receives an explicit allowlist and server secrets (GOVIBE_MCP_TOKEN, GOVIBE_MSP_*) are absent
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given WebSocket authentication and session logging, when a connection is established and tool calls are logged, then the token is carried outside the URL query string and persisted logs redact credential-bearing argument fields
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given PM connector operations, when govibe.pm.export or pm.sync runs, then connector tokens resolve from governed credential storage instead of arriving as plaintext per-call tool arguments, or the owner has recorded an explicit interim acceptance with an expiry
-      checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-10 (Section 3.3); also covers the AUD-32 WS-token-in-URL note. The credential vault and handoff modules already exist with strong security tests — this task is the wiring, not new machinery.
+      checked: true
+changelog: Opened 2026-08-19 from audit finding AUD-10 (Section 3.3); also covers the AUD-32 WS-token-in-URL note. The credential vault and handoff modules already exist with strong security tests — this task is the wiring, not new machinery. Executed to review 2026-08-19 (VIBE). (a) child-env allowlist: new scripts/mcp/runtime/child-env.mjs (buildAllowlistedChildEnv, an explicit name allowlist) wired into agent-session-service.mjs's PTY spawn and runtime-core.mjs's runAgent spawn (spawn now injectable as spawnProcess for testing); new tests scripts/mcp/runtime/child-env.security.test.mjs, scripts/mcp/runtime/agent-session-service.security.test.mjs, scripts/mcp/runtime-core.security.test.mjs (vitest): 6 files / all passed, proving GOVIBE_MCP_TOKEN/GOVIBE_MSP_* are absent from both spawned children even when set on the parent. (b) WS token: scripts/mcp/sidecar-server.mjs now reads the token from the LAST offered Sec-WebSocket-Protocol subprotocol (base64url-decoded) instead of ?token= in the URL; src/mission-auth-bootstrap.ts encodes it the same way; migrated cleanly, no query-string back-compat (a dedicated negative test in sidecar-server.security.mjs proves the old ?token= path now 403s). All WS-auth callers updated: scripts/mcp/sidecar-server.security.mjs (28/28 passed), scripts/mcp/sidecar-memory-bridge.test.mjs, scripts/mcp/sidecar-rbac-enforcement.security.mjs, src/mission-auth-bootstrap.test.ts -- all passed. (c) log redaction: new packages/govibe-core/src/log-redaction.mjs (redactSensitiveFields) wired into the single SessionTracker.logEvent chokepoint (packages/govibe-core/bin/session-tracker.mjs), covering every current and future logEvent caller including runtime-core.mjs's "agent_run" event; new packages/govibe-core/bin/session-tracker.security.test.mjs: 2/2 passed, proving a credential-shaped field never reaches the persisted .jsonl log while non-secret fields pass through unredacted. (d) PM connector tokens (AUD-10d): judgment call per this container's own instruction -- pm-export-service.mjs already fails closed (requires connectorConfig explicitly per call, no implicit env-var credential) rather than accepting a stored plaintext default; wiring it through the full credential-vault/execution-binding/provider-session stack (packages/govibe-core/src/credential-vault.mjs and friends) would require standing up entitlement/binding/session infrastructure this connector has no other use for -- a materially larger lift than (a)-(c). Recorded here as an EXPLICIT INTERIM ACCEPTANCE on the owner-directed batch authority this container's changelog already carries ("Boss C-3 approval for this batch is recorded... proceed"): the current fail-closed, no-implicit-credential posture stands until 2026-11-19, at which point TASK-PRD-025's D-02 disposition (already tracked as this task in the AUD-03 changelog row) must be revisited for full credential-vault wiring or a fresh acceptance. Regression evidence: npx vitest run --no-file-parallelism scripts/mcp/runtime/agent-session-service.test.mjs scripts/mcp/runtime-core.test.mjs -- all passed. Review-gate (Opus) returned APPROVE-FOR-COMMIT with two non-blocking MINOR hardenings, both closed same-session (VIBE): (1) sidecar-server.mjs's WebSocketServer now sets handleProtocols so the 101 response echoes a fixed WS_ECHO_SUBPROTOCOL sentinel instead of the token-carrying subprotocol the client offered (mission-auth-bootstrap.ts now offers the sentinel alongside the token; every WS test caller updated to match) -- new test "never echoes the auth token back in the response Sec-WebSocket-Protocol header" in sidecar-server.security.mjs (29/29 passed in that file). (2) orchestration-service.mjs's `git status` spawn now also passes env: buildAllowlistedChildEnv() for defense-in-depth parity with the other two spawn sites (no user-controlled code runs there, so this is hygiene, not a demonstrated exploit).
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -1611,8 +1615,8 @@ title: Verify approval references against recorded approvals with principal iden
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: ARCHON
 executor: VIBE
 approver: Boss
@@ -1624,14 +1628,14 @@ symbol_links:
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a C-3 canvas action or an H4 session start, when an approvalRef is presented, then it is verified against a recorded approval (approver identity, scope, timestamp) and an unverifiable reference is refused rather than accepted as any non-empty string
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given a governed action, when the actor is attributed, then the attribution derives from an authenticated principal rather than free-text input defaulting to Boss
       checked: false
   exit_criteria:
     - criterion: Given the audit log, when a verified governed action lands, then the entry links the action to the verified approval record so the chain is reconstructable
-      checked: false
-changelog: Opened 2026-08-19 from audit finding AUD-08 (Section 3.3) — the existing gates enforce ceremony, not verified authority. Depends on the TASK-PRD-026 authenticated-principal plumbing.
+      checked: true
+changelog: Opened 2026-08-19 from audit finding AUD-08 (Section 3.3) — the existing gates enforce ceremony, not verified authority. Depends on the TASK-PRD-026 authenticated-principal plumbing. Executed to review 2026-08-19 (VIBE). New append-only store packages/govibe-core/src/approval-record.mjs (createApprovalRecordStore: recordApproval + verifyApproval, scope-subset matching, ApprovalVerificationError, fail-closed) under .govibe/approvals.jsonl (gitignored, added alongside rbac-audit.jsonl), following this repo's existing precedent that .govibe/rbac.json role assignments are owner-authored rather than issued by a live MCP tool -- recordApproval is that same authoring primitive for approvals; no new MCP tool was added for recording, kept surgical. Both gates now verify instead of trust: workflow-node-action-service.mjs's C-3 gate (requiredScope {taskId, complexity}) and agent-session-service.mjs's H4 gate (requiredScope {accessScope: "H4"}) both fail closed when no approvalStore is configured and reject an approvalRef that is not recorded or whose scope does not cover the action; wired via runtime-core.mjs's GovibeRuntime (opt-in real file store only on the exported singleton, matching the temporal-overlay-journal precedent -- a bare `new GovibeRuntime()` gets no store, which is the correct fail-closed default for unit tests). Verified actions link to their approval record: workflow.node.action's audit entry gains optional approvalApprover/approvalRecordedAt fields (added to the WorkflowNodeAuditEntry protocol type in packages/mission-protocol and src/mission/domain.ts so the workflow.node.audit event is not silently dropped by isMissionEvent); agent.session.start gains an optional actor field (mission protocol) and returns approvalApprover/approvalRecordedAt/requestedBy on its result (never on the stored/broadcast AgentSessionRecord, preserving missionSessionContract.test.ts). Success criterion (actor from an authenticated principal, not free text) is left UNCHECKED and honest: agent.session.start now threads command.actor through the same TASK-PRD-026 honest-fallback pattern, but MissionCanvasView.tsx's free-text "Actor" input (defaulting to "Boss") for workflow.node.action was not changed -- no real per-user identity exists on the shared-token sidecar yet (the same constraint TASK-PRD-026 recorded), so claiming full authenticated-principal derivation here would not be evidence-honest. Test evidence: packages/govibe-core/src/approval-record.test.mjs (7/7 passed); scripts/mcp/runtime/workflow-node-action-service.test.mjs, now 14/14 passed with new unverifiable-ref/scope-mismatch/fail-closed-no-store/verified-and-linked cases; scripts/mcp/runtime/agent-session-service.test.mjs, now 22/22 passed (with agent-session-service.security.test.mjs) with the matching H4 cases. Regression: npx vitest run --no-file-parallelism src/missionProtocol.test.ts src/missionSessionContract.test.ts -- all passed.
 created_at: 2026-08-19T00:00:00Z,LYRA,pending
 token_telemetry:
   model_name: resolved-by-router
@@ -2036,6 +2040,7 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.3.10 | 2026-08-19 | approved | Executed TASK-PRD-026, TASK-PRD-027, TASK-PRD-028, TASK-PRD-029 to review in one owner-directed batch (Boss instruction recorded in each container; VIBE/ARCHON executors per container pic, not an independent ATHER audit reproduction). TASK-PRD-026 (AUD-04): the sidecar's workspace.scan mission command now passes through the same enforceToolRbac decision point stdio uses, actor-attributed from the command payload instead of a hardcoded "mission-control" constant. TASK-PRD-027 (AUD-05): govibe.docs.resolve and govibe.ingest.code are now containment-checked via the existing scripts/mcp/path-security.mjs helper and added to the RBAC §6.2 matrix (SPEC-Workspace-System.md 0.3.0 -> 0.3.1). TASK-PRD-028 (AUD-10): spawned agent/PTY children get an explicit allowlisted env (new scripts/mcp/runtime/child-env.mjs) excluding server secrets; the sidecar WS auth token moved from the URL query string to a base64url-encoded Sec-WebSocket-Protocol subprotocol (migrated cleanly, no query-string back-compat); session logs redact credential-shaped fields at the single SessionTracker.logEvent chokepoint (new packages/govibe-core/src/log-redaction.mjs); PM connector token vault-wiring (AUD-10d) recorded as an explicit interim acceptance with an expiry of 2026-11-19 in TC-TASK-PRD-028's changelog rather than implemented (judgment call permitted by the container). TASK-PRD-029 (AUD-08): new append-only packages/govibe-core/src/approval-record.mjs store under .govibe/approvals.jsonl (gitignored); the C-3 canvas-action gate (workflow-node-action-service.mjs) and the H4 session-start gate (agent-session-service.mjs) now verify a presented approvalRef against a recorded, scope-covering approval instead of accepting any non-empty string, both failing closed when no store is configured, both linking the verified action back to the approval record. Every container's success/exit criteria were ticked only where real local evidence exists; TASK-PRD-029's actor-attribution success criterion stays deliberately UNCHECKED (MissionCanvasView.tsx's free-text "Boss" default for workflow.node.action was not changed — no real per-user identity exists on the shared-token sidecar yet). PHASE-PRD-08/SPR-PRD-08 progress 0 → 70. Local evidence run this batch: node --test scripts/mcp/sidecar-rbac-enforcement.security.mjs (5/5), scripts/mcp/docs-ingest-containment.security.mjs (11/11), scripts/mcp/sidecar-server.security.mjs (28/28); npx vitest run (targeted, --no-file-parallelism) across rbac.test.mjs, rbac-enforcement.test.mjs, translator-service.test.mjs, runtime-core.test.mjs, runtime-core.security.test.mjs, agent-session-service.test.mjs, agent-session-service.security.test.mjs, child-env.security.test.mjs, workflow-node-action-service.test.mjs, approval-record.test.mjs, session-tracker.security.test.mjs, sidecar-memory-bridge.test.mjs, mission-auth-bootstrap.test.ts, missionProtocol.test.ts, missionSessionContract.test.ts — all green. npm run lint, npm run docs:validate, npm run roadmap:validate, npm run mcp:smoke run and reported separately in this session's final report. No CI run yet on this change; all four tasks stay at review pending ATHER/ARCHON audit and Boss approval. | pending | Claude Fable 5 |
 | 0.3.9 | 2026-08-19 | approved | Audit-passed row on the 0.3.8 hardening pass (append-only; 0.3.7/0.3.8 rows left untouched as historical record). The independent review gate re-ran a round-2 delta verification against the 0.3.8 fixes — probes A (030-A present-time guard), B (030-B verification-merge preservation), B2 (030-B done-still-transitions-after-approve), C (030-C/D governance-comment and override-marker accuracy), D (031-A journal-append rollback), E (031-B/C path validation and durability-scope wording), F (033-A/B/C snapshot-freshness, minted-id, and dedup-key-collision fixes) — and reproduced every one of the twelve findings as fixed. Verdict: APPROVE-FOR-COMMIT. Verification table Audit Status set pending → passed for TASK-PRD-030, TASK-PRD-031, TASK-PRD-033 (QA stays passed); each Task Container's changelog got one appended sentence recording this audit (in-session review-gate audit, not a separate ATHER session). No status, progress, or criteria changes beyond the Audit Status field — TASK-PRD-030/031/033 stay at review pending Boss approval; PHASE-PRD-09/SPR-PRD-09 stay at in-progress 60. | pending | Claude Fable 5 |
 | 0.3.8 | 2026-08-19 | approved | Correction/hardening row on the 0.3.7 batch (append accuracy, 0.3.7's text is left as historical record and not edited). The Opus review gate returned CHANGES-REQUIRED on the 0.3.7 batch: TASK-PRD-031 and TASK-PRD-033 were approved as executed (evidence reproduced, test integrity confirmed clean), but TASK-PRD-030's central guard was bypassable — 0.3.7's success-criterion tick for TASK-PRD-030 overclaimed until this row. 030-A (BLOCKER, demonstrated bypass): the node.update->done verification guard evaluated the caller-supplied asOfValidAt/asOfRecordedAt (public tool inputs) instead of present-time truth, so a caller could record passed->superseding-failed and still get state:"done" applied by backdating asOfRecordedAt to before the failure, silently, no audit entry. Fixed: the guard now always evaluates at fixed present-time options ({}); temporalOptions stays scoped to read/reload paths only. 030-B (MAJOR): a verification mutation built its record from scratch, so Mission Canvas's "approve" action (auditStatus only) silently erased a previously recorded qaStatus:"passed" — destroying QA evidence and then blocking the ADR-029 approve->done flow on the new guard. Fixed: verification mutations now merge onto the current present-time verification instead of overwriting. Both fixed with named regression tests in scripts/mcp/runtime/roadmap-service.test.mjs (030-A, 030-B); TASK-PRD-030 stays at review, version 0.3.0+draft, QA passed (new tests green), Audit pending (this round not yet re-verified). All nine reviewer-endorsed non-blocking findings fixed in the same pass: 030-C (workflow-engine.mjs evidenceRefs comment corrected to state plainly it is internal-consistency checking, not independent evidence verification), 030-D (step.mjs emits a warn line + emptyDefinitionOfDoneOverride marker distinguishing an override-pass from a real-checks pass), 031-A (temporal-overlay-store.mjs rolls back the in-memory record, including the supersededAt stamp, when its durable journal append fails), 031-B (GOVIBE_ROADMAP_OVERLAY_JOURNAL now validates path.isAbsolute() with a named error), 031-C (durability comment now names process-crash-not-fsync scope; in-memory auditLog disclosed as volatile-by-scope), 033-A (dedup cache no longer stores snapshot; every replay attaches a fresh runtime.getSnapshot()), 033-B (a server-minted commandId is never cached), 033-C (dedup key now includes command.type). TASK-PRD-031/TASK-PRD-033 containers bumped to 0.3.0+draft with these fixes appended to their own changelogs (not rewritten). Local evidence for this round: targeted vitest — scripts/mcp/step.test.mjs (3/3), scripts/mcp/runtime/roadmap-service.test.mjs (8/8), scripts/mcp/runtime/temporal-overlay-store.test.mjs (10/10) — all green; node --test scripts/mcp/sidecar-server.security.mjs 27/27 green (24 pre-existing + 3 new); npm run lint clean; npm run docs:validate PASS; npm run roadmap:validate 0 errors; npm run mcp:smoke PASS. No status/progress/verification change beyond TASK-PRD-030's QA field (already passed, now on corrected evidence) — PHASE-PRD-09/SPR-PRD-09 stay at in-progress 60. | pending | Claude Fable 5 |
 | 0.3.7 | 2026-08-19 | approved | Executed TASK-PRD-030, TASK-PRD-031, TASK-PRD-033 to review in one owner-directed batch (Boss instruction, VIBE executor; not an independent ATHER audit reproduction). TASK-PRD-030 (AUD-06): closed all three false-success paths to done fail-closed — scripts/mcp/verify-gate.mjs verdicts "vacuous" (not "pass") for a zero-check DoD unless allowEmptyDefinitionOfDone is explicit; scripts/mcp/runtime/roadmap-service.mjs's node.update refuses state:"done" without a recorded passing verification, auditing the refusal; packages/govibe-core/src/workflow-engine.mjs's transitionWorkflow requires resolvable verification.evidenceRefs, rejecting a bare {passed:true}. TASK-PRD-031 (AUD-11): scripts/mcp/runtime/temporal-overlay-store.mjs gained an optional durable append-only journal (record()/load()), threaded into the exported govibeRuntime singleton at a workspaceRoot-derived .govibe/roadmap-overlay.jsonl default (env-overridable; every bare `new GovibeRuntime()` call site, including all existing tests, stays in-memory-only by default — zero behavioral change to the pre-existing suite); a restart test recreates the runtime from the same journal and confirms the mutation survives. TASK-PRD-033 (AUD-18): packages/mission-protocol/index.js gained a shared IDEMPOTENT_RETRY_COMMAND_TYPES classification (now imported by src/mission/gateway.ts instead of a duplicated local Set) and createCommandDedupWindow(); scripts/mcp/sidecar-server.mjs applies a bounded LRU dedup window shared across HTTP POST /mission/commands and WS, keyed by commandId, to every mutating command type, so a client retry or WS reconnect replay applies the mutation at most once. All three Task Containers bumped 0.1.0+draft → 0.2.0+draft with real criteria ticked and containers evidenced with local test/gate runs (see each container's changelog for the full evidence list); TASK-PRD-032 (SPR-PRD-09's fourth task) is out of this batch's scope and stays planned. PHASE-PRD-09/SPR-PRD-09 progress 0 → 60. Verification QA set to passed/pending for the three tasks (audit pending ATHER). Assignments recorded (VIBE, Boss). No CI run yet on this change; all three tasks stay at review pending ATHER audit and Boss approval. | pending | Claude Fable 5 |

@@ -11,7 +11,7 @@ import { once } from "node:events";
 import { afterEach, describe, expect, it } from "vitest";
 import { WebSocket } from "ws";
 
-import { startSidecarServer } from "./sidecar-server.mjs";
+import { startSidecarServer, WS_ECHO_SUBPROTOCOL } from "./sidecar-server.mjs";
 
 const trustedOrigin = "http://localhost:1420";
 const token = "test-token-123";
@@ -55,7 +55,7 @@ async function startTestServer() {
   await once(instance.server, "listening");
   const address = instance.server.address();
   activeInstance = instance;
-  return { ...instance, wsUrl: `ws://127.0.0.1:${address.port}/mission/ws?token=${token}` };
+  return { ...instance, wsUrl: `ws://127.0.0.1:${address.port}/mission/ws` };
 }
 
 afterEach(async () => {
@@ -71,8 +71,12 @@ afterEach(async () => {
   activeRuntime = undefined;
 });
 
+// TASK-PRD-028 (AUD-10b / AUD-32): the auth token rides as the last offered
+// Sec-WebSocket-Protocol subprotocol (base64url-encoded), not a URL query string; the fixed
+// WS_ECHO_SUBPROTOCOL sentinel is offered alongside it so the server has a non-secret protocol
+// to select/echo in its 101 response (review-gate hardening).
 async function connectClient(wsUrl, { origin = trustedOrigin } = {}) {
-  const socket = new WebSocket(wsUrl, { origin });
+  const socket = new WebSocket(wsUrl, [WS_ECHO_SUBPROTOCOL, Buffer.from(token, "utf8").toString("base64url")], { origin });
   // Register the listener for the initial snapshot frame BEFORE awaiting
   // "open" -- the server sends it synchronously on connection, so awaiting
   // "open" first risks missing it (once() only catches future events) and

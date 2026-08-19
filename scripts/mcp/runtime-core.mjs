@@ -1,8 +1,10 @@
-import { spawn } from "node:child_process";
+import { spawn as nodeSpawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { resolvePathWithinAnyRoot } from "./path-security.mjs";
+import { buildAllowlistedChildEnv } from "./runtime/child-env.mjs";
 import { parseAgentRegistry } from "./runtime/agent-registry-service.mjs";
 import { createRuntimeSnapshot, RuntimeSnapshotStore } from "./runtime/snapshot-store.mjs";
 import { TemporalOverlayStore } from "./runtime/temporal-overlay-store.mjs";
@@ -18,6 +20,7 @@ import { RoadmapService } from "./runtime/roadmap-service.mjs";
 import { toolCatalog } from "./registry.mjs";
 import { SessionTracker } from "../../packages/govibe-core/bin/session-tracker.mjs";
 import {
+  createApprovalRecordStore,
   createExecutorRegistry,
   createGksClientFromEnvironment,
   createMspClientFromEnvironment,
@@ -44,6 +47,18 @@ function defaultTemporalOverlayJournalPath() {
 }
 function toRelativePath(fullPath) {
   return path.relative(workspaceRoot, fullPath).replaceAll("\\", "/");
+}
+
+// TASK-PRD-029 (AUD-08): same opt-in pattern as defaultTemporalOverlayJournalPath — only the
+// real singleton below points the approval-record store at a durable file under the repo's
+// own `.govibe/`; a bare `new GovibeRuntime()` (unit tests) gets no store at all, which is the
+// correct fail-closed default for gated (C-3/H4) actions rather than a throwaway file.
+function defaultApprovalRecordPath() {
+  if (!process.env.GOVIBE_APPROVAL_RECORD_PATH) return path.join(workspaceRoot, ".govibe", "approvals.jsonl");
+  if (!path.isAbsolute(process.env.GOVIBE_APPROVAL_RECORD_PATH)) {
+    throw new Error("GOVIBE_APPROVAL_RECORD_PATH must be an absolute path.");
+  }
+  return process.env.GOVIBE_APPROVAL_RECORD_PATH;
 }
 
 function buildAuditRef(capability) {
@@ -90,22 +105,29 @@ export class GovibeRuntime {
     // No journalPath by default (in-memory only, matching pre-TASK-PRD-031 behavior) — only
     // the exported `govibeRuntime` singleton below opts in to a real durable journal.
     this.temporalOverlayStore = new TemporalOverlayStore({ journalPath: options.temporalOverlayJournalPath });
+    // TASK-PRD-029 (AUD-08): no store by default (matching the temporal-overlay opt-in
+    // pattern above) — only the exported `govibeRuntime` singleton points this at a real file.
+    this.approvalRecordStore = options.approvalRecordStore
+      ?? (options.approvalRecordPath ? createApprovalRecordStore({ storePath: options.approvalRecordPath }) : undefined);
     this.activeRoadmapSource = undefined;
     this.availableSources = [];
     this.mspClient = options.mspClient ?? createMspClientFromEnvironment();
     this.gksClient = options.gksClient ?? createGksClientFromEnvironment();
     this.executorRegistry = createExecutorRegistry(options.executorAdapters ?? {});
+    // TASK-PRD-028 (AUD-10a): injectable so security tests can intercept the child's `env`
+    // option without actually spawning powershell; the real singleton uses node:child_process.
+    this.spawnProcess = options.spawnProcess ?? nodeSpawn;
     this.allowedWorkspaceRoots = options.allowedWorkspaceRoots ?? configuredWorkspaceRoots();
     this.allowedRoadmapReadRoots = options.allowedRoadmapReadRoots ?? configuredPathRoots("GOVIBE_ROADMAP_READ_ROOTS", roadmapDir);
     this.allowedRoadmapWriteRoots = options.allowedRoadmapWriteRoots ?? configuredPathRoots("GOVIBE_ROADMAP_WRITE_ROOTS", roadmapDir);
     this.snapshot.providers = this.executorRegistry.inspect();
     this.workspaceService = new WorkspaceService({ workspaceRoot, allowedRoots: this.allowedWorkspaceRoots, snapshotStore: this.snapshotStore, mspClient: this.mspClient, gksClient: this.gksClient });
-    this.translatorService = new TranslatorService({ workspaceRoot, appendTerminal: (type, text) => this.appendTerminal(type, text) });
+    this.translatorService = new TranslatorService({ workspaceRoot, allowedRoots: this.allowedWorkspaceRoots, appendTerminal: (type, text) => this.appendTerminal(type, text) });
     this.roadmapService = new RoadmapService({ snapshotStore: this.snapshotStore, temporalOverlayStore: this.temporalOverlayStore, allowedRoadmapReadRoots: this.allowedRoadmapReadRoots, allowedRoadmapWriteRoots: this.allowedRoadmapWriteRoots });
     this.orchestrationService = new OrchestrationService({ workspaceRoot, runAgent: (args) => this.runAgent(args), applyMutation: (args) => this.applyRoadmapMutation(args), appendTerminal: (type, text) => this.appendTerminal(type, text), logEvent: (name, payload) => this.sessionTracker.logEvent(name, payload), emit: (event) => this.emit(event) });
     this.memoryService = new MemoryService({ snapshotStore: this.snapshotStore, mspClient: this.mspClient });
-    this.agentSessionService = options.agentSessionService ?? new AgentSessionService({ store: this.snapshotStore, allowedRoots: this.allowedWorkspaceRoots });
-    this.workflowNodeActionService = options.workflowNodeActionService ?? new WorkflowNodeActionService({ store: this.snapshotStore, applyRoadmapMutation: (args) => this.applyRoadmapMutation(args), getSnapshot: () => this.snapshot });
+    this.agentSessionService = options.agentSessionService ?? new AgentSessionService({ store: this.snapshotStore, allowedRoots: this.allowedWorkspaceRoots, approvalStore: this.approvalRecordStore });
+    this.workflowNodeActionService = options.workflowNodeActionService ?? new WorkflowNodeActionService({ store: this.snapshotStore, applyRoadmapMutation: (args) => this.applyRoadmapMutation(args), getSnapshot: () => this.snapshot, approvalStore: this.approvalRecordStore });
     this.pmExportService = options.pmExportService ?? new PmExportService({ getSnapshot: () => this.snapshot });
     this.commandRouter = new MissionCommandRouter(this);
   }
@@ -207,7 +229,11 @@ export class GovibeRuntime {
   async resolveDocs(selectors = []) {
     const files = [];
     for (const selector of selectors) {
-      const fullPath = path.isAbsolute(selector) ? selector : path.join(workspaceRoot, selector);
+      // TASK-PRD-027 (AUD-05): previously honored an absolute path or a `..`-escaping
+      // relative selector with no containment. resolvePathWithinAnyRoot rejects both BEFORE
+      // any read, reusing the same containment helper and allowed-roots pattern already used
+      // for roadmap reads/writes (scripts/mcp/runtime/roadmap-service.mjs).
+      const fullPath = await resolvePathWithinAnyRoot(selector, this.allowedWorkspaceRoots, { basePath: workspaceRoot });
       files.push({
         path: toRelativePath(fullPath),
         mimeType: fullPath.endsWith(".html") ? "text/html" : "text/markdown",
@@ -240,7 +266,9 @@ export class GovibeRuntime {
 
     const shell = process.platform === "win32" ? "powershell.exe" : "pwsh";
     const result = await new Promise((resolve, reject) => {
-      const child = spawn(shell, psArgs, { cwd: workspaceRoot });
+      // TASK-PRD-028 (AUD-10a): an explicit allowlisted env, not the full parent process.env —
+      // the spawned agent process never sees GOVIBE_MCP_TOKEN, GOVIBE_MSP_*, or other server secrets.
+      const child = this.spawnProcess(shell, psArgs, { cwd: workspaceRoot, env: buildAllowlistedChildEnv() });
       let stdout = "";
       let stderr = "";
 
@@ -251,7 +279,7 @@ export class GovibeRuntime {
     });
 
     this.appendTerminal("agent", `Agent run completed for ${args.agent_id ?? "resolved-agent"} (${args.scope ?? "no-scope"}).`);
-    this.sessionTracker.logEvent("agent_run", { args, result });
+    await this.sessionTracker.logEvent("agent_run", { args, result });
     return {
       capability: "govibe.agent.run",
       auditRef: buildAuditRef("govibe.agent.run"),
@@ -261,7 +289,7 @@ export class GovibeRuntime {
     }
 
   // Translator-core compatibility methods delegate to the isolated service.
-  ingestCode(args = {}) {
+  async ingestCode(args = {}) {
     return this.translatorService.ingest(args);
   }
 
@@ -332,4 +360,7 @@ export class GovibeRuntime {
 // TASK-PRD-031 (AUD-11): the singleton the real MCP server process runs gets a real durable
 // journal by default. Every other `new GovibeRuntime()` call site (unit tests, the
 // smoke-test.mjs registry-introspection instance) stays in-memory-only unless it opts in.
-export const govibeRuntime = new GovibeRuntime({ temporalOverlayJournalPath: defaultTemporalOverlayJournalPath() });
+export const govibeRuntime = new GovibeRuntime({
+  temporalOverlayJournalPath: defaultTemporalOverlayJournalPath(),
+  approvalRecordPath: defaultApprovalRecordPath(),
+});

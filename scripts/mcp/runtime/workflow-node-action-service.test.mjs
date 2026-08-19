@@ -1,7 +1,25 @@
 import { describe, expect, it, vi } from "vitest";
 import { WorkflowNodeActionService, accessScopeGateFor } from "./workflow-node-action-service.mjs";
+import { ApprovalVerificationError } from "../../../packages/govibe-core/src/approval-record.mjs";
 
 const FIXED_NOW = () => "2026-08-17T12:00:00.000Z";
+
+// TASK-PRD-029 (AUD-08): a minimal fake mirroring createApprovalRecordStore's contract
+// (packages/govibe-core/src/approval-record.mjs) — recorded refs verify with their exact
+// scope; anything else refuses, the same fail-closed shape the real store produces.
+function fakeApprovalStore(records = []) {
+  return {
+    records,
+    async verifyApproval({ approvalRef, requiredScope }) {
+      const record = records.find((entry) =>
+        entry.approvalRef === approvalRef
+        && Object.entries(requiredScope).every(([key, value]) => entry.scope[key] === value),
+      );
+      if (!record) throw new ApprovalVerificationError(approvalRef, "not_recorded_or_scope_mismatch");
+      return record;
+    },
+  };
+}
 
 function fakeContext(overrides = {}) {
   let snapshot = { roadmap: { taskContainers: [] }, auditLog: [], ...overrides };
@@ -15,6 +33,7 @@ function fakeContext(overrides = {}) {
     applyRoadmapMutation,
     getSnapshot: () => snapshot,
     now: FIXED_NOW,
+    approvalStore: overrides.approvalStore,
   });
   return { service, store, applyRoadmapMutation, getSnapshot: () => snapshot };
 }
@@ -49,13 +68,51 @@ describe("WorkflowNodeActionService", () => {
     expect(applyRoadmapMutation).not.toHaveBeenCalled();
   });
 
-  it("allows a C-3 action once an approvalRef is supplied", async () => {
+  it("fails closed on a gated task when no approval record store is configured at all", async () => {
     const { service, applyRoadmapMutation } = fakeContext({
       roadmap: { taskContainers: [{ task_id: "T1", complexity: "C-3" }] },
     });
+    await expect(service.apply({ taskId: "T1", action: "approve", actor: "Boss", approvalRef: "owner-signoff-1" }))
+      .rejects.toThrow(/no approval record store is configured/);
+    expect(applyRoadmapMutation).not.toHaveBeenCalled();
+  });
+
+  it("refuses an approvalRef that is not a recorded approval (AUD-08: not any non-empty string)", async () => {
+    const { service, applyRoadmapMutation } = fakeContext({
+      roadmap: { taskContainers: [{ task_id: "T1", complexity: "C-3" }] },
+      approvalStore: fakeApprovalStore([]), // nothing recorded
+    });
+    await expect(service.apply({ taskId: "T1", action: "approve", actor: "Boss", approvalRef: "made-up-ref" }))
+      .rejects.toThrow(ApprovalVerificationError);
+    expect(applyRoadmapMutation).not.toHaveBeenCalled();
+  });
+
+  it("refuses a recorded approval whose scope does not cover this task/complexity", async () => {
+    const { service, applyRoadmapMutation } = fakeContext({
+      roadmap: { taskContainers: [{ task_id: "T1", complexity: "C-3" }] },
+      approvalStore: fakeApprovalStore([
+        { approvalRef: "owner-signoff-1", approver: "employee_boss-01", scope: { taskId: "T2", complexity: "C-3" }, recordedAt: "2026-08-19T00:00:00.000Z" },
+      ]),
+    });
+    await expect(service.apply({ taskId: "T1", action: "approve", actor: "Boss", approvalRef: "owner-signoff-1" }))
+      .rejects.toThrow(ApprovalVerificationError);
+    expect(applyRoadmapMutation).not.toHaveBeenCalled();
+  });
+
+  it("allows a C-3 action once a recorded, scope-covering approval verifies, and links the audit entry to it", async () => {
+    const { service, applyRoadmapMutation } = fakeContext({
+      roadmap: { taskContainers: [{ task_id: "T1", complexity: "C-3" }] },
+      approvalStore: fakeApprovalStore([
+        { approvalRef: "owner-signoff-1", approver: "employee_boss-01", scope: { taskId: "T1", complexity: "C-3" }, recordedAt: "2026-08-19T00:00:00.000Z" },
+      ]),
+    });
     const result = await service.apply({ taskId: "T1", action: "approve", actor: "Boss", approvalRef: "owner-signoff-1" });
     expect(applyRoadmapMutation).toHaveBeenCalledTimes(1);
-    expect(result.entry.approvalRef).toBe("owner-signoff-1");
+    expect(result.entry).toMatchObject({
+      approvalRef: "owner-signoff-1",
+      approvalApprover: "employee_boss-01",
+      approvalRecordedAt: "2026-08-19T00:00:00.000Z",
+    });
   });
 
   it("never gates a C-2 (or lower) task, even without an approvalRef", async () => {

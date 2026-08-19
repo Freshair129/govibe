@@ -42,6 +42,45 @@ function readBearerToken(request) {
   return authorization.match(/^Bearer\s+(.+)$/i)?.[1];
 }
 
+// TASK-PRD-028 (AUD-10b / AUD-32): the WS handshake previously carried the auth token in the
+// URL's `?token=` query string, which lands in access logs, browser/proxy history, and
+// Referer headers on any subsequent same-origin navigation. RFC 6455's Sec-WebSocket-Protocol
+// header is the standard place to carry a credential the browser WebSocket API cannot attach
+// as a custom header — the client (src/mission-auth-bootstrap.ts) sends the token base64url-
+// encoded as the LAST offered subprotocol so it stays a valid HTTP token (raw secrets can
+// contain characters the header grammar forbids).
+function decodeWebSocketProtocolToken(value) {
+  try {
+    const normalized = value.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized + "=".repeat((4 - (normalized.length % 4)) % 4);
+    return Buffer.from(padded, "base64").toString("utf8");
+  } catch {
+    return undefined;
+  }
+}
+
+function readWebSocketProtocolToken(request) {
+  const header = request.headers["sec-websocket-protocol"];
+  if (typeof header !== "string") return undefined;
+  const offered = header.split(",").map((part) => part.trim()).filter(Boolean);
+  const last = offered.at(-1);
+  return last ? decodeWebSocketProtocolToken(last) : undefined;
+}
+
+// Review-gate hardening: by default `ws` echoes back whichever subprotocol the client offered
+// (here, the token-carrying one — see readWebSocketProtocolToken above) in the 101 response's
+// Sec-WebSocket-Protocol header, so the credential would round-trip into that response header
+// too (some reverse proxies log response headers). The client always offers this fixed,
+// non-secret sentinel ALONGSIDE the encoded token (src/mission-auth-bootstrap.ts), so the
+// server can select and echo IT instead — a real subprotocol negotiation the strict `ws`
+// client library accepts (it errors if the server names a protocol the client never offered,
+// or omits the header entirely when the client offered one) without ever reflecting the token.
+export const WS_ECHO_SUBPROTOCOL = "govibe-mission-control";
+
+function selectEchoSubprotocol(offeredProtocols) {
+  return offeredProtocols.has(WS_ECHO_SUBPROTOCOL) ? WS_ECHO_SUBPROTOCOL : false;
+}
+
 function sendJson(response, statusCode, payload, origin, allowedOrigins) {
   const headers = {
     "Content-Type": "application/json",
@@ -286,11 +325,11 @@ export function startSidecarServer(runtime, options = {}) {
     }
   });
 
-  const wss = new WebSocketServer({ noServer: true, maxPayload: maxBodyBytes });
+  const wss = new WebSocketServer({ noServer: true, maxPayload: maxBodyBytes, handleProtocols: (protocols) => selectEchoSubprotocol(protocols) });
   server.on("upgrade", (request, socket, head) => {
     const origin = request.headers.origin;
     const url = new URL(request.url ?? "/", `http://${request.headers.host ?? `${host}:${port}`}`);
-    if (!originAllowed(origin, allowedOrigins) || !tokenMatches(url.searchParams.get("token"), authToken)) {
+    if (!originAllowed(origin, allowedOrigins) || !tokenMatches(readWebSocketProtocolToken(request), authToken)) {
       socket.write("HTTP/1.1 403 Forbidden\r\nConnection: close\r\n\r\n");
       socket.destroy();
       return;

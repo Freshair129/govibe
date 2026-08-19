@@ -12,6 +12,26 @@ function isSidecarHttpUrl(input: RequestInfo | URL) {
   }
 }
 
+// TASK-PRD-028 (AUD-10b / AUD-32): the auth token previously rode in the WS URL's `?token=`
+// query string, which lands in browser history, proxy/server access logs, and any Referer
+// header on a later same-origin navigation. The native WebSocket API gives no way to attach a
+// custom request header, so the token instead travels as the LAST offered Sec-WebSocket-Protocol
+// subprotocol (RFC 6455) — base64url-encoded so it stays a valid HTTP token even though a raw
+// bearer token can contain characters the subprotocol grammar forbids. The sidecar
+// (scripts/mcp/sidecar-server.mjs) decodes the same way.
+function encodeWebSocketProtocolToken(token: string): string {
+  const base64 = btoa(token);
+  return base64.replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+// Review-gate hardening: `ws` (and RFC 6455 servers generally) echo back a client-offered
+// subprotocol in the 101 response header, so offering ONLY the token-carrying subprotocol
+// would round-trip the credential into that response header too (some reverse proxies log
+// response headers). This fixed, non-secret sentinel is offered ALONGSIDE the token so the
+// sidecar (scripts/mcp/sidecar-server.mjs's WS_ECHO_SUBPROTOCOL / handleProtocols) has a real,
+// client-offered protocol to select and echo instead of the token.
+const WS_ECHO_SUBPROTOCOL = "govibe-mission-control";
+
 function createAuthenticatedWebSocket(
   NativeWebSocket: typeof WebSocket,
   authToken: string,
@@ -24,8 +44,14 @@ function createAuthenticatedWebSocket(
       const isSidecar = configuredWsOrigin
         ? target.origin === configuredWsOrigin
         : (target.hostname === "127.0.0.1" || target.hostname === "localhost") && target.port === "4310";
-      if (isSidecar) target.searchParams.set("token", authToken);
-      super(target.toString(), protocols);
+      if (!isSidecar) {
+        super(target.toString(), protocols);
+        return;
+      }
+      const offered = protocols === undefined ? [] : Array.isArray(protocols) ? protocols : [protocols];
+      // The token stays LAST (readWebSocketProtocolToken reads the last offered protocol);
+      // the sentinel sits before it so the server has a non-secret value it can validly echo.
+      super(target.toString(), [...offered, WS_ECHO_SUBPROTOCOL, encodeWebSocketProtocolToken(authToken)]);
     }
   };
 }

@@ -35,6 +35,10 @@ export type WorkflowNodeAuditEntry = {
   action: WorkflowNodeAction;
   at: string;
   approvalRef?: string;
+  // TASK-PRD-029 (AUD-08): present only when approvalRef was verified against a recorded
+  // approval — links the audited action back to that approval record.
+  approvalApprover?: string;
+  approvalRecordedAt?: string;
 };
 
 export type MissionCommand =
@@ -42,14 +46,14 @@ export type MissionCommand =
   | { type: "agent.select"; agentId: string }
   | { type: "roadmap.select"; sourcePath: string }
   | { type: "masterplan.preview"; sourcePath: string }
-  | { type: "workspace.scan"; workspacePath: string; deep: boolean; runId?: string }
+  | { type: "workspace.scan"; workspacePath: string; deep: boolean; runId?: string; actor?: string }
   | { type: "reactor.run"; profile: string }
   | { type: "file.save"; hash: string; data: number[] | ArrayBuffer; meta: Record<string, unknown> }
   | { type: "memory.search"; vaultId: string; query: string; mode?: "hybrid" | "fts" | "vector"; limit?: number }
   | { type: "memory.select"; entityId: string | null }
   | { type: "memory.forget"; entityId: string; reason: string }
   | { type: "memory.decay.run"; vaultId: string; dryRun?: boolean }
-  | { type: "agent.session.start"; agent: string; cwd: string; accessScope: AgentSessionRecord["accessScope"]; approvalRef?: string; cols?: number; rows?: number }
+  | { type: "agent.session.start"; agent: string; cwd: string; accessScope: AgentSessionRecord["accessScope"]; approvalRef?: string; actor?: string; cols?: number; rows?: number }
   | { type: "agent.session.input"; sessionId: string; data: string }
   | { type: "agent.session.stop"; sessionId: string }
   | { type: "agent.session.resize"; sessionId: string; cols: number; rows: number }
