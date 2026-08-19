@@ -26,6 +26,7 @@
     "gemini:doc-audit": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/agents/run-gemini-doc-audit.ps1",
     "baseline:check": "npm run env:validate && npm run docs:validate && npm run roadmap:validate && npm run lint && npm run test && npm run build",
     "preview": "vite preview",
+    "env:bootstrap": "node scripts/mcp/bootstrap-env.mjs",
     "env:validate": "node scripts/docs/validate-env.mjs",
     "mcp:smoke": "node scripts/mcp/smoke-test.mjs",
     "msp:smoke": "node scripts/mcp/msp-promotion-smoke.mjs",
