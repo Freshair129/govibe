@@ -1,9 +1,16 @@
+// Moved from tests/wp09-production-replay-kv.test.js (TASK-PRD-018 / AUD-26): the old location
+// under tests/ was not collected by any runner (vitest.config.ts only collects src/**/*.test.ts,
+// scripts/**/*.test.mjs, and packages/**/*.test.mjs). The replay-provider module it covers is
+// still live and otherwise untested, so this is still-valuable coverage moved into a collected
+// location rather than deleted. TASK-PRD-036 (planned) covers pinning replay-provider with a
+// contract test for the replay-consumption path this file does not exercise; this file is the
+// pre-existing restart/tamper coverage, not a duplicate of that future work.
 import { mkdtemp, readFile, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 
-import { createFileReplayProvider, loadReplayBundle, persistReplayBundle, restoreReplayContext } from "../packages/govibe-core/src/replay-provider.mjs";
+import { createFileReplayProvider, loadReplayBundle, persistReplayBundle, restoreReplayContext } from "./replay-provider.mjs";
 
 const HASH_A = "a".repeat(64);
 const HASH_B = "b".repeat(64);
