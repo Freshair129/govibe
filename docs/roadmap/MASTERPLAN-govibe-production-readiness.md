@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.3.19"
+version: "0.3.20"
 updated: "2026-08-20"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -256,7 +256,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-004 | SPR-PRD-01 | task | Point end-to-end coverage at the running application | P1 | VIBE | planned | TASK-PRD-003 | Section 3.1 GAP-02 |
 | TASK-PRD-005 | SPR-PRD-02 | task | Add the orchestration slice to the MissionSnapshot contract | P0 | ARCHON | done | TASK-PRD-003 | Section 3.1 GAP-04 |
 | TASK-PRD-006 | SPR-PRD-02 | task | Resolve the heatmap and master plan preview contract orphans | P1 | ARCHON | planned | TASK-PRD-005 | Section 3.1 GAP-05 |
-| TASK-PRD-007 | SPR-PRD-03 | task | Publish graph and symbol producers from the workspace scan | P0 | VIBE | planned | TASK-PRD-005 | Section 3.2 |
+| TASK-PRD-007 | SPR-PRD-03 | task | Publish graph and symbol producers from the workspace scan | P0 | VIBE | review | TASK-PRD-005 | Section 3.2 |
 | TASK-PRD-008 | SPR-PRD-03 | task | Reconcile sidebar labels with rendered view titles | P2 | VIBE | planned | - | Section 3.1 GAP-07 |
 | TASK-PRD-009 | SPR-PRD-04 | task | Correct abolished H-axis semantics in architecture documents | P1 | ATHER | done | - | Section 3.1 GAP-08 |
 | TASK-PRD-010 | SPR-PRD-05 | task | Author the clean-checkout developer quickstart | P0 | THESEUS | done | TASK-PRD-003 | Section 3.1 GAP-09 |
@@ -335,7 +335,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-001 | ATHER | Boss | Registry row plus ratification decision | Ratified to approved 2026-08-09 by owner decision (Boss); registry synchronized in the same change | 2026-08-06T00:00:00Z | completed |
 | TASK-PRD-003 | ATHER | Boss | Green pull-request run of the full baseline gate | Confirms GATE-CI before further phases start | 2026-08-06T00:00:00Z | completed |
 | TASK-PRD-006 | ARCHON | Boss | Contract decision on the two orphan fields | Produce or retire is a product decision, not an implementation choice | 2026-08-06T00:00:00Z | pending |
-| TASK-PRD-007 | VIBE | ATHER | Impact analysis over the changed snapshot contract | Required before the wiring change closes | 2026-08-06T00:00:00Z | pending |
+| TASK-PRD-007 | VIBE | ATHER | Impact analysis over the changed snapshot contract | Required before the wiring change closes | 2026-08-06T00:00:00Z | passed |
 | TASK-PRD-025 | ARCHON | Boss | Integrate-or-descope decision on the entitlement execution and credential stack | Completed 2026-08-19: Boss approved D-01..D-05 as recommended in CR-2026-08-19 §6; follow-ups TASK-PRD-035/036 opened, D-03 dispositions recorded in the execution-binding TODO register | 2026-08-19T00:00:00Z | completed |
 
 ## Verification
@@ -656,27 +656,60 @@ title: Publish graph and symbol producers from the workspace scan
 requirement_type: FR
 complexity: C-3
 access_scope: H3
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
 approver: Boss
 auditor: ATHER
 symbol_links:
-  code: scripts/mcp/runtime-core.mjs
-  doc: docs/PRD-GoVibe-Platform-Overview.md
-  test: scripts/mcp/smoke-test.mjs
+  code: scripts/mcp/runtime/workspace-service.mjs
+  doc: docs/specs/SPEC-Workspace-System.md
+  test: packages/govibe-core/src/scan/stage-runner.test.mjs
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a completed workspace scan, when the runtime publishes a snapshot, then the graph and symbol slices carry the discovered nodes rather than empty arrays
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the graph slice is populated, when a reviewer opens the AST tree, interactive graph, call graph, symbol explorer, ERD, and vector map views, then each renders discovered data
       checked: false
   exit_criteria:
     - criterion: Given no scan has run, when those views render, then they still show an empty state that names the missing feed and never a fabricated value
-      checked: false
-changelog: Seven unproduced snapshot slices recorded from the 2026-08-06 producer audit.
+      checked: true
+changelog: >-
+  Executed to review at commit 78f1b78 on branch fix/impact-analysis-boundary. runDeepScan now
+  accumulates observed candidates across the twelve stages and WorkspaceService.scan maps them onto
+  the MissionSnapshot graph/symbols contract and emits graph.update; an L1 scan publishes nothing.
+  Publishing the data exposed that the pipeline was largely producing untrustworthy output, and most
+  of the change is fixing that rather than the wiring: stage 6 was promoting 5,819 fabricated Route
+  entities to MSP (it matched any call ending .get/.post/.delete, so searchParams.get and Reflect.get
+  qualified) on a repository with no router; stage 3 harvested wikilinks from inside fenced and
+  inline code, including [[:space:]] from git grep examples; stage 3 could not resolve this
+  repository's dominant link idioms; stage 8 recorded a false inventory-exclusion to MSP with verdict
+  passed; and stages 5/6/7/9/10 aborted on the first unparseable file. Inventory scope is now derived
+  from the repository's own git ignore rules (owner-approved MSP semantic change, recorded as
+  SPEC-WORKSPACE-SYSTEM 0.3.3 section 5.3.1) because the prior hand-maintained list had already
+  drifted and omitted scripts/bench/, which .gitignore excludes because it holds real
+  customer/account mapping data. Measured before -> after on this repository: inventory 6,838 -> 923
+  files; fabricated Routes 5,819 -> 0; published graph 1,000 scratch paths / 0 edges / 0 symbols ->
+  3,563 nodes / 2,635 edges / 2,024 symbols; connectivity 6.9% (48 fragments, largest 26) -> 44.5%
+  (30 components, largest 1,485); stage-3 unresolved links 3,226 -> 41 split by honest reason; 0
+  scratch, 0 dangling and 0 duplicate nodes published. Evidence: npm run baseline:check exit 0; npx
+  vitest run exit 0 (124 files, 1033 passed, 1 skipped); npm run mcp:smoke PASS (15 tools, 90 roadmap
+  nodes); real deep scan reporting status complete, graphValidation true, inventoryMode git,
+  path-free governingRuleSets. Acceptance and exit criteria are ticked on that evidence. The SUCCESS
+  criterion is deliberately left UNCHECKED: all six views now render live discovered data and were
+  relabelled to stop asserting capabilities that do not exist (the vector map claimed HNSW with no
+  embeddings in the system; the symbol explorer asserted GenesisBlockDB membership over unpromoted
+  candidates; the ERD rendered TypeScript functions as database tables), but the criterion names a
+  reviewer OPENING each view, and no such human review has been recorded -- ticking it would be an
+  assertion, not evidence. Six adversarial review rounds were run; rounds 1-5 each returned no-merge
+  on defects a green test suite had not caught. Known-open follow-ups, none of which this task
+  claims: the stage-1 budget still truncates (the published graph is a bounded subset, disclosed);
+  the WS snapshot connect frame measures 874,726 bytes against a 1,000,000-byte protocol ceiling
+  (12.5% headroom); the .agents/ exclusion drops 146 git-tracked documents including the
+  docs:validate template root and awaits an owner decision; and five redundant full-repository AST
+  passes remain uncached.
 created_at: 2026-08-06T00:00:00Z,THESEUS,pending
 token_telemetry:
   model_name: claude-opus-5
@@ -2433,6 +2466,7 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.3.20 | 2026-08-20 | approved | TASK-PRD-007 (P0, Section 3.2) executed to review at commit 78f1b78. Backlog Items row planned -> review; TC-TASK-PRD-007 0.1.0+draft -> 0.2.0+draft with symbol_links corrected to the files actually changed; Verification row "Impact analysis over the changed snapshot contract" pending -> passed (calculateWorkspaceImpact run over the changed paths; every distance-1 must_update dependent reviewed, docs/specs/SPEC-Workspace-System.md updated to 0.3.3 as a result). The snapshot graph/symbols slices now carry live deep-scan output; publishing them exposed that the scan pipeline was largely producing untrustworthy data, and most of the work was fixing that: 5,819 fabricated Route entities were being promoted to MSP, wikilinks were being harvested from inside code fences, stage 8 was recording a false inventory-exclusion with verdict passed, and five stages aborted on the first unparseable file. Inventory scope now derives from the repository's own git ignore rules — an owner-approved MSP semantic change recorded as SPEC-WORKSPACE-SYSTEM 0.3.3 §5.3.1. Measured before -> after: inventory 6,838 -> 923 files; fabricated Routes 5,819 -> 0; published graph 1,000 scratch paths / 0 edges / 0 symbols -> 3,563 nodes / 2,635 edges / 2,024 symbols; connectivity 6.9% -> 44.5%. Evidence: baseline:check exit 0, vitest exit 0 (124 files, 1033 passed, 1 skipped), mcp:smoke PASS. Acceptance and exit criteria ticked on that evidence; the SUCCESS criterion is deliberately left unchecked because it names a reviewer opening each of the six views and no human review has been recorded. PHASE-PRD-03/SPR-PRD-03 progress and status are NOT changed by this row — TASK-PRD-004, -006 and -008 remain open beneath them. No Readiness Gate is flipped and the plan's approved lifecycle status is unchanged. | pending | Claude Opus 5 |
 | 0.3.19 | 2026-08-20 | approved | Consistency reconciliation, not new execution work: with GATE-BOOTSTRAP flipped to met in §4 (0.3.18 row) and TASK-PRD-010 — verified as SPR-PRD-05's sole child task in the Assignments table (line ~262) — already `done`, PHASE-PRD-05's named exit criterion ("GATE-BOOTSTRAP is met") and SPR-PRD-05's sole blocking task were both already satisfied, leaving the Phases/Sprints table rows internally contradictory with §4. Phases table: PHASE-PRD-05 status in-progress → done, progress 75 → 100. Sprints table: SPR-PRD-05 status in-progress → done, progress 75 → 100. §4 gates, TASK-PRD-010's own row, and the plan's `approved` lifecycle status are unchanged by this row — this closes only the two now-stale progress rows. | pending | Claude Sonnet 5 |
 | 0.3.18 | 2026-08-20 | approved | Closed the one gap an adversarial review found in TASK-PRD-010's 0.3.17 evidence: live boot had only been verified against this checkout's pre-existing `.env`, never against a `.env` produced by `npm run env:bootstrap` — the GAP-09 bootstrap→boot seam itself was unchained. Ran the seam test end to end in this working tree: backed up the real `.env` (`Copy-Item .env .env.seamtest-backup`), removed it, ran `npm run env:bootstrap` fresh (wrote a new `.env`, `GOVIBE_MCP_TOKEN`/`VITE_GOVIBE_MCP_TOKEN` both 64-hex and identical), started `npm run mcp:dev` against that bootstrap-generated `.env` alone (bound `127.0.0.1:4310` in 4s), and called `GET /mission/snapshot` with the bootstrap-generated token: `200`, real snapshot (`agents.length: 9`, `roadmap.nodes.length: 31`, `roadmap.sourcePath: docs/roadmap/ROADMAP-translator-core.md`, `roadmapSources.length: 14`) — not empty state; the unauthenticated negative check returned `401`. Stopped the sidecar (port 4310 confirmed free) and restored the real `.env` unconditionally, verified byte-for-byte back (16 lines, original token) with no `.env.seamtest-backup` left behind. This is real, non-fabricated evidence that the documented bootstrap path — not merely a pre-existing working `.env` — produces a `.env` that boots a connected Mission Control. **GATE-BOOTSTRAP flipped to met in §4** citing this evidence. TC-TASK-PRD-010's exit criterion ticked and status moved review → done (version 0.2.0+draft → 0.3.0+draft), with an honest caveat recorded in its own changelog: this closes the specific GAP-09 seam via the documented commands, not a literal from-zero `git clone` + second-human unaided run, which remains owner-accepted surrogate evidence for that criterion's fresh-machine framing — consistent with how GATE-CONTRACT/GATE-SEMANTIC were flipped on surrogate CI evidence by owner direction (§13 0.3.16 row). Backlog Items table: TASK-PRD-010 review → done. Verification table: TASK-PRD-010 unchanged (QA passed, Audit stays pending — not already passed, so left as-is per this batch's instruction). With GATE-BOOTSTRAP now met, all six Readiness Gates in §4 (GATE-CI, GATE-CONTRACT, GATE-HONESTY, GATE-SEMANTIC, GATE-BOOTSTRAP, GATE-SECURITY) read met — verified by re-reading §4 in full during this edit. This does NOT change the plan's own `approved` lifecycle status, which was already owner-ratified prior to this row; no further owner action on that axis is implied by this note. No document status changed to approved/accepted by this row beyond this masterplan's own routine patch. | pending | Claude Sonnet 5 |
 | 0.3.17 | 2026-08-19 | approved | TASK-PRD-010 execution (GAP-09 / GATE-BOOTSTRAP): authored and verified `docs/operations/runbooks/RUNBOOK-GoVibe-Quickstart.md`, a single linear clean-checkout-to-connected-Mission-Control path (Node 22, `npm ci` incl. `packages/msp-runtime`, `.env`/token creation, sidecar + Vite start, live-data confirmation), plus `npm run env:bootstrap` (`scripts/mcp/bootstrap-env.mjs`) which mints a matching `GOVIBE_MCP_TOKEN`/`VITE_GOVIBE_MCP_TOKEN` pair into a fresh `.env` and never overwrites an existing one. TASK-PRD-010 planned → review; PHASE-PRD-05/SPR-PRD-05 planned → in-progress (75). Real, non-fabricated verification evidence recorded in TC-TASK-PRD-010's changelog: the sidecar bound `127.0.0.1:4310`, `GET /mission/snapshot` and `GET /roadmap/sources` returned `200` with 17 real roadmap nodes / 9 real agents / 14 real sources, unauthenticated and foreign-origin requests returned `401`/`403`, Vite served `1420`, and a live browser session showed the header status pill `CONNECTED` and A2 Roadmap Board fully populated (real active source, real agent roster) rather than an empty state. Acceptance and success criteria ticked on this evidence; the exit criterion (an independent, never-run-the-project reviewer following the doc unaided) stays unticked — a literal from-zero `git clone` + `npm ci` re-run was attempted but did not complete in a practical time budget on this machine and was cleanly aborted rather than left half-done, so that specific evidence is honestly absent. **GATE-BOOTSTRAP stays "not met" in §4** per this task's own instructions: the verification above is real and, in this executor's assessment, sufficient to make GATE-BOOTSTRAP ready for an owner-directed review citing this row and TC-TASK-PRD-010's changelog, but the gate flip itself is left for the owner, consistent with how GATE-CONTRACT/GATE-SEMANTIC were handled. No document status changed to approved/accepted by this row beyond this masterplan's own routine patch. | pending | Claude Sonnet 5 |
