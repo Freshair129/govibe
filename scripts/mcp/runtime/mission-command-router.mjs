@@ -52,7 +52,14 @@ export class MissionCommandRouter {
       // would on stdio, with the same audited decision.
       const actor = resolveSidecarActor(command.actor);
       await enforceToolRbac("govibe.workspace.scan", { workspacePath: command.workspacePath, deep: command.deep, actor, requestedBy: actor });
-      const result = await service.scanWorkspace({ actor, workspacePath: command.workspacePath, deep: command.deep, runId: command.runId });
+      const scanResult = await service.scanWorkspace({ actor, workspacePath: command.workspacePath, deep: command.deep, runId: command.runId });
+      // TASK-PRD-007 (B9, round 3): F8 (handlers.mjs) stripped `observed` -- the internal Deep
+      // Scan presentation accumulator, up to ~0.5 MB measured on this repo -- from the stdio MCP
+      // tool response only. This sidecar path (POST /mission/commands, the transport Mission
+      // Control actually uses) still returned it, duplicating the same data the snapshot already
+      // carries post-mapping; sidecar-server.mjs's command dedup LRU then cached and re-served it
+      // on replay. Strip it here too, on the SAME field, for the SAME reason.
+      const { observed: _observed, ...result } = scanResult;
       return { ok: true, action: "workspace.scan", result, snapshot: service.getSnapshot() };
     }
     if (command.type === "agent.select") {

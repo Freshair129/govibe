@@ -237,9 +237,17 @@ export async function handleToolCall(name, args = {}) {
     }
     case "govibe.workspace.scan": {
       const result = await govibeRuntime.scanWorkspace(args);
+      // TASK-PRD-007 (F8): `result.observed` is the internal Deep Scan presentation accumulator
+      // (packages/govibe-core/src/scan/stage-runner.mjs) that WorkspaceService.scan() already
+      // used to patch snapshot.graph/.symbols -- it can carry thousands of full node/edge/symbol
+      // objects (~0.5 MB measured on this repo). It must not ride on the tool's public MCP
+      // response, or every deep-scan caller gets that injected into its context. Keep it internal
+      // to the runtime; registry.mjs declares no outputSchema for this tool, so nothing else
+      // strips it.
+      const { observed: _observed, ...publicResult } = result;
       return {
         content: asTextContent(`GoVibe ${result.level} workspace scan: ${result.status}.`),
-        structuredContent: { capability: name, ...result, auditRef: buildAuditRef(name) },
+        structuredContent: { capability: name, ...publicResult, auditRef: buildAuditRef(name) },
       };
     }
     case "govibe.workspace.validate": {

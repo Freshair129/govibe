@@ -24,8 +24,13 @@ const WS_ID = "workspace_aaaaaaaaaaaaaaaaaaaaaaaa";
 const PROJECT_ID = "project_bbbbbbbbbbbbbbbbbbbbbbbb";
 
 const roots = [];
+// TASK-PRD-007 (B3, round 3): a governed `deep: true` workspace.scan now spawns
+// `git -C <path> ls-files` (packages/govibe-core/src/scan/scan.mjs). On Windows, a just-exited
+// child process can hold the directory tree's handle for a few ms after its promise resolves,
+// which can race this cleanup into EBUSY -- maxRetries/retryDelay is Node's own documented
+// mitigation for exactly this (see fs.promises.rm docs), not a real leak.
 async function cleanupRoots() {
-  for (const root of roots.splice(0).reverse()) await rm(root, { recursive: true, force: true });
+  for (const root of roots.splice(0).reverse()) await rm(root, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
 }
 
 function ownerAssignment(subjectId) {

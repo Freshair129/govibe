@@ -235,31 +235,26 @@
   color: var(--accent);
 }
 
-.ast-canvas,
 .graph-studio-canvas {
   min-height: 400px;
-  position: relative;
-  overflow: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 12px;
+  overflow-y: auto;
+  max-height: 560px;
   background-image: linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
   background-size: 28px 28px;
 }
 
-.ast-node,
 .graph-studio-canvas span {
-  position: absolute;
   border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent);
   border-radius: 12px;
   background: color-mix(in srgb, var(--accent) 12%, rgba(0,0,0,0.4));
   color: var(--text);
-  display: grid;
-  gap: 4px;
-  min-width: 132px;
-  padding: 12px;
-}
-
-.ast-node span {
-  color: var(--accent);
-  font-size: 10px;
+  padding: 10px 14px;
+  font-size: 12px;
+  height: fit-content;
 }
 
 .view-note {
@@ -267,6 +262,102 @@
   font-size: 12px;
   margin: -8px 0 0;
   text-align: center;
+}
+
+/* TASK-PRD-007 (F1/F4): genuine collapsible tree for AstTreeView -- children only mount once a
+   branch is expanded, so a large observed graph never mounts thousands of simultaneously
+   invisible nodes. */
+.tree-canvas {
+  min-height: 400px;
+  max-height: 640px;
+  overflow-y: auto;
+}
+
+.tree-root,
+.tree-children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tree-children {
+  margin-left: 18px;
+  border-left: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  padding-left: 12px;
+}
+
+.tree-item {
+  margin: 2px 0;
+}
+
+.tree-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 30px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+}
+
+.tree-toggle:not(:disabled):hover {
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.tree-toggle:disabled {
+  cursor: default;
+}
+
+.tree-caret {
+  color: var(--accent);
+  width: 12px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.tree-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-kind {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.tree-count {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 800;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.tree-leaf {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 26px;
+  padding: 2px 8px 2px 20px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  color: var(--text);
+}
+
+.tree-leaf-kind {
+  color: var(--muted);
+  font-size: 10px;
+  text-transform: uppercase;
 }
 
 .spec-panel {
