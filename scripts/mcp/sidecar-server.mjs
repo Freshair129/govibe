@@ -354,7 +354,25 @@ export function startSidecarServer(runtime, options = {}) {
   });
 
   wss.on("connection", (socket) => {
-    socket.send(JSON.stringify({ type: "snapshot", snapshot: runtime.getSnapshot() }));
+    // TASK-PRD-007 (round 5): the connect frame goes through the SAME isMissionEvent gate the
+    // broadcast path above uses. It used to be sent unchecked, which made the ceiling asymmetric
+    // and the failure hard to read: src/mission/gateway.ts's handleRawFrame() validates every
+    // inbound frame, so an oversized snapshot was already being discarded by the client with a
+    // generic "failed Mission Control schema validation" line and nothing server-side to explain
+    // it. And the snapshot frame is the EARLIER of the two ceilings to break -- it is a strict
+    // superset of the `graph.update` payload (measured on this repository: an 869,491-byte snapshot
+    // frame against a 667,348-byte graph.update), so a deep scan large enough to blackhole live
+    // graph updates has already blackholed the connect frame. Reporting the measured size here is
+    // what keeps that diagnosable instead of silent on both ends.
+    const snapshotFrame = { type: "snapshot", snapshot: runtime.getSnapshot() };
+    if (!isMissionEvent(snapshotFrame)) {
+      runtime.appendTerminal(
+        "warn",
+        `Mission snapshot frame failed protocol validation and was not sent to a connecting client (${Buffer.byteLength(JSON.stringify(snapshotFrame), "utf8")} bytes, against a MISSION_PROTOCOL_LIMITS.eventBytes ceiling of ${MISSION_PROTOCOL_LIMITS.eventBytes}). The client would have discarded it on arrival.`,
+      );
+    } else {
+      socket.send(JSON.stringify(snapshotFrame));
+    }
     socket.on("message", async (message, isBinary) => {
       if (isBinary) {
         socket.send(JSON.stringify({

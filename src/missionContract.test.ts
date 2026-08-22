@@ -23,6 +23,8 @@ import { createRuntimeSnapshot } from "../scripts/mcp/runtime/snapshot-store.mjs
 // file's source as a plain string at build/test time — used below to pin the roadmap.dag rider
 // without depending on Node's `fs` types, which this frontend project does not have installed.
 import roadmapServiceSource from "../scripts/mcp/runtime/roadmap-service.mjs?raw";
+// Same Vite `?raw` pattern, used by the graph/symbols producer regression test below.
+import workspaceServiceSource from "../scripts/mcp/runtime/workspace-service.mjs?raw";
 
 // ---------------------------------------------------------------------------
 // Compile-time key registry — MUST stay in sync with `TaskContainer` in mission.ts.
@@ -296,14 +298,21 @@ describe("TaskContainer contract drift guard", () => {
 // drift (either MissionSnapshot drops it, or createRuntimeSnapshot() starts returning it) fails
 // the "allowlist stays accurate" test and forces this file to be updated.
 //
-// Known-drift disposition (2026-08-19 audit, AUD-16):
-//   - 7 producer-less slices (metrics, chart, reactor, graph, specs, symbols, campaignLogs):
+// Known-drift disposition (2026-08-19 audit, AUD-16; updated by TASK-PRD-007):
+//   - 5 producer-less slices (metrics, chart, reactor, specs, campaignLogs):
 //     structurally present as keys on BOTH sides already (createRuntimeSnapshot() seeds them),
 //     so they do not fail a key-set comparison and are NOT in the allowlist below. Their gap is
 //     that no runtime code path ever fills them with non-empty data — a data-population concern
-//     the audit itself scopes to TASK-PRD-007, not a structural key-parity violation this
-//     mechanism can express. Recorded and asserted in the second describe block below so the
-//     drift stays visible without this task fabricating TASK-PRD-007's producers.
+//     out of scope for the task that fixes them. Recorded and asserted in the second describe
+//     block below so the drift stays visible without fabricating a producer.
+//   - graph, symbols: REMOVED from the producer-less set by TASK-PRD-007. WorkspaceService.scan()
+//     (scripts/mcp/runtime/workspace-service.mjs) is now a real producer — a deep scan maps
+//     packages/govibe-core/src/scan/ Deep Scan OBSERVED candidates (CLAUDE.md: "Deep Scan creates
+//     observed candidates. It does not create canonical GKS truth.") onto these two slices via
+//     `snapshotStore.patch({ graph, symbols })`. createRuntimeSnapshot()'s BOOT-TIME shape is
+//     still the documented empty `{nodes:[],edges:[]}` / `[]` (no scan has run yet at boot), so
+//     both fields stay correctly typed and boot-empty; they are simply no longer "no runtime code
+//     path ever fills them" — see the scan-producer regression test below.
 //   - heatmap: allowlisted below (orphan field pending TASK-PRD-006).
 //   - roadmap, masterPlanPreview, roadmapSources, usage: allowlisted below (populated post-boot
 //     by other runtime code paths, not part of createRuntimeSnapshot()'s initial shape).
@@ -408,13 +417,13 @@ describe("MissionSnapshot cross-runtime parity guard (TASK-PRD-019)", () => {
 // Producer-less slices (TASK-PRD-007 scope, tracked here per TASK-PRD-019's DoD but NOT fixed —
 // fabricating producers for these is explicitly out of this task's scope).
 // ---------------------------------------------------------------------------
+// `graph` and `symbols` were removed from this set by TASK-PRD-007 -- see the disposition
+// comment above and the "graph/symbols producer" describe block below.
 const PRODUCER_LESS_SLICE_EMPTY_SHAPES: Record<string, unknown> = {
   metrics: [],
   chart: { labels: [], series: [] },
   reactor: [],
-  graph: { nodes: [], edges: [] },
   specs: [],
-  symbols: [],
   campaignLogs: [],
 };
 
@@ -435,6 +444,36 @@ describe("MissionSnapshot producer-less slices (TASK-PRD-007 scope, recorded not
         `"${key}" no longer matches its documented always-empty boot shape — TASK-PRD-007 may have wired a producer; update PRODUCER_LESS_SLICE_EMPTY_SHAPES and this task's disposition comment.`,
       ).toEqual(emptyShape);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// graph/symbols producer (TASK-PRD-007, F6): these two slices used to be recorded above as
+// "no runtime code path ever fills them with non-empty data". WorkspaceService.scan() now maps
+// a deep scan's OBSERVED candidates onto both -- pin the source line here the same way
+// roadmap.dag is pinned below, so a future removal of that producer is caught instead of this
+// comment silently going stale again.
+// ---------------------------------------------------------------------------
+describe("graph/symbols producer (TASK-PRD-007): no longer producer-less", () => {
+  it("WorkspaceService.scan() patches graph and symbols from a deep scan's observed candidates", () => {
+    expect(
+      workspaceServiceSource,
+      "workspace-service.mjs no longer patches graph/symbols from a deep scan's observed output -- if this is intentional, move graph/symbols back into PRODUCER_LESS_SLICE_EMPTY_SHAPES and restore the disposition comment above.",
+    ).toMatch(/snapshotStore\.patch\(\{\s*graph:\s*\{[^}]*\},\s*symbols:\s*graph\.symbols/);
+  });
+
+  // TASK-PRD-007 (F5): round 2 removed graph/symbols from PRODUCER_LESS_SLICE_EMPTY_SHAPES,
+  // which also removed the only assertion that createRuntimeSnapshot() actually BOOTS these two
+  // slices empty -- the regex test above only proves a producer function exists somewhere in the
+  // source text, not what the runtime returns at boot. A fabricated non-empty boot-time graph
+  // would still pass that regex. This restores the value assertion (still true: no scan has run
+  // at boot, so both slices start empty) without reintroducing the now-false "no runtime code
+  // path ever fills them" claim -- WorkspaceService.scan() is a real post-boot producer, and the
+  // test above pins that fact separately.
+  it("createRuntimeSnapshot() still boots graph/symbols with their documented empty shape (a producer exists but has not run yet)", () => {
+    const snapshot = createRuntimeSnapshot() as Record<string, unknown>;
+    expect(snapshot.graph, "graph boot shape").toEqual({ nodes: [], edges: [] });
+    expect(snapshot.symbols, "symbols boot shape").toEqual([]);
   });
 });
 

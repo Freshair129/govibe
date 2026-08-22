@@ -20,7 +20,14 @@ export function IntelligenceZoo({ snapshot }: { snapshot: MissionSnapshot }) {
 
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="Block DB" title="Intelligence Zoo" desc="Registered agents and MCP capabilities from the mission snapshot." />
+      {/* TASK-PRD-007 (F3, round 3): "Block DB" implied GenesisBlockDB canonical membership; this
+          only ever lists registered agents and MCP capabilities from the mission snapshot, not
+          anything promoted through MSP/GKS. See navigation.ts domain C for the matching rename.
+          TASK-PRD-007 (round 4, M6): round 3 replaced "Block DB" with "Deep Scan" here, which is
+          an equally false capability claim -- this component reads only `snapshot.agents` and
+          `snapshot.capabilities` (see above); it contains zero Deep Scan output (no observed
+          nodes/edges/symbols). Labelled for what it actually shows. */}
+      <ViewHeader eyebrow="Agents & Capabilities" title="Intelligence Zoo" desc="Registered agents and MCP capabilities from the mission snapshot." />
       {entries.length > 0 ? (
         <section className="zoo-grid">
           {entries.map((item) => (

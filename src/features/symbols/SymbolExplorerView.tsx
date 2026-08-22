@@ -10,10 +10,15 @@ export function SymbolExplorerView({ snapshot }: { snapshot: MissionSnapshot }) 
     return symbol.name.toLowerCase().includes(query) || symbol.path.toLowerCase().includes(query) || symbol.kind.toLowerCase().includes(query);
   });
 
+  // TASK-PRD-007 (D3): CLAUDE.md -- "Deep Scan creates observed candidates. It does not create
+  // canonical GKS truth." This view previously branded itself "Block DB" (GenesisBlockDB) and
+  // hardcoded every row's status as "Indexed", implying canonical, persisted knowledge-base
+  // membership that promotion through MSP/GKS never happened here. Deep Scan only ever produces
+  // observed candidates (packages/govibe-core/src/scan/) -- present them as that, honestly.
   return (
     <div className="view-stack">
       <div className="view-title-row">
-        <ViewHeader eyebrow="Block DB" title="Symbol Explorer Hub" />
+        <ViewHeader eyebrow="Deep Scan" title="Symbol Explorer Hub" />
         <input
           className="table-filter"
           value={filter}
@@ -21,7 +26,7 @@ export function SymbolExplorerView({ snapshot }: { snapshot: MissionSnapshot }) 
           placeholder="Filter symbols..."
         />
       </div>
-      {snapshot.symbols.length === 0 ? <EmptyState title="No symbols indexed" body="Publish snapshot.symbols to populate this view." /> : (
+      {snapshot.symbols.length === 0 ? <EmptyState title="No symbols observed" body="Publish snapshot.symbols, or run a deep scan, to populate this view." /> : (
         <section className="panel table-panel">
           <table>
             <thead>
@@ -38,7 +43,7 @@ export function SymbolExplorerView({ snapshot }: { snapshot: MissionSnapshot }) 
                   <td>{symbol.name}</td>
                   <td>{symbol.kind}</td>
                   <td>{symbol.path}</td>
-                  <td><span>Indexed</span></td>
+                  <td><span>Observed candidate</span></td>
                 </tr>
               ))}
             </tbody>

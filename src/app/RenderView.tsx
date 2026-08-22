@@ -48,7 +48,14 @@ export function RenderView({
   if (activeView === "B1") return <AstTreeView snapshot={snapshot} />;
   if (activeView === "B2") return <BusinessSpecificationsView snapshot={snapshot} />;
   if (activeView === "B3") return <GraphStudioView snapshot={snapshot} />;
-  if (activeView === "B4") return <GraphView snapshot={snapshot} title="Live Call Graph" />;
+  if (activeView === "B4") return (
+    <GraphView
+      snapshot={snapshot}
+      title="Observed Link Graph"
+      desc="Edges are Deep Scan's undifferentiated union of doc links, imports, calls, and inheritance references -- the published contract drops relation type, so it cannot be shown or filtered here."
+      showSummaryPanel
+    />
+  );
   if (activeView === "C1") return <SymbolExplorerView snapshot={snapshot} />;
   if (activeView === "C2") return <IntelligenceZoo snapshot={snapshot} />;
   if (activeView === "C3") return <DataIngestView ingest={ingest} />;

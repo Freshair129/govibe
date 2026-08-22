@@ -27,6 +27,19 @@ Thumbs.db
 .govibe/roadmap-overlay.jsonl
 # RBAC decision audit trail (runtime-generated; see scripts/mcp/runtime/rbac-enforcement.mjs).
 .govibe/rbac-audit.jsonl
+# RBAC assignment state (runtime-generated; see scripts/mcp/runtime/rbac-enforcement.mjs).
+# TASK-PRD-007 (round 4, M4): this was NOT previously ignored -- verified untracked and
+# unignored on this repo -- so a scan's own `git ls-files --others --exclude-standard` picked it
+# up as project source and re-submitted it to MSP on the next run (scan output becoming scan
+# input, growing `sourceSnapshotHash` churn without bound).
+.govibe/rbac.json
+# Persisted context packets and injection records (runtime-generated; see
+# packages/govibe-core/src/context-store.mjs). Same TASK-PRD-007 (round 4, M4) scan-feedback-loop
+# finding as .govibe/rbac.json above -- persisted context packets can themselves contain prior
+# scan output, so leaving these unignored fed scan output back into the NEXT scan as project
+# source, unbounded in count.
+.govibe/contexts/
+.govibe/context-injections/
 # TASK-PRD-029 (AUD-08): recorded approvals for C-3/H4 gates (runtime-generated/owner-authored;
 # see packages/govibe-core/src/approval-record.mjs).
 .govibe/approvals.jsonl
