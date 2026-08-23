@@ -1,6 +1,7 @@
 import type { MissionSnapshot } from "../../mission";
 import { EmptyState } from "../../shared/EmptyState";
 import { ViewHeader } from "../../shared/ViewHeader";
+import { viewTitle } from "../../mission/navigation";
 import { BrainConfig } from "../config/BrainConfig";
 import "./context-operations.css";
 
@@ -35,7 +36,7 @@ export function ContextOperationsView({ snapshot }: { snapshot: MissionSnapshot 
     <div className="view-stack">
       <ViewHeader
         eyebrow="Governed context"
-        title="Vault, Context & Impact"
+        title={viewTitle("A4")}
         desc="Read-only operational surface for MSP-mediated vault state, context lineage, replay evidence, and dependency impact. Missing evidence is shown as unavailable rather than invented."
       />
 

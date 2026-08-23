@@ -313,7 +313,6 @@ describe("TaskContainer contract drift guard", () => {
 //     still the documented empty `{nodes:[],edges:[]}` / `[]` (no scan has run yet at boot), so
 //     both fields stay correctly typed and boot-empty; they are simply no longer "no runtime code
 //     path ever fills them" — see the scan-producer regression test below.
-//   - heatmap: allowlisted below (orphan field pending TASK-PRD-006).
 //   - roadmap, masterPlanPreview, roadmapSources, usage: allowlisted below (populated post-boot
 //     by other runtime code paths, not part of createRuntimeSnapshot()'s initial shape).
 //   - roadmap.dag rider: a NESTED field (RoadmapSnapshot.dag), not a top-level MissionSnapshot
@@ -338,7 +337,6 @@ const _missionSnapshotKeyCheck: Record<keyof MissionSnapshot, true> = {
   graph: true,
   specs: true,
   symbols: true,
-  heatmap: true,
   campaignLogs: true,
   roadmap: true,
   masterPlanPreview: true,
@@ -364,12 +362,10 @@ const MISSION_SNAPSHOT_TYPE_KEYS = new Set<string>(Object.keys(_missionSnapshotK
  * above for the full disposition.
  */
 const RUNTIME_POST_BOOT_ALLOWLIST: Record<string, string> = {
-  heatmap:
-    "No runtime producer at any point (frontend-only field). Orphan-or-retire decision owned by TASK-PRD-006.",
   roadmap:
     "Populated post-boot by RoadmapService.reloadRoadmap()'s snapshotStore.patch({roadmap}) (scripts/mcp/runtime/roadmap-service.mjs:519), not part of createRuntimeSnapshot()'s boot-time shape.",
   masterPlanPreview:
-    "Populated on-demand by RoadmapService.previewMasterPlan() (scripts/mcp/runtime/roadmap-service.mjs:354-356); also tracked as an orphan field by TASK-PRD-006 from the 2026-08-06 audit.",
+    "Populated on-demand by RoadmapService.previewMasterPlan() (scripts/mcp/runtime/roadmap-service.mjs:382-385) and consumed by src/features/readiness/readinessPlan.ts and RoadmapBoard.tsx. The 2026-08-06 audit listed it as an orphan; TASK-PRD-006 re-measured and found a real producer on both sides, so it is post-boot, not orphaned.",
   roadmapSources:
     "Populated post-boot by RoadmapService.discoverSources()/reloadRoadmap() (scripts/mcp/runtime/roadmap-service.mjs:241,331), not part of createRuntimeSnapshot()'s boot-time shape.",
   usage:

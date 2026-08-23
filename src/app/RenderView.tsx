@@ -2,7 +2,6 @@ import type { MissionCommand, MissionSnapshot, ThemeMode, ViewId } from "../miss
 import { AgentManagement } from "../features/agents/AgentManagement";
 import { AstTreeView } from "../features/ast/AstTreeView";
 import { CampaignLogsView } from "../features/benchmark/CampaignLogsView";
-import { Heatmap } from "../features/benchmark/Heatmap";
 import { ReactorRunTrigger } from "../features/benchmark/ReactorRunTrigger";
 import { CapabilityPlugins } from "../features/capabilities/CapabilityPlugins";
 import { MissionCanvasView } from "../features/canvas/MissionCanvasView";
@@ -61,7 +60,6 @@ export function RenderView({
   if (activeView === "C3") return <DataIngestView ingest={ingest} />;
   if (activeView === "C4") return <DatabaseErdView snapshot={snapshot} />;
   if (activeView === "D1") return <ReactorRunTrigger send={send} />;
-  if (activeView === "D2") return <Heatmap snapshot={snapshot} />;
   if (activeView === "D3") return <CampaignLogsView snapshot={snapshot} />;
   return <HnswVectorView snapshot={snapshot} />;
 }

@@ -91,7 +91,6 @@ describe("mission protocol v2", () => {
       { type: "chart.update", chart: {} },
       { type: "agents.update", agents: [] },
       { type: "graph.update", graph: {} },
-      { type: "heatmap.update", heatmap: {} },
       { type: "roadmap.snapshot", roadmap: {} },
       { type: "dag.update", dag: {} },
       { type: "dag.update", dag: { nodes: {}, edges: [] } },
