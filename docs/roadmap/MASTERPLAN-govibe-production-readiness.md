@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.3.20"
+version: "0.3.21"
 updated: "2026-08-20"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -257,7 +257,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-005 | SPR-PRD-02 | task | Add the orchestration slice to the MissionSnapshot contract | P0 | ARCHON | done | TASK-PRD-003 | Section 3.1 GAP-04 |
 | TASK-PRD-006 | SPR-PRD-02 | task | Resolve the heatmap and master plan preview contract orphans | P1 | ARCHON | planned | TASK-PRD-005 | Section 3.1 GAP-05 |
 | TASK-PRD-007 | SPR-PRD-03 | task | Publish graph and symbol producers from the workspace scan | P0 | VIBE | review | TASK-PRD-005 | Section 3.2 |
-| TASK-PRD-008 | SPR-PRD-03 | task | Reconcile sidebar labels with rendered view titles | P2 | VIBE | planned | - | Section 3.1 GAP-07 |
+| TASK-PRD-008 | SPR-PRD-03 | task | Reconcile sidebar labels with rendered view titles | P2 | VIBE | review | - | Section 3.1 GAP-07 |
 | TASK-PRD-009 | SPR-PRD-04 | task | Correct abolished H-axis semantics in architecture documents | P1 | ATHER | done | - | Section 3.1 GAP-08 |
 | TASK-PRD-010 | SPR-PRD-05 | task | Author the clean-checkout developer quickstart | P0 | THESEUS | done | TASK-PRD-003 | Section 3.1 GAP-09 |
 | TASK-PRD-011 | SPR-PRD-00 | task | Provide a Mission Control readiness tracking and command view | P1 | VIBE | done | TASK-PRD-001 | Section 11 |
@@ -733,8 +733,8 @@ title: Reconcile sidebar labels with rendered view titles
 requirement_type: NFR
 complexity: C-1
 access_scope: H1
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: VIBE
 executor: VIBE
 approver: Boss
@@ -742,18 +742,40 @@ auditor: ATHER
 symbol_links:
   code: src/mission/navigation.ts
   doc: docs/PRD-GoVibe-Platform-Overview.md
-  test: src/missionContract.test.ts
+  test: src/mission/navigation.test.ts
 definition_of_done:
   acceptance_criteria:
     - criterion: Given a user selects any sidebar entry, when the view renders, then the on-screen title matches the sidebar label or the difference is a recorded product decision
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the four known mismatches, when the change lands, then each is either renamed or documented as intentional
-      checked: false
+      checked: true
   exit_criteria:
     - criterion: Given a test that compares the navigation map to each view header, when a future rename desynchronises them, then the test fails
-      checked: false
-changelog: Four label mismatches recorded from the 2026-08-06 navigation audit.
+      checked: true
+changelog: >-
+  Executed to review at commit 7581d9b on branch feat/task-prd-008-navigation-title-parity. The
+  2026-08-06 audit's four mismatches were re-measured and all four confirmed: A4 sidebar
+  "Brain & Config" against rendered "Vault, Context & Impact", B2 "Business Specifications" against
+  "Functional Specifications", B3 "Interactive Graph" against "Interactive Graph Studio", and D2
+  "Cyber Reactor Heatmap" against "Cyber Reactor Real-time Heatmap". A4 was the substantive one --
+  BrainConfig had become a single panel inside the much broader ContextOperationsView, so the
+  sidebar entry was a leftover from when it was the whole view; the sidebar now states what the
+  view is. D2's "Real-time" was doubly untrue because snapshot.heatmap has no producer at all
+  (TASK-PRD-006), so the shorter accurate wording was taken. Rather than renaming four strings and
+  leaving the same trap set, navigation.ts is now the single source and views read viewTitle(id)
+  instead of hardcoding a header, so the pair cannot disagree; an entry may still declare an
+  explicit title override for a deliberately short sidebar entry, but titleNote is then required
+  and the test fails without it, making every surviving difference a recorded decision rather than
+  drift. Exit criterion is satisfied by src/mission/navigation.test.ts, which fails on
+  desynchronisation and additionally pins ViewId coverage, domain-default ownership, that
+  viewTitle throws on an unknown id rather than returning an empty string, and that no redundant
+  override is left behind. One item is recorded rather than fixed and is NOT claimed as done: A2
+  (Roadmap Board) renders no ViewHeader at all, which is an absent header rather than a mismatched
+  one, and adding one to that dense drag-and-drop board is a layout change that could not be
+  verified without running the application -- a test pins the exception so that if RoadmapBoard
+  ever gains a header it fails and whoever adds it must wire it to viewTitle("A2"). Evidence:
+  npm run baseline:check exit 0; vitest 125 files, 1042 passed, 1 skipped; npm run lint clean.
 created_at: 2026-08-06T00:00:00Z,THESEUS,pending
 token_telemetry:
   model_name: claude-opus-5
@@ -2466,6 +2488,7 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.3.21 | 2026-08-20 | approved | TASK-PRD-008 (P2, NFR) executed to review at commit 7581d9b. Backlog Items row planned -> review; TC-TASK-PRD-008 0.1.0+draft -> 0.2.0+draft with symbol_links.test repointed from src/missionContract.test.ts to the suite that actually binds this task, src/mission/navigation.test.ts. All four audited mismatches re-measured and confirmed, then closed structurally rather than by renaming strings: navigation.ts is now the single source for both the sidebar label and the view header, views read viewTitle(id), and a deliberate difference requires a titleNote the test enforces. All three criteria ticked on command-verified evidence (baseline:check exit 0; vitest 125 files / 1042 passed / 1 skipped; lint clean). One item is recorded rather than claimed: A2 Roadmap Board renders no ViewHeader at all — an absent header, not a mismatched one — and a test pins that exception. PHASE-PRD-03/SPR-PRD-03 are NOT advanced: TASK-PRD-006 remains open beneath them and its own acceptance criterion requires an owner produce-or-retire decision on the heatmap and masterPlanPreview orphan fields. No Readiness Gate flipped; the plan's approved lifecycle status is unchanged. | pending | Claude Opus 5 |
 | 0.3.20 | 2026-08-20 | approved | TASK-PRD-007 (P0, Section 3.2) executed to review at commit 78f1b78. Backlog Items row planned -> review; TC-TASK-PRD-007 0.1.0+draft -> 0.2.0+draft with symbol_links corrected to the files actually changed; Verification row "Impact analysis over the changed snapshot contract" pending -> passed (calculateWorkspaceImpact run over the changed paths; every distance-1 must_update dependent reviewed, docs/specs/SPEC-Workspace-System.md updated to 0.3.3 as a result). The snapshot graph/symbols slices now carry live deep-scan output; publishing them exposed that the scan pipeline was largely producing untrustworthy data, and most of the work was fixing that: 5,819 fabricated Route entities were being promoted to MSP, wikilinks were being harvested from inside code fences, stage 8 was recording a false inventory-exclusion with verdict passed, and five stages aborted on the first unparseable file. Inventory scope now derives from the repository's own git ignore rules — an owner-approved MSP semantic change recorded as SPEC-WORKSPACE-SYSTEM 0.3.3 §5.3.1. Measured before -> after: inventory 6,838 -> 923 files; fabricated Routes 5,819 -> 0; published graph 1,000 scratch paths / 0 edges / 0 symbols -> 3,563 nodes / 2,635 edges / 2,024 symbols; connectivity 6.9% -> 44.5%. Evidence: baseline:check exit 0, vitest exit 0 (124 files, 1033 passed, 1 skipped), mcp:smoke PASS. Acceptance and exit criteria ticked on that evidence; the SUCCESS criterion is deliberately left unchecked because it names a reviewer opening each of the six views and no human review has been recorded. PHASE-PRD-03/SPR-PRD-03 progress and status are NOT changed by this row — TASK-PRD-004, -006 and -008 remain open beneath them. No Readiness Gate is flipped and the plan's approved lifecycle status is unchanged. | pending | Claude Opus 5 |
 | 0.3.19 | 2026-08-20 | approved | Consistency reconciliation, not new execution work: with GATE-BOOTSTRAP flipped to met in §4 (0.3.18 row) and TASK-PRD-010 — verified as SPR-PRD-05's sole child task in the Assignments table (line ~262) — already `done`, PHASE-PRD-05's named exit criterion ("GATE-BOOTSTRAP is met") and SPR-PRD-05's sole blocking task were both already satisfied, leaving the Phases/Sprints table rows internally contradictory with §4. Phases table: PHASE-PRD-05 status in-progress → done, progress 75 → 100. Sprints table: SPR-PRD-05 status in-progress → done, progress 75 → 100. §4 gates, TASK-PRD-010's own row, and the plan's `approved` lifecycle status are unchanged by this row — this closes only the two now-stale progress rows. | pending | Claude Sonnet 5 |
 | 0.3.18 | 2026-08-20 | approved | Closed the one gap an adversarial review found in TASK-PRD-010's 0.3.17 evidence: live boot had only been verified against this checkout's pre-existing `.env`, never against a `.env` produced by `npm run env:bootstrap` — the GAP-09 bootstrap→boot seam itself was unchained. Ran the seam test end to end in this working tree: backed up the real `.env` (`Copy-Item .env .env.seamtest-backup`), removed it, ran `npm run env:bootstrap` fresh (wrote a new `.env`, `GOVIBE_MCP_TOKEN`/`VITE_GOVIBE_MCP_TOKEN` both 64-hex and identical), started `npm run mcp:dev` against that bootstrap-generated `.env` alone (bound `127.0.0.1:4310` in 4s), and called `GET /mission/snapshot` with the bootstrap-generated token: `200`, real snapshot (`agents.length: 9`, `roadmap.nodes.length: 31`, `roadmap.sourcePath: docs/roadmap/ROADMAP-translator-core.md`, `roadmapSources.length: 14`) — not empty state; the unauthenticated negative check returned `401`. Stopped the sidecar (port 4310 confirmed free) and restored the real `.env` unconditionally, verified byte-for-byte back (16 lines, original token) with no `.env.seamtest-backup` left behind. This is real, non-fabricated evidence that the documented bootstrap path — not merely a pre-existing working `.env` — produces a `.env` that boots a connected Mission Control. **GATE-BOOTSTRAP flipped to met in §4** citing this evidence. TC-TASK-PRD-010's exit criterion ticked and status moved review → done (version 0.2.0+draft → 0.3.0+draft), with an honest caveat recorded in its own changelog: this closes the specific GAP-09 seam via the documented commands, not a literal from-zero `git clone` + second-human unaided run, which remains owner-accepted surrogate evidence for that criterion's fresh-machine framing — consistent with how GATE-CONTRACT/GATE-SEMANTIC were flipped on surrogate CI evidence by owner direction (§13 0.3.16 row). Backlog Items table: TASK-PRD-010 review → done. Verification table: TASK-PRD-010 unchanged (QA passed, Audit stays pending — not already passed, so left as-is per this batch's instruction). With GATE-BOOTSTRAP now met, all six Readiness Gates in §4 (GATE-CI, GATE-CONTRACT, GATE-HONESTY, GATE-SEMANTIC, GATE-BOOTSTRAP, GATE-SECURITY) read met — verified by re-reading §4 in full during this edit. This does NOT change the plan's own `approved` lifecycle status, which was already owner-ratified prior to this row; no further owner action on that axis is implied by this note. No document status changed to approved/accepted by this row beyond this masterplan's own routine patch. | pending | Claude Sonnet 5 |
