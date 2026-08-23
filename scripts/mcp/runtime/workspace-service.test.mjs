@@ -15,7 +15,7 @@ vi.mock("../../../packages/govibe-core/src/index.mjs", async (importOriginal) =>
 import { isMissionEvent, MISSION_PROTOCOL_LIMITS } from "../../../packages/mission-protocol/index.js";
 import { MspClient, scanWorkspace } from "../../../packages/govibe-core/src/index.mjs";
 import { RuntimeSnapshotStore, createRuntimeSnapshot } from "./snapshot-store.mjs";
-import { mapObservedGraph, SCAN_SLICE_WIRE_BYTE_BUDGET, WorkspaceService } from "./workspace-service.mjs";
+import { mapObservedGraph, MAX_PUBLISHED_WORKFLOW_RUNS, SCAN_SLICE_WIRE_BYTE_BUDGET, WorkspaceService } from "./workspace-service.mjs";
 
 function contextAuthority() {
   return {
@@ -670,5 +670,68 @@ describe("workspace service scan observed graph wire byte bound", () => {
     expect(warning.text).toContain("serialized-size budget");
     expect(warning.text).toContain(String(SCAN_SLICE_WIRE_BYTE_BUDGET));
     expect(warning.text).not.toContain("dropped 0 node(s), 0 edge(s), 0 symbol(s)");
+  });
+});
+
+// TASK-PRD-007 follow-up: `workflowRuns` was the last UNBOUNDED snapshot slice. publishRun() and
+// status() de-duplicate by runId but otherwise append forever, so a session running repeated
+// scans grew it without limit -- while `terminal` has always been capped at 199 lines. Because
+// the WebSocket connect frame carries the whole snapshot and is validated against
+// MISSION_PROTOCOL_LIMITS.eventBytes, an unbounded slice eventually costs a connecting client
+// its snapshot entirely. Measured on this repository: ~45 KB of non-scan content, a 900 KB scan
+// budget, ~55 KB of headroom, and ~6.2 KB per workflow run -- about nine scans to the ceiling.
+describe("workflowRuns bounding", () => {
+  const makeService = () => {
+    const store = new RuntimeSnapshotStore(createRuntimeSnapshot());
+    return { store, service: new WorkspaceService({ workspaceRoot: "/tmp", allowedRoots: ["/tmp"], snapshotStore: store }) };
+  };
+
+  it("keeps the slice bounded no matter how many distinct runs are published", () => {
+    const { store, service } = makeService();
+    for (let index = 0; index < MAX_PUBLISHED_WORKFLOW_RUNS + 40; index += 1) {
+      service.publishRun({ runId: `run-${index}`, status: "complete" });
+    }
+    expect(store.getSnapshot().workflowRuns.length).toBe(MAX_PUBLISHED_WORKFLOW_RUNS);
+  });
+
+  it("keeps the NEWEST runs and drops the oldest -- the tail is what a reader is looking at", () => {
+    const { store, service } = makeService();
+    const total = MAX_PUBLISHED_WORKFLOW_RUNS + 5;
+    for (let index = 0; index < total; index += 1) {
+      service.publishRun({ runId: `run-${index}`, status: "complete" });
+    }
+    const ids = store.getSnapshot().workflowRuns.map((run) => run.runId);
+    expect(ids.at(-1)).toBe(`run-${total - 1}`);
+    expect(ids).not.toContain("run-0");
+    expect(ids).toContain(`run-${total - MAX_PUBLISHED_WORKFLOW_RUNS}`);
+  });
+
+  it("discloses the trim rather than silently dropping runs", () => {
+    const { store, service } = makeService();
+    for (let index = 0; index < MAX_PUBLISHED_WORKFLOW_RUNS + 3; index += 1) {
+      service.publishRun({ runId: `run-${index}`, status: "complete" });
+    }
+    const warning = store.getSnapshot().terminal.find((line) => line.type === "warn" && line.text.includes("workflow runs"));
+    expect(warning, "trimming must be reported, not silent").toBeTruthy();
+    expect(warning.text).toContain(String(MAX_PUBLISHED_WORKFLOW_RUNS));
+    expect(warning.text).toContain("state/runs/");
+  });
+
+  it("does not warn or trim while the slice is still within bounds", () => {
+    const { store, service } = makeService();
+    for (let index = 0; index < MAX_PUBLISHED_WORKFLOW_RUNS; index += 1) {
+      service.publishRun({ runId: `run-${index}`, status: "complete" });
+    }
+    expect(store.getSnapshot().workflowRuns.length).toBe(MAX_PUBLISHED_WORKFLOW_RUNS);
+    expect(store.getSnapshot().terminal.some((line) => line.text.includes("workflow runs"))).toBe(false);
+  });
+
+  it("still replaces a run in place when the same runId is published again", () => {
+    const { store, service } = makeService();
+    service.publishRun({ runId: "run-a", status: "running" });
+    service.publishRun({ runId: "run-a", status: "complete" });
+    const runs = store.getSnapshot().workflowRuns;
+    expect(runs.length).toBe(1);
+    expect(runs[0].status).toBe("complete");
   });
 });
