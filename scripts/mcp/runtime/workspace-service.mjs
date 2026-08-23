@@ -246,10 +246,37 @@ export function mapObservedGraph(observed) {
   };
 }
 
+// TASK-PRD-007 follow-up: `workflowRuns` was the one UNBOUNDED slice on the snapshot. Both
+// publishRun() and status() below append a new entry per run id and only de-duplicate the SAME
+// id, so a session that ran repeated scans grew the slice forever -- while `terminal`, a few
+// lines away in snapshot-store.mjs, has always been capped at 199 lines.
+//
+// That matters because the WebSocket connect frame (sidecar-server.mjs) carries the whole
+// snapshot and is validated against MISSION_PROTOCOL_LIMITS.eventBytes. Measured on this
+// repository: a real runtime's non-scan content is ~45 KB, the scan slices are bounded at
+// SCAN_SLICE_WIRE_BYTE_BUDGET (900 KB), leaving ~55 KB of headroom -- and ONE workflow run
+// serialises to ~6.2 KB. So roughly nine deep scans in a session would push the connect frame
+// past the ceiling, at which point a connecting client silently receives no snapshot at all.
+// Bounding the slice is what keeps the byte budget's arithmetic true over a long session.
+//
+// Newest runs are kept: the tail is what a reader is looking at. Trimming is disclosed rather
+// than silent, matching how every other drop in this file is reported.
+export const MAX_PUBLISHED_WORKFLOW_RUNS = 25;
+
+function boundWorkflowRuns(runs, appendTerminal) {
+  if (runs.length <= MAX_PUBLISHED_WORKFLOW_RUNS) return runs;
+  const dropped = runs.length - MAX_PUBLISHED_WORKFLOW_RUNS;
+  appendTerminal?.(
+    "warn",
+    `GoVibe workflow runs: kept the ${MAX_PUBLISHED_WORKFLOW_RUNS} most recent of ${runs.length} in the published snapshot (${dropped} older run(s) trimmed). The slice is bounded so the WebSocket connect frame stays inside the ${MISSION_PROTOCOL_LIMITS.eventBytes}-byte protocol ceiling; the trimmed runs remain on disk under state/runs/.`,
+  );
+  return runs.slice(-MAX_PUBLISHED_WORKFLOW_RUNS);
+}
+
 export class WorkspaceService {
   constructor(options) { Object.assign(this, options); }
   async target(value) { return resolveWorkspace(value, this.allowedRoots); }
-  publishRun(run) { const snapshot = this.snapshotStore.getSnapshot(); this.snapshotStore.patch({ workflowRuns: [...snapshot.workflowRuns.filter((item) => item.runId !== run.runId), run] }); this.snapshotStore.emit({ type: "workflow.run", run }); }
+  publishRun(run) { const snapshot = this.snapshotStore.getSnapshot(); const next = boundWorkflowRuns([...snapshot.workflowRuns.filter((item) => item.runId !== run.runId), run], (type, text) => this.snapshotStore.appendTerminal(type, text)); this.snapshotStore.patch({ workflowRuns: next }); this.snapshotStore.emit({ type: "workflow.run", run }); }
   async initialize(args = {}) {
     const target = await this.target(args.workspacePath);
     const builtInSkill = await readSkillDefinition(path.join(this.workspaceRoot, ".govibe", "skills", "block-decomposition", "1.0.0", "SKILL.md"));
@@ -269,7 +296,7 @@ export class WorkspaceService {
     this.snapshotStore.appendTerminal(result.status === "ready" ? "sys" : "warn", `GoVibe continue ${result.status}.`); return result;
   }
   async createPlan(args = {}) { const result = await createWorkflowPlan({ workspacePath: await this.target(args.workspacePath), runId: args.runId, tasks: args.tasks, policyEnvelope: createPolicyEnvelope(args.mode ?? "codev", args.actor ?? "unknown") }); this.publishRun(result); return result; }
-  async status(args = {}) { const result = await getWorkflowStatus({ workspacePath: await this.target(args.workspacePath), runId: args.runId }); const snapshot = this.snapshotStore.getSnapshot(); this.snapshotStore.patch({ workflowRuns: [...snapshot.workflowRuns.filter((run) => run.runId !== result.runId), result] }); return result; }
+  async status(args = {}) { const result = await getWorkflowStatus({ workspacePath: await this.target(args.workspacePath), runId: args.runId }); const snapshot = this.snapshotStore.getSnapshot(); this.snapshotStore.patch({ workflowRuns: boundWorkflowRuns([...snapshot.workflowRuns.filter((run) => run.runId !== result.runId), result], (type, text) => this.snapshotStore.appendTerminal(type, text)) }); return result; }
   async impact(args = {}) { return workspaceImpact({ workspacePath: await this.target(args.workspacePath), paths: args.paths ?? [] }); }
   async version(args = {}) { return docsVersion({ workspacePath: await this.target(args.workspacePath), path: args.path }); }
   async review(args = {}) { return reviewWorkspace({ workspacePath: await this.target(args.workspacePath) }); }

@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.78+draft"
+version: "0.3.79+draft"
 updated: "2026-08-20"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.78+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.79+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -149,7 +149,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Architecture | `BLUEPRINT-GOVIBE-CAPABILITY-VERTICAL-SLICE` | `3.1.0` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-GoVibe-Capability-Vertical-Slice.md` |
 | Architecture | `BLUEPRINT-MISSION-GATEWAY-RUNTIME-SPLIT` | `0.1.2` | approved | Boss / ATHER | `docs/architecture/BLUEPRINT-Mission-Gateway-Runtime-Responsibility-Split.md` |
 | Architecture | `ARCH-VAULT-CONTEXT-MODEL` | `1.0.1` | approved | Boss / ATHER | `docs/architecture/ARCH-Vault-and-Context-Model.md` |
-| Spec | `SPEC-WORKSPACE-SYSTEM` | `0.3.3` | approved | Boss (CEO) | `docs/specs/SPEC-Workspace-System.md` |
+| Spec | `SPEC-WORKSPACE-SYSTEM` | `0.3.4` | approved | Boss (CEO) | `docs/specs/SPEC-Workspace-System.md` |
 | Architecture | `TDD-POC-CANONICAL-LOOP` | `1.0.0` | approved | Boss / ATHER | `docs/architecture/TDD-POC-Canonical-Loop.md` |
 | Architecture / Conformance | `C4-KNOWLEDGE-CONTEXT-AUTHORITY-OVERLAY` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/C4-Knowledge-Context-Authority-Overlay.md` |
 | Architecture / Conformance | `C4-PROVIDER-ENTITLEMENT-EXECUTION-ROUTING-OVERLAY` | `0.1.0+draft` | draft | ARCHON / ATHER | `docs/architecture/C4-Provider-Entitlement-Execution-Routing-Overlay.md` |
@@ -234,6 +234,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.79+draft | 2026-08-20 | Claude Opus 5 | Synchronized SPEC-WORKSPACE-SYSTEM to 0.3.4 and this registry own self-row to 0.3.79+draft: recorded §5.3.3, the snapshot frame budget. Every accumulating snapshot slice must be bounded, because the WebSocket connect frame carries the whole snapshot against a single protocol ceiling; workflowRuns was unbounded and would have cost connecting clients their snapshot after roughly nine deep scans in a session. Written because the Docs-First diff gate correctly refused a governed runtime-surface change that carried no documentation. No document status changed by this row. |
 | 0.3.78+draft | 2026-08-20 | Claude Opus 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.23 and this registry own self-row to 0.3.78+draft: TASK-PRD-004 (GAP-02) executed to review. End-to-end coverage now boots the Vite dev server and the sidecar and asserts on live sidecar snapshot data, replacing a suite that exercised a static marketing mockup and would have passed with the application broken. Exit criterion proved by an injected off-by-one regression failing the suite, not by assertion. SPR-PRD-01 and PHASE-PRD-01 now have no open child tasks but are NOT advanced -- their children sit at review and promotion is the owner ratification decision. GATE-CI not re-evaluated. No Readiness Gate flipped; no document status changed to approved/accepted. |
 | 0.3.77+draft | 2026-08-20 | Claude Opus 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.22 and this registry's own self-row to 0.3.77+draft: TASK-PRD-006 executed to review at commit 72eec66 on the owner's RETIRE decision for snapshot.heatmap. Only one of the two audited orphans was real; masterPlanPreview has a producer and consumers, so that 2026-08-06 finding was stale. The heatmap field, its event, the D2 view and its ViewId union member were removed from both sides of the MissionSnapshot contract. Success criterion recorded n/a (conditional on the field surviving). SPR-PRD-03 and PHASE-PRD-03 now have no open child tasks but are NOT advanced by this row -- their children sit at review and promotion is the owner's ratification decision. No Readiness Gate flipped; no document status changed to approved/accepted. |
 | 0.3.76+draft | 2026-08-20 | Claude Opus 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.21 and this registry's own self-row to 0.3.76+draft: TASK-PRD-008 executed to review at commit 7581d9b, all three criteria ticked on command-verified evidence. A2 Roadmap Board rendering no ViewHeader is recorded as a pinned exception rather than claimed as fixed. PHASE-PRD-03/SPR-PRD-03 are NOT advanced — TASK-PRD-006 remains open and needs an owner produce-or-retire decision. No Readiness Gate flipped; no document status changed to approved/accepted. |

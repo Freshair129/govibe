@@ -2,7 +2,7 @@
 title: "SPEC: Workspace System Specification"
 doc_id: "SPEC-WORKSPACE-SYSTEM"
 status: "approved"
-version: "0.3.3"
+version: "0.3.4"
 updated: "2026-08-20"
 owner: "Boss (CEO)"
 source_of_truth: true
@@ -269,6 +269,30 @@ with numerator and denominator describing the **same** population, and candidate
 by the endpoint filter or the wire bound are reported separately. An L1 scan publishes
 nothing, so a workspace with no deep scan keeps an honest empty state.
 
+#### 5.3.3 Snapshot frame budget
+
+The sidecar's WebSocket connect frame carries the **whole** snapshot and is validated
+against `MISSION_PROTOCOL_LIMITS.eventBytes`. A frame that exceeds it is not sent, and a
+connecting client receives no snapshot at all — so the ceiling is a property of the
+snapshot as a whole, not of any one slice.
+
+**Every accumulating snapshot slice MUST be bounded.** The scan slices are held to a
+byte budget, which only remains sufficient while the rest of the snapshot stays small:
+measured on this repository, non-scan content is ~45 KB against a ~900 KB scan budget,
+leaving roughly 55 KB of headroom. A slice that grows without limit therefore does not
+merely get large — it invalidates the scan budget's arithmetic and eventually costs every
+connecting client its snapshot.
+
+`workflowRuns` was such a slice: it de-duplicated by `runId` but otherwise appended
+indefinitely, at roughly 6 KB per run, so on the order of nine deep scans in one session
+would breach the ceiling. It is now bounded to the most recent runs, as `terminal`
+already was.
+
+Trimming a bounded slice MUST be disclosed on the same terms as §5.3.2 — the reader is
+told what was kept, what was dropped, and where the dropped records still exist
+(`state/runs/`). Retention MUST keep the newest entries: the tail is what a reader is
+looking at.
+
 ### 5.4 `govibe.workspace.impact`
 
 Traverses the observed backlink graph
@@ -492,6 +516,7 @@ conflicting `.govibe`/`.brain` state); the runtime MUST NOT auto-delete workspac
 
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.4 | 2026-08-20 | VIBE / Boss | §5.3.3 added: the snapshot frame budget. The sidecar WebSocket connect frame carries the whole snapshot and is validated against MISSION_PROTOCOL_LIMITS.eventBytes, so the ceiling is a property of the snapshot as a whole rather than of any one slice, and every accumulating slice must therefore be bounded. Measured on this repository: non-scan content ~45 KB against a ~900 KB scan budget, leaving ~55 KB of headroom, while one workflow run serialises to ~6 KB. workflowRuns de-duplicated by runId but otherwise appended indefinitely, so roughly nine deep scans in a session would breach the ceiling and a connecting client would silently receive no snapshot at all -- the unbounded slice does not merely grow, it invalidates the scan budget arithmetic that keeps the frame legal. Now bounded to the most recent runs, as terminal already was, with the trim disclosed on the same terms as §5.3.2 (what was kept, what was dropped, and where the dropped records still exist under state/runs/) and newest-first retention required because the tail is what a reader is looking at. Recorded because the repository Docs-First gate (scripts/docs/diff-check.mjs, pull-request scoped) correctly refused a governed runtime-surface change with no accompanying documentation. Evidence: npm run lint exit 0; npx vitest run 125 files, 1047 passed, 1 skipped; scripts/mcp plus packages/govibe-core 81 files, 714 passed. No status change; approved content addition under the live-document precedent this repo already applies to other approved planning/spec docs. |
 | 0.3.3 | 2026-08-20 | VIBE / Boss | §5.3.1 and §5.3.2 added, recording the owner-approved MSP semantic change made under TASK-PRD-007. Inventory scope is now derived from the repository's own git ignore rules rather than a hand-maintained list, because a hand list had already drifted (it omitted `scripts/bench/`, which .gitignore excludes precisely because it holds real customer/account mapping data, and it could not express the `benchmark_results/v2/` vs `benchmark_results/logs/` split or the `!local_model/...` negation). Measured on this repository the inventory went 6,838 -> 922 files, and stage-3 unresolved links 3,226 -> 41, because a stale in-repo git worktree was duplicating ~90 governed documents and poisoning basename/doc_id resolution. §5.3.1 further requires that a non-git-toplevel workspace not inherit an enclosing repository's rules (such a workspace previously inventoried as EMPTY), that an unexpected git failure be surfaced rather than silently widening scope (measured blast radius 922 -> 1,726 files including a vendored foreign checkout), and that `governingRuleSets` carry no absolute path so `sourceSnapshotHash` stays content-addressed for §6 replay comparison. §5.3.2 records that observed candidates published to the Mission Control snapshot must not be presented as canonical, and that per-stage bounding must be disclosed with numerator and denominator describing the same population. Evidence: `npm run baseline:check` exit 0; `npx vitest run` exit 0 (124 files, 1033 passed, 1 skipped); real deep scan of this repository reporting status complete, graphValidation true, inventoryMode git, path-free governingRuleSets, 3563 nodes / 2635 edges / 2024 symbols published with 0 dangling, 0 duplicate and 0 scratch nodes. No status change; approved content addition under the live-document precedent this repo already applies to other approved planning/spec docs. |
 | 0.3.2 | 2026-08-20 | VIBE / Boss | §5.4: `govibe.workspace.impact` results now declare their own analysis boundary in `boundary.excluded[]`. The link graph is built by walking the filesystem rather than the git index, so a `git worktree add` target parked inside the repository (`.git` written as a *file*, which the walker's `.git` directory-name exclusion never matched) was indexed as a full second copy of the tree — `docs/specs/SPEC-Workspace-System.md` and its worktree twin were both returned as distinct `review_and_update` dependents at distance 1 for the same change. Nested checkouts and root-level scratch directories are now excluded and reported with a reason rather than silently dropped. This is an AGENTS.md §10 correctness fix: phantom dependents inflate the mandatory required-review set with paths nobody should edit. Measured on this repository, a single-seed impact run drops from 197 affected artifacts to 100, with zero worktree duplicates. Evidence: `npx vitest run packages/govibe-core/impact-engine.test.mjs` (9 passed, 6 new covering `.git`-as-file, `.git`-as-directory, scratch exclusion, the nested `src/state/` name-collision guard, and boundary reporting through `calculateWorkspaceImpact`). Deep scan's separate `ignored` set in `packages/govibe-core/src/scan/scan.mjs` was deliberately NOT changed — it governs what is submitted to MSP and needs owner sign-off. No status change; approved content addition under the live-document precedent this repo already applies to other approved planning/spec docs. |
 | 0.3.1 | 2026-08-19 | VIBE / Boss | TASK-PRD-026 (AUD-04): the sidecar's `workspace.scan` mission command now passes through the SAME `enforceToolRbac` decision point as stdio (`scripts/mcp/runtime/mission-command-router.mjs`), attributing the actor from the command payload rather than a hardcoded `mission-control` constant. TASK-PRD-027 (AUD-05): `govibe.docs.resolve` and `govibe.ingest.code` added to the §6.2/§7 tables and put behind `scripts/mcp/path-security.mjs`'s existing containment helper — both previously honored absolute/traversal paths with no containment and sat outside the RBAC matrix entirely. Evidence: `node --test scripts/mcp/sidecar-rbac-enforcement.security.mjs` (5 passed), `node --test scripts/mcp/docs-ingest-containment.security.mjs` (11 passed), `npx vitest run packages/govibe-core/src/rbac.test.mjs scripts/mcp/rbac-enforcement.test.mjs` (44 passed). No status change; approved content addition under the live-document precedent this repo already applies to other approved planning/spec docs. |
