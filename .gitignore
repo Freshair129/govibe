@@ -79,6 +79,7 @@ local_model/*
 
 # Playwright output
 playwright-report/
+playwright-report-landing/
 test-results/
 .playwright-cli/
 

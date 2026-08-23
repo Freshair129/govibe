@@ -1,22 +1,27 @@
 name: E2E Tests — Landing Page
 
+# TASK-PRD-004 (GAP-02): this workflow covers ONLY the static marketing mockup
+# (e2e/landing-page.spec.ts against docs/references/fixtures/LANDING-GoVibe-Mockup.html), via
+# its own playwright.landing.config.ts. It boots no application server. The real app suite lives
+# in e2e-ci.yml against playwright.config.ts.
+
 on:
   push:
     branches: [ main, develop ]
     paths:
-      - 'e2e/**'
+      - 'e2e/landing-page.spec.ts'
       - 'docs/references/fixtures/LANDING-GoVibe-Mockup.html'
       - 'package.json'
-      - 'playwright.config.ts'
+      - 'playwright.landing.config.ts'
       - '.github/workflows/e2e-tests.yml'
 
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'e2e/**'
+      - 'e2e/landing-page.spec.ts'
       - 'docs/references/fixtures/LANDING-GoVibe-Mockup.html'
       - 'package.json'
-      - 'playwright.config.ts'
+      - 'playwright.landing.config.ts'
 
   # Allow manual trigger
   workflow_dispatch:
@@ -49,14 +54,14 @@ jobs:
         run: npx playwright install --with-deps ${{ matrix.browser }}
 
       - name: Run E2E tests — ${{ matrix.browser }}
-        run: npx playwright test --project=${{ matrix.browser }}
+        run: npx playwright test --config=playwright.landing.config.ts --project=${{ matrix.browser }}
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report-${{ matrix.browser }}
-          path: playwright-report/
+          path: playwright-report-landing/
           retention-days: 30
 
       - name: Upload test results (JSON)
@@ -64,7 +69,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results-json-${{ matrix.browser }}
-          path: test-results/results.json
+          path: test-results/landing-results.json
           retention-days: 30
 
   report:
