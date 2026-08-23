@@ -1,6 +1,7 @@
 import type { MissionSnapshot } from "../../mission";
 import { EmptyState } from "../../shared/EmptyState";
 import { ViewHeader } from "../../shared/ViewHeader";
+import { viewTitle } from "../../mission/navigation";
 import { selectBoundedNodes } from "./bounded-nodes";
 
 // TASK-PRD-007 (F1): this canvas previously positioned every node at
@@ -16,7 +17,7 @@ export function GraphStudioView({ snapshot }: { snapshot: MissionSnapshot }) {
   return (
     <div className="view-stack">
       <div className="view-title-row">
-        <ViewHeader eyebrow="Genesis Knowledge" title="Interactive Graph Studio" desc="2D graph workspace for relationship mapping." />
+        <ViewHeader eyebrow="Genesis Knowledge" title={viewTitle("B3")} desc="2D graph workspace for relationship mapping." />
       </div>
       {total > 0 ? (
         <>

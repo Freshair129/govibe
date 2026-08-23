@@ -1,11 +1,12 @@
 import type { MissionSnapshot } from "../../mission";
 import { EmptyState } from "../../shared/EmptyState";
 import { ViewHeader } from "../../shared/ViewHeader";
+import { viewTitle } from "../../mission/navigation";
 
 export function Heatmap({ snapshot }: { snapshot: MissionSnapshot }) {
   return (
     <div className="view-stack">
-      <ViewHeader eyebrow="AI Benchmark" title="Cyber Reactor Real-time Heatmap" />
+      <ViewHeader eyebrow="AI Benchmark" title={viewTitle("D2")} />
       {snapshot.heatmap ? (
         <div className="dashboard-grid">
           <section className="panel reactor-overview">
