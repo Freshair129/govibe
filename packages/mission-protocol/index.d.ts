@@ -71,7 +71,6 @@ export type MissionSnapshot = {
   graph: Record<string, unknown>;
   specs: unknown[];
   symbols: unknown[];
-  heatmap?: Record<string, unknown>;
   campaignLogs: unknown[];
   roadmap?: Record<string, unknown>;
   masterPlanPreview?: Record<string, unknown>;
@@ -117,7 +116,6 @@ export type MissionEvent =
   | { type: "chart.update"; chart: Record<string, unknown> }
   | { type: "agents.update"; agents: unknown[] }
   | { type: "graph.update"; graph: Record<string, unknown> }
-  | { type: "heatmap.update"; heatmap: Record<string, unknown> }
   | { type: "roadmap.snapshot"; roadmap: Record<string, unknown> }
   | { type: "dag.update"; dag: Record<string, unknown> }
   | { type: "roadmap.node.update"; node: Record<string, unknown> & { id: string } }

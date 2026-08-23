@@ -62,7 +62,12 @@ export const missionDomains: Record<DomainId, MissionDomain> = {
     { id: "C5", name: "Observed Candidate Map", icon: "vector" },
   ] },
   D: { id: "D", title: "AI Benchmark", shortTitle: "AI Benchmark", color: "#f59e0b", icon: "gauge", subModules: [
-    { id: "D1", name: "Reactor Run Trigger", icon: "bolt" }, { id: "D2", name: "Cyber Reactor Heatmap", icon: "fire" },
+    { id: "D1", name: "Reactor Run Trigger", icon: "bolt" },
+    // TASK-PRD-006: D2 "Cyber Reactor Heatmap" retired by owner decision. Its snapshot.heatmap
+    // field declared an 8x8 CPU/GPU thermal grid and core temperature -- host hardware telemetry
+    // this product has no collector for -- so the view could only ever render its empty state.
+    // Retired rather than faked, consistent with TASK-PRD-020 removing the fabricated D1 reactor
+    // telemetry. Re-introducing it means building a real collector under its own Task ID.
     { id: "D3", name: "EABS-01 Campaign Logs", icon: "log" },
   ] },
 };

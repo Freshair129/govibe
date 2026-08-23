@@ -51,7 +51,6 @@ export function reduceMissionEvent(current: MissionSnapshot, event: MissionEvent
     case "chart.update": return mergeMissionSnapshot(current, { chart: event.chart });
     case "agents.update": return mergeMissionSnapshot(current, { agents: event.agents });
     case "graph.update": return mergeMissionSnapshot(current, { graph: event.graph });
-    case "heatmap.update": return mergeMissionSnapshot(current, { heatmap: event.heatmap });
     case "roadmap.snapshot": return mergeMissionSnapshot(current, { roadmap: event.roadmap });
     // No view consumes the DAG client-side today; this case exists only to
     // satisfy exhaustiveness and pass protocol validation so the sidecar

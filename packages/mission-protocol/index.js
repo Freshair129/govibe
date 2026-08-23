@@ -220,7 +220,6 @@ export function isMissionEvent(value) {
     case "chart.update": return hasOnlyKeys(value, ["type", "chart"]) && isBoundedRecord(value.chart);
     case "agents.update": return hasOnlyKeys(value, ["type", "agents"]) && isBoundedArray(value.agents);
     case "graph.update": return hasOnlyKeys(value, ["type", "graph"]) && isBoundedRecord(value.graph);
-    case "heatmap.update": return hasOnlyKeys(value, ["type", "heatmap"]) && isBoundedRecord(value.heatmap);
     case "roadmap.snapshot": return hasOnlyKeys(value, ["type", "roadmap"]) && isBoundedRecord(value.roadmap);
     case "dag.update": return hasOnlyKeys(value, ["type", "dag"]) && isBoundedRecord(value.dag);
     case "roadmap.node.update": return hasOnlyKeys(value, ["type", "node"]) && isBoundedRecord(value.node) && isBoundedString(value.node.id, MISSION_PROTOCOL_LIMITS.idChars);

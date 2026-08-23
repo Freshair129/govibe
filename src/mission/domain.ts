@@ -3,7 +3,9 @@ export type ViewId =
   | "A1" | "A2" | "A3" | "A4" | "A5" | "A6" | "A7" | "A8" | "A9"
   | "B1" | "B2" | "B3" | "B4"
   | "C1" | "C2" | "C3" | "C4" | "C5"
-  | "D1" | "D2" | "D3";
+  // TASK-PRD-006: D2 (Cyber Reactor Heatmap) retired by owner decision -- its snapshot.heatmap
+  // field described host CPU/GPU thermal telemetry this product has no collector for.
+  | "D1" | "D3";
 
 export type ThemeMode = "dark" | "light";
 // TASK-PRD-021 (AUD-24): "unauthorized" is a dedicated state for a 401 bootstrap response --
@@ -372,7 +374,6 @@ export type MissionSnapshot = {
   graph: { nodes: Array<{ id: string; label: string }>; edges: Array<{ source: string; target: string }> };
   specs: Array<{ title: string; body: string }>;
   symbols: Array<{ name: string; path: string; kind: string }>;
-  heatmap?: { cells: number[]; coreTemp: number };
   campaignLogs: string[];
   roadmap?: RoadmapSnapshot;
   masterPlanPreview?: RoadmapSnapshot;
@@ -397,7 +398,6 @@ export type MissionEvent =
   | { type: "chart.update"; chart: MissionSnapshot["chart"] }
   | { type: "agents.update"; agents: AgentRecord[] }
   | { type: "graph.update"; graph: MissionSnapshot["graph"] }
-  | { type: "heatmap.update"; heatmap: NonNullable<MissionSnapshot["heatmap"]> }
   | { type: "roadmap.snapshot"; roadmap: RoadmapSnapshot }
   | { type: "dag.update"; dag: Record<string, unknown> }
   | { type: "roadmap.node.update"; node: WorkflowTaskNode }
