@@ -2,7 +2,7 @@
 title: "MASTERPLAN: GoVibe Production Readiness"
 doc_id: "MASTERPLAN-GOVIBE-PRODUCTION-READINESS"
 status: "approved"
-version: "0.3.21"
+version: "0.3.22"
 updated: "2026-08-20"
 owner: "LYRA"
 ratification_authority: "Boss (CEO)"
@@ -255,7 +255,7 @@ any production claim that involves a network-reachable deployment.
 | TASK-PRD-003 | SPR-PRD-01 | task | Add an unfiltered baseline check workflow for every pull request | P0 | ATHER | done | TASK-PRD-002 | Section 3.1 GAP-01 |
 | TASK-PRD-004 | SPR-PRD-01 | task | Point end-to-end coverage at the running application | P1 | VIBE | planned | TASK-PRD-003 | Section 3.1 GAP-02 |
 | TASK-PRD-005 | SPR-PRD-02 | task | Add the orchestration slice to the MissionSnapshot contract | P0 | ARCHON | done | TASK-PRD-003 | Section 3.1 GAP-04 |
-| TASK-PRD-006 | SPR-PRD-02 | task | Resolve the heatmap and master plan preview contract orphans | P1 | ARCHON | planned | TASK-PRD-005 | Section 3.1 GAP-05 |
+| TASK-PRD-006 | SPR-PRD-02 | task | Resolve the heatmap and master plan preview contract orphans | P1 | ARCHON | review | TASK-PRD-005 | Section 3.1 GAP-05 |
 | TASK-PRD-007 | SPR-PRD-03 | task | Publish graph and symbol producers from the workspace scan | P0 | VIBE | review | TASK-PRD-005 | Section 3.2 |
 | TASK-PRD-008 | SPR-PRD-03 | task | Reconcile sidebar labels with rendered view titles | P2 | VIBE | review | - | Section 3.1 GAP-07 |
 | TASK-PRD-009 | SPR-PRD-04 | task | Correct abolished H-axis semantics in architecture documents | P1 | ATHER | done | - | Section 3.1 GAP-08 |
@@ -612,27 +612,46 @@ title: Resolve the heatmap and master plan preview contract orphans
 requirement_type: FR
 complexity: C-2
 access_scope: H2
-status: planned
-version: 0.1.0+draft
+status: review
+version: 0.2.0+draft
 pic: ARCHON
 executor: VIBE
 approver: Boss
 auditor: ATHER
 symbol_links:
-  code: scripts/mcp/runtime/snapshot-store.mjs
+  code: src/mission/domain.ts
   doc: docs/PRD-GoVibe-Platform-Overview.md
-  test: src/mission/snapshot-reducer.test.ts
+  test: src/missionContract.test.ts
 definition_of_done:
   acceptance_criteria:
     - criterion: Given the owner decides produce or retire for each orphan field, when the decision is recorded, then the code follows it in the same change
-      checked: false
+      checked: true
   success_criteria:
     - criterion: Given the heatmap field survives the decision, when the runtime publishes a snapshot, then the field carries real reactor data rather than an absent key
-      checked: false
+      checked: "n/a - heatmap did not survive the decision; retired"
   exit_criteria:
     - criterion: Given both orphan fields are resolved, when the contract test runs, then no field exists on one side only
-      checked: false
-changelog: Two orphan contract fields recorded from the 2026-08-06 live snapshot comparison.
+      checked: true
+changelog: >-
+  Executed to review at commit 72eec66. Re-measuring the 2026-08-06 audit found only ONE real
+  orphan, not two. masterPlanPreview is produced by RoadmapService.previewMasterPlan()
+  (scripts/mcp/runtime/roadmap-service.mjs:382-385) and consumed by
+  src/features/readiness/readinessPlan.ts and src/features/roadmap/RoadmapBoard.tsx, so the audit
+  finding was stale; its contract-test allowlist justification now records it as post-boot rather
+  than orphaned. snapshot.heatmap was a genuine orphan: it declared an 8x8 CPU/GPU thermal grid
+  and core temperature, and the only non-frontend reference in the tree was a template-extraction
+  script naming the D2 HTML file. snapshot.reactor has no producer either (reactor.run returns
+  only a command acknowledgement), so there was no existing telemetry to feed it from, and
+  producing it would require building a host hardware-telemetry collector -- a new capability with
+  its own platform and permission questions, not a wiring fix. Owner decision recorded in session:
+  RETIRE. The field, the heatmap.update event, the reducer case, the D2 nav entry, the RenderView
+  branch, Heatmap.tsx, the ViewId union member and the contract-test allowlist entry were all
+  removed from both sides of the contract, consistent with TASK-PRD-020's removal of the
+  fabricated D1 reactor telemetry. The SUCCESS criterion is recorded n/a rather than ticked or
+  failed: it is conditional on the heatmap field surviving the decision, and it did not. Evidence:
+  npm run baseline:check exit 0; vitest 125 files, 1042 passed, 1 skipped; contract + protocol +
+  navigation suites 44 passed; a repository-wide grep shows no heatmap reference remaining outside
+  explanatory comments.
 created_at: 2026-08-06T00:00:00Z,THESEUS,pending
 token_telemetry:
   model_name: claude-opus-5
@@ -2488,6 +2507,7 @@ agent.
 
 | Version | Date | Status | Summary | Commit Hash | Agent |
 |---|---|---|---|---|---|
+| 0.3.22 | 2026-08-20 | approved | TASK-PRD-006 (P1) executed to review at commit 72eec66 on the owner's produce-or-retire decision, recorded in session as RETIRE. Backlog Items row planned -> review; TC-TASK-PRD-006 0.1.0+draft -> 0.2.0+draft. Re-measuring the 2026-08-06 audit found only ONE real orphan, not two: masterPlanPreview is produced by RoadmapService.previewMasterPlan() and consumed by readinessPlan.ts and RoadmapBoard.tsx, so that finding was stale and its allowlist justification now records it as post-boot. snapshot.heatmap was genuinely unproduced -- an 8x8 CPU/GPU thermal grid this product has no collector for -- and was removed from both sides of the contract along with the heatmap.update event, the reducer case, the D2 view, its nav entry and its ViewId union member. The success criterion is recorded n/a rather than ticked, because it is conditional on the heatmap field surviving the decision and it did not. Acceptance and exit criteria ticked on evidence: baseline:check exit 0; vitest 125 files / 1042 passed / 1 skipped; repository-wide grep shows no heatmap reference outside explanatory comments. This closes the last open task under SPR-PRD-03 and PHASE-PRD-03, but neither is advanced by this row: their children are at review, not done, and promoting them is the owner's ratification decision. No Readiness Gate flipped; the plan's approved lifecycle status is unchanged. | pending | Claude Opus 5 |
 | 0.3.21 | 2026-08-20 | approved | TASK-PRD-008 (P2, NFR) executed to review at commit 7581d9b. Backlog Items row planned -> review; TC-TASK-PRD-008 0.1.0+draft -> 0.2.0+draft with symbol_links.test repointed from src/missionContract.test.ts to the suite that actually binds this task, src/mission/navigation.test.ts. All four audited mismatches re-measured and confirmed, then closed structurally rather than by renaming strings: navigation.ts is now the single source for both the sidebar label and the view header, views read viewTitle(id), and a deliberate difference requires a titleNote the test enforces. All three criteria ticked on command-verified evidence (baseline:check exit 0; vitest 125 files / 1042 passed / 1 skipped; lint clean). One item is recorded rather than claimed: A2 Roadmap Board renders no ViewHeader at all — an absent header, not a mismatched one — and a test pins that exception. PHASE-PRD-03/SPR-PRD-03 are NOT advanced: TASK-PRD-006 remains open beneath them and its own acceptance criterion requires an owner produce-or-retire decision on the heatmap and masterPlanPreview orphan fields. No Readiness Gate flipped; the plan's approved lifecycle status is unchanged. | pending | Claude Opus 5 |
 | 0.3.20 | 2026-08-20 | approved | TASK-PRD-007 (P0, Section 3.2) executed to review at commit 78f1b78. Backlog Items row planned -> review; TC-TASK-PRD-007 0.1.0+draft -> 0.2.0+draft with symbol_links corrected to the files actually changed; Verification row "Impact analysis over the changed snapshot contract" pending -> passed (calculateWorkspaceImpact run over the changed paths; every distance-1 must_update dependent reviewed, docs/specs/SPEC-Workspace-System.md updated to 0.3.3 as a result). The snapshot graph/symbols slices now carry live deep-scan output; publishing them exposed that the scan pipeline was largely producing untrustworthy data, and most of the work was fixing that: 5,819 fabricated Route entities were being promoted to MSP, wikilinks were being harvested from inside code fences, stage 8 was recording a false inventory-exclusion with verdict passed, and five stages aborted on the first unparseable file. Inventory scope now derives from the repository's own git ignore rules — an owner-approved MSP semantic change recorded as SPEC-WORKSPACE-SYSTEM 0.3.3 §5.3.1. Measured before -> after: inventory 6,838 -> 923 files; fabricated Routes 5,819 -> 0; published graph 1,000 scratch paths / 0 edges / 0 symbols -> 3,563 nodes / 2,635 edges / 2,024 symbols; connectivity 6.9% -> 44.5%. Evidence: baseline:check exit 0, vitest exit 0 (124 files, 1033 passed, 1 skipped), mcp:smoke PASS. Acceptance and exit criteria ticked on that evidence; the SUCCESS criterion is deliberately left unchecked because it names a reviewer opening each of the six views and no human review has been recorded. PHASE-PRD-03/SPR-PRD-03 progress and status are NOT changed by this row — TASK-PRD-004, -006 and -008 remain open beneath them. No Readiness Gate is flipped and the plan's approved lifecycle status is unchanged. | pending | Claude Opus 5 |
 | 0.3.19 | 2026-08-20 | approved | Consistency reconciliation, not new execution work: with GATE-BOOTSTRAP flipped to met in §4 (0.3.18 row) and TASK-PRD-010 — verified as SPR-PRD-05's sole child task in the Assignments table (line ~262) — already `done`, PHASE-PRD-05's named exit criterion ("GATE-BOOTSTRAP is met") and SPR-PRD-05's sole blocking task were both already satisfied, leaving the Phases/Sprints table rows internally contradictory with §4. Phases table: PHASE-PRD-05 status in-progress → done, progress 75 → 100. Sprints table: SPR-PRD-05 status in-progress → done, progress 75 → 100. §4 gates, TASK-PRD-010's own row, and the plan's `approved` lifecycle status are unchanged by this row — this closes only the two now-stale progress rows. | pending | Claude Sonnet 5 |

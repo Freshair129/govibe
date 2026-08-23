@@ -2,7 +2,7 @@
 title: "Document Version Registry"
 doc_id: "DOC-VERSION-REGISTRY"
 status: "draft"
-version: "0.3.76+draft"
+version: "0.3.77+draft"
 updated: "2026-08-20"
 owner: "ATHER / THESEUS"
 source_of_truth: true
@@ -33,7 +33,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 | Standard / Canonical SOT | `STD-EXECUTION-GOVERNANCE` | `2.4.0+ga` | stable | GoVibe | `docs/STD-Execution-Governance.md` |
 | Standard / Canonical SOT | `STD-SLM-TIERED-ROUTING` | `0.1.0+draft` | draft | GoVibe | `docs/STD-SLM-Tiered-Routing.md` |
 | Standard | `STD-DOCUMENT-VERSIONING-GOVERNANCE` | `0.2.1+draft` | draft | ATHER / THESEUS | `docs/STD-Document-Versioning-Governance.md` |
-| Registry | `DOC-VERSION-REGISTRY` | `0.3.76+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
+| Registry | `DOC-VERSION-REGISTRY` | `0.3.77+draft` | draft | ATHER / THESEUS | `docs/DOC-VERSION-REGISTRY.md` |
 
 ## 3. Product and Platform
 
@@ -91,7 +91,7 @@ This registry is the audit sitemap for active canonical and registered conforman
 |---|---|---|---|---|---|
 | Roadmap | `ROADMAP-GOVIBE-MCP-RUNTIME` | `0.4.8` | approved | LYRA | `docs/roadmap/ROADMAP-govibe-mcp-runtime.md` |
 | Master Plan | `MASTERPLAN-GOVIBE-MVP-DEVELOPER-TRIAL` | `0.2.1` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-mvp-developer-trial.md` |
-| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.21` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
+| Master Plan | `MASTERPLAN-GOVIBE-PRODUCTION-READINESS` | `0.3.22` | approved | LYRA | `docs/roadmap/MASTERPLAN-govibe-production-readiness.md` |
 | Backlog | `BACKLOG-PRODUCTION-READINESS-EXECUTION` | `0.1.0+draft` | draft | LYRA | `docs/roadmap/BACKLOG-production-readiness-execution.md` |
 | Roadmap | `ROADMAP-TASK-SCOPED-CONTEXT-INJECTION` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-task-scoped-context-injection.md` |
 | Roadmap | `ROADMAP-TRANSLATOR-CORE` | `0.1.0` | approved | LYRA | `docs/roadmap/ROADMAP-translator-core.md` |
@@ -234,6 +234,7 @@ them into product authority.
 ## Changelog
 | Version | Date | Owner | Summary |
 |---|---|---|---|
+| 0.3.77+draft | 2026-08-20 | Claude Opus 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.22 and this registry's own self-row to 0.3.77+draft: TASK-PRD-006 executed to review at commit 72eec66 on the owner's RETIRE decision for snapshot.heatmap. Only one of the two audited orphans was real; masterPlanPreview has a producer and consumers, so that 2026-08-06 finding was stale. The heatmap field, its event, the D2 view and its ViewId union member were removed from both sides of the MissionSnapshot contract. Success criterion recorded n/a (conditional on the field surviving). SPR-PRD-03 and PHASE-PRD-03 now have no open child tasks but are NOT advanced by this row -- their children sit at review and promotion is the owner's ratification decision. No Readiness Gate flipped; no document status changed to approved/accepted. |
 | 0.3.76+draft | 2026-08-20 | Claude Opus 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.21 and this registry's own self-row to 0.3.76+draft: TASK-PRD-008 executed to review at commit 7581d9b, all three criteria ticked on command-verified evidence. A2 Roadmap Board rendering no ViewHeader is recorded as a pinned exception rather than claimed as fixed. PHASE-PRD-03/SPR-PRD-03 are NOT advanced — TASK-PRD-006 remains open and needs an owner produce-or-retire decision. No Readiness Gate flipped; no document status changed to approved/accepted. |
 | 0.3.75+draft | 2026-08-20 | Claude Opus 5 | Synchronized MASTERPLAN-GOVIBE-PRODUCTION-READINESS to 0.3.20 and this registry's own self-row to 0.3.75+draft: TASK-PRD-007 (P0) executed to review at commit 78f1b78, with its Verification row for impact analysis moved pending -> passed. Acceptance and exit criteria ticked on command-verified evidence (baseline:check exit 0; vitest exit 0, 124 files / 1033 passed / 1 skipped; mcp:smoke PASS); the success criterion is deliberately left unchecked because it names a reviewer opening each of six views and no human review is recorded. PHASE-PRD-03/SPR-PRD-03 are NOT advanced — TASK-PRD-004, -006 and -008 remain open beneath them. No Readiness Gate flipped; no document status changed to approved/accepted by this row. |
 | 0.3.74+draft | 2026-08-20 | Claude Opus 5 | Synchronized SPEC-WORKSPACE-SYSTEM to 0.3.3 and this registry's own self-row to 0.3.74+draft: recorded the owner-approved MSP semantic change executed under TASK-PRD-007 as §5.3.1 (inventory scope derived from the repository's git ignore rules rather than a hand-maintained list; non-git-toplevel workspaces must not inherit an enclosing repository's rules; unexpected git failure must be surfaced, not silently widen scope; `governingRuleSets` must carry no absolute path so `sourceSnapshotHash` stays content-addressed for §6 replay) and §5.3.2 (observed candidates published to the Mission Control snapshot must not be presented as canonical; per-stage bounding must be disclosed with numerator and denominator describing the same population). The change was owner-directed in session. No document status changed by this row; TASK-PRD-007 itself remains open in the masterplan and no Definition-of-Done criterion is ticked by this row. |
