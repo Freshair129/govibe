@@ -1,4 +1,10 @@
-name: E2E Tests — CI Pipeline
+name: E2E Tests — Mission Control App
+
+# TASK-PRD-004 (GAP-02): this pipeline now boots the real application (Vite dev server + the
+# sidecar, both via playwright.config.ts's webServer array) and exercises the roadmap board
+# against live sidecar data, replacing the previous run against a static marketing fixture.
+# The marketing-mockup spec (e2e/landing-page.spec.ts) still runs, but only in
+# e2e-tests.yml against its own fixture-only config (playwright.landing.config.ts).
 
 on:
   push:
@@ -25,11 +31,18 @@ jobs:
       - name: 📥 Install
         run: npm ci
 
+      - name: 🔑 Bootstrap local .env
+        # Never overwrites an existing .env (scripts/mcp/bootstrap-env.mjs) — safe here since a
+        # CI runner never has one, and playwright.config.ts also calls this itself as a defense-
+        # in-depth fallback, so this step documents the requirement rather than being the only
+        # thing enforcing it.
+        run: npm run env:bootstrap
+
       - name: 🎭 Install Playwright
         run: npx playwright install --with-deps chromium
 
       - name: 🧪 Run Tests
-        run: npm run e2e:landing -- --project=chromium
+        run: npm run e2e -- --project=chromium
 
       - name: 📊 Generate Report
         if: always()

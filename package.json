@@ -18,7 +18,7 @@
     "e2e:debug": "playwright test --debug",
     "e2e:headed": "playwright test --headed",
     "e2e:report": "playwright show-report",
-    "e2e:landing": "playwright test e2e/landing-page.spec.ts",
+    "e2e:landing": "playwright test --config=playwright.landing.config.ts",
     "docs:validate": "node scripts/docs/validate-docs.mjs",
     "diff:check": "node scripts/docs/diff-check.mjs",
     "diff:check:staged": "node scripts/docs/diff-check.mjs --staged",
